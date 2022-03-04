@@ -39,7 +39,7 @@ class ReportController(
     {
         val reportName = context.params(":name")
         val version = context.params().getOrElse(":version") { reportRepository.getLatestVersion(reportName).id }!!
-        val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
+        val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version, getArtefacts(version))
         val versions = reportRepository.getReportsByName(reportName)
         val changelog = orderly.getChangelogByNameAndVersion(reportName, version)
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
@@ -161,4 +161,13 @@ class ReportController(
             listOf()
         }
     }
+
+    /*
+    fun getArtefacts(version: String): List<Artefact>
+    {
+        val response = orderlyServerAPI.get("/report/version/${version}/artefact", emptyMap())
+        return response.listData(Artefact::class.java)
+    }
+
+     */
 }

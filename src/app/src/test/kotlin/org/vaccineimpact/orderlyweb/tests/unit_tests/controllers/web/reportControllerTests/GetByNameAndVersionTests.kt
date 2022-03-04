@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -36,11 +38,11 @@ class GetByNameAndVersionTests
                 3754.3,
                 "master",
                 "abc123"),
-            listOf(),
-            listOf(),
-            listOf(),
-            mapOf("p1" to "v1", "p2" to "v2"),
-            mapOf("p1" to "v1", "p2" to "v2"))
+            artefacts = listOf(),
+            resources = listOf(),
+            dataInfo = listOf(),
+            parameterValues = mapOf("p1" to "v1", "p2" to "v2"),
+            instances = mapOf("p1" to "v1", "p2" to "v2"))
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
             Changelog("20160103-143015-1234abcd", "public", "something public", true, true),
@@ -54,7 +56,7 @@ class GetByNameAndVersionTests
 
     private val mockOrderly = mock<OrderlyClient> {
 
-        on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn mockReportDetails
+        on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn mockReportDetails
 
         on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
     }
@@ -65,6 +67,21 @@ class GetByNameAndVersionTests
 
         on { this.getLatestVersion("r1") } doReturn mockLatestVersion
     }
+
+    /*
+    private val artefactsResponse = """{"data": [
+                {"format": ${ArtefactFormat.DATA}, "description": "some artefact",
+                 "files": {"name": "artefactfile.csv", "size": "1234"}}
+            ], 
+            "errors": null, "status": "success"}""".trimMargin()
+
+    private val mockResponse = OrderlyServerResponse(artefactsResponse, 200)
+
+    private val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
+        on {it.get("/report/version/v1/artefacts", emptyMap())} doReturn mockResponse
+    }
+
+     */
 
     @Test
     fun `getByNameAndVersion gets latest version if version param is empty`()
@@ -92,7 +109,7 @@ class GetByNameAndVersionTests
     {
         val noDisplayName = mockReportDetails.basicReportVersion.copy(displayName = null)
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(basicReportVersion = noDisplayName)
         }
 
@@ -125,7 +142,7 @@ class GetByNameAndVersionTests
     fun `builds empty parameter values`()
     {
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(parameterValues = mapOf())
         }
 
@@ -138,7 +155,7 @@ class GetByNameAndVersionTests
     fun `builds empty instances`()
     {
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(instances = mapOf())
         }
 
@@ -233,7 +250,7 @@ class GetByNameAndVersionTests
                 listOf(FileInfo("unsuitable.csv", 1), FileInfo("suitable.png", 1))))
 
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(artefacts = unsuitableArtefacts)
         }
 
@@ -251,7 +268,7 @@ class GetByNameAndVersionTests
                 Artefact(ArtefactFormat.DATA, "desc", listOf(FileInfo("unsuitable.csv", 1))))
 
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
@@ -270,7 +287,7 @@ class GetByNameAndVersionTests
                         FileInfo("subdir/another.csv", 200), FileInfo("suitable.png", 2000))))
 
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
@@ -306,7 +323,7 @@ class GetByNameAndVersionTests
                         listOf(FileInfo("suitable.jpg", 1), FileInfo("another.csv", 1))))
 
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
@@ -321,7 +338,7 @@ class GetByNameAndVersionTests
     fun `dataLinks have expected urls and size`()
     {
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(dataInfo = listOf(
                             DataInfo("data1", 100, 1000),
                             DataInfo("data2", 200, 2000)))
@@ -353,7 +370,7 @@ class GetByNameAndVersionTests
     fun `resources have expected urls and size`()
     {
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+            on { this.getDetailsByNameAndVersion("r1", versionId, listOf()) } doReturn
                     mockReportDetails.copy(resources = listOf(FileInfo("resource1.Rmd", 100), FileInfo("subdir/resource2.Rmd", 200)))
         }
 

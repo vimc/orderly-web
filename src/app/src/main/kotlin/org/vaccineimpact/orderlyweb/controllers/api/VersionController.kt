@@ -45,7 +45,8 @@ class VersionController(context: ActionContext,
     fun getByNameAndVersion(): ReportVersionWithArtefactsDataDescParamsResources
     {
         val name = context.params(":name")
-        return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
+        val version = context.params(":version")
+        return orderly.getDetailsByNameAndVersion(name, version, getArtefacts(version))
     }
 
     fun getRunMetadata(): Boolean

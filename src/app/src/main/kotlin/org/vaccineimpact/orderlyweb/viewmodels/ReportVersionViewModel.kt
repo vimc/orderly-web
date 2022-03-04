@@ -104,7 +104,7 @@ data class ReportVersionPageViewModel(
         private fun getFocalArtefactUrl(builder: ReportFileViewModelBuilder, artefacts: List<Artefact>): String?
         {
             //reproducing existing reportle behaviour - show the first artefact inline if it is possible
-            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() && canRenderInBrowser(artefacts[0].files[0].name))
+            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() && canRenderInBrowser(artefacts[0].files[0].filename))
             {
                 artefacts[0].files[0]
             }
@@ -151,7 +151,7 @@ data class ReportVersionPageViewModel(
         private fun getInlineFigureFile(files: List<FileInfo>): FileInfo?
         {
             //reproducing existing reportle behaviour - show the first file inline if it is an image
-            return if (files.count() > 0 && isImage(files[0].name))
+            return if (files.count() > 0 && isImage(files[0].filename))
             {
                 files[0]
             }

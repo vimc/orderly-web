@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.parseEnum
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Artefact
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FileInfo
 
 interface ArtefactRepository
@@ -43,7 +44,7 @@ class OrderlyArtefactRepository : ArtefactRepository
                                 .fetch()
                                 .map{ r -> FileInfo(r[Tables.FILE_ARTEFACT.FILENAME], r[Tables.FILE.SIZE]) }
 
-                        Artefact(parseEnum(format), description, files)
+                        Artefact(parseEnum<ArtefactFormat>(format), description, files)
                     }
         }
     }

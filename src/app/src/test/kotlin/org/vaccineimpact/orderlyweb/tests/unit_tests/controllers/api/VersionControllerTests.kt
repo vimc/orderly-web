@@ -113,7 +113,7 @@ class VersionControllerTests : ControllerTest()
                 resources = listOf(), dataInfo = listOf(), parameterValues = mapOf(), instances = mapOf())
 
         val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
+            on { this.getDetailsByNameAndVersion(reportName, reportVersion, listOf()) } doReturn report
         }
 
         val actionContext = mock<ActionContext> {

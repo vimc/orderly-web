@@ -75,7 +75,7 @@ fun insertArtefact(reportVersionId: String,
                     .execute()
 
             it.dsl.insertInto(FILE_ARTEFACT)
-                    .set(FILE_ARTEFACT.FILENAME, f.name)
+                    .set(FILE_ARTEFACT.FILENAME, f.filename)
                     .set(FILE_ARTEFACT.ARTEFACT, lastId + 1)
                     .set(FILE_ARTEFACT.FILE_HASH, hash)
                     .execute()

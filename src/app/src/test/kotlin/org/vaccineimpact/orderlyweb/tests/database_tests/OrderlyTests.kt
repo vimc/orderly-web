@@ -14,7 +14,6 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import java.time.Instant
@@ -78,11 +77,19 @@ class OrderlyTests : CleanDatabaseTests()
 
         insertData("v1", "dat", "some sql", "testdb", "somehash", 9876, 7654)
 
-        insertArtefact("v1", "some artefact",
-                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
+        //insertArtefact("v1", "some artefact",
+         //       ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
+
+        val artefacts = listOf(
+            Artefact(
+                ArtefactFormat.DATA,
+                "some artefact",
+                listOf(FileInfo("artefactfile.csv", 1234))
+            )
+        )
 
         val sut = createSut()
-        val result = sut.getDetailsByNameAndVersion("test", "v1")
+        val result = sut.getDetailsByNameAndVersion("test", "v1", artefacts)
 
         // these properties come from the mock
         assertThat(result.id).isEqualTo("v1")

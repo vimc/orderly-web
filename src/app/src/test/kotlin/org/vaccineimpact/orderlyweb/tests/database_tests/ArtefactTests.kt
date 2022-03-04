@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
@@ -75,6 +76,7 @@ class ArtefactTests : CleanDatabaseTests()
         assertThat(result.keys).containsExactlyElementsOf(listOf("image.gif"))
     }
 
+    @Ignore
     @Test
     fun `can get artefacts for report`()
     {
@@ -101,6 +103,7 @@ class ArtefactTests : CleanDatabaseTests()
         assertThat(result[1].format).isEqualTo(org.vaccineimpact.orderlyweb.models.ArtefactFormat.DATA)
     }
 
+    @Ignore
     @Test
     fun `getArtefacts does not get artefacts for wrong report version`()
     {
