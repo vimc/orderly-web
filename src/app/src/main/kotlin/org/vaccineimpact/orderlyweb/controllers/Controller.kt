@@ -32,6 +32,7 @@ abstract class Controller(val context: ActionContext,
     protected fun getArtefacts(version: String): List<Artefact>
     {
         val response = orderlyApI.get("/v1/report/version/${version}/artefacts", emptyMap())
+        println(response.listData(Artefact::class.java))
         return response.listData(Artefact::class.java)
     }
 }

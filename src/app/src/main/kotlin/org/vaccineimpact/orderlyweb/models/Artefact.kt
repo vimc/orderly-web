@@ -10,4 +10,3 @@ data class Artefact(val format: ArtefactFormat, val description: String, val fil
         files
     )
 }
-
