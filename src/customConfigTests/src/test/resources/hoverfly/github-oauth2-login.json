@@ -684,7 +684,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "image/webp,image/apng,image/*,*/*;q=0.8"
+            "value" : "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
           } ],
           "Accept-Encoding" : [ {
             "matcher" : "exact",
@@ -1619,7 +1619,176 @@
           "X-Xss-Protection" : [ "1; mode=block" ]
         }
       }
-    } ],
+    }, {
+      "request" : {
+        "path" : [ {
+          "matcher" : "exact",
+          "value" : "/orgs/vimc-auth-test/teams"
+        } ],
+        "method" : [ {
+          "matcher" : "exact",
+          "value" : "GET"
+        } ],
+        "destination" : [ {
+          "matcher" : "exact",
+          "value" : "api.github.com"
+        } ],
+        "scheme" : [ {
+          "matcher" : "exact",
+          "value" : "https"
+        } ],
+        "query" : {
+          "page": [
+            {
+              "matcher": "exact",
+              "value": "1"
+            }
+          ],
+          "per_page": [
+            {
+              "matcher": "exact",
+              "value": "100"
+            }
+          ]
+        },
+        "body" : [ {
+          "matcher" : "exact",
+          "value" : ""
+        } ],
+        "headers" : {
+          "Accept" : [ {
+            "matcher" : "exact",
+            "value" : "application/vnd.github.beta+json"
+          } ],
+          "Authorization" : [ {
+            "matcher" : "exact",
+            "value" : "token notarealtoken"
+          } ],
+          "Connection" : [ {
+            "matcher" : "exact",
+            "value" : "keep-alive"
+          } ],
+          "User-Agent" : [ {
+            "matcher" : "regex",
+            "value" : ".*"
+          } ]
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : "[{\"id\": 4660231,\"node_id\": \"MDQ6VGVhbTE=\", \"url\": \"https://api.github.com/teams/4660231\", \"html_url\": \"https://github.com/orgs/vimc-auth-test/teams/vimc-auth-team\", \"name\": \"vimc-auth-team\", \"slug\": \"vimc-auth-team\", \"description\": \"\", \"privacy\": \"closed\",\"permission\": \"admin\", \"members_url\": \"https://api.github.com/teams/4660231/members/{member}\", \"repositories_url\": \"https://api.github.com/teams/4660231/repos\", \"parent\": null}, {\"id\": 4660232,\"node_id\": \"MDQ6VGVhbTF=\", \"url\": \"https://api.github.com/teams/4660232\", \"html_url\": \"https://github.com/orgs/vimc-auth-test/teams/vimc-auth-team2\", \"name\": \"vimc-auth-team2\", \"slug\": \"vimc-auth-team2\", \"description\": \"\", \"privacy\": \"closed\",\"permission\": \"admin\", \"members_url\": \"https://api.github.com/teams/4660232/members/{member}\", \"repositories_url\": \"https://api.github.com/teams/4660232/repos\", \"parent\": null}]",
+        "encodedBody" : false,
+        "templated" : false,
+        "headers" : {
+          "Access-Control-Allow-Origin" : [ "*" ],
+          "Access-Control-Expose-Headers" : [ "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type" ],
+          "Cache-Control" : [ "private, max-age=60, s-maxage=60" ],
+          "Content-Security-Policy" : [ "default-src 'none'" ],
+          "Content-Type" : [ "application/json; charset=utf-8" ],
+          "Date" : [ "Wed, 29 May 2019 15:52:41 GMT" ],
+          "Etag" : [ "W/\"0b5bf5b19e04af8a90f1b7f75550d2a8\"" ],
+          "Hoverfly" : [ "Was-Here" ],
+          "Last-Modified" : [ "Tue, 28 May 2019 09:46:42 GMT" ],
+          "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
+          "Server" : [ "GitHub.com" ],
+          "Status" : [ "200 OK" ],
+          "Strict-Transport-Security" : [ "max-age=31536000; includeSubdomains; preload" ],
+          "Transfer-Encoding" : [ "chunked" ],
+          "Vary" : [ "Accept, Authorization, Cookie, X-GitHub-OTP" ],
+          "X-Accepted-Oauth-Scopes" : [ "" ],
+          "X-Content-Type-Options" : [ "nosniff" ],
+          "X-Frame-Options" : [ "deny" ],
+          "X-Github-Media-Type" : [ "unknown, github.v3" ],
+          "X-Github-Request-Id" : [ "C1CE:7278:5744:ADAB:5CEEAAC9" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
+          "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
+          "X-Ratelimit-Limit" : [ "5000" ],
+          "X-Ratelimit-Remaining" : [ "4993" ],
+          "X-Ratelimit-Reset" : [ "1559148693" ],
+          "X-Xss-Protection" : [ "1; mode=block" ]
+        }
+      }
+    }, {
+      "request" : {
+        "path" : [ {
+          "matcher" : "exact",
+          "value" : "/organizations/48723703/team/4660231/memberships/notarealuser"
+        } ],
+        "method" : [ {
+          "matcher" : "exact",
+          "value" : "GET"
+        } ],
+        "destination" : [ {
+          "matcher" : "exact",
+          "value" : "api.github.com"
+        } ],
+        "scheme" : [ {
+          "matcher" : "exact",
+          "value" : "https"
+        } ],
+        "query" : {},
+        "body" : [ {
+          "matcher" : "exact",
+          "value" : ""
+        } ],
+        "headers" : {
+          "Accept" : [ {
+            "matcher" : "exact",
+            "value" : "application/vnd.github.beta+json"
+          } ],
+          "Authorization" : [ {
+            "matcher" : "exact",
+            "value" : "token notarealtoken"
+          } ],
+          "Connection" : [ {
+            "matcher" : "exact",
+            "value" : "keep-alive"
+          } ],
+          "User-Agent" : [ {
+            "matcher" : "regex",
+            "value" : ".*"
+          } ]
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : "{\"url\": \"https://api.github.com/teams/4660231/memberships/notarealuser\", \"role\": \"maintainer\", \"state\": \"active\"}",
+        "encodedBody" : false,
+        "templated" : false,
+        "headers" : {
+          "Access-Control-Allow-Origin" : [ "*" ],
+          "Access-Control-Expose-Headers" : [ "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type" ],
+          "Cache-Control" : [ "private, max-age=60, s-maxage=60" ],
+          "Content-Security-Policy" : [ "default-src 'none'" ],
+          "Content-Type" : [ "application/json; charset=utf-8" ],
+          "Date" : [ "Wed, 29 May 2019 15:52:41 GMT" ],
+          "Etag" : [ "W/\"0b5bf5b19e04af8a90f1b7f75550d2a8\"" ],
+          "Hoverfly" : [ "Was-Here" ],
+          "Last-Modified" : [ "Tue, 28 May 2019 09:46:42 GMT" ],
+          "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
+          "Server" : [ "GitHub.com" ],
+          "Status" : [ "200 OK" ],
+          "Strict-Transport-Security" : [ "max-age=31536000; includeSubdomains; preload" ],
+          "Transfer-Encoding" : [ "chunked" ],
+          "Vary" : [ "Accept, Authorization, Cookie, X-GitHub-OTP" ],
+          "X-Accepted-Oauth-Scopes" : [ "" ],
+          "X-Content-Type-Options" : [ "nosniff" ],
+          "X-Frame-Options" : [ "deny" ],
+          "X-Github-Media-Type" : [ "unknown, github.v3" ],
+          "X-Github-Request-Id" : [ "C1CE:7278:5744:ADAB:5CEEAAC9" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
+          "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
+          "X-Ratelimit-Limit" : [ "5000" ],
+          "X-Ratelimit-Remaining" : [ "4993" ],
+          "X-Ratelimit-Reset" : [ "1559148693" ],
+          "X-Xss-Protection" : [ "1; mode=block" ]
+        }
+      }
+    }
+
+
+
+    ],
     "globalActions" : {
       "delays" : [ ]
     }
