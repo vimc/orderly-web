@@ -103,8 +103,8 @@ class GithubWebTests : SeleniumTest()
         assertThat(header.text).isEqualTo("Find a report")
     }
 
-    /*@Test
-    fun `user sees 401 page not in configured team`()
+    @Test
+    fun `user sees 401 page if not in configured team`()
     {
         startApp("auth.provider=github\nauth.github_team=vimc-auth-team2")
 
@@ -114,5 +114,5 @@ class GithubWebTests : SeleniumTest()
         assertThat(helpText.text)
                 .contains("We have not been able to successfully identify you as a member of the app's configured GitHub org")
 
-    }*/
+    }
 }

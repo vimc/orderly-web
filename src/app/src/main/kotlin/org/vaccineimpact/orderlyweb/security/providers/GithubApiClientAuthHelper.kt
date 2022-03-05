@@ -15,6 +15,8 @@ import org.eclipse.jetty.http.HttpStatus
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
 
 interface GithubAuthHelper
 {
@@ -28,11 +30,19 @@ interface GithubAuthHelper
 }
 
 class GithubApiClientAuthHelper(private val appConfig: Config,
-                                private val githubApiClient: GitHubClient = GitHubClient(),
-                                private val httpClient: OkHttpClient = OkHttpClient()) : GithubAuthHelper
+                                private val githubApiClient: GitHubClient = GitHubClient()) : GithubAuthHelper
 {
     private var user: User? = null
     private var authToken: String? = null
+
+    private var httpClient: OkHttpClient = if (appConfig.getBool("allow.localhost"))
+    {
+        getLocalOkHttpClient()
+    }
+    else
+    {
+        OkHttpClient()
+    }
 
     override fun authenticate(token: String)
     {
