@@ -6,14 +6,10 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import java.io.IOException
-import java.security.cert.X509Certificate
-import javax.net.ssl.*
-
 
 interface MontaguAPIClient
 {
@@ -31,7 +27,6 @@ interface MontaguAPIClient
     {
         override fun toString(): String = message
     }
-
 }
 
 abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
@@ -42,10 +37,13 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         fun create(appConfig: Config = AppConfig()): OkHttpMontaguAPIClient
         {
             return if (appConfig.getBool("allow.localhost"))
+            {
                 LocalOkHttpMontaguApiClient(appConfig)
+            }
             else
+            {
                 RemoteHttpMontaguApiClient(appConfig)
-
+            }
         }
     }
 
@@ -60,7 +58,8 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
 
                     if (response.code != 200)
                     {
-                        throw MontaguAPIException("Response had errors ${result.errors.joinToString(",") { it.toString() }}", response.code)
+                        val errors = result.errors.joinToString(",") { it.toString() }
+                        throw MontaguAPIException("Response had errors $errors", response.code)
                     }
 
                     return result.data as MontaguAPIClient.UserDetails
@@ -82,7 +81,6 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         {
             throw MontaguAPIException("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e", 500)
         }
-
     }
 
     private fun getHttpResponse(url: String, headers: Map<String, String>): Response
@@ -90,7 +88,7 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         val client = getHttpClient()
 
         val headersBuilder = Headers.Builder()
-        headers.forEach { k, v ->  headersBuilder.add(k, v)}
+        headers.forEach { k, v -> headersBuilder.add(k, v)}
 
         val request = Request.Builder()
                 .url(url)
@@ -103,7 +101,7 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
     protected abstract fun getHttpClient(): OkHttpClient
 }
 
-class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
+class LocalOkHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig)
 {
     override fun getHttpClient(): OkHttpClient
     {
@@ -111,7 +109,7 @@ class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(app
     }
 }
 
-class RemoteHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
+class RemoteHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig)
 {
     override fun getHttpClient(): OkHttpClient
     {

@@ -15,8 +15,6 @@ import org.eclipse.jetty.http.HttpStatus
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
-import java.security.cert.X509Certificate
-import javax.net.ssl.*
 
 interface GithubAuthHelper
 {

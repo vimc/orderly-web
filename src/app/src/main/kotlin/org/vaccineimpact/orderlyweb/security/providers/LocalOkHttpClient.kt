@@ -11,9 +11,11 @@ fun getLocalOkHttpClient(): OkHttpClient
     val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager
     {
         override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            // do nothing
         }
 
         override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            // do nothing
         }
 
         override fun getAcceptedIssuers() = arrayOf<X509Certificate>()
