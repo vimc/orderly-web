@@ -84,7 +84,6 @@ class VersionController(context: ActionContext,
         val version = context.params(":version")
         return orderly.getReportVersionTags(name, version)
     }
-
     private fun buildFileList(report: String, version: String, folderName: String): List<String>
     {
         return if (context.hasPermission(ReifiedPermission("reports.review", Scope.Global())))
@@ -99,5 +98,4 @@ class VersionController(context: ActionContext,
                     .map { "$folderName/${it.key}" }
         }
     }
-
 }

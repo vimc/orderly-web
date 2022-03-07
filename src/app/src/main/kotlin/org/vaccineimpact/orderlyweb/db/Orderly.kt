@@ -10,10 +10,11 @@ class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
               val reportReadingScopes: List<String> = listOf(),
               val reportRepository: ReportRepository = OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
-              val artefactRepository: ArtefactRepository = OrderlyArtefactRepository(),
               val tagRepository: TagRepository = OrderlyWebTagRepository()) : OrderlyClient
 {
-    constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+    constructor(
+        context: ActionContext
+    ) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
 
     override fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
@@ -21,7 +22,10 @@ class Orderly(val isReviewer: Boolean,
         return mapToReportVersions(basicVersions)
     }
 
-    override fun getDetailsByNameAndVersion(name: String, version: String, artefacts: List<Artefact>): ReportVersionWithArtefactsDataDescParamsResources
+    override fun getDetailsByNameAndVersion(
+        name: String,
+        version: String, artefacts: List<Artefact>
+    ): ReportVersionWithArtefactsDataDescParamsResources
     {
         val basicReportVersion = reportRepository.getReportVersion(name, version)
         val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
@@ -113,7 +117,9 @@ class Orderly(val isReviewer: Boolean,
         return reportRepository.getDatedChangelogForReport(basicVersion.name, basicVersion.date)
     }
 
-    private fun mapToReportVersions(basicVersions: List<ReportVersionWithDescLatest>): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
+    private fun mapToReportVersions(
+        basicVersions: List<ReportVersionWithDescLatest>
+    ): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
         val versionIds = basicVersions.map { it.id }
         val allCustomFields = reportRepository.getAllCustomFields()
@@ -175,7 +181,6 @@ class Orderly(val isReviewer: Boolean,
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetch()
                     .map { FileInfo(it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
-
         }
     }
 }

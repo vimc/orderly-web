@@ -2,10 +2,15 @@ package org.vaccineimpact.orderlyweb.models
 
 import org.vaccineimpact.orderlyweb.db.parseEnum
 
-data class Artefact(val format: ArtefactFormat, val description: String, val files: List<FileInfo>)
+data class Artefact(var format: String, val description: String, val files: List<FileInfo>)
 {
-    constructor(format: String, description: String, files: List<FileInfo>) : this(
-        parseEnum<ArtefactFormat>(format),
+    init
+    {
+        this.format = parseEnum<ArtefactFormat>(format).toString()
+    }
+
+    constructor(format: ArtefactFormat, description: String, files: List<FileInfo>) : this(
+        format.toString(),
         description,
         files
     )

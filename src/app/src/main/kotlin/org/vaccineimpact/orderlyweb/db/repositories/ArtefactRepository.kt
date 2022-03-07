@@ -11,7 +11,6 @@ interface ArtefactRepository
 
     @Throws(UnknownObjectError::class)
     fun getArtefactHash(name: String, version: String, filename: String): String
-
 }
 
 class OrderlyArtefactRepository : ArtefactRepository

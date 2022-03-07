@@ -9,7 +9,11 @@ interface OrderlyClient
     fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
 
     @Throws(UnknownObjectError::class)
-    fun getDetailsByNameAndVersion(name: String, version: String, artefacts: List<Artefact>): ReportVersionWithArtefactsDataDescParamsResources
+    fun getDetailsByNameAndVersion(
+        name: String,
+        version: String,
+        artefacts: List<Artefact>
+    ): ReportVersionWithArtefactsDataDescParamsResources
 
     @Throws(UnknownObjectError::class)
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
