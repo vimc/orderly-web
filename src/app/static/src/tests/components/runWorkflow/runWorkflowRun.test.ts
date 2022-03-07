@@ -4,18 +4,20 @@ import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import Changelog from "../../../js/components/runReport/changeLog.vue";
-import {mockRunWorkflowMetadata} from "../../mocks";
+import {mockGitState, mockRunWorkflowMetadata} from "../../mocks";
 import {RunWorkflowMetadata} from "../../../js/utils/types";
+import {GitState} from "../../../js/store/git/git";
+import Vuex from "vuex";
 
 describe(`runWorkflowRun`, () => {
 
     const changelogTypes = ["internal", "public"]
     const source = ["prod", "uat"]
-    const runMetadata = {
+    const gitState: GitState = {
         git_branches: [],
         metadata: {
             changelog_types: changelogTypes,
-            git_supported: false,
+            git_supported: true,
             instances_supported: true,
             instances: {
                 source: source,
@@ -24,6 +26,18 @@ describe(`runWorkflowRun`, () => {
         }
     }
 
+    const createStore = (state: Partial<GitState> = gitState) => {
+        return new Vuex.Store({
+            state: {},
+            modules: {
+                git: {
+                    namespaced: true,
+                    state: mockGitState(state)
+                }
+            }
+        });
+    };
+
     const workflowSummaryMetadata = [
         {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"},
         {name: "interim report2", date: "2021-06-19T16:28:24Z", email: "test@example.com2", key: "fake2"}
@@ -31,8 +45,6 @@ describe(`runWorkflowRun`, () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runMetadata});
         mockAxios.onGet('http://app/workflows')
             .reply(200, {"data": workflowSummaryMetadata});
     })
@@ -40,12 +52,12 @@ describe(`runWorkflowRun`, () => {
     const getWrapper = (workflowMetadata: Partial<RunWorkflowMetadata> = {}) => {
         return mount(runWorkflowRun,
             {
+                store: createStore(),
                 propsData: {
                     workflowMetadata: mockRunWorkflowMetadata(workflowMetadata),
                 },
                 data() {
                     return {
-                        runMetadata: null,
                         workflows: [],
                         workflowNameError: ""
                     }
@@ -214,9 +226,8 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(2);
-            expect(mockAxios.history.get[0].url).toBe("http://app/report/run-metadata");
-            expect(mockAxios.history.get[1].url).toBe("http://app/workflows");
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get[0].url).toBe("http://app/workflows");
             expect(wrapper.vm.$data.error).toStrictEqual("")
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
@@ -276,9 +287,8 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            expect(mockAxios.history.get.length).toBe(2);
-            expect(mockAxios.history.get[0].url).toBe("http://app/report/run-metadata");
-            expect(mockAxios.history.get[1].url).toBe("http://app/workflows");
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get[0].url).toBe("http://app/workflows");
             expect(wrapper.vm.$data.error).toStrictEqual("")
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
@@ -364,6 +374,7 @@ describe(`runWorkflowRun`, () => {
             .reply(500, "TEST ERROR");
 
         const wrapper = shallowMount(runWorkflowRun, {
+            store: createStore(),
             propsData: {
                 workflowMetadata: {}
             }
@@ -376,20 +387,4 @@ describe(`runWorkflowRun`, () => {
         })
     });
 
-    it("show error message if error getting run-metadata", (done) => {
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(500, "TEST ERROR");
-
-        const wrapper = shallowMount(runWorkflowRun, {
-            propsData: {
-                workflowMetadata: {}
-            }
-        });
-
-        setTimeout(() => {
-            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred while retrieving data");
-            done();
-        })
-    });
 })
