@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource

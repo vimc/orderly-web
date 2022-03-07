@@ -1,5 +1,5 @@
 dependencies {
-    testCompile "org.slf4j:slf4j-simple:1.7.21"
+    testCompile "org.slf4j:slf4j-simple:1.7.25"
     testCompile "com.beust:klaxon:0.31"
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.+"
@@ -47,3 +47,13 @@ copyDemo.dependsOn 'copyGitDemo'
 
 test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'
+
+test {
+    testLogging {
+        events "failed", "standard_error"
+
+        // remove standard output/error logging from --info builds
+        // by assigning only 'failed' and 'skipped' events
+        info.events = ["failed", "standard_error"]
+    }
+}
