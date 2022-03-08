@@ -1,5 +1,6 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     module: {
@@ -33,7 +34,9 @@ module.exports = {
     },
     plugins: [
         // make sure to include the plugin!
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        // uncomment to see analysis of bundle size
+       // new BundleAnalyzerPlugin({analyzerPort: 4000})
     ],
     output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
     resolve: {
