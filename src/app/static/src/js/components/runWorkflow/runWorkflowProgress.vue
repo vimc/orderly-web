@@ -61,7 +61,7 @@
                 </table>
             </div>
             <div v-if="selectedWorkflowKey" class="row justify-content-end mt-3">
-                <button id="rerun" class="button mr-3" type="button" @click="rerun">
+                <button id="rerun" class="button mr-3" type="button" @click="rerun" :disabled="!workflowMetadata">
                     Re-run workflow
                 </button>
                 <!-- Cancel button to be implemented in mrc-2549 -->
@@ -225,16 +225,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 (report.default_param_list && report.default_param_list.length > 0)
         },
         rerun() {
-            api.get(`/workflows/${this.selectedWorkflowKey}/`)
-                .then(({data}) => {
-                    const reportMetadata = workflowRunDetailsToMetadata(data.data)
-                    this.$emit("rerun", reportMetadata);
-                })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage =
-                        "An error occurred fetching workflow details";
-                });
+            this.$emit("rerun", this.workflowMetadata);
         },
         getWorkflowMetadata(){
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
