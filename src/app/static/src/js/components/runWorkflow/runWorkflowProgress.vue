@@ -43,7 +43,7 @@
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
                         <td v-if="anyParams" class="p-2">
-                            <run-workflow-parameters :report="report"></run-workflow-parameters>
+                            <run-workflow-parameters :report="workflowSummary.reports[index]"></run-workflow-parameters>
                         </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
@@ -100,21 +100,16 @@ import {
 import { buildFullUrl } from "../../utils/api";
 import runWorkflowParameters from "./runWorkflowParameters.vue"
 
-interface ExtendedReports extends WorkflowRunReportStatus, WorkflowReportWithDependencies {}
-
-interface ExtendedWorkflowRunStatus extends WorkflowRunStatus {
-    reports: ExtendedReports[]
-}
-
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
     selectedWorkflowKey: null | string;
-    workflowRunStatus: null | ExtendedWorkflowRunStatus;
+    workflowRunStatus: null | WorkflowRunReportStatus;
     error: string;
     defaultMessage: string;
     pollingTimer: null | number;
     showLogForReportKey: string | null;
-    workflowMetadata: RunWorkflowMetadata | null
+    workflowMetadata: RunWorkflowMetadata | null;
+    workflowSummary: WorkflowSummaryResponse | null;
 }
 
 interface Computed {
@@ -136,7 +131,7 @@ interface Methods {
     closeReportLogDialog: () => void;
     hasParams: (report: WorkflowReportWithDependencies) => boolean
     getWorkflowMetadata: () => void;
-    getReportDependencies: () => void;
+    getWorkflowSummary: () => void;
 }
 
 interface Props {
@@ -175,11 +170,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             pollingTimer: null,
             showLogForReportKey: null,
             workflowMetadata: null,
+            workflowSummary: null
         };
     },
     computed: {
         anyParams() {
-            return this.workflowRunStatus.reports.some(report => this.hasParams(report))
+            return !!this.workflowSummary?.reports.some(report => this.hasParams(report))
         }
     },
     methods: {
@@ -231,7 +227,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
                 .then(({data}) => {
                     this.workflowMetadata = workflowRunDetailsToMetadata(data.data)
-                    this.getReportDependencies()
+                    this.getWorkflowSummary()
                 })
                 .catch((error) => {
                     this.error = error;
@@ -239,19 +235,14 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         "An error occurred fetching workflow details";
                 });
         },
-        getReportDependencies() {
+        getWorkflowSummary() {
             const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
             api.post(`/workflows/summary/${commit}`, {
                 reports: this.workflowMetadata.reports,
                 ref: this.workflowMetadata.git_commit
             })
                 .then(({data}) => {
-                    const reports = [...this.workflowRunStatus.reports]
-                    this.workflowRunStatus.reports.forEach((report1, index) => {
-                        const extraData = data.data.reports.find(report2 => report2.name === report1.name)
-                        reports[index] = extraData ? {...report1, ...extraData} : report1
-                    });
-                    this.workflowRunStatus = {...this.workflowRunStatus, reports}
+                    this.workflowSummary = data.data
                     this.error = "";
                 })
                 .catch((error) => {
