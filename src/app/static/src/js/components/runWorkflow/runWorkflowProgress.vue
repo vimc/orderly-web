@@ -28,37 +28,7 @@
             </div>
             <div class="row" v-if="workflowRunStatus" id="workflow-table">
                 <label class="form-label col">Reports</label>
-                <table class="table-bordered col-10">
-                    <tr>
-                        <th class="p-2">Report</th>
-                        <th v-if="anyParams" class="p-2">Parameters</th>
-                        <th class="p-2">Status</th>
-                        <th class="p-2">Logs</th>
-                    </tr>
-                    <tr v-for="(report, index) in workflowRunStatus.reports" :key="report.key">
-                        <td v-if="report.status === 'success'" class="p-2">
-                            <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
-                                {{ report.name }}
-                            </a>
-                        </td>
-                        <td v-else class="p-2">{{ report.name }}</td>
-                        <td v-if="anyParams" class="p-2">
-                            <run-workflow-parameters :report="workflowSummary.reports[index]"></run-workflow-parameters>
-                        </td>
-                        <td :class="statusColour(report.status)" class="p-2">
-                            {{ interpretStatus(report.status) }}
-                        </td>
-                        <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
-                        <td class="p-2">
-                            <a v-if="viewLogLinkVisible(report.status)"
-                               class="report-log-link"
-                               href="#"
-                               @click="showReportLog(report.key)">
-                                View log
-                            </a>
-                        </td>
-                    </tr>
-                </table>
+                <run-workflow-table class="col-10" :workflow-run-status="workflowRunStatus" :workflow-summary="workflowSummary" @show-report-log="showReportLog"></run-workflow-table>
             </div>
             <div v-if="selectedWorkflowKey" class="row justify-content-end mt-3">
                 <button id="rerun" class="button mr-3" type="button" @click="rerun" :disabled="!workflowMetadata">
@@ -86,7 +56,7 @@
 import Vue from "vue";
 import vSelect from "vue-select";
 import { api } from "../../utils/api";
-import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
+import {workflowRunDetailsToMetadata, formatDate, interpretStatus} from "../../utils/helpers.ts";
 import ErrorInfo from "../errorInfo.vue";
 import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
 import {
@@ -95,10 +65,8 @@ import {
     RunWorkflowMetadata,
     WorkflowRunReportStatus,
     WorkflowSummaryResponse,
-    WorkflowReportWithDependencies
 } from "../../utils/types";
-import { buildFullUrl } from "../../utils/api";
-import runWorkflowParameters from "./runWorkflowParameters.vue"
+import runWorkflowTable from "./runWorkflowTable.vue"
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -112,24 +80,14 @@ interface Data {
     workflowSummary: WorkflowSummaryResponse | null;
 }
 
-interface Computed {
-    anyParams: boolean
-}
-
 interface Methods {
     getWorkflowRunSummaries: () => void;
     getWorkflowRunStatus: (key: string) => void;
-    formatDate: (date: string) => string;
-    reportVersionHref: (name: string, version: string) => string;
-    statusColour: (status: string) => string;
-    interpretStatus: (status: string) => string;
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
-    viewLogLinkVisible: (status: string) => boolean;
     showReportLog: (reportKey: string) => void;
     closeReportLogDialog: () => void;
-    hasParams: (report: WorkflowReportWithDependencies) => boolean
     getWorkflowMetadata: () => void;
     getWorkflowSummary: () => void;
 }
@@ -138,21 +96,13 @@ interface Props {
     initialSelectedWorkflow: string;
 }
 
-const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
-const notStartedStates = ["queued", "deferred", "impossible", "missing"];
-const nonFailStateMessages = {
-    "success": "Complete",
-    "impossible": "Dependency failed",
-    "deferred": "Waiting for dependency"
-};
-
-export default Vue.extend<Data, Methods, Computed, Props>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
         WorkflowReportLogDialog,
         vSelect,
-        runWorkflowParameters
+        runWorkflowTable
     },
     props: {
         initialSelectedWorkflow: {
@@ -175,11 +125,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             // contains the params and default params for each report
             workflowSummary: null
         };
-    },
-    computed: {
-        anyParams() {
-            return !!this.workflowSummary?.reports.some(report => this.hasParams(report))
-        }
     },
     methods: {
         startPolling() {
@@ -219,10 +164,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         "An error occurred fetching the workflow reports";
                 });
         },
-        hasParams(report) {
-            return (report.param_list && report.param_list.length > 0) ||
-                (report.default_param_list && report.default_param_list.length > 0)
-        },
         rerun() {
             this.$emit("rerun", this.workflowMetadata);
         },
@@ -254,36 +195,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         "An error occurred fetching a report's dependencies";
                 })
         },
-        formatDate(date) {
-            return longTimestamp(new Date(date));
-        },
-        reportVersionHref(name, version) {
-            const url = `/report/${name}/${version}/`;
-            return buildFullUrl(url);
-        },
-        statusColour(status) {
-            if (["queued", "running"].includes(status)) {
-                return "text-secondary";
-            } else if (failStates.includes(status)) {
-                return "text-danger";
-            } else {
-                return "";
-            }
-        },
-        interpretStatus(status) {
-            if (Object.keys(nonFailStateMessages).includes(status)) {
-                return nonFailStateMessages[status]
-            } else if (
-                failStates.includes(status)
-            ) {
-                return "Failed";
-            } else {
-                return status.charAt(0).toUpperCase() + status.slice(1);
-            }
-        },
-        viewLogLinkVisible(status) {
-            return !notStartedStates.includes(status);
-        },
         showReportLog(reportKey) {
             this.showLogForReportKey = reportKey;
         },
@@ -305,8 +216,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             }
         },
         workflowRunStatus(newWorkflowRunStatus) {
-            const interpretStatus = this.interpretStatus(newWorkflowRunStatus.status)
-            if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+            const interpretStatusState = interpretStatus(newWorkflowRunStatus.status)
+            if (interpretStatusState === "Failed" || interpretStatusState === "Complete") {
                 this.stopPolling();
             }
         },

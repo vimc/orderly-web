@@ -28,6 +28,7 @@ import {WorkflowRunReportStatus, WorkflowReportWithDependencies} from "../../uti
 import {BLink} from "bootstrap-vue/esm/components/link";
 import {BCollapse} from "bootstrap-vue/esm/components/collapse";
 import {VBToggle} from 'bootstrap-vue';
+import {hasParams} from "../../utils/helpers.ts";
 
 interface Props {
     report: WorkflowRunReportStatus;
@@ -39,7 +40,7 @@ interface Methods {
 
 Vue.directive("b-toggle", VBToggle);
 
-export default Vue.extend({
+export default Vue.extend<unknown, Methods, unknown, Props>({
     name: "runWorkflowParameters",
     components: {
         BCollapse,
@@ -53,8 +54,7 @@ export default Vue.extend({
     },
     methods: {
         hasParams(report) {
-            return (report.param_list && report.param_list.length > 0) ||
-                (report.default_param_list && report.default_param_list.length > 0)
+            return hasParams(report)
         },
     },
     

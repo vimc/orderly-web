@@ -1,4 +1,4 @@
-import {RunWorkflowMetadata, WorkflowRun} from "./types"
+import { RunWorkflowMetadata, WorkflowRun, WorkflowReportWithDependencies } from "./types"
 
 export function reportVersionToLongTimestamp(versionId) {
     const regex = /(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([0-9a-f]{8})/;
@@ -43,4 +43,32 @@ export function workflowRunDetailsToMetadata(details: WorkflowRun): RunWorkflowM
     }
 }
 
+export function formatDate(date) {
+    return longTimestamp(new Date(date));
+}
 
+export const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
+export const notStartedStates = ["queued", "deferred", "impossible", "missing"];
+const nonFailStateMessages = {
+    "success": "Complete",
+    "impossible": "Dependency failed",
+    "deferred": "Waiting for dependency"
+};
+
+
+export function interpretStatus(status) {
+    if (Object.keys(nonFailStateMessages).includes(status)) {
+        return nonFailStateMessages[status]
+    } else if (
+        failStates.includes(status)
+    ) {
+        return "Failed";
+    } else {
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+}
+
+export function hasParams(report: WorkflowReportWithDependencies) {
+    return (report.param_list && report.param_list.length > 0) ||
+        (report.default_param_list && report.default_param_list.length > 0)
+}
