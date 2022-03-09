@@ -164,12 +164,15 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         return {
             workflowRunSummaries: null,
             selectedWorkflowKey: null,
+            // gives the status of each report
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
             pollingTimer: null,
             showLogForReportKey: null,
+            // contains git_commit and report parameters (needed to get the workflow summary)
             workflowMetadata: null,
+            // contains the params and default params for each report
             workflowSummary: null
         };
     },
@@ -298,6 +301,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             } else {
                 this.workflowRunStatus = null;
                 this.workflowMetadata = null;
+                this.workflowSummary = null;
             }
         },
         workflowRunStatus(newWorkflowRunStatus) {
