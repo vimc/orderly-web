@@ -22,26 +22,7 @@
                                 <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
-                                        <div v-if="hasParams(report)">
-                                            <p class="non-default-param"
-                                               v-for="param in report.param_list"
-                                               :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                                            <div v-if="report.default_param_list.length > 0"
-                                                 :id="`default-params-${index}`">
-                                                <b-link href="#"
-                                                        class="show-defaults pt-2 d-inline-block small"
-                                                        v-b-toggle="`collapseSummary-${index}`">
-                                                    <span class="when-closed">Show</span>
-                                                    <span class="when-open">Hide</span> defaults...
-                                                </b-link>
-                                                <b-collapse :id="`collapseSummary-${index}`">
-                                                    <p :id="`default-params-collapse-${index}-${paramIndex}`"
-                                                       v-for="(param, paramIndex) in report.default_param_list"
-                                                       :key="key">{{ param.name }}: {{ param.value }}</p>
-                                                </b-collapse>
-                                            </div>
-                                        </div>
-                                        <div v-else><p>There are no parameters</p></div>
+                                        <run-workflow-parameters :report="report"></run-workflow-parameters>
                                     </div>
                                 </div>
                             </div>
@@ -59,12 +40,10 @@
 <script lang="ts">
     import Vue from "vue";
     import {InfoIcon} from "vue-feather-icons";
-    import {BLink} from "bootstrap-vue/esm/components/link";
-    import {BCollapse} from "bootstrap-vue/esm/components/collapse";
-    import {VBToggle} from 'bootstrap-vue/esm/directives/toggle';
     import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../../utils/types";
     import {VTooltip} from "v-tooltip";
     import ErrorInfo from "../../errorInfo.vue";
+    import runWorkflowParameters from "./../runWorkflowParameters.vue"
 
     interface Props {
         workflowSummary: WorkflowSummaryResponse
@@ -72,11 +51,8 @@
     }
 
     interface Methods {
-        hasParams: (report: WorkflowReportWithDependencies) => boolean
         reportInfo: (reportName: string) => string
     }
-
-    Vue.directive("b-toggle", VBToggle);
 
     export default Vue.extend<unknown, Methods, unknown, Props>({
         name: "workflowSummaryReports",
@@ -95,16 +71,11 @@
                 const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
                 return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
             },
-            hasParams(report) {
-                return (report.param_list && report.param_list.length > 0) ||
-                    (report.default_param_list && report.default_param_list.length > 0)
-            }
         },
         components: {
-            BCollapse,
-            BLink,
             InfoIcon,
-            ErrorInfo
+            ErrorInfo,
+            runWorkflowParameters
         },
         directives: {tooltip: VTooltip}
     });

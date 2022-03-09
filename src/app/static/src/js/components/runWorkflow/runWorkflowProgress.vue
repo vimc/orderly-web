@@ -43,27 +43,7 @@
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
                         <td v-if="anyParams" class="p-2">
-                            <div v-if="hasParams(report)">
-                                <p class="non-default-param"
-                                    v-for="param in report.param_list"
-                                    :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                                <p v-if="!report.param_list.length">No non-default params</p>
-                                <div v-if="report.default_param_list.length > 0"
-                                        :id="`default-params-${index}`">
-                                    <b-link href="#"
-                                            class="show-defaults pt-2 d-inline-block small"
-                                            v-b-toggle="`collapseSummary-${index}`">
-                                        <span class="when-closed">Show</span>
-                                        <span class="when-open">Hide</span> defaults...
-                                    </b-link>
-                                    <b-collapse :id="`collapseSummary-${index}`">
-                                        <p :id="`default-params-collapse-${index}-${paramIndex}`"
-                                            v-for="(param, paramIndex) in report.default_param_list"
-                                            :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                                    </b-collapse>
-                                </div>
-                            </div>
-                            <p v-else>No params</p>
+                            <run-workflow-parameters :report="report"></run-workflow-parameters>
                         </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
@@ -118,9 +98,7 @@ import {
     WorkflowReportWithDependencies
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
-import {BLink} from "bootstrap-vue/esm/components/link";
-import {BCollapse} from "bootstrap-vue/esm/components/collapse";
-import {VBToggle} from 'bootstrap-vue';
+import runWorkflowParameters from "./runWorkflowParameters.vue"
 
 interface ExtendedReports extends WorkflowRunReportStatus, WorkflowReportWithDependencies {}
 
@@ -165,8 +143,6 @@ interface Props {
     initialSelectedWorkflow: string;
 }
 
-Vue.directive("b-toggle", VBToggle);
-
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
 const notStartedStates = ["queued", "deferred", "impossible", "missing"];
 const nonFailStateMessages = {
@@ -178,18 +154,17 @@ const nonFailStateMessages = {
 export default Vue.extend<Data, Methods, Computed, Props>({
     name: "runWorkflowProgress",
     components: {
-        BCollapse,
-        BLink,
         ErrorInfo,
         WorkflowReportLogDialog,
         vSelect,
+        runWorkflowParameters
     },
     props: {
-            initialSelectedWorkflow: {
-                type: String,
-                required: true
-            },
+        initialSelectedWorkflow: {
+            type: String,
+            required: true
         },
+    },
     data() {
         return {
             workflowRunSummaries: null,
