@@ -1,8 +1,5 @@
 package org.vaccineimpact.orderlyweb.security.providers
 
-import okhttp3.Headers
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.eclipse.egit.github.core.User
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.util.CommonHelper
@@ -11,7 +8,6 @@ import org.eclipse.egit.github.core.client.RequestException
 import org.eclipse.egit.github.core.service.OrganizationService
 import org.eclipse.egit.github.core.service.TeamService
 import org.eclipse.egit.github.core.service.UserService
-import org.eclipse.jetty.http.HttpStatus
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
@@ -28,29 +24,12 @@ interface GithubAuthHelper
 }
 
 class GithubApiClientAuthHelper(private val appConfig: Config,
-                                private val githubApiClient: GitHubClient = GitHubClient(),
-                                private val httpClient: OkHttpClient = getHttpClient(appConfig)) : GithubAuthHelper
+                                private val githubApiClient: GitHubClient = GitHubClient()) : GithubAuthHelper
 {
     private var user: User? = null
-    private var authToken: String? = null
-
-    companion object {
-        fun getHttpClient(appConfig: Config): OkHttpClient
-        {
-            return if (appConfig.getBool("allow.localhost"))
-            {
-                getLocalOkHttpClient()
-            }
-            else
-            {
-                OkHttpClient()
-            }
-        }
-    }
 
     override fun authenticate(token: String)
     {
-        authToken = token
         setClientToken(token)
         user = getGitHubUser()
     }
@@ -66,9 +45,11 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             throw InvalidConfigurationKey("auth.github_org", githubOrg)
         }
-        val githubOrgId = getUserOrgId(githubOrg)
-                ?: throw CredentialsException("User is not a member of GitHub org $githubOrg")
-        if (!teamName.isEmpty() && !userBelongsToTeam(githubOrg, githubOrgId, teamName, user!!))
+        if (!userBelongsToOrg(githubOrg))
+        {
+            throw CredentialsException("User is not a member of GitHub org $githubOrg")
+        }
+        if (!teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user!!))
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
@@ -91,9 +72,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     private fun checkAuthenticated()
     {
         if (user == null)
-        {
             throw IllegalStateException("User has not been authenticated")
-        }
     }
 
     private fun setClientToken(token: String)
@@ -115,34 +94,34 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         }
         catch (e: RequestException)
         {
-            if (e.status == HttpStatus.UNAUTHORIZED_401)
+            if (e.status == 401)
             {
-                throw CredentialsException(e.message ?: "")
+                throw CredentialsException(e.message?:"")
             }
             else throw e
         }
     }
 
-    private fun getUserOrgId(githubOrg: String): Int?
+    private fun userBelongsToOrg(githubOrg: String): Boolean
     {
-        // Check if user belongs to org and return org id if it does
         try
         {
             val userService = OrganizationService(githubApiClient)
             val orgs = userService.organizations
-            return orgs.find{ it.login == githubOrg }?.id
+            return orgs.map{ it.login }.contains(githubOrg)
         }
         catch (e: RequestException)
         {
-            if (e.status == HttpStatus.FORBIDDEN_403)
+            if (e.status == 403)
             {
                 throw CredentialsException("GitHub token must include scope read:user")
             }
             else throw e
         }
+
     }
 
-    private fun userBelongsToTeam(githubOrg: String, githubOrgId: Int, teamName: String, user: User): Boolean
+    private fun userBelongsToTeam(githubOrg: String, teamName: String, user: User): Boolean
     {
         val teamService = TeamService(githubApiClient)
         val team = teamService
@@ -151,26 +130,8 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 }
                 ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
 
-        // See mrc-2966 - old team endpoints used by the client have been deprecated, so we manually use new endpoint
-        // here for now
-        val url = "https://api.github.com/organizations/$githubOrgId/team/${team.id}/memberships/${user.login}"
-
-        val headersBuilder = Headers.Builder()
-        headersBuilder.add("Authorization", "token $authToken")
-        headersBuilder.add("Accept", "application/vnd.github.beta+json")
-
-        val request = Request.Builder()
-                .url(url)
-                .headers(headersBuilder.build())
-                .build()
-
-        val response = httpClient.newCall(request).execute()
-        return when(response.code)
-        {
-            HttpStatus.OK_200 -> true
-            HttpStatus.NOT_FOUND_404 -> false
-            else -> throw CredentialsException("Unexpected status code from github api: ${response.code}")
-        }
+        val members = teamService.getMembers(team.id)
+        return members.map{ it.login }.contains(user.login)
     }
 
     private fun getEmailForUser(): String
@@ -181,11 +142,12 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         }
         catch (e: RequestException)
         {
-            if (e.status == HttpStatus.NOT_FOUND_404)
+            if (e.status == 404)
             {
                 throw CredentialsException("GitHub token must include scope user:email")
             }
             else throw e
         }
     }
+
 }
