@@ -35,12 +35,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import runWorkflowParameters from "./runWorkflowParameters.vue"
-import {WorkflowRunReportStatus, WorkflowSummaryResponse} from "../../utils/types";
+import {WorkflowRunStatus, WorkflowSummaryResponse} from "../../utils/types";
 import {buildFullUrl} from "../../utils/api";
 import {formatDate, failStates, notStartedStates, interpretStatus, hasParams} from "../../utils/helpers.ts";
 
 interface Props {
-    workflowRunStatus: WorkflowRunReportStatus
+    workflowRunStatus: WorkflowRunStatus
     workflowSummary: WorkflowSummaryResponse | null
 }
 
@@ -49,6 +49,7 @@ interface Methods {
     statusColour: (status: string) => string;
     viewLogLinkVisible: (status: string) => boolean;
     interpretStatus: (status: string) => string;
+    formatDate: (date: string) => string;
 }
 
 interface Computed {
@@ -95,7 +96,10 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
         },
         interpretStatus(status){
             return interpretStatus(status)
-        }
+        },
+        formatDate(date){
+            return formatDate(date)
+        },
     },
     
 })

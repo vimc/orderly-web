@@ -63,7 +63,6 @@ import {
     WorkflowRunSummary,
     WorkflowRunStatus,
     RunWorkflowMetadata,
-    WorkflowRunReportStatus,
     WorkflowSummaryResponse,
 } from "../../utils/types";
 import runWorkflowTable from "./runWorkflowTable.vue"
@@ -71,7 +70,7 @@ import runWorkflowTable from "./runWorkflowTable.vue"
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
     selectedWorkflowKey: null | string;
-    workflowRunStatus: null | WorkflowRunReportStatus;
+    workflowRunStatus: null | WorkflowRunStatus;
     error: string;
     defaultMessage: string;
     pollingTimer: null | number;
@@ -83,6 +82,7 @@ interface Data {
 interface Methods {
     getWorkflowRunSummaries: () => void;
     getWorkflowRunStatus: (key: string) => void;
+    formatDate: (date: string) => string;
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
@@ -168,16 +168,21 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.$emit("rerun", this.workflowMetadata);
         },
         getWorkflowMetadata(){
-            api.get(`/workflows/${this.selectedWorkflowKey}/`)
-                .then(({data}) => {
-                    this.workflowMetadata = workflowRunDetailsToMetadata(data.data)
-                    this.getWorkflowSummary()
-                })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage =
-                        "An error occurred fetching workflow details";
-                });
+            if (this.selectedWorkflowKey){
+                api.get(`/workflows/${this.selectedWorkflowKey}/`)
+                    .then(({data}) => {
+                        this.workflowMetadata = workflowRunDetailsToMetadata(data.data)
+                        this.getWorkflowSummary()
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage =
+                            "An error occurred fetching workflow details";
+                    });
+            }
+        },
+        formatDate(date){
+            return formatDate(date)
         },
         getWorkflowSummary() {
             const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
