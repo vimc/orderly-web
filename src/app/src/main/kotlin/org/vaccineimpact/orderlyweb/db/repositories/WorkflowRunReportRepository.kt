@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
+import java.sql.Timestamp
 
 interface WorkflowRunReportRepository : ReportRunLogRepository
 {
@@ -49,6 +50,7 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS, status)
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS, logsString)
+                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE, Timestamp.from(null))
                 .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
                 .execute()
         }
@@ -84,7 +86,8 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
                 result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
                 result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS],
                 result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS],
-                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION],
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE].toInstant()
             )
         }
     }

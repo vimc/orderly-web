@@ -49,7 +49,8 @@ class ReportRunControllerTests
         "gitCommit",
         "running",
         "started running",
-        null
+        null,
+        Instant.now()
     )
 
     private val testReportRunLogFinished = ReportRunLog(
@@ -62,7 +63,8 @@ class ReportRunControllerTests
             "gitCommit",
             "success",
             "finished running",
-            null
+            null,
+            Instant.now()
     )
 
     private val testOutput = listOf("started running", "still running")

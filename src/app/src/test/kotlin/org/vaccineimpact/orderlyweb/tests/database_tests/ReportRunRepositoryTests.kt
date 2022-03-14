@@ -104,7 +104,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit1",
                 null,
                 null,
-                null))
+                null,
+                now))
     }
 
     @Test
@@ -143,7 +144,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit1",
                 "success",
                 "log1\nlog2",
-                "version123"))
+                "version123",
+                now))
     }
 
     @Test
@@ -171,7 +173,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit1",
                 "running",
                 "log1\nlog2",
-                null))
+                null,
+                now))
     }
 
     fun `can get all running reports for current user only`()

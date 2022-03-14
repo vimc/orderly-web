@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
+import java.sql.Timestamp
 import java.time.Instant
 
 class RunReportTests
@@ -33,7 +34,8 @@ class RunReportTests
             "commit",
             "complete",
             "logs",
-            "1233")
+            "1233",
+            instant)
 
     @Test
     fun `getRunReport creates viewmodel`()

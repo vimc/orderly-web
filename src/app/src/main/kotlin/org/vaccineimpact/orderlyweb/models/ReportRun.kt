@@ -23,6 +23,7 @@ data class ReportRunLog(
     val gitCommit: String?,
     val status: String?,
     val logs: String?,
-    val reportVersion: String?
+    val reportVersion: String?,
+    val startTime: Instant? = null
 )
 data class ReportRunWithDate(val name: String, val key: String, val date: Instant)
