@@ -10,7 +10,8 @@ data class ReportStatus(
     val name: String,
     val version: String,
     val output: List<String>? = null,
-    val queue: List<Any>? = null
+    val queue: List<Any>? = null,
+    val startTime: String? = null
 )
 
 data class ReportRunLog(
@@ -23,7 +24,6 @@ data class ReportRunLog(
     val gitCommit: String?,
     val status: String?,
     val logs: String?,
-    val reportVersion: String?,
-    val startTime: Instant? = null
+    val reportVersion: String?
 )
 data class ReportRunWithDate(val name: String, val key: String, val date: Instant)

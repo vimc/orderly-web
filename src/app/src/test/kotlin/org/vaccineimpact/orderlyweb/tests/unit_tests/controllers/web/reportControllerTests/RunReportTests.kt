@@ -34,8 +34,7 @@ class RunReportTests
             "commit",
             "complete",
             "logs",
-            "1233",
-            instant)
+            "1233")
 
     @Test
     fun `getRunReport creates viewmodel`()
@@ -198,7 +197,8 @@ class RunReportTests
       "name": "test", 
       "version": "1233", 
       "output": ["output item"], 
-      "queue": []
+      "queue": [],
+      "start_time": "${instant.toString()}"
      }"""
 
     @Test
@@ -210,6 +210,7 @@ class RunReportTests
         assertThat(status.version).isEqualTo("1233")
         assertThat(status.output).isEqualTo(listOf("output item"))
         assertThat(status.queue).isEqualTo(listOf<Any>())
+        assertThat(status.startTime).isEqualTo(instant.toString())
     }
 
     private fun testRunningLogRefresh(incompleteStatus: String?)
@@ -234,7 +235,7 @@ class RunReportTests
         val result = sut.getRunningReportLogs()
         verify(mockRepo, times(2)).getReportRun("fakeKey")
         assertThat(result).isSameAs(incompleteLog)
-        verify(mockRepo).updateReportRun(eq("fakeKey"), eq("updatedStatus"), eq("1233"), eq(listOf("output item")))
+        verify(mockRepo).updateReportRun(eq("fakeKey"), eq("updatedStatus"), eq("1233"), eq(listOf("output item")), eq(instant))
     }
 
     @Test

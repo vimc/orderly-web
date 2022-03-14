@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import java.sql.Timestamp
+import java.time.Instant
 
 interface WorkflowRunReportRepository : ReportRunLogRepository
 {
@@ -33,7 +34,7 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
         }
     }
 
-    override fun updateReportRun(key: String, status: String, version: String?, logs: List<String>?)
+    override fun updateReportRun(key: String, status: String, version: String?, logs: List<String>?, startTime: Instant?)
     {
         val logsString = logs?.joinToString(separator = "\n")
 
@@ -50,7 +51,7 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS, status)
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS, logsString)
-                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE, Timestamp.from(null))
+                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE, Timestamp.from(startTime))
                 .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
                 .execute()
         }
@@ -86,8 +87,7 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
                 result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
                 result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS],
                 result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS],
-                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION],
-                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE].toInstant()
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]
             )
         }
     }

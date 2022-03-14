@@ -108,7 +108,8 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         key: String,
         status: String,
         version: String?,
-        logs: List<String>?
+        logs: List<String>?,
+        startTime: Instant?
     )
     {
         val logsString = logs?.joinToString(separator = "\n")

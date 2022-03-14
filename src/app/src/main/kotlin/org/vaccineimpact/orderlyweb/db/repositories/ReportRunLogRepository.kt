@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
+import java.time.Instant
 
 interface ReportRunLogRepository
 {
@@ -12,6 +13,7 @@ interface ReportRunLogRepository
         key: String,
         status: String,
         version: String?,
-        logs: List<String>?
+        logs: List<String>?,
+        startTime: Instant? = Instant.now()
     )
 }

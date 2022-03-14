@@ -19,6 +19,7 @@ import java.time.Instant
 
 class ReportRunControllerTests
 {
+    private val startTime = Instant.now()
     @Test
     fun `gets all running reports`()
     {
@@ -49,8 +50,7 @@ class ReportRunControllerTests
         "gitCommit",
         "running",
         "started running",
-        null,
-        Instant.now()
+        null
     )
 
     private val testReportRunLogFinished = ReportRunLog(
@@ -63,8 +63,7 @@ class ReportRunControllerTests
             "gitCommit",
             "success",
             "finished running",
-            null,
-            Instant.now()
+            null
     )
 
     private val testOutput = listOf("started running", "still running")
@@ -73,7 +72,9 @@ class ReportRunControllerTests
         "success",
         "tet report",
         "version1",
-        testOutput
+        testOutput,
+        null,
+        startTime.toString()
     )
 
     @Test
@@ -99,7 +100,7 @@ class ReportRunControllerTests
         val result = sut.getRunningReportLogs()
 
         verify(mockWorkflowRepo, never()).checkReportIsInWorkflow(any(), any())
-        verify(mockReportRepo).updateReportRun("testReportKey", "success", "version1", testOutput)
+        verify(mockReportRepo).updateReportRun("testReportKey", "success", "version1", testOutput, startTime)
         verify(mockReportRepo, times(2)).getReportRun("testReportKey")
         assertThat(result).isSameAs(testReportRunLog)
     }
@@ -124,7 +125,7 @@ class ReportRunControllerTests
         val result = sut.getRunningReportLogs()
 
         verify(mockWorkflowRepo, never()).checkReportIsInWorkflow(any(), any())
-        verify(mockReportRepo, never()).updateReportRun(any(), any(), any(), any())
+        verify(mockReportRepo, never()).updateReportRun(any(), any(), any(), any(), any())
         verify(mockReportRepo, times(1)).getReportRun("testReportKey")
         verify(mockAPI, never()).get(any(), any<Map<String,String>>())
         assertThat(result).isSameAs(testReportRunLogFinished)
@@ -151,7 +152,7 @@ class ReportRunControllerTests
         val result = sut.getRunningReportLogs()
 
         verify(mockWorkflowRepo).checkReportIsInWorkflow("testReportKey", "testWorkflow")
-        verify(mockWorkflowRepo).updateReportRun("testReportKey", "success", "version1", testOutput)
+        verify(mockWorkflowRepo).updateReportRun("testReportKey", "success", "version1", testOutput, startTime)
         verify(mockWorkflowRepo, times(2)).getReportRun("testReportKey")
         assertThat(result).isSameAs(testReportRunLog)
     }
@@ -174,7 +175,7 @@ class ReportRunControllerTests
         val result = sut.getRunningReportLogs()
 
         verify(mockWorkflowRepo).checkReportIsInWorkflow("testReportKey", "testWorkflow")
-        verify(mockWorkflowRepo, never()).updateReportRun(any(), any(), any(), any())
+        verify(mockWorkflowRepo, never()).updateReportRun(any(), any(), any(), any(), any())
         verify(mockAPI, never()).get(any(), any<Map<String,String>>())
         verify(mockWorkflowRepo, times(1)).getReportRun("testReportKey")
         assertThat(result).isSameAs(testReportRunLogFinished)

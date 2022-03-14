@@ -16,6 +16,7 @@ import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
     private val now = Instant.now()
+    private val startTime = Instant.now()
 
     private fun addTestReportRun(sut: OrderlyWebReportRunRepository)
     {
@@ -104,8 +105,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit1",
                 null,
                 null,
-                null,
-                now))
+                null))
     }
 
     @Test
@@ -144,8 +144,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit1",
                 "success",
                 "log1\nlog2",
-                "version123",
-                now))
+                "version123"))
     }
 
     @Test
@@ -173,8 +172,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit1",
                 "running",
                 "log1\nlog2",
-                null,
-                now))
+                null))
     }
 
     fun `can get all running reports for current user only`()

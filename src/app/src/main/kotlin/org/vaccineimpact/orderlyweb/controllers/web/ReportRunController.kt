@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportStatus
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
+import java.time.Instant
 
 class ReportRunController(
     context: ActionContext,
@@ -50,7 +51,12 @@ class ReportRunController(
                     "/v1/reports/$key/status/",
                     mapOf("output" to "true"))
             val latestStatus = statusResponse.data(ReportStatus::class.java)
-            reportRunLogRepository.updateReportRun(key, latestStatus.status, latestStatus.version, latestStatus.output)
+            reportRunLogRepository.updateReportRun(
+                key,
+                latestStatus.status,
+                latestStatus.version,
+                latestStatus.output,
+                Instant.parse(latestStatus.startTime))
             log = reportRunLogRepository.getReportRun(key)
         }
         return log
