@@ -32,6 +32,7 @@ import {hasParams} from "../../utils/helpers.ts";
 
 interface Props {
     report: WorkflowRunReportStatus;
+    index: number;
 }
 
 interface Methods {
@@ -49,6 +50,10 @@ export default Vue.extend<unknown, Methods, unknown, Props>({
     props: {
         report: {
             type: Object,
+            required: true
+        },
+        index: {
+            type: Number,
             required: true
         },
     },

@@ -14,7 +14,7 @@
             </td>
             <td v-else class="p-2">{{ report.name }}</td>
             <td v-if="anyParams" class="p-2">
-                <run-workflow-parameters :report="workflowSummary.reports[index]"></run-workflow-parameters>
+                <run-workflow-parameters :report="workflowSummary.reports[index]" :index="index"></run-workflow-parameters>
             </td>
             <td :class="statusColour(report.status)" class="p-2">
                 {{ interpretStatus(report.status) }}
