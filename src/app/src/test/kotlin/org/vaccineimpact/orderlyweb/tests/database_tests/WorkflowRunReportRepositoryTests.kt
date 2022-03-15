@@ -131,7 +131,6 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
         assertThat(result.report).isEqualTo("test_report_name")
         assertThat(result.reportVersion).isEqualTo("report_version_1")
         assertThat(result.status).isEqualTo("success")
-        //assertThat(result.startTime).isEqualTo("startTime")
     }
 
     @Test

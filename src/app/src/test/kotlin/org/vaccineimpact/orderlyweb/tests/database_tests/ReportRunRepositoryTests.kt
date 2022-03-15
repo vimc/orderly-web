@@ -16,7 +16,6 @@ import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
     private val now = Instant.now()
-    private val startTime = Instant.now()
 
     private fun addTestReportRun(sut: OrderlyWebReportRunRepository)
     {
@@ -133,7 +132,6 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "version123",
                 listOf("log1","log2")
         )
-
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
                 "user@email.com",
                 now,
