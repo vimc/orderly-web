@@ -291,7 +291,7 @@ class RunWorkflowTests : SeleniumTest()
         val table = driver.findElement(By.id("workflow-table"))
         assertThat(table.text).contains("Reports")
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
-        assertThat(rows.count()).isEqualTo(2)
+        assertThat(rows.count()).isEqualTo(3)
         val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
         val minimalRowStatus = minimalRow.findElement(By.cssSelector("td:nth-child(2)"))
         assertThat(minimalRowStatus.text).isIn(listOf("Queued", "Running"))
