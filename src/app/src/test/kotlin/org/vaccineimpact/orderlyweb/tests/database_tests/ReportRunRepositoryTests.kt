@@ -130,7 +130,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "adventurous_aardvark",
                 "success",
                 "version123",
-                listOf("log1","log2")
+                listOf("log1","log2"),
+                now
         )
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
                 "user@email.com",
@@ -157,7 +158,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "adventurous_aardvark",
                 "running",
                 "version123",
-                listOf("log1", "log2")
+                listOf("log1", "log2"),
+                now
         )
 
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(

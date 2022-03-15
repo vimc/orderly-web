@@ -12,7 +12,6 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
-import java.sql.Timestamp
 import java.time.Instant
 
 class RunReportTests
@@ -198,7 +197,7 @@ class RunReportTests
       "version": "1233", 
       "output": ["output item"], 
       "queue": [],
-      "start_time": "${instant.toString()}"
+      "start_time": "1647340549"
      }"""
 
     @Test
@@ -210,7 +209,7 @@ class RunReportTests
         assertThat(status.version).isEqualTo("1233")
         assertThat(status.output).isEqualTo(listOf("output item"))
         assertThat(status.queue).isEqualTo(listOf<Any>())
-        assertThat(status.startTime).isEqualTo(instant.toString())
+        assertThat(status.startTime).isEqualTo(1647340549L)
     }
 
     private fun testRunningLogRefresh(incompleteStatus: String?)
@@ -235,7 +234,12 @@ class RunReportTests
         val result = sut.getRunningReportLogs()
         verify(mockRepo, times(2)).getReportRun("fakeKey")
         assertThat(result).isSameAs(incompleteLog)
-        verify(mockRepo).updateReportRun(eq("fakeKey"), eq("updatedStatus"), eq("1233"), eq(listOf("output item")), eq(instant))
+        verify(mockRepo).updateReportRun(
+            eq("fakeKey"),
+            eq("updatedStatus"),
+            eq("1233"),
+            eq(listOf("output item")),
+            eq(Instant.ofEpochSecond(1647340549L)))
     }
 
     @Test

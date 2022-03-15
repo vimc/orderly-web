@@ -52,7 +52,7 @@ class ReportRunController(
                     mapOf("output" to "true"))
             val latestStatus = statusResponse.data(ReportStatus::class.java)
             val startDateTime =
-                if (latestStatus.startTime != null) Instant.parse(latestStatus.startTime) else Instant.now()
+                if (latestStatus.startTime != null) Instant.ofEpochSecond(latestStatus.startTime) else Instant.now()
             reportRunLogRepository.updateReportRun(
                 key,
                 latestStatus.status,

@@ -19,7 +19,7 @@ import java.time.Instant
 
 class ReportRunControllerTests
 {
-    private val startTime = Instant.now()
+    private val startTime = Instant.now().epochSecond
     @Test
     fun `gets all running reports`()
     {
@@ -74,7 +74,7 @@ class ReportRunControllerTests
         "version1",
         testOutput,
         null,
-        startTime.toString()
+        startTime
     )
 
     @Test
@@ -100,7 +100,7 @@ class ReportRunControllerTests
         val result = sut.getRunningReportLogs()
 
         verify(mockWorkflowRepo, never()).checkReportIsInWorkflow(any(), any())
-        verify(mockReportRepo).updateReportRun("testReportKey", "success", "version1", testOutput, startTime)
+        verify(mockReportRepo).updateReportRun("testReportKey", "success", "version1", testOutput,  Instant.ofEpochSecond(startTime))
         verify(mockReportRepo, times(2)).getReportRun("testReportKey")
         assertThat(result).isSameAs(testReportRunLog)
     }
@@ -152,7 +152,7 @@ class ReportRunControllerTests
         val result = sut.getRunningReportLogs()
 
         verify(mockWorkflowRepo).checkReportIsInWorkflow("testReportKey", "testWorkflow")
-        verify(mockWorkflowRepo).updateReportRun("testReportKey", "success", "version1", testOutput, startTime)
+        verify(mockWorkflowRepo).updateReportRun("testReportKey", "success", "version1", testOutput, Instant.ofEpochSecond(startTime))
         verify(mockWorkflowRepo, times(2)).getReportRun("testReportKey")
         assertThat(result).isSameAs(testReportRunLog)
     }

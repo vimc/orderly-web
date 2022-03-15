@@ -44,7 +44,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     )
     {
         JooqContext().use {
-            it.dsl.insertInto(Tables.ORDERLYWEB_REPORT_RUN)
+            it.dsl.insertInto(ORDERLYWEB_REPORT_RUN)
                 .set(ORDERLYWEB_REPORT_RUN.KEY, key)
                 .set(ORDERLYWEB_REPORT_RUN.EMAIL, user)
                 .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
@@ -109,7 +109,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         status: String,
         version: String?,
         logs: List<String>?,
-        startTime: Instant?
+        startTime: Instant
     )
     {
         val logsString = logs?.joinToString(separator = "\n")
