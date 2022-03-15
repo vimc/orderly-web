@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
 import io.specto.hoverfly.junit.rule.HoverflyRule
+import okhttp3.internal.wait
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
@@ -45,7 +46,7 @@ abstract class SeleniumTest : CustomConfigTests()
         System.setProperty("webdriver.chrome.whitelistedIps", "")
         driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
                 .apply {
-                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")
+                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox", "--disable-dev-shm-usage")
                     setProxy(proxy)
                 })
         driver.manage().timeouts().implicitlyWait(12, TimeUnit.SECONDS)
