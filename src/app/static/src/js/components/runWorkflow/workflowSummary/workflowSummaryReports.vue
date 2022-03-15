@@ -63,7 +63,7 @@
     import {InfoIcon} from "vue-feather-icons";
     import {BLink} from "bootstrap-vue/esm/components/link";
     import {BCollapse} from "bootstrap-vue/esm/components/collapse";
-    import {VBToggle} from 'bootstrap-vue';
+    import {VBToggle} from 'bootstrap-vue/esm/directives/toggle';
     import {WorkflowSummary, WorkflowReportWithDependencies} from "../../../utils/types";
     import {VTooltip} from "v-tooltip";
 

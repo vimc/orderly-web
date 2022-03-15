@@ -1,13 +1,14 @@
 <template>
     <div>
-        <b-alert :show="!!workflowRemovals"
-                 dismissible
-                 variant="warning"
-                 class="col-sm-10"
-                 @dismissed="workflowRemovals=null">
+        <b-alert
+            :show="!!workflowRemovals"
+            dismissible
+            variant="warning"
+            class="col-sm-10"
+            @dismissed="workflowRemovals=null">
             The following items are not present in this git commit and have been removed from the workflow:
             <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                <li v-for="item in workflowRemovals" :key="item">
+                <li v-for="item in workflowRemovals">
                     {{ item }}
                 </li>
             </ul>
@@ -76,8 +77,8 @@
                                  @dismissed="validationErrors=[]">
                             Failed to import from csv. The following issues were found:
                             <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                                <li v-for="e in validationErrors" :key="e.message" class="import-validation-error">
-                                    {{ e.message }}
+                                <li v-for="error in validationErrors" class="import-validation-error">
+                                    {{ error.message }}
                                 </li>
                             </ul>
                         </b-alert>
@@ -138,8 +139,7 @@
     import {
         Error,
         Parameter,
-        ReportWithDate,
-        RunnerRootState,
+        ReportWithDate, RunnerRootState,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowReportWithParams
