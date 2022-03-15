@@ -1,12 +1,12 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue"
-import {RunWorkflowMetadata, WorkflowSummary} from "../../../../js/utils/types";
+import { RunWorkflowMetadata, WorkflowSummaryResponse } from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`runWorkflowSummary`, () => {
 
-    const workflowSummary: WorkflowSummary = {
+    const workflowSummary: WorkflowSummaryResponse = {
         ref: "test",
         missing_dependencies: {},
         reports: [{name: "test", param_list: [{name: "key", value: "value"}]}]
