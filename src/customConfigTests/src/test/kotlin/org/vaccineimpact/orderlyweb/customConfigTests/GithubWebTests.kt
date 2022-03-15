@@ -91,4 +91,28 @@ class GithubWebTests : SeleniumTest()
         val authProvider = driver.findElement(By.cssSelector(".login-link"))
         assertThat(authProvider.getAttribute("href")).isEqualTo("${url}weblogin/external?requestedUrl=${url}")
     }
+
+    @Test
+    fun `user can log in if in configured team`()
+    {
+        startApp("auth.provider=github\nauth.github_team=vimc-auth-team")
+
+        login()
+
+        val header = driver.findElement(By.cssSelector(".reports-list"))
+        assertThat(header.text).isEqualTo("Find a report")
+    }
+
+    @Test
+    fun `user sees 401 page if not in configured team`()
+    {
+        startApp("auth.provider=github\nauth.github_team=vimc-auth-team2")
+
+        login()
+
+        val helpText = driver.findElements(By.cssSelector("p")).first()
+        assertThat(helpText.text)
+                .contains("We have not been able to successfully identify you as a member of the app's configured GitHub org")
+
+    }
 }
