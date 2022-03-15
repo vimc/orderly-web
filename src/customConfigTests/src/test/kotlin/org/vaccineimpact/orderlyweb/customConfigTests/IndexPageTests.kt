@@ -127,7 +127,6 @@ class IndexPageTests : SeleniumTest()
         val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(1)
         component[0].click()
-        println(driver.findElement(By.cssSelector("body")).getAttribute("innerHTML"))
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report")))
     }
 

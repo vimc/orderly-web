@@ -2,8 +2,6 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
 import io.specto.hoverfly.junit.rule.HoverflyRule
-import okhttp3.internal.wait
-import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
 import org.junit.Rule
