@@ -1,13 +1,8 @@
 package org.vaccineimpact.orderlyweb.security.providers
 
-import org.eclipse.egit.github.core.User
+import org.kohsuke.github.*
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.util.CommonHelper
-import org.eclipse.egit.github.core.client.GitHubClient
-import org.eclipse.egit.github.core.client.RequestException
-import org.eclipse.egit.github.core.service.OrganizationService
-import org.eclipse.egit.github.core.service.TeamService
-import org.eclipse.egit.github.core.service.UserService
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
@@ -20,17 +15,18 @@ interface GithubAuthHelper
 
     fun getUserEmail(): String
 
-    fun getUser(): User
+    fun getUser(): GHUser
 }
 
 class GithubApiClientAuthHelper(private val appConfig: Config,
-                                private val githubApiClient: GitHubClient = GitHubClient()) : GithubAuthHelper
+                                private val githubBuilder: GitHubBuilder = GitHubBuilder()) : GithubAuthHelper
 {
-    private var user: User? = null
+    private var github: GitHub? = null
+    private var user: GHUser? = null
 
     override fun authenticate(token: String)
     {
-        setClientToken(token)
+        connectToClient(token)
         user = getGitHubUser()
     }
 
@@ -38,18 +34,20 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     {
         checkAuthenticated()
 
-        val githubOrg = appConfig["auth.github_org"]
+        val orgName = appConfig["auth.github_org"]
         val teamName = appConfig["auth.github_team"]
 
-        if (githubOrg.isEmpty())
+        if (orgName.isEmpty())
         {
-            throw InvalidConfigurationKey("auth.github_org", githubOrg)
+            throw InvalidConfigurationKey("auth.github_org", orgName)
         }
-        if (!userBelongsToOrg(githubOrg))
+
+        val org = getOrg(orgName)
+        if (!userBelongsToOrg(org))
         {
-            throw CredentialsException("User is not a member of GitHub org $githubOrg")
+            throw CredentialsException("User is not a member of GitHub org $orgName")
         }
-        if (!teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user!!))
+        if (!teamName.isEmpty() && !userBelongsToTeam(org, teamName, user!!))
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
@@ -58,12 +56,11 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     override fun getUserEmail(): String
     {
         checkAuthenticated()
-
         // If the GitHub user has no public email set, we need to make an extra call to get it
         return user!!.email ?: getEmailForUser()
     }
 
-    override fun getUser(): User
+    override fun getUser(): GHUser
     {
         checkAuthenticated()
         return user!!
@@ -75,22 +72,24 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
             throw IllegalStateException("User has not been authenticated")
     }
 
-    private fun setClientToken(token: String)
+    private fun connectToClient(token: String)
     {
         if (CommonHelper.isBlank(token))
         {
             throw CredentialsException("Token cannot be blank")
         }
 
-        githubApiClient.setOAuth2Token(token)
+        github = githubBuilder.withOAuthToken(token).build()
     }
 
-    private fun getGitHubUser(): User
+    private fun getGitHubUser(): GHUser
     {
-        return try
+        // TODO: work out what sort of errors are thrown that we need to deal with
+        return github!!.getMyself()
+
+        /*return try
         {
-            val service = UserService(githubApiClient)
-            service.user
+            github!!.getMyself()
         }
         catch (e: RequestException)
         {
@@ -99,12 +98,21 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 throw CredentialsException(e.message?:"")
             }
             else throw e
-        }
+        }*/
     }
 
-    private fun userBelongsToOrg(githubOrg: String): Boolean
+    private fun getOrg(orgName: String): GHOrganization
     {
-        try
+        //TODO: deal with auth errors
+        return github!!.getOrganization(orgName)
+    }
+
+    private fun userBelongsToOrg(org: GHOrganization): Boolean
+    {
+        //TODO: deal with auth errors
+        return getUser().isMemberOf(org)
+
+        /*try
         {
             val userService = OrganizationService(githubApiClient)
             val orgs = userService.organizations
@@ -117,13 +125,18 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 throw CredentialsException("GitHub token must include scope read:user")
             }
             else throw e
-        }
+        }*/
 
     }
 
-    private fun userBelongsToTeam(githubOrg: String, teamName: String, user: User): Boolean
+    private fun userBelongsToTeam(org: GHOrganization, teamName: String, user: GHUser): Boolean
     {
-        val teamService = TeamService(githubApiClient)
+       //TODO: deal with auth errors
+       val team = org.teams[teamName]
+               ?: throw BadConfigurationError("GitHub org ${org.name} has no team called $teamName")
+       return user.isMemberOf(team)
+
+       /* val teamService = TeamService(githubApiClient)
         val team = teamService
                 .getTeams(githubOrg).firstOrNull {
                     it.name == teamName
@@ -131,12 +144,15 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
 
         val members = teamService.getMembers(team.id)
-        return members.map{ it.login }.contains(user.login)
+        return members.map{ it.login }.contains(user.login)*/
     }
 
     private fun getEmailForUser(): String
     {
-        return try
+        //TODO: deal with auth errors
+        return (getUser() as GHMyself).emails2.first().email
+
+        /*return try
         {
             UserService(githubApiClient).emails.first()
         }
@@ -147,7 +163,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 throw CredentialsException("GitHub token must include scope user:email")
             }
             else throw e
-        }
+        }*/
     }
 
 }

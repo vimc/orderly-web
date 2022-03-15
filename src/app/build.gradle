@@ -48,12 +48,12 @@ dependencies {
     compile 'org.pac4j:pac4j-oauth:3.6.1'
     compile 'commons-codec:commons-codec:1.10'
 
-    compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
-
     compile "org.json:json:20201115"
     compile "com.squareup.okhttp3:okhttp:4.8.1"
 
     compile "org.ocpsoft.prettytime:prettytime:4.0.5.Final"
+
+    compile "org.kohsuke:github-api:1.303"
 
     testCompile "org.slf4j:slf4j-simple:1.7.21"
     testCompile "com.beust:klaxon:0.31"
