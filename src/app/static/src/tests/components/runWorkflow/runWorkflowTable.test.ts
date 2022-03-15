@@ -1,5 +1,6 @@
 import { shallowMount } from "@vue/test-utils";
 import runWorkflowTable from '../../../js/components/runWorkflow/runWorkflowTable.vue'
+import runWorkflowParameters from '../../../js/components/runWorkflow/runWorkflowParameters.vue'
 
 const workflowStatus1 = {
     "reports": [
@@ -28,6 +29,33 @@ const workflowStatus1 = {
             "status": "impossible",
             "date": "2021-06-16T09:51:16Z"
         },
+    ]
+}
+
+const workflowSummary = {
+    ref: "commit123",
+    missing_dependencies: {},
+    reports: [
+        {
+            name: "report one a",
+            param_list: [{ name: "disease", value: "Measles" }],
+            default_param_list: [{ name: "nmin", value: "123" }],
+        },
+        {
+            name: "report one b",
+            param_list: [],
+            default_param_list: [{ name: "nmin2", value: "234" }, { name: "disease", value: "HepC" }]
+        },
+        {
+            name: "report one c",
+            param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
+            default_param_list: []
+        },
+        {
+            name: "report one d",
+            param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
+            default_param_list: []
+        }
     ]
 }
 
@@ -192,6 +220,28 @@ describe(`runWorkflowTable`, () => {
         })
     });
 
-    // need to test rendering of parameters column
+    it(`can render parameters column`, (done) => {
+        const wrapper = getWrapper(workflowStatus1, workflowSummary)
 
+        setTimeout(() => {
+            expect(wrapper.find("table").exists()).toBe(true)
+            expect(wrapper.findAll("tr").length).toBe(5)
+
+            const headers = wrapper.findAll("th")
+            expect(headers.length).toBe(4)
+            expect(headers.at(1).text()).toBe("Parameters")
+
+            const parameterComponents = wrapper.findAllComponents(runWorkflowParameters)
+            expect(parameterComponents.length).toBe(4)
+            expect(parameterComponents.at(0).props("index")).toBe(0);
+            expect(parameterComponents.at(0).props("report")).toBe(workflowSummary.reports[0]);
+            expect(parameterComponents.at(1).props("index")).toBe(1);
+            expect(parameterComponents.at(1).props("report")).toBe(workflowSummary.reports[1]);
+            expect(parameterComponents.at(2).props("index")).toBe(2);
+            expect(parameterComponents.at(2).props("report")).toBe(workflowSummary.reports[2]);
+            expect(parameterComponents.at(3).props("index")).toBe(3);
+            expect(parameterComponents.at(3).props("report")).toBe(workflowSummary.reports[3]);
+            done();
+        })
+    })
 })

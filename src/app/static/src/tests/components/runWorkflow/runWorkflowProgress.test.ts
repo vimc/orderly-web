@@ -53,7 +53,58 @@ const workflowStatus1 = {
           },
       ]
     }
-  }
+}
+
+const workflowDetails = {
+    name: "Test Workflow",
+    key: "curious_mongoose",
+    email: "test.user@example.com",
+    date: "2021-08-01",
+    instances: { source: "UAT" },
+    git_branch: "master",
+    git_commit: null,
+    reports: [
+        {
+            workflow_key: "curious_mongoose",
+            key: "terrified_ocelot",
+            report: "report1",
+            params: { p1: "v1" }
+        },
+        {
+            workflow_key: "curious_mongoose",
+            key: "weird_anteater",
+            report: "report2",
+            params: {}
+        }
+    ]
+};
+
+const workflowSummary = {
+    ref: "commit123",
+    missing_dependencies: {},
+    reports: [
+        {
+            name: "report one a",
+            param_list: [{ name: "disease", value: "Measles" }],
+            default_param_list: [{ name: "nmin", value: "123" }],
+        },
+        {
+            name: "report one b",
+            param_list: [],
+            default_param_list: [{ name: "nmin2", value: "234" }, { name: "disease", value: "HepC" }]
+        },
+        {
+            name: "report one c",
+            param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
+            default_param_list: []
+        },
+        {
+            name: "report one d",
+            param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
+            default_param_list: []
+        }
+    ]
+}
 
 describe(`runWorkflowProgress`, () => {
     beforeEach(() => {
@@ -154,6 +205,36 @@ describe(`runWorkflowProgress`, () => {
         expect(dialog.props("workflowKey")).toBe("key1");
     });
 
+    it(`renders table using workflowRunStatus and workflowSummary props`, (done) => {
+        mockAxios.onGet("http://app/workflows/key1/")
+            .reply(200, { data: workflowDetails });
+        mockAxios.onPost('http://app/workflows/summary/')
+            .reply(200, { data: workflowSummary });
+        const wrapper = getWrapper()
+        wrapper.setData({ selectedWorkflowKey: "key1" })
+        setTimeout(async () => {
+            const runWorkflowTableComponent = wrapper.findComponent(runWorkflowTable);
+            expect(runWorkflowTableComponent.props("workflowRunStatus")).toStrictEqual(workflowStatus1.data);
+            expect(runWorkflowTableComponent.props("workflowSummary")).toStrictEqual(workflowSummary);
+            done();
+        })
+    });
+
+    it(`renders get workflow summary status error`, (done) => {
+        mockAxios.onGet("http://app/workflows/key1/")
+            .reply(200, { data: workflowDetails });
+        mockAxios.onPost('http://app/workflows/summary/')
+            .reply(500, "TEST ERROR");
+        const wrapper = getWrapper()
+        wrapper.setData({ selectedWorkflowKey: "key1" })
+        setTimeout(async () => {
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching a report's dependencies")
+            expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
+            expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
+            done();
+        })
+    });
+
     it(`sets report log dialog report key when show-report-log is emitted from the table`, (done) => {
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
@@ -187,29 +268,6 @@ describe(`runWorkflowProgress`, () => {
     });
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
-        const workflowDetails = {
-            name: "Test Workflow",
-            key: "curious_mongoose",
-            email: "test.user@example.com",
-            date: "2021-08-01",
-            instances: {source: "UAT"},
-            git_branch: "master",
-            git_commit: null,
-            reports: [
-                {
-                    workflow_key: "curious_mongoose",
-                    key: "terrified_ocelot",
-                    report: "report1",
-                    params: {p1: "v1" }
-                },
-                {
-                    workflow_key: "curious_mongoose",
-                    key: "weird_anteater",
-                    report: "report2",
-                    params: {}
-                }
-            ]
-        };
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(200, {data: workflowDetails});
 
@@ -372,7 +430,5 @@ describe(`runWorkflowProgress`, () => {
             done();
         });
     })
-
-    // need to add tests for get workflow metatdata and summary
 
 })
