@@ -127,7 +127,7 @@ class IndexPageTests : SeleniumTest()
 
         val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(1)
-        component[0].click();
+        component[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report")))
     }
 
@@ -145,7 +145,7 @@ class IndexPageTests : SeleniumTest()
 
         val component = driver.findElements(By.id("run-workflow"))
         assertThat(component.count()).isEqualTo(1)
-        component[0].click();
+        component[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-container")))
     }
 

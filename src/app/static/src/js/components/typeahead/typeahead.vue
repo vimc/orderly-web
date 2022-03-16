@@ -1,26 +1,24 @@
 <template>
     <div>
         <div :class="sizeClasses">
-            <div ref="prependDiv" v-if="$slots.prepend || prepend" class="input-group-prepend">
+            <div v-if="$slots.prepend || prepend" ref="prependDiv" class="input-group-prepend">
                 <slot name="prepend">
                     <span class="input-group-text">{{ prepend }}</span>
                 </slot>
             </div>
-            <input
-                    ref="input"
-                    type="search"
-                    :class="`form-control ${inputClass}`"
-                    :placeholder="placeholder"
-                    :aria-label="placeholder"
-                    :value="inputValue"
-                    @focus="isFocused = true"
-                    @blur="handleBlur"
-                    @input="handleInput($event.target.value)"
-                    @keyup.down="$emit('keyup.down', $event.target.value)"
-                    @keyup.up="$emit('keyup.up', $event.target.value)"
-                    @keyup.enter="$emit('keyup.enter', $event.target.value)"
-                    autocomplete="off"
-            />
+            <input ref="input"
+                   type="search"
+                   :class="`form-control ${inputClass}`"
+                   :placeholder="placeholder"
+                   :aria-label="placeholder"
+                   :value="inputValue"
+                   autocomplete="off"
+                   @focus="isFocused = true"
+                   @blur="handleBlur"
+                   @input="handleInput($event.target.value)"
+                   @keyup.down="$emit('keyup.down', $event.target.value)"
+                   @keyup.up="$emit('keyup.up', $event.target.value)"
+                   @keyup.enter="$emit('keyup.enter', $event.target.value)"/>
             <div v-if="$slots.append || append" class="input-group-append">
                 <slot name="append">
                     <span class="input-group-text">{{ append }}</span>
@@ -28,17 +26,16 @@
             </div>
         </div>
         <vue-bootstrap-typeahead-list
-                class="vbt-autcomplete-list"
-                ref="list"
-                v-show="isFocused && data.length > 0"
-                :query="inputValue"
-                :data="formattedData"
-                :background-variant="backgroundVariant"
-                :text-variant="textVariant"
-                :maxMatches="maxMatches"
-                :minMatchingChars="minMatchingChars"
-                @hit="handleHit"
-        >
+            v-show="isFocused && data.length > 0"
+            ref="list"
+            class="vbt-autcomplete-list"
+            :query="inputValue"
+            :data="formattedData"
+            :background-variant="backgroundVariant"
+            :text-variant="textVariant"
+            :max-matches="maxMatches"
+            :min-matching-chars="minMatchingChars"
+            @hit="handleHit">
             <!-- pass down all scoped slots -->
             <template v-for="(slot, slotName) in $scopedSlots" :slot="slotName" slot-scope="{ data, htmlText }">
                 <slot :name="slotName" v-bind="{ data, htmlText }"></slot>
@@ -99,6 +96,13 @@
             append: String
         },
 
+        data() {
+            return {
+                isFocused: false,
+                inputValue: ''
+            }
+        },
+
         computed: {
             sizeClasses() {
                 return this.size ? `input-group input-group-${this.size}` : 'input-group'
@@ -146,23 +150,16 @@
                     this.$emit('input', newValue)
                 }
             }
-        },
-
-        data() {
-            return {
-                isFocused: false,
-                inputValue: ''
-            }
         }
     }
 </script>
 
 <style scoped>
-    .vbt-autcomplete-list {
-        padding-top: 5px;
-        position: absolute;
-        max-height: 350px;
-        overflow-y: auto;
-        z-index: 999;
-    }
+.vbt-autcomplete-list {
+    padding-top: 5px;
+    position: absolute;
+    max-height: 350px;
+    overflow-y: auto;
+    z-index: 999;
+}
 </style>

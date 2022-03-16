@@ -51,24 +51,6 @@ class GithubAuthenticationTests : CustomConfigTests()
     }
 
     @Test
-    fun `authentication succeeds if user is in configured team`()
-    {
-        startApp("auth.provider=github\nauth.github_team=vimc-auth-team")
-        val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
-
-        assertAuthSuccess(result)
-    }
-
-    @Test
-    fun `authentication fails if user is not in configured team`()
-    {
-        startApp("auth.provider=github\nauth.github_team=vimc-auth-team2")
-        val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
-
-        assertAuthFailure(result)
-    }
-
-    @Test
     fun `authentication fails if token has no scope`()
     {
         startApp("auth.provider=github")
@@ -85,7 +67,6 @@ class GithubAuthenticationTests : CustomConfigTests()
     fun `authentication fails if token does not have email reading scope`()
     {
         startApp("auth.provider=github")
-
         // this is a PAT for a test user who only has access to a test org with no repos
         // reversed so GitHub doesn't spot it and invalidate it.
         // This token has read:org scope only
@@ -105,7 +86,32 @@ class GithubAuthenticationTests : CustomConfigTests()
         // This token has user:email scope only
         val tokenWithoutOrgReadingScope = "Lyjuf0dwzjk293PSW01wz1M4ggqWs68Yv7Nl_phg".reversed()
         val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithoutOrgReadingScope))
+        assertAuthFailure(result)
+    }
 
+    @Test
+    fun `authentication fails if user is not in configured org`()
+    {
+        startApp("auth.provider=github\nauth.github_org=vimc")
+        val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
+
+        assertAuthFailure(result)
+    }
+
+    @Test
+    fun `authentication succeeds if user is in configured team`()
+    {
+        startApp("auth.provider=github\nauth.github_team=vimc-auth-team")
+        val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
+
+        assertAuthSuccess(result)
+    }
+
+    @Test
+    fun `authentication fails if user is not in configured team`()
+    {
+        startApp("auth.provider=github\nauth.github_team=vimc-auth-team2")
+        val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
         assertAuthFailure(result)
     }
 

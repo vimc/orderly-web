@@ -126,7 +126,7 @@ class AdminPageTests : SeleniumTest()
         addPermission.findElement(By.tagName("input")).sendKeys("reports.review")
         addPermission.findElement(By.tagName("button")).click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions li[id='Funders'] li span[name='reports.review']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions li[id='Funders'] li span[id='reports.review']")))
     }
 
     @Test
@@ -174,7 +174,7 @@ class AdminPageTests : SeleniumTest()
         val addPermission = userListItem.findElement(By.className("add-permission"))
         addPermission.findElement(By.tagName("input")).sendKeys("reports.run")
         addPermission.findElement(By.tagName("button")).click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li li span[name='reports.run']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li li span[id='reports.run']")))
     }
 
     @Test

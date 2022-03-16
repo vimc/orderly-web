@@ -3,23 +3,26 @@
         <h2>Running report logs</h2>
         <div v-if="showReports">
             <div id="logs-form-group" class="form-group row">
-            <label for="logs" class="col-sm-2 col-form-label text-right">Show logs for</label>
-            <div class="col-sm-6">
-                <running-reports-list id="logs"
-                :reports="reports"
-                v-on="$listeners"
-                :initial-selected-key="selectedRunningReportKey"/>
+                <label for="logs" class="col-sm-2 col-form-label text-right">Show logs for</label>
+                <div class="col-sm-6">
+                    <running-reports-list id="logs"
+                                          :reports="reports"
+                                          :initial-selected-key="selectedRunningReportKey"
+                                          v-on="$listeners"/>
+                </div>
             </div>
-            </div>
-            <div v-if="selectedRunningReportKey" class="form-group row text-right" id="running-report-details">
+            <div v-if="selectedRunningReportKey" id="running-report-details" class="form-group row text-right">
                 <label for="details" class="col-sm-2 col-form-label text-right">Log details</label>
                 <div class="col-sm-7">
-                    <running-report-details id="details" :report-key="selectedRunningReportKey"></running-report-details>
+                    <running-report-details id="details"
+                                            :report-key="selectedRunningReportKey"></running-report-details>
                 </div>
             </div>
         </div>
         <div v-else>
-            <p id="noReportsRun">No reports have been run yet</p>
+            <p id="noReportsRun">
+                No reports have been run yet
+            </p>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
@@ -51,16 +54,16 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "reportLog",
-        props: {
-            selectedRunningReportKey: {
-                type: String
-            }
-        },
+        name: "ReportLog",
         components: {
             ErrorInfo,
             RunningReportsList,
             runningReportDetails
+        },
+        props: {
+            selectedRunningReportKey: {
+                type: String
+            }
         },
         data(): Data {
             return {
@@ -73,6 +76,9 @@
             showReports: function () {
                 return this.reports.length > 0
             }
+        },
+        mounted() {
+            this.getAllReports();
         },
         methods: {
             getAllReports() {
@@ -88,9 +94,6 @@
                         this.defaultMessage = "An error occurred fetching the running reports";
                     });
             }
-        },
-        mounted(){
-            this.getAllReports();
         }
     })
 </script>

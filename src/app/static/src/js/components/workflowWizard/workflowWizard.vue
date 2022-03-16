@@ -11,12 +11,12 @@
               @cancel="confirmCancel">
             <component :is="step.component"
                        :workflow-metadata="runWorkflowMetadata"
+                       :disable-rename="disableRename"
                        @valid="handleStepValidity"
-                       :disable-rename ="disableRename"
                        @update="updateMetadata">
             </component>
         </step>
-        <cancel-dialog @cancel="cancel" @abortCancel="abortCancel" :show-modal="showModal"/>
+        <cancel-dialog :show-modal="showModal" @cancel="cancel" @abortCancel="abortCancel"/>
     </div>
 </template>
 
@@ -43,7 +43,10 @@
         cancel: () => void
         confirmCancel: () => void
         abortCancel: () => void
-        handleButtonOptions: (name: string) => {}
+        handleButtonOptions: (name: string) => {
+            hasCustomSubmitLabel?: boolean,
+            back: boolean
+        },
         getCurrentIndex: (name: string) => number
         handleStepValidity: (valid: Event) => void
         updateMetadata: (metadata: Partial<RunWorkflowMetadata>) => void
@@ -52,12 +55,19 @@
     interface Props {
         initialRunWorkflowMetadata: RunWorkflowMetadata
         steps: Step[]
-        submitLabel : string | null
+        submitLabel: string | null
         disableRename: boolean
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
-        name: "workflowWizard",
+        name: "WorkflowWizard",
+        components: {
+            runWorkflowReport,
+            runWorkflowRun,
+            runWorkflowSummary,
+            step,
+            cancelDialog
+        },
         props: {
             initialRunWorkflowMetadata: {
                 type: Object,
@@ -83,6 +93,16 @@
                 showModal: false,
                 runWorkflowMetadata: null
             }
+        },
+        watch: {
+            runWorkflowMetadata() {
+                this.$emit("update-run-workflow-metadata", this.runWorkflowMetadata)
+            }
+        },
+        created() {
+            this.runWorkflowMetadata = {
+                ...this.initialRunWorkflowMetadata
+            };
         },
         methods: {
             handleButtonOptions(name) {
@@ -116,18 +136,18 @@
                 }
             },
             back: function (name) {
-                    if (this.getCurrentIndex(name) !== 0) {
-                        this.activeStep = this.steps.findIndex(step => step.name === name) - 1
-                    }
+                if (this.getCurrentIndex(name) !== 0) {
+                    this.activeStep = this.steps.findIndex(step => step.name === name) - 1
+                }
             },
             cancel: function () {
                 this.$emit("cancel")
                 this.validStep = false
             },
-            confirmCancel: function() {
+            confirmCancel: function () {
                 this.showModal = true
             },
-            abortCancel: function() {
+            abortCancel: function () {
                 this.showModal = false
             },
             getCurrentIndex: function (name) {
@@ -142,23 +162,6 @@
                     ...metadata
                 };
             }
-        },
-        created() {
-            this.runWorkflowMetadata = {
-                ...this.initialRunWorkflowMetadata
-            };
-        },
-        watch: {
-            runWorkflowMetadata(){
-                this.$emit("update-run-workflow-metadata", this.runWorkflowMetadata)
-            }
-        },
-        components: {
-            runWorkflowReport,
-            runWorkflowRun,
-            runWorkflowSummary,
-            step,
-            cancelDialog
         }
     })
 </script>
