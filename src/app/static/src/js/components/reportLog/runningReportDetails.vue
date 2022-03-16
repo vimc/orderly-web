@@ -17,66 +17,74 @@
                     </div>
                 </div>
                 <div class="row pt-2">
-                    <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
+                    <div v-if="reportLog.git_branch" id="report-git-branch" class="col-sm-auto">
                         <div class="text-right">
                             <span>Git branch:</span>
                             <span class="font-weight-bold">
-                            {{ reportLog.git_branch }}
-                        </span>
+                                {{ reportLog.git_branch }}
+                            </span>
                         </div>
                     </div>
-                    <div id="report-git-commit" v-if="reportLog.git_commit" class="col-sm-auto">
+                    <div v-if="reportLog.git_commit" id="report-git-commit" class="col-sm-auto">
                         <div class="text-right">
                             <span>Git commit:</span>
                             <span class="font-weight-bold">
-                            {{ reportLog.git_commit }}
-                        </span>
+                                {{ reportLog.git_commit }}
+                            </span>
                         </div>
                     </div>
                 </div>
                 <div class="row pt-2">
-                    <div id="report-params" v-if="paramSize > 0" class="col-sm-auto text-left">
+                    <div v-if="paramSize > 0" id="report-params" class="col-sm-auto text-left">
                         <span>Parameters:</span>
                         <table>
-                            <tr class="d-md-table-row row" v-for="(value, key) in reportLog.params">
-                                <td class="border border-secondary px-2">{{ key }}</td>
-                                <td class="border border-secondary px-2">{{ value }}</td>
+                            <tr v-for="(value, key) in reportLog.params" :key="key" class="d-md-table-row row">
+                                <td class="border border-secondary px-2">
+                                    {{ key }}
+                                </td>
+                                <td class="border border-secondary px-2">
+                                    {{ value }}
+                                </td>
                             </tr>
                         </table>
                     </div>
                 </div>
-                <div id="report-database-instances"  v-if="instanceSize > 0" class="row pt-2">
+                <div v-if="instanceSize > 0" id="report-database-instances" class="row pt-2">
                     <div v-for="(value, key) in reportLog.instances"
+                         :key="key"
                          class="report-database-instance col-sm-auto">
                         <span>Database "{{ key }}":</span>
                         <span class="font-weight-bold">{{ value }}</span>
                     </div>
                 </div>
                 <div class="row pt-2">
-                    <div id="report-status" v-if="reportLog.status" class="col-sm-auto">
+                    <div v-if="reportLog.status" id="report-status" class="col-sm-auto">
                         <div class="text-right">
                             <span>Status:</span>
                             <span class="font-weight-bold">{{ reportLog.status }}</span>
                         </div>
                     </div>
-                    <div id="report-version" v-if="reportLog.report_version" class="col-sm-auto">
+                    <div v-if="reportLog.report_version" id="report-version" class="col-sm-auto">
                         <div class="text-right">
                             <span>Report version:</span>
-                            <span class="font-weight-bold"><a :href="versionUrl">{{reportLog.report_version}}</a></span>
+                            <span class="font-weight-bold"><a
+                                :href="versionUrl">{{ reportLog.report_version }}</a></span>
                         </div>
                     </div>
                 </div>
                 <div id="report-logs" class="row pt-2">
                     <div class="text-right col-12">
                         <textarea ref="logs"
-                                  class="form-control bg-white text-monospace" style="font-size: 80%;"
-                                  readonly rows="20">{{ reportLog.logs }}
+                                  :value="reportLog.logs" class="form-control bg-white text-monospace"
+                                  style="font-size: 80%;" readonly rows="20">
                         </textarea>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="no-logs" v-if="!reportLog">There are no logs to display</div>
+        <div v-if="!reportLog" id="no-logs">
+            There are no logs to display
+        </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -114,7 +122,10 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runningReportDetails",
+        name: "RunningReportDetails",
+        components: {
+            ErrorInfo
+        },
         props: {
             reportKey: {
                 type: String,
@@ -124,9 +135,6 @@
                 type: String,
                 required: false
             }
-        },
-        components: {
-            ErrorInfo
         },
         data(): Data {
             return {
@@ -151,6 +159,15 @@
                 return longTimestamp(new Date(this.reportLog.date));
             }
         },
+        watch: {
+            reportKey() {
+                this.stopPolling();
+                this.getLogs();
+            }
+        },
+        mounted() {
+            this.getLogs();
+        },
         methods: {
             getLogs: function () {
                 if (this.reportKey) {
@@ -169,8 +186,7 @@
 
                             if (status === "running" || status === "queued") {
                                 this.startPolling();
-                            }
-                            else  {
+                            } else {
                                 this.stopPolling(); //the run has completed
                             }
                         })
@@ -190,15 +206,6 @@
                     clearInterval(this.pollingTimer);
                     this.pollingTimer = null;
                 }
-            }
-        },
-        mounted() {
-            this.getLogs();
-        },
-        watch: {
-            reportKey() {
-                this.stopPolling();
-                this.getLogs();
             }
         }
     })

@@ -8,14 +8,14 @@
         <workflow-wizard v-if="workflowStarted"
                          :steps="stepComponents"
                          :submit-label="toggleFinalStepNextTo"
+                         :disable-rename="disableRename"
+                         :initial-run-workflow-metadata="runWorkflowMetadata"
                          @cancel="handleCancel"
                          @complete="handleComplete"
-                         @update-run-workflow-metadata="updateRunWorkflowMetadata"
-                         :disable-rename="disableRename"
-                         :initial-run-workflow-metadata="runWorkflowMetadata">
+                         @update-run-workflow-metadata="updateRunWorkflowMetadata">
         </workflow-wizard>
         <div v-if="createdWorkflowKey" id="view-progress-link" class="text-secondary mt-2 pl-3">
-            <a @click.prevent="$emit('view-progress', createdWorkflowKey)" href="#">View workflow progress</a>
+            <a href="#" @click.prevent="$emit('view-progress', createdWorkflowKey)">View workflow progress</a>
         </div>
         <div class="pt-4 col-sm-6">
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -57,7 +57,12 @@
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
-        name: "runWorkflow",
+        name: "RunWorkflow",
+        components: {
+            workflowWizard,
+            runWorkflowCreate,
+            ErrorInfo
+        },
         props: {
             workflowToRerun: null
         },
@@ -70,6 +75,11 @@
                 disableRename: false,
                 error: "",
                 createdWorkflowKey: ""
+            }
+        },
+        mounted() {
+            if (this.workflowToRerun) {
+                this.handleRerun(this.workflowToRerun);
             }
         },
         methods: {
@@ -123,16 +133,6 @@
             },
             resetSelectedWorkflowReportSource() {
                 session.setSelectedWorkflowReportSource(null);
-            }
-        },
-        components: {
-            workflowWizard,
-            runWorkflowCreate,
-            ErrorInfo
-        },
-        mounted() {
-            if (this.workflowToRerun) {
-                this.handleRerun(this.workflowToRerun);
             }
         }
     })

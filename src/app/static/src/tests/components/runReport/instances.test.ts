@@ -19,7 +19,7 @@ describe(`instances`, () => {
 
     it('renders component correctly', () => {
         const wrapper = getWrapper()
-        expect(wrapper.find("#instances-div label").text()).toBe("Database \"source\"");
+        expect(wrapper.find(".instance-div label").text()).toBe("Database \"source\"");
         expect(wrapper.find("#source").exists()).toBe(true);
 
         const sourceOptions = wrapper.findAll("#source option");
@@ -32,14 +32,14 @@ describe(`instances`, () => {
 
     it('renders styles correctly when custom style prop is set', async() => {
         const label = ["col-form-label", "col-sm-2", "text-right"]
-        const control = ["col-sm-6"]
+        const control = ["instance-control", "col-sm-6"]
 
         const wrapper = getWrapper()
         await wrapper.setProps({customStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}})
 
-        const instances = wrapper.find("#instances-div")
+        const instances = wrapper.find(".instance-div")
         expect(instances.find("label").classes()).toEqual(label)
-        expect(wrapper.find("#instance-control").classes()).toEqual(control)
+        expect(wrapper.find(".instance-control").classes()).toEqual(control)
     });
 
     it('emits selected value when an instance is selected', async() => {

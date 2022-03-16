@@ -36,7 +36,7 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runWorkflowSummary",
+        name: "RunWorkflowSummary",
         components: {
             WorkflowSummaryReports,
             runWorflowSummaryHeader,
@@ -60,6 +60,10 @@
                 return !!this.workflowSummary
             }
         },
+        mounted() {
+            this.getReportWorkflowSummary();
+            this.$emit("valid", true)
+        },
         methods: {
             getReportWorkflowSummary() {
                 const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
@@ -77,10 +81,6 @@
                         this.defaultMessage = "An error occurred while retrieving the workflow summary";
                     })
             },
-        },
-        mounted() {
-            this.getReportWorkflowSummary();
-            this.$emit("valid", true)
         }
     })
 </script>

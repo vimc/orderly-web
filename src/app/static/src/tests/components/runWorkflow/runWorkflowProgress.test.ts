@@ -288,7 +288,7 @@ describe(`runWorkflowProgress`, () => {
     it("renders report log dialog", async () => {
         const wrapper = getWrapper();
         await wrapper.setData({selectedWorkflowKey: "key1"});
-        const dialog = wrapper.find(WorkflowReportLogDialog);
+        const dialog = wrapper.findComponent(WorkflowReportLogDialog);
         expect(dialog.props("reportKey")).toBe(null);
         expect(dialog.props("workflowKey")).toBe("key1");
     });

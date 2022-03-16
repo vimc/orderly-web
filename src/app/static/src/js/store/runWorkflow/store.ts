@@ -1,12 +1,10 @@
 import Vue from "vue";
 import Vuex, {StoreOptions} from "vuex";
-import {git, GitState} from "../git/git";
+import {git} from "../git/git";
 import {RunnerRootState} from "../../utils/types";
 
-export interface RunWorkflowRootState extends RunnerRootState {}
-
-export const storeOptions: StoreOptions<RunWorkflowRootState> = {
-    state: {} as RunWorkflowRootState,
+export const storeOptions: StoreOptions<RunnerRootState> = {
+    state: {} as RunnerRootState,
     modules: {
         git
     }
@@ -14,4 +12,4 @@ export const storeOptions: StoreOptions<RunWorkflowRootState> = {
 
 Vue.use(Vuex);
 
-export const store = new Vuex.Store<RunWorkflowRootState>(storeOptions);
+export const store = new Vuex.Store<RunnerRootState>(storeOptions);

@@ -10,27 +10,34 @@
             </div>
             <div>
                 <ul v-if="selected.length > 0" class="list-unstyled children mt-1">
-                    <li v-for="selectedReport in selected">
-                        <span class="name" :id="selectedReport">{{displayName(selectedReport)}}</span>
-                        <span @click="function() {remove(selectedReport)}" class="remove d-inline-block ml-2 large">×</span>
+                    <li v-for="selectedReport in selected" :key="selectedReport">
+                        <span :id="selectedReport" class="name">{{ displayName(selectedReport) }}</span>
+                        <span class="remove d-inline-block ml-2 large"
+                              @click="function() {remove(selectedReport)}">×</span>
                     </li>
                 </ul>
                 <div class="mb-3 mt-2">
                     <typeahead
-                            size="sm"
-                            v-model="newPinnedReport"
-                            placeholder="report name"
-                            :data="availableDisplayNames">
+                        v-model="newPinnedReport"
+                        size="sm"
+                        placeholder="report name"
+                        :data="availableDisplayNames">
                         <template slot="append">
-                            <button id="add-pinned-report" @click="add" type="submit" class="btn btn-sm" :disabled="disableAdd">Add</button>
+                            <button id="add-pinned-report" type="submit" class="btn btn-sm" :disabled="disableAdd"
+                                    @click="add">Add
+                            </button>
                         </template>
                     </typeahead>
                     <error-info :default-message="defaultMessage" :api-error="error"></error-info>
                 </div>
                 <error-info :default-message="defaultMessage" :api-error="error"></error-info>
                 <div id="pinned-report-buttons">
-                    <button class="btn btn-sm float-right" type="submit" @click="save">Save changes</button>
-                    <button class="btn btn-sm btn-default float-right mr-2" @click="cancel">Cancel</button>
+                    <button class="btn btn-sm float-right" type="submit" @click="save">
+                        Save changes
+                    </button>
+                    <button class="btn btn-sm btn-default float-right mr-2" @click="cancel">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>
@@ -44,42 +51,47 @@
     import {api} from "../../utils/api";
 
     export default {
-        name: "setGlobalPinnedReports",
+        name: "SetGlobalPinnedReports",
+        components: {
+            EditIcon,
+            ErrorInfo,
+            Typeahead
+        },
         props: ["available", "current"],
         data() {
             return this.initialState();
         },
         computed: {
-            availableDisplayNames: function() {
+            availableDisplayNames: function () {
                 return Object.keys(this.available)
                     .filter(r => this.selected.indexOf(r) < 0)
                     .map(r => this.available[r]);
             },
-            disableAdd: function() {
+            disableAdd: function () {
                 return this.selected.length > 2;
             }
         },
         methods: {
-            expand: function() {
+            expand: function () {
                 this.expanded = true;
             },
-            cancel: function() {
+            cancel: function () {
                 Object.assign(this, this.initialState());
             },
-            displayName: function(name) {
+            displayName: function (name) {
                 return this.available[name] || name;
             },
-            remove: function(name) {
+            remove: function (name) {
                 this.selected = this.selected.filter(r => r !== name)
             },
-            add: function() {
+            add: function () {
                 //Find the report name which corresponds to the display name from the typeahead (newPinnedReport)
                 const name = Object.keys(this.available).filter(r => this.available[r] === this.newPinnedReport);
                 if (name.length > 0) {
                     this.selected.push(name[0]);
                 }
             },
-            save: function() {
+            save: function () {
                 const data = {
                     reports: this.selected,
                 };
@@ -93,7 +105,7 @@
                         this.defaultMessage = "could not save pinned reports";
                     });
             },
-            initialState: function() {
+            initialState: function () {
                 return {
                     expanded: false,
                     selected: [...this.current],
@@ -102,11 +114,6 @@
                     newPinnedReport: ""
                 }
             }
-        },
-        components: {
-            EditIcon,
-            ErrorInfo,
-            Typeahead
         }
     }
 </script>
