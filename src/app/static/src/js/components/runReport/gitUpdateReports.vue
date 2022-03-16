@@ -33,8 +33,6 @@
     import Vue from "vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    import {RunReportRootState} from "../../store/runReport/store";
-    import {mapState} from "vuex";
 
     export default Vue.extend({
         name: "gitUpdateReports",
