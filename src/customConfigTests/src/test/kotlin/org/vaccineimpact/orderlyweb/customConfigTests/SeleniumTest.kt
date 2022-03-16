@@ -2,9 +2,9 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
 import io.specto.hoverfly.junit.rule.HoverflyRule
-import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
+import org.junit.Rule
 import org.openqa.selenium.By
 import org.openqa.selenium.Proxy
 import org.openqa.selenium.WebDriver
@@ -23,6 +23,9 @@ abstract class SeleniumTest : CustomConfigTests()
     protected lateinit var driver: WebDriver
     protected lateinit var wait: WebDriverWait
 
+    @get:Rule
+    val debugHelper = DebugHelper()
+
     companion object
     {
         @JvmField
@@ -38,20 +41,15 @@ abstract class SeleniumTest : CustomConfigTests()
         proxy.noProxy = "localhost"
         proxy.httpProxy = "localhost:" + hoverflyRule.proxyPort
         proxy.sslProxy = "localhost:" + hoverflyRule.proxyPort
-
+        System.setProperty("webdriver.chrome.whitelistedIps", "")
         driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
                 .apply {
-                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")
+                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox", "--disable-dev-shm-usage")
                     setProxy(proxy)
                 })
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
+        driver.manage().timeouts().implicitlyWait(12, TimeUnit.SECONDS)
         wait = WebDriverWait(driver, 12)
-    }
-
-    @After
-    fun tearDown()
-    {
-        driver.quit()
+        debugHelper.driver = driver
     }
 
     protected fun clickOnLandingPageLink()
