@@ -1,6 +1,6 @@
 <template>
     <div id="summary-header">
-        <runWorflowSummaryHeader :workflow-summary="workflowSummary"></runWorflowSummaryHeader>
+        <run-workflow-summary-header :workflow-summary="workflowSummary"></run-workflow-summary-header>
         <div v-if="hasDependenciesLength">
             <workflow-summary-reports :workflow-summary="workflowSummary"
                                       :git-commit="workflowMetadata.git_commit"/>
@@ -12,7 +12,7 @@
 <script lang="ts">
     import Vue from "vue"
     import {RunWorkflowMetadata, WorkflowSummaryResponse} from "../../../utils/types";
-    import runWorflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
+    import runWorkflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
     import ErrorInfo from "../../../../js/components/errorInfo.vue";
     import {api} from "../../../utils/api";
     import WorkflowSummaryReports from "./workflowSummaryReports.vue"
@@ -39,7 +39,7 @@
         name: "RunWorkflowSummary",
         components: {
             WorkflowSummaryReports,
-            runWorflowSummaryHeader,
+            runWorkflowSummaryHeader,
             ErrorInfo
         },
         props: {
