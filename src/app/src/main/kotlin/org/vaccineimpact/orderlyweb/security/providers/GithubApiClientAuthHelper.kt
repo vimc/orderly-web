@@ -28,15 +28,10 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     {
         connectToClient(token)
         user = getGitHubUser()
-
-        println("Github User is ${user!!.login}")
-        val orgs = user!!.organizations
-        println("User orgs: " + orgs.toString())
     }
 
     override fun checkGitHubOrgAndTeamMembership()
     {
-        println("checking membership")
         checkAuthenticated()
 
         val orgName = appConfig["auth.github_org"]
@@ -56,7 +51,6 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
-        println("finished checking membership")
     }
 
     override fun getUserEmail(): String
@@ -90,96 +84,57 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 
     private fun getGitHubUser(): GHUser
     {
-        // TODO: work out what sort of errors are thrown that we need to deal with
-        return github!!.getMyself()
-
-        /*return try
+        try
         {
-            github!!.getMyself()
+            return github!!.getMyself()
         }
-        catch (e: RequestException)
+        catch(e: HttpException)
         {
-            if (e.status == 401)
-            {
-                throw CredentialsException(e.message?:"")
-            }
+           if (e.responseCode == 401)
+           {
+               throw CredentialsException(e.message?:"")
+           }
             else throw e
-        }*/
+        }
     }
 
     private fun getOrg(orgName: String): GHOrganization
     {
-        //TODO: deal with auth errors
-        return github!!.getOrganization(orgName)
+        try
+        {
+            return github!!.getOrganization(orgName)
+        }
+        catch(e: HttpException)
+        {
+            if (e.responseCode == 401)
+            {
+                throw CredentialsException(e.message?:"")
+            }
+            else throw e
+        }
     }
 
     private fun userBelongsToOrg(org: GHOrganization): Boolean
     {
-        //TODO: deal with auth errors
-
         return getUser().isMemberOf(org)
-
-        /*try
-        {
-            val userService = OrganizationService(githubApiClient)
-            val orgs = userService.organizations
-            return orgs.map{ it.login }.contains(githubOrg)
-        }
-        catch (e: RequestException)
-        {
-            if (e.status == 403)
-            {
-                throw CredentialsException("GitHub token must include scope read:user")
-            }
-            else throw e
-        }*/
-
     }
 
     private fun userBelongsToTeam(org: GHOrganization, teamName: String, user: GHUser): Boolean
     {
-       //TODO: deal with auth errors
        val team = org.teams[teamName]
                ?: throw BadConfigurationError("GitHub org ${org.name} has no team called $teamName")
        return user.isMemberOf(team)
-
-       /* val teamService = TeamService(githubApiClient)
-        val team = teamService
-                .getTeams(githubOrg).firstOrNull {
-                    it.name == teamName
-                }
-                ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
-
-        val members = teamService.getMembers(team.id)
-        return members.map{ it.login }.contains(user.login)*/
     }
 
     private fun getEmailForUser(): String
     {
-        //TODO: deal with auth errors
         try
         {
             return (getUser() as GHMyself).emails2.first().email
         }
-        catch(e: GHFileNotFoundException) //todo: handle this or IOException
+        catch(e: GHFileNotFoundException)
         {
-            println("exception in getEmail")
-            println(e.toString())
-            throw(e)
+            throw CredentialsException("GitHub token must include scope user:email")
         }
-
-        /*return try
-        {
-            UserService(githubApiClient).emails.first()
-        }
-        catch (e: RequestException)
-        {
-            if (e.status == 404)
-            {
-                throw CredentialsException("GitHub token must include scope user:email")
-            }
-            else throw e
-        }*/
     }
-
 }
