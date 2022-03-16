@@ -35,9 +35,9 @@ class RunReportPageTests
     }
 
     @Test
-    fun `renders run report header correctly`()
+    fun `renders run report tabs correctly`()
     {
-        val runReportComponent = doc.select("#vuexRunReportApp").select("h1")
-        assertThat(runReportComponent.text()).isEqualTo("Vuex Run Report Page")
+        doc.select("#runReportTabsVueApp").select("run-report-tabs")
     }
+
 }
