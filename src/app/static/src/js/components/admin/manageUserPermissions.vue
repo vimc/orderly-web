@@ -1,15 +1,18 @@
 <template>
     <div id="manage-users">
-        <input type="text"
+        <input v-model="searchStr"
+               type="text"
                class="form-control"
-               v-model="searchStr"
                placeholder="type to search"/>
         <ul class="list-unstyled roles mt-2">
             <li v-for="u in filteredUsers"
-                v-bind:class="['role has-children', {'open':expanded[u.email]}]">
-                <div class="expander" v-on:click="toggle(u.email)"></div>
-                <span v-on:click="toggle(u.email)" class="role-name">{{u.display_name}}</span>
-                <div class="text-muted small email role-name">{{u.email}}</div>
+                :key="u.email"
+                :class="['role has-children', {'open':expanded[u.email]}]">
+                <div class="expander" @click="toggle(u.email)"></div>
+                <span class="role-name" @click="toggle(u.email)">{{ u.display_name }}</span>
+                <div class="text-muted small email role-name">
+                    {{ u.email }}
+                </div>
                 <permission-list v-show="expanded[u.email]"
                                  :permissions="u.direct_permissions.concat(u.role_permissions)"
                                  :user-group="u.email"
@@ -29,7 +32,11 @@
     import ErrorInfo from "../errorInfo.vue";
 
     export default {
-        name: 'manageUsers',
+        name: 'ManageUsers',
+        components: {
+            PermissionList,
+            ErrorInfo
+        },
         props: ["allUsers"],
         data() {
             return {
@@ -87,10 +94,6 @@
             stringMatches: function (a, b) {
                 return a.toLowerCase().indexOf(b.toLowerCase()) > -1
             }
-        },
-        components: {
-            PermissionList,
-            ErrorInfo
         }
     };
 </script>

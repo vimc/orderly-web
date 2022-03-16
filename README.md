@@ -106,6 +106,9 @@ works, which is necessary because it is called implicitly during the Docker imag
 
 [settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
 
+Front-end linting is provided by `eslint`, settings [here](https://github.com/vimc/orderly-web/tree/master/src/app/static/.eslintrc.js).
+To lint the front-end code run `npm run lint`, or to run and automatically fix issues `npm run lint -- --fix`
+
 ### Coverage
 
 The `@NoCoverage` annotation defined in [Annotations.kt](src/app/src/main/kotlin/org/vaccineimpact/orderlyweb/Annotations.kt)

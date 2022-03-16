@@ -20,12 +20,13 @@
     import ErrorInfo from "../errorInfo";
 
     export default {
-        name: 'scopedReaderRolesList',
-        props: ["report"],
-        mounted() {
-            this.getCurrentRoles();
-            this.getAllRoles();
+        name: 'ScopedReaderRolesList',
+        components: {
+            AddReportReader,
+            RoleList,
+            ErrorInfo
         },
+        props: ["report"],
         data() {
             return {
                 currentRoles: [],
@@ -46,6 +47,10 @@
                     scope_id: this.report.name
                 }
             }
+        },
+        mounted() {
+            this.getCurrentRoles();
+            this.getAllRoles();
         },
         methods: {
             getAllRoles: function () {
@@ -76,11 +81,6 @@
                         this.error = error;
                     });
             }
-        },
-        components: {
-            AddReportReader,
-            RoleList,
-            ErrorInfo
         }
     };
 

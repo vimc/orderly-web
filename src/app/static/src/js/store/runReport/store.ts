@@ -1,12 +1,10 @@
 import Vue from "vue";
 import Vuex, {StoreOptions} from "vuex";
-import {git, GitState} from "../git/git";
+import {git} from "../git/git";
 import {RunnerRootState} from "../../utils/types";
 
-export interface RunReportRootState extends RunnerRootState {}
-
-export const storeOptions: StoreOptions<RunReportRootState> = {
-    state: {} as RunReportRootState,
+export const storeOptions: StoreOptions<RunnerRootState> = {
+    state: {} as RunnerRootState,
     modules: {
         git
     }
@@ -14,4 +12,4 @@ export const storeOptions: StoreOptions<RunReportRootState> = {
 
 Vue.use(Vuex);
 
-export const store = new Vuex.Store<RunReportRootState>(storeOptions);
+export const store = new Vuex.Store<RunnerRootState>(storeOptions);

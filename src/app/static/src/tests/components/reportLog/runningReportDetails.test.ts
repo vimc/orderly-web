@@ -137,7 +137,7 @@ describe(`runningReportDetails`, () => {
     it(`displays Logs data as expected`,  () => {
             const wrapper = getWrapper()
             const textArea = wrapper.find("#report-logs").find("textarea")
-            expect(textArea.text()).toBe("some logs")
+            expect((textArea.element as HTMLTextAreaElement).value).toBe("some logs")
     })
 
     it("sets logs textarea scrollTop to scrollHeight on getLogs", async () => {
