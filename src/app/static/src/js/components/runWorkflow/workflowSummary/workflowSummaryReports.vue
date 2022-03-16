@@ -23,7 +23,7 @@
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <run-workflow-parameters :report="report"
-                                                                 :index="index"></run-workflow-parameters>
+                                                                 :report-index="index"></run-workflow-parameters>
                                     </div>
                                 </div>
                             </div>

@@ -91,11 +91,11 @@ describe(`workflowSummaryReports`, () => {
 
         const reportRows = wrapper.findAllComponents(runWorkflowParameters);
         expect(reportRows.length).toBe(3);
-        expect(reportRows.at(0).props("index")).toBe(0);
+        expect(reportRows.at(0).props("reportIndex")).toBe(0);
         expect(reportRows.at(0).props("report")).toBe(workflowSummary.reports[0]);
-        expect(reportRows.at(1).props("index")).toBe(1);
+        expect(reportRows.at(1).props("reportIndex")).toBe(1);
         expect(reportRows.at(1).props("report")).toBe(workflowSummary.reports[1]);
-        expect(reportRows.at(2).props("index")).toBe(2);
+        expect(reportRows.at(2).props("reportIndex")).toBe(2);
         expect(reportRows.at(2).props("report")).toBe(workflowSummary.reports[2]);
     });
 

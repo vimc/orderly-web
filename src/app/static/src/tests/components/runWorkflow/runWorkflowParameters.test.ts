@@ -21,8 +21,8 @@ describe(`runWorkflowParameters`, () => {
         default_param_list: []
     }
 
-    const getWrapper = (report = report1, index = 0) => {
-        return shallowMount(runWorkflowParameters, { propsData: { report, index } })
+    const getWrapper = (report = report1, reportIndex = 0) => {
+        return shallowMount(runWorkflowParameters, { propsData: { report, reportIndex } })
     }
     it(`it can render default and non-default parameters`, () => {
         const wrapper = getWrapper();

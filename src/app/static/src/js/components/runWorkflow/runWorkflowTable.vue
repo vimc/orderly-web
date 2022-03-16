@@ -25,7 +25,7 @@
             </td>
             <td v-if="anyParams" class="p-2">
                 <run-workflow-parameters :report="workflowSummary.reports[index]"
-                                         :index="index"></run-workflow-parameters>
+                                         :report-index="index"></run-workflow-parameters>
             </td>
             <td :class="statusColour(report.status)" class="p-2">
                 {{ interpretStatus(report.status) }}
@@ -114,6 +114,12 @@
                 return formatDate(date)
             }
         },
+        watch: {
+            workflowSummary(){
+            console.log("workflowRunStatus", this.workflowRunStatus)
+            console.log("workflowSummary", this.workflowSummary)
 
+            }
+        }
     })
 </script>

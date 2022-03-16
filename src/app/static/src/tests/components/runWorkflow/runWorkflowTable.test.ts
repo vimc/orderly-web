@@ -233,13 +233,13 @@ describe(`runWorkflowTable`, () => {
 
             const parameterComponents = wrapper.findAllComponents(runWorkflowParameters)
             expect(parameterComponents.length).toBe(4)
-            expect(parameterComponents.at(0).props("index")).toBe(0);
+            expect(parameterComponents.at(0).props("reportIndex")).toBe(0);
             expect(parameterComponents.at(0).props("report")).toBe(workflowSummary.reports[0]);
-            expect(parameterComponents.at(1).props("index")).toBe(1);
+            expect(parameterComponents.at(1).props("reportIndex")).toBe(1);
             expect(parameterComponents.at(1).props("report")).toBe(workflowSummary.reports[1]);
-            expect(parameterComponents.at(2).props("index")).toBe(2);
+            expect(parameterComponents.at(2).props("reportIndex")).toBe(2);
             expect(parameterComponents.at(2).props("report")).toBe(workflowSummary.reports[2]);
-            expect(parameterComponents.at(3).props("index")).toBe(3);
+            expect(parameterComponents.at(3).props("reportIndex")).toBe(3);
             expect(parameterComponents.at(3).props("report")).toBe(workflowSummary.reports[3]);
             done();
         })

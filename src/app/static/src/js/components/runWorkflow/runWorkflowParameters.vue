@@ -7,16 +7,16 @@
             No non-default parameters
         </p>
         <div v-if="report.default_param_list.length > 0"
-             :id="`default-params-${index}`">
-            <b-link v-b-toggle="`collapseSummary-${index}`"
+             :id="`default-params-${reportIndex}`">
+            <b-link v-b-toggle="`collapseSummary-${reportIndex}`"
                     href="#"
                     class="show-defaults pt-2 d-inline-block small">
                 <span class="when-closed">Show</span>
                 <span class="when-open">Hide</span> defaults...
             </b-link>
-            <b-collapse :id="`collapseSummary-${index}`">
+            <b-collapse :id="`collapseSummary-${reportIndex}`">
                 <p v-for="(param, paramIndex) in report.default_param_list"
-                   :id="`default-params-collapse-${index}-${paramIndex}`"
+                   :id="`default-params-collapse-${reportIndex}-${paramIndex}`"
                    :key="paramIndex">{{ param.name }}: {{ param.value }}</p>
             </b-collapse>
         </div>
@@ -36,7 +36,7 @@
 
     interface Props {
         report: WorkflowRunReportStatus;
-        index: number;
+        reportIndex: number;
     }
 
     interface Methods {
@@ -56,7 +56,7 @@
                 type: Object,
                 required: true
             },
-            index: {
+            reportIndex: {
                 type: Number,
                 required: true
             },
