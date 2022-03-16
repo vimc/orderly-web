@@ -6,14 +6,10 @@
         <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
     </#macro>
         <div id="runReportTabsVueApp">
-            <run-report-tabs :metadata="runReportMetadata"
-                             :initial-git-branches="gitBranches"
-                             :initial-report-name="initialReportName"></run-report-tabs>
+            <run-report-tabs :initial-report-name="initialReportName"></run-report-tabs>
         </div>
     <#macro scripts>
         <script type="text/javascript">
-            var runReportMetadata = ${runReportMetadataJson};
-            var gitBranches = ${gitBranchesJson};
             var initialReportName = ${initialReportName};
         </script>
         <script type="text/javascript" src="${appUrl}/js/runReportTabs.bundle.js"></script>

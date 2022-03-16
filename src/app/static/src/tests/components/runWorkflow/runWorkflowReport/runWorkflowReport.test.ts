@@ -9,9 +9,11 @@ import ErrorInfo from "../../../../js/components/errorInfo.vue";
 import {BAlert} from "bootstrap-vue";
 import {switches} from "../../../../js/featureSwitches";
 import {session} from "../../../../js/utils/session";
-import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../../mocks";
+import {mockRunWorkflowMetadata, mockGitState} from "../../../mocks";
+import {GitState} from "../../../../js/store/git/git";
+import Vuex from "vuex";
 
-export const runReportMetadataResponse = {
+export const gitState: GitState = {
     metadata: {
         instances_supported: false,
         git_supported: true,
@@ -21,8 +23,20 @@ export const runReportMetadataResponse = {
     git_branches: ["master", "dev"]
 };
 
-const minimal = { name: "minimal", date: null };
-const global = { name: "other", date: new Date() };
+const createStore = (state: Partial<GitState> = gitState) => {
+    return new Vuex.Store({
+        state: {},
+        modules: {
+            git: {
+                namespaced: true,
+                state: mockGitState(state)
+            }
+        }
+    });
+};
+
+const minimal = {name: "minimal", date: null};
+const global = {name: "other", date: new Date()};
 
 const workflowValidationResponse = {
     data: [
@@ -38,17 +52,16 @@ describe(`runWorkflowReport`, () => {
     beforeEach(() => {
         mockAxios.reset();
 
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": mockRunReportMetadata()});
-
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
         mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
 
         mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
-            .replyOnce(500, {errors: [
-                {code: "bad-request", message: "ERROR 1"},
-                {code: "bad-request", message: "ERROR 2"}
-            ]});
+            .replyOnce(500, {
+                errors: [
+                    {code: "bad-request", message: "ERROR 1"},
+                    {code: "bad-request", message: "ERROR 2"}
+                ]
+            });
 
         session.setSelectedWorkflowReportSource = mockSessionSetSelectedWorkflowReportSource;
         session.getSelectedWorkflowReportSource = mockSessionGetSelectedWorkflowReportSource;
@@ -56,21 +69,20 @@ describe(`runWorkflowReport`, () => {
         jest.resetAllMocks();
     });
 
-    const getWrapper = (propsData = {workflowMetadata: mockRunWorkflowMetadata()}) => {
-        return shallowMount(runWorkflowReport, {propsData})
+    const getWrapper = (propsData = {workflowMetadata: mockRunWorkflowMetadata()},
+                        state: Partial<GitState> = gitState) => {
+        return shallowMount(runWorkflowReport, {store: createStore(state), propsData})
     };
 
-    it("fetches report run metadata and renders gitUpdateReports component", (done) => {
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": mockRunReportMetadata()});
+    it("renders gitUpdateReports component", (done) => {
 
         const wrapper = getWrapper({
             workflowMetadata: mockRunWorkflowMetadata({git_branch: "master", git_commit: "abc123"})
         });
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
-            expect(git.props("reportMetadata")).toStrictEqual(mockRunReportMetadata().metadata);
-            expect(git.props("initialBranches")).toStrictEqual(mockRunReportMetadata().git_branches);
+            expect(git.props("reportMetadata")).toStrictEqual(gitState.metadata);
+            expect(git.props("initialBranches")).toStrictEqual(gitState.git_branches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
             expect(git.props("showAllReports")).toBe(true);
@@ -83,30 +95,11 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("renders error when error on fetch report run metadata", (done) => {
-        const testError = {test: "something"};
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(500, testError);
-
-        const wrapper = getWrapper();
-        setTimeout(() => {
-            const git = wrapper.findComponent(GitUpdateReports);
-            expect(git.exists()).toBe(false);
-
-            const error = wrapper.findComponent(ErrorInfo);
-            expect(error.props("apiError").response.data).toStrictEqual(testError);
-            expect(error.props("defaultMessage")).toBe("An error occurred fetching run report metadata");
-            done();
-        });
-    });
-
-    it("does not render content until run report metadata is set", (done) => {
-        const wrapper = getWrapper();
+    it("does not render content until run report metadata is set", () => {
+        let wrapper = getWrapper({workflowMetadata: mockRunWorkflowMetadata()}, {metadata: null});
         expect(wrapper.findComponent(GitUpdateReports).exists()).toBe(false);
-        setTimeout(async () => {
-            expect(wrapper.findComponent(GitUpdateReports).exists()).toBe(true);
-            done();
-        });
+        wrapper = getWrapper({workflowMetadata: mockRunWorkflowMetadata()});
+        expect(wrapper.findComponent(GitUpdateReports).exists()).toBe(true);
     });
 
     it(`it renders workflow report headers correctly`, (done) => {
@@ -410,9 +403,11 @@ describe(`runWorkflowReport`, () => {
             {name: "global", date: new Date()}
         ];
         mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(200, {data: []});
-        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: [
-            {name: "p2", value: "newValue"}
-        ]});
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {
+            data: [
+                {name: "p2", value: "newValue"}
+            ]
+        });
 
         setTimeout(() => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
@@ -452,14 +447,18 @@ describe(`runWorkflowReport`, () => {
             {name: "minimal", date: null},
             {name: "global", date: new Date()}
         ];
-        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(200, {data: [
-            {name: "aNewParam", value: "1"},
-            {name: "nmin", value: "6"}
-        ]});
-        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: [
-            {name: "p1", value: "v1"},
-            {name: "p2", value: "v2"}
-         ]});
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(200, {
+            data: [
+                {name: "aNewParam", value: "1"},
+                {name: "nmin", value: "6"}
+            ]
+        });
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {
+            data: [
+                {name: "p1", value: "v1"},
+                {name: "p2", value: "v2"}
+            ]
+        });
 
         setTimeout(() => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
@@ -493,10 +492,12 @@ describe(`runWorkflowReport`, () => {
         const newAvailableReports = [
             {name: "global", date: new Date()}
         ];
-        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: [
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {
+            data: [
                 {name: "p2", value: "newValue2"},
                 {name: "p3", value: "newValue3"}
-            ]});
+            ]
+        });
 
         setTimeout(() => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
@@ -548,8 +549,11 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can dismiss workflow removals alert", async () => {
-        const wrapper = mount(runWorkflowReport, {propsData: {workflowMetadata: mockRunWorkflowMetadata()}});
-        wrapper.setData({workflowRemovals: ["Test removal"], runReportMetadata: {}});
+        const wrapper = mount(runWorkflowReport, {
+            store: createStore(),
+            propsData: {workflowMetadata: mockRunWorkflowMetadata()}
+        });
+        wrapper.setData({workflowRemovals: ["Test removal"]});
         await Vue.nextTick();
 
         const dismissButton = wrapper.findComponent(BAlert).find("button.close");
@@ -570,6 +574,7 @@ describe(`runWorkflowReport`, () => {
         const mockUpdateWorkflowReports = jest.fn()
 
         const wrapper = shallowMount(runWorkflowReport, {
+            store: createStore(),
             propsData: {
                 workflowMetadata:
                     mockRunWorkflowMetadata({
@@ -684,7 +689,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.isImportedReports).toBe(false)
     });
 
-    it("can display errors if workflow validation fails",  (done) => {
+    it("can display errors if workflow validation fails", (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
@@ -695,6 +700,7 @@ describe(`runWorkflowReport`, () => {
         const mockUpdateWorkflowReports = jest.fn()
 
         const wrapper = shallowMount(runWorkflowReport, {
+            store: createStore(),
             propsData: {
                 workflowMetadata:
                     mockRunWorkflowMetadata({
@@ -771,6 +777,7 @@ describe(`runWorkflowReport`, () => {
 
     it("clears file input value when clicked", (done) => {
         const wrapper = shallowMount(runWorkflowReport, {
+            store: createStore(),
             propsData: {
                 workflowMetadata: mockRunWorkflowMetadata({
                     git_commit: "test",
@@ -810,7 +817,7 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-   it("loads with import csv checked when set in session storage", (done) =>{
+    it("loads with import csv checked when set in session storage", (done) => {
         const mockGetReportsSource = jest.fn();
         mockGetReportsSource.mockReturnValue("csv");
         session.getSelectedWorkflowReportSource = mockGetReportsSource;
@@ -828,7 +835,7 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("loads with choose from list checked when set in session storage", (done) =>{
+    it("loads with choose from list checked when set in session storage", (done) => {
         const mockGetReportsSource = jest.fn();
         mockGetReportsSource.mockReturnValue("list");
         session.getSelectedWorkflowReportSource = mockGetReportsSource;
@@ -909,7 +916,7 @@ describe(`runWorkflowReport`, () => {
 
             await Vue.nextTick()
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
-            const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
+            const fakeFile = new File(["report"], "test.csv", {type: 'text/csv'});
             const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
 
             expect(wrapper.vm.$data.importedFilename).toBe("")

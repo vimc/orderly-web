@@ -14,18 +14,18 @@
             </div>
         </div>
         <div v-if="showInstances">
-            <instances :instances="runMetadata.metadata.instances"
+            <instances :instances="runReportMetadata.instances"
                        :initial-selected-instances="workflowMetadata.instances"
                        :custom-style="childCustomStyle"
                        @selectedValues="handleInstancesValue"/>
         </div>
         <div v-if="showChangelog">
             <change-log
-                        :changelog-type-options="this.runMetadata.metadata.changelog_types"
-                        :custom-style="childCustomStyle"
-                        :initial-message="initialChangelogMessage"
-                        :initial-type="initialChangelogType"
-                        @changelog="handleChangelog">
+                :changelog-type-options="runReportMetadata.changelog_types"
+                :custom-style="childCustomStyle"
+                :initial-message="initialChangelogMessage"
+                :initial-type="initialChangelogType"
+                @changelog="handleChangelog">
             </change-log>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -34,11 +34,19 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChildCustomStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
+    import {
+        ChildCustomStyle,
+        RunReportMetadata,
+        RunReportMetadataDependency,
+        RunWorkflowMetadata,
+        WorkflowRunSummary
+    } from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
     import Instances from "../../../js/components/runReport/instances.vue";
+    import {mapState} from "vuex";
+    import {RunReportRootState} from "../../store/runReport/store";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata | null
@@ -46,6 +54,7 @@
     }
 
     interface Computed {
+        runReportMetadata: RunReportMetadataDependency,
         showInstances: boolean,
         showChangelog: void,
         initialChangelogMessage: string | null,
@@ -53,14 +62,12 @@
     }
 
     interface Data {
-        runMetadata: RunReportMetadata | null,
-        workflows: WorkflowSummary[],
+        workflows: WorkflowRunSummary[],
         workflowNameError: string,
         childCustomStyle: ChildCustomStyle
     }
 
     interface Methods {
-        getRunMetadata: () => void
         handleWorkflowName: (event: Event) => void
         getWorkflows: () => void
         handleChangelog: (changelog: object) => void,
@@ -79,7 +86,6 @@
         },
         data() {
             return {
-                runMetadata: null,
                 error: "",
                 defaultMessage: "",
                 workflows: [],
@@ -88,11 +94,14 @@
             }
         },
         computed: {
+            ...mapState({
+                runReportMetadata: (state: RunReportRootState) => state.git.metadata
+            }),
             showInstances() {
-                return !!this.runMetadata && this.runMetadata.metadata.instances_supported;
+                return !!this.runReportMetadata && this.runReportMetadata.instances_supported;
             },
             showChangelog: function () {
-                return this.runMetadata && !!this.runMetadata.metadata.changelog_types;
+                return this.runReportMetadata && !!this.runReportMetadata.changelog_types;
             },
             initialChangelogMessage() {
                 return this.workflowMetadata.changelog?.message
@@ -107,18 +116,6 @@
             },
             handleChangelog: function (changelog) {
                 this.$emit("update", {changelog});
-            },
-            getRunMetadata: function () {
-                api.get('/report/run-metadata')
-                    .then(({data}) => {
-                        this.runMetadata = data.data
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred while retrieving data";
-                    });
             },
             getWorkflows: function () {
                 api.get(`/workflows`)
@@ -138,7 +135,7 @@
                 this.validateWorkflowName(workflowName);
                 this.$emit("update", {name: workflowName});
             },
-            validateWorkflowName: function(workflowName: string) {
+            validateWorkflowName: function (workflowName: string) {
                 let valid = !!workflowName;
                 this.workflowNameError = "";
                 if (this.workflows.find(workflow =>
@@ -150,7 +147,6 @@
             }
         },
         mounted() {
-            this.getRunMetadata();
             if (this.disableRename) {
                 this.$emit("valid", true);
             } else {

@@ -16,17 +16,17 @@ import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
 
 class WorkflowRunController(
-    context: ActionContext,
-    private val workflowRunRepository: WorkflowRunRepository,
-    private val orderlyServerAPI: OrderlyServerAPI,
-    private val workflowLogic: WorkflowLogic
+        context: ActionContext,
+        private val workflowRunRepository: WorkflowRunRepository,
+        private val orderlyServerAPI: OrderlyServerAPI,
+        private val workflowLogic: WorkflowLogic
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
-        context,
-        OrderlyWebWorkflowRunRepository(),
-        OrderlyServer(AppConfig()).throwOnError(),
-        OrderlyWebWorkflowLogic()
+            context,
+            OrderlyWebWorkflowRunRepository(),
+            OrderlyServer(AppConfig()).throwOnError(),
+            OrderlyWebWorkflowLogic()
     )
 
     @Template("run-workflow-page.ftl")
@@ -44,25 +44,37 @@ class WorkflowRunController(
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>
     {
         return workflowRunRepository.getWorkflowRunSummaries(
-            context.queryParams("email"),
-            context.queryParams("namePrefix")
+                context.queryParams("email"),
+                context.queryParams("namePrefix")
         )
     }
 
-    fun getWorkflowRunSummary(): String
+    fun getWorkflowSummary(): WorkflowSummary
     {
         val response = orderlyServerAPI.post(
-            "/v1/workflow/summary/",
-            context.getRequestBody(),
-            emptyMap()
+                "/v1/workflow/summary/",
+                context.getRequestBody(),
+                emptyMap()
         )
-        return passThroughResponse(response)
+        val summary = response.data(WorkflowSummary::class.java)
+        val reports = summary.reports.map { report ->
+            val defaultParams = orderlyServerAPI.getReportParameters(report.name, context.queryParams())
+                    .associate { it.name to it.value }
+            report.copy(
+                    defaultParamList = report.params?.filter { defaultParams[it.key] == it.value }?.map {
+                        Parameter(it.key, it.value)
+                    },
+                    paramList = report.params?.filter { defaultParams[it.key] != it.value }?.map {
+                        Parameter(it.key, it.value)
+                    })
+        }
+        return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
 
     internal data class WorkflowRunResponse(
-        @SerializedName(value = "workflow_key")
-        val key: String,
-        val reports: List<String>
+            @SerializedName(value = "workflow_key")
+            val key: String,
+            val reports: List<String>
     )
 
     fun createWorkflowRun(): String
@@ -79,49 +91,51 @@ class WorkflowRunController(
         }
 
         val body = Serializer.instance.gson.toJson(
-            listOfNotNull(
-                ("changelog" to workflowRunRequest.changelog).takeIf { it.second != null },
-                ("ref" to workflowRunRequest.gitCommit).takeIf { it.second != null },
-                "reports" to workflowRunRequest.reports.map { report ->
-                    listOfNotNull(
-                        "name" to report.name,
-                        "params" to report.params,
-                        // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
-                        ("instance" to workflowRunRequest.instances?.values?.elementAtOrNull(0)).takeIf {
-                            it.second != null
+                listOfNotNull(
+                        ("changelog" to workflowRunRequest.changelog).takeIf { it.second != null },
+                        ("ref" to workflowRunRequest.gitCommit).takeIf { it.second != null },
+                        "reports" to workflowRunRequest.reports.map { report ->
+                            listOfNotNull(
+                                    "name" to report.name,
+                                    "params" to report.params,
+                                    // TODO remove this in favour of passing instances to orderly.server
+                                    // see VIMC-4561
+                                    ("instance" to workflowRunRequest.instances?.values?.elementAtOrNull(0))
+                                            .takeIf {
+                                                it.second != null
+                                            }
+                            ).toMap()
                         }
-                    ).toMap()
-                }
-            ).toMap()
+                ).toMap()
         )
         val response = orderlyServerAPI.post(
-            "/v1/workflow/run/",
-            body,
-            emptyMap()
+                "/v1/workflow/run/",
+                body,
+                emptyMap()
         )
         if (response.statusCode == HTTP_OK)
         {
             val workflowRun = response.data(WorkflowRunResponse::class.java)
 
             workflowRunRepository.addWorkflowRun(
-                WorkflowRun(
-                    workflowRunRequest.name,
-                    workflowRun.key,
-                    @Suppress("UnsafeCallOnNullableType")
-                    context.userProfile!!.id,
-                    Instant.now(),
-                    workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
-                        WorkflowRunReport(
+                    WorkflowRun(
+                            workflowRunRequest.name,
                             workflowRun.key,
-                            reportKey,
-                            report.name,
-                            report.params
-                        )
-                    },
-                    workflowRunRequest.instances ?: emptyMap(),
-                    workflowRunRequest.gitBranch,
-                    workflowRunRequest.gitCommit
-                )
+                            @Suppress("UnsafeCallOnNullableType")
+                            context.userProfile!!.id,
+                            Instant.now(),
+                            workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                                WorkflowRunReport(
+                                        workflowRun.key,
+                                        reportKey,
+                                        report.name,
+                                        report.params
+                                )
+                            },
+                            workflowRunRequest.instances ?: emptyMap(),
+                            workflowRunRequest.gitBranch,
+                            workflowRunRequest.gitCommit
+                    )
             )
         }
         return passThroughResponse(response)
@@ -129,17 +143,17 @@ class WorkflowRunController(
 
     @NoCoverage
     internal data class WorkflowRunStatusResponse(
-        @SerializedName(value = "workflow_key")
-        val key: String,
-        val status: String,
-        val reports: List<WorkflowRunStatusResponseReport>
+            @SerializedName(value = "workflow_key")
+            val key: String,
+            val status: String,
+            val reports: List<WorkflowRunStatusResponseReport>
     )
     {
         @NoCoverage
         data class WorkflowRunStatusResponseReport(
-            val key: String,
-            val status: String,
-            val version: String?
+                val key: String,
+                val status: String,
+                val version: String?
         )
     }
 
@@ -147,24 +161,24 @@ class WorkflowRunController(
     {
         val key = context.params(":key")
         val response = orderlyServerAPI
-            .throwOnError()
-            .get("/v1/workflow/$key/status/", emptyMap())
+                .throwOnError()
+                .get("/v1/workflow/$key/status/", emptyMap())
         val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
         workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
 
         val runWorkflow = workflowRunRepository.getWorkflowRunDetails(key)
 
         return WorkflowRunStatus(
-            workflowRunStatusResponse.status,
-            workflowRunStatusResponse.reports.map { report ->
-                WorkflowRunStatus.WorkflowRunReportStatus(
-                    @Suppress("UnsafeCallOnNullableType")
-                    runWorkflow.reports.find{it.key == report.key}!!.report,
-                    report.key,
-                    report.status,
-                    report.version
-                )
-            })
+                workflowRunStatusResponse.status,
+                workflowRunStatusResponse.reports.map { report ->
+                    WorkflowRunStatus.WorkflowRunReportStatus(
+                            @Suppress("UnsafeCallOnNullableType")
+                            runWorkflow.reports.find { it.key == report.key }!!.report,
+                            report.key,
+                            report.status,
+                            report.version
+                    )
+                })
     }
 
     fun validateWorkflow(): List<WorkflowReportWithParams>

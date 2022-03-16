@@ -1,3 +1,5 @@
+import {GitState} from "../store/git/git";
+
 export interface Parameter {
     name: string,
     value: string
@@ -83,7 +85,7 @@ export interface WorkflowRunReportStatus {
     date?: string
 }
 
-export interface WorkflowSummary {
+export interface WorkflowRunSummary {
     date: string,
     email: string,
     key: string,
@@ -133,7 +135,8 @@ export interface Error {
 export interface WorkflowReportWithDependencies {
     name: string,
     instance?: string
-    params?: Record<string, string>,
+    default_param_list?: Parameter[],
+    param_list?: Parameter[],
     depends_on?: string[]
 }
 
@@ -141,4 +144,8 @@ export interface WorkflowSummary {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
     ref: string
+}
+
+export interface RunnerRootState {
+    git: GitState
 }

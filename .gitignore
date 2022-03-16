@@ -35,6 +35,7 @@ src/app/static/public/css
 src/app/static/public/js
 demo
 git
+!src/app/static/src/**/*
 src/customConfigTests/templates
 src/customConfigTests/static
 src/app/static/coverage
