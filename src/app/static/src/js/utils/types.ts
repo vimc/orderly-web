@@ -154,3 +154,5 @@ export interface WorkflowSummary {
 export interface RunnerRootState {
     git: GitState
 }
+
+export type EmptyObject = Record<string, never>
