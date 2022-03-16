@@ -156,9 +156,11 @@
                 </#list>];
             </#if>
             var runReportBtn = document.querySelector('#run-report')
-            runReportBtn.addEventListener('click', () => {
-                window.sessionStorage.removeItem("selectedRunningReportTab");
-            })
+            if (runReportBtn) {
+                runReportBtn.addEventListener('click', () => {
+                    window.sessionStorage.removeItem("selectedRunningReportTab");
+                })
+            }
         </script>
         <script type="text/javascript" src="${appUrl}/js/lib/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="${appUrl}/js/lib/dataTables.bootstrap4.js"></script>
