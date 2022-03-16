@@ -31,15 +31,9 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runWorkflowSummary",
+        name: "RunWorkflowSummary",
         components: {
             WorkflowSummaryReports
-        },
-        data() {
-            return {
-                workflowSummary: null,
-                error: ""
-            }
         },
         props: {
             workflowMetadata: {
@@ -47,10 +41,20 @@
                 type: Object
             }
         },
+        data() {
+            return {
+                workflowSummary: null,
+                error: ""
+            }
+        },
         computed: {
             hasDependenciesLength() {
                 return !!this.workflowSummary
             }
+        },
+        mounted() {
+            this.getReportDependencies();
+            this.$emit("valid", true)
         },
         methods: {
             getReportDependencies() {
@@ -67,10 +71,6 @@
                         this.error = error;
                     })
             }
-        },
-        mounted() {
-            this.getReportDependencies();
-            this.$emit("valid", true)
         }
     })
 </script>

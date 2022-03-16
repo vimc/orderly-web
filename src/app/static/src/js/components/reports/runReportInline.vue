@@ -14,7 +14,7 @@
     import {SELECTED_RUNNING_REPORT_TAB} from "../../utils/session";
 
     export default {
-        name: 'runReport',
+        name: 'RunReportInline',
         props: ['report'],
         computed: {
             runReportHref: function () {
@@ -23,7 +23,7 @@
             }
         },
         methods: {
-            clearRunReportSession(){
+            clearRunReportSession() {
                 session.setSelectedTab(SELECTED_RUNNING_REPORT_TAB, "runReport");
             }
         }

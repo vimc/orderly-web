@@ -309,7 +309,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(driver.findElement(By.cssSelector("#report-name span.font-weight-bold")).text).isEqualTo("minimal")
         assertThat(driver.findElement(By.cssSelector("#report-git-branch span.font-weight-bold")).text).isEqualTo("master")
         assertThat(driver.findElement(By.cssSelector("#report-status span.font-weight-bold")).text).isEqualTo("success")
-        assertThat(driver.findElement(By.cssSelector("#report-logs textarea")).text).startsWith("[ git")
+        assertThat(driver.findElement(By.cssSelector("#report-logs textarea")).getAttribute("value")).startsWith("[ git")
 
         val closeLogButton = driver.findElement(By.cssSelector("#report-log-dialog button.modal-buttons"))
         closeLogButton.click()

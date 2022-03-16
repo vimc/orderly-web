@@ -1,7 +1,11 @@
 <template>
     <div>
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="allowGuest" v-model="authAllowGuest" @change="setAuthAllowGuest">
+            <input id="allowGuest"
+                   v-model="authAllowGuest"
+                   type="checkbox"
+                   class="form-check-input"
+                   @change="setAuthAllowGuest">
             <label class="form-check-label" for="allowGuest">Allow non-logged in users</label>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -13,7 +17,7 @@
     import {api} from "../../utils/api";
 
     export default {
-        name: "settings",
+        name: "Settings",
         components: {
             errorInfo: errorInfo
         },
@@ -23,19 +27,6 @@
                 authAllowGuest: false,
                 error: null,
                 defaultMessage: ""
-            }
-        },
-        methods: {
-            setAuthAllowGuest: function() {
-                api.post(this.url, this.authAllowGuest, {headers: {"Content-Type": "application/json"}})
-                    .then(() => {
-                        this.error = null;
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "could not set allow guest user";
-                    });
             }
         },
         mounted() {
@@ -50,6 +41,19 @@
                     this.error = error;
                     this.defaultMessage = "could not get allow guest user";
                 });
+        },
+        methods: {
+            setAuthAllowGuest: function () {
+                api.post(this.url, this.authAllowGuest, {headers: {"Content-Type": "application/json"}})
+                    .then(() => {
+                        this.error = null;
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "could not set allow guest user";
+                    });
+            }
         }
     }
 </script>

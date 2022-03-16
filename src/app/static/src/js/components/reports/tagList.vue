@@ -1,18 +1,24 @@
 <template>
     <div>
-        <h6>{{header}}</h6>
-        <div class="text-muted tag-list-description">{{description}}</div>
+        <h6>{{ header }}</h6>
+        <div class="text-muted tag-list-description">
+            {{ description }}
+        </div>
         <p class="tags">
-            <span v-for="tag in value" :class="'badge mr-1 mb-1 badge-' + (editable ? 'primary' : 'secondary')">
-                {{tag}}<span v-if="editable"> |
+            <span v-for="tag in value"
+                  :key="tag"
+                  :class="'badge mr-1 mb-1 badge-' + (editable ? 'primary' : 'secondary')">
+                {{ tag }}<span v-if="editable"> |
                     <span class="remove-tag" @click="removeTag(tag)">×</span>
                 </span>
             </span>
         </p>
         <div v-if="editable" class="input-group input-group-sm">
-            <input v-model="tagToAdd" class="form-control" type="input"/>
+            <input v-model="tagToAdd" class="form-control"/>
             <div class="input-group-append">
-                <button class="btn btn-sm submit" @click="addTag">Add tag</button>
+                <button class="btn btn-sm submit" @click="addTag">
+                    Add tag
+                </button>
             </div>
         </div>
     </div>
@@ -29,13 +35,13 @@
             }
         },
         methods: {
-            addTag: function() {
-                if ((this.tagToAdd.trim() != "") && (this.value.indexOf(this.tagToAdd) < 0)) {
+            addTag: function () {
+                if ((this.tagToAdd.trim() !== "") && (this.value.indexOf(this.tagToAdd) < 0)) {
                     this.$emit("input", [...this.value, this.tagToAdd]);
                     this.tagToAdd = "";
                 }
             },
-            removeTag: function(tag) {
+            removeTag: function (tag) {
                 const index = this.value.indexOf(tag);
                 const removed = [...this.value];
                 removed.splice(index, 1);

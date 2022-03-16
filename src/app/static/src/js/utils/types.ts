@@ -1,4 +1,4 @@
-import { GitState } from "../store/git/git";
+import {GitState} from "../store/git/git";
 
 export interface Parameter {
     name: string,
@@ -13,6 +13,11 @@ export interface Step {
 export interface ReportWithDate {
     name: string,
     date: Date | null
+}
+
+export interface Report {
+    name: string,
+    id: string
 }
 
 export interface ReportLog {

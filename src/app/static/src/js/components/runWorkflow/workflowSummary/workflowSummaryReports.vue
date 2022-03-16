@@ -10,11 +10,11 @@
                         <div id="report-name-icon" class="d-inline-block">
                             <h5>{{ report.name }}
                                 <span>
-                                    <info-icon size="1.2x"
+                                    <info-icon v-tooltip="reportInfo(report.name)"
+                                               size="1.2x"
                                                stroke="grey"
-                                               v-tooltip="reportInfo(report.name)"
                                                class="custom-class"/>
-                                    </span>
+                                </span>
                             </h5>
                         </div>
                         <div class="row">
@@ -22,7 +22,8 @@
                                 <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
-                                        <run-workflow-parameters :report="report" :index="index"></run-workflow-parameters>
+                                        <run-workflow-parameters :report="report"
+                                                                 :index="index"></run-workflow-parameters>
                                     </div>
                                 </div>
                             </div>
@@ -40,9 +41,8 @@
 <script lang="ts">
     import Vue from "vue";
     import {InfoIcon} from "vue-feather-icons";
-    import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../../utils/types";
+    import {WorkflowSummaryResponse} from "../../../utils/types";
     import {VTooltip} from "v-tooltip";
-    import ErrorInfo from "../../errorInfo.vue";
     import runWorkflowParameters from "./../runWorkflowParameters.vue"
 
     interface Props {
@@ -55,7 +55,12 @@
     }
 
     export default Vue.extend<unknown, Methods, unknown, Props>({
-        name: "workflowSummaryReports",
+        name: "WorkflowSummaryReports",
+        components: {
+            InfoIcon,
+            runWorkflowParameters
+        },
+        directives: {tooltip: VTooltip},
         props: {
             workflowSummary: {
                 required: true,
@@ -71,12 +76,6 @@
                 const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
                 return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
             },
-        },
-        components: {
-            InfoIcon,
-            ErrorInfo,
-            runWorkflowParameters
-        },
-        directives: {tooltip: VTooltip}
+        }
     });
 </script>
