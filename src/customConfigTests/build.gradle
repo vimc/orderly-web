@@ -50,10 +50,8 @@ test.dependsOn 'copyStatic'
 
 test {
     testLogging {
-        events "failed", "standard_error"
-
-        // remove standard output logging from --info builds
+        // remove standard output logging
         // by assigning only 'failed' and 'standard_error' events
-        info.events = ["failed", "standard_error"]
+        events "failed", "standard_error"
     }
 }
