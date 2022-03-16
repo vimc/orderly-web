@@ -16,6 +16,7 @@ class ReportPagePermissionTests : SeleniumTest()
     private val testListItemUser = "user@example.com"
     private val testRole = "test-role"
 
+    /*
     private fun canViewReportReaders(widgetId: String)
     {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId li")))
@@ -190,4 +191,6 @@ class ReportPagePermissionTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
         canRemoveUserGroup("scoped-roles-list")
     }
+
+     */
 }

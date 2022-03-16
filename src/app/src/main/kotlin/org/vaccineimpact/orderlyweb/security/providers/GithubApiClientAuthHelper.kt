@@ -28,10 +28,15 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     {
         connectToClient(token)
         user = getGitHubUser()
+
+        println("Github User is ${user!!.login}")
+        val orgs = user!!.organizations
+        println("User orgs: " + orgs.toString())
     }
 
     override fun checkGitHubOrgAndTeamMembership()
     {
+        println("checking membership")
         checkAuthenticated()
 
         val orgName = appConfig["auth.github_org"]
@@ -51,6 +56,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
+        println("finished checking membership")
     }
 
     override fun getUserEmail(): String
@@ -110,6 +116,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     private fun userBelongsToOrg(org: GHOrganization): Boolean
     {
         //TODO: deal with auth errors
+
         return getUser().isMemberOf(org)
 
         /*try
@@ -150,7 +157,16 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     private fun getEmailForUser(): String
     {
         //TODO: deal with auth errors
-        return (getUser() as GHMyself).emails2.first().email
+        try
+        {
+            return (getUser() as GHMyself).emails2.first().email
+        }
+        catch(e: GHFileNotFoundException) //todo: handle this or IOException
+        {
+            println("exception in getEmail")
+            println(e.toString())
+            throw(e)
+        }
 
         /*return try
         {

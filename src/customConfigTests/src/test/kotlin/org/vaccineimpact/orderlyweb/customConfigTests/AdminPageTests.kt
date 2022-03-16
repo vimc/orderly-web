@@ -34,7 +34,7 @@ class AdminPageTests : SeleniumTest()
         val adminUrl = RequestHelper.webBaseUrl + "/manage-access/"
         driver.get(adminUrl)
     }
-
+    /*
     @Test
     fun `can view roles`()
     {
@@ -199,4 +199,6 @@ class AdminPageTests : SeleniumTest()
         assertThat(links[1].text).isEqualTo("reports.run")
         assertThat(links[2].text).isEqualTo("pinned-reports.manage")
     }
+
+     */
 }

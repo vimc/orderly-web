@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class GithubWebTests : SeleniumTest()
 {
+    /*
     val url: String = "http://localhost:${AppConfig()["app.port"]}/"
     val loginUrl = "${url}login/"
 
@@ -91,4 +92,6 @@ class GithubWebTests : SeleniumTest()
         val authProvider = driver.findElement(By.cssSelector(".login-link"))
         assertThat(authProvider.getAttribute("href")).isEqualTo("${url}weblogin/external?requestedUrl=${url}")
     }
+
+     */
 }
