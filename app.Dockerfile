@@ -10,6 +10,8 @@ ENV APP_DOCKER_TAG $registry/$name
 ENV APP_DOCKER_COMMIT_TAG $registry/$name:$git_id
 ENV APP_DOCKER_BRANCH_TAG $registry/$name:$git_branch
 
+RUN npm run test --prefix=/api/src/app/static
+
 RUN mkdir -p /etc/orderly/web && touch /etc/orderly/web/go_signal
 
 CMD docker build --file dist.Dockerfile --tag orderly-web-dist-base . \
