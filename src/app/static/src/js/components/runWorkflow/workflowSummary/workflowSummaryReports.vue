@@ -101,6 +101,11 @@
                     (report.default_param_list && report.default_param_list.length > 0)
             }
         },
+        watch: {
+            workflowSummary(){
+                console.log("workflowSumamry", this.workflowSummary)
+            }
+        },
         components: {
             BCollapse,
             BLink,
