@@ -29,7 +29,7 @@ dependencies {
 
     compile "com.sparkjava:spark-core:2.7.1"
     compile "com.sparkjava:spark-template-freemarker:2.7.1"
-    compile "org.slf4j:slf4j-simple:1.7.21"
+    compile "org.slf4j:slf4j-simple:1.7.25"
 
     compile "com.google.code.gson:gson:2.2.4"
     compile "com.github.salomonbrys.kotson:kotson:2.5.0"
