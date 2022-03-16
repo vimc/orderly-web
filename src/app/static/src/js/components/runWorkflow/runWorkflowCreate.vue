@@ -1,22 +1,24 @@
 <template>
     <div id="create-workflow-container">
-        <h2 id="create-workflow-header">Run workflow</h2>
+        <h2 id="create-workflow-header">
+            Run workflow
+        </h2>
         <div class="pt-2 col-sm-6">
             <p>Either:</p>
-            <button id="create-workflow" @click="create()"
-                    type="button" class="btn btn-success">
+            <button id="create-workflow" type="button"
+                    class="btn btn-success" @click="create()">
                 Create a blank workflow
             </button>
         </div>
         <div id="report-list" class="pt-4 col-sm-8">
             <p>Or re-use an existing workflow:</p>
             <div id="v-select">
-                <v-select label="name"
+                <v-select v-model="selectedWorkflow"
+                          label="name"
                           :filter="searchWorkflows"
                           :options="workflows.slice(0, 10)"
-                          v-model="selectedWorkflow"
                           placeholder="Search by name or user...">
-                    <template id="optionTemplate" #option="{ name, email, date }">
+                    <template #option="{ name, email, date }">
                         <div>
                             <span>{{ name }}</span>
                             <span class="text-muted pl-3">{{ email }} | {{ getLongTimestamp(date) }}</span>
@@ -26,14 +28,14 @@
             </div>
         </div>
         <div class="pt-4 col-sm-6">
-            <button id="rerun" @click="rerun()"
-                    type="button"
+            <button id="rerun" type="button"
                     class="btn btn-success"
-                    :disabled="enableButtons">Re-run workflow
+                    :disabled="enableButtons"
+                    @click="rerun()">Re-run workflow
             </button>
-            <button id="clone" @click="clone()"
-                    type="button" class="btn btn-success"
-                    :disabled="enableButtons">Clone workflow
+            <button id="clone" type="button"
+                    class="btn btn-success" :disabled="enableButtons"
+                    @click="clone()">Clone workflow
             </button>
         </div>
         <div class="pt-4 col-sm-6">
@@ -82,7 +84,11 @@
     }
 
     export default Vue.extend<Data, Methods, Computed>({
-        name: "runWorkflowCreate",
+        name: "RunWorkflowCreate",
+        components: {
+            vSelect,
+            ErrorInfo
+        },
         data(): Data {
             return {
                 workflows: [],
@@ -96,6 +102,16 @@
             enableButtons: function () {
                 return !this.selectedWorkflow || !this.runWorkflowMetadata
             }
+        },
+        watch: {
+            selectedWorkflow() {
+                if (this.selectedWorkflow) {
+                    this.getWorkflowDetails()
+                }
+            }
+        },
+        mounted() {
+            this.getWorkflows()
         },
         methods: {
             create: function () {
@@ -151,20 +167,6 @@
                 const dateConverter = new Date(date)
                 return longTimestamp(dateConverter)
             }
-        },
-        mounted() {
-            this.getWorkflows()
-        },
-        watch: {
-            selectedWorkflow() {
-                if (this.selectedWorkflow) {
-                    this.getWorkflowDetails()
-                }
-            }
-        },
-        components: {
-            vSelect,
-            ErrorInfo
         }
     })
 </script>

@@ -30,3 +30,6 @@ RUN npm install -g npm
 
 RUN npm install --prefix=/api/src/app/static
 RUN ./gradlew :app:compileFrontEnd
+
+RUN npm run lint --prefix=/api/src/app/static -- --quiet
+

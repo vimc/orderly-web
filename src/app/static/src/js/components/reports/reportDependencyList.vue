@@ -1,17 +1,18 @@
 <template>
     <ul class="report-dependency-list">
         <li v-for="dependency in dependencyList"
-            v-bind:class="[{'has-children': hasChildren(dependency)}, {'open':expanded[dependency.id]}]">
-            <div class="expander"
-                 v-if="hasChildren(dependency)"
-                 v-on:click="toggle(dependency.id)"></div>
+            :key="dependency.id"
+            :class="[{'has-children': hasChildren(dependency)}, {'open':expanded[dependency.id]}]">
+            <div v-if="hasChildren(dependency)"
+                 class="expander"
+                 @click="toggle(dependency.id)"></div>
             <span class="report-dependency-item"
-                  v-on:click="toggle(dependency.id)">
-                {{dependency.name}} (<a :href="dependencyLink(dependency)">{{dependency.id}}</a>)
+                  @click="toggle(dependency.id)">
+                {{ dependency.name }} (<a :href="dependencyLink(dependency)">{{ dependency.id }}</a>)
             </span>
             <report-dependency-list v-if="hasChildren(dependency)"
-                    v-show="expanded[dependency.id]"
-                    :dependency-list="dependency.dependencies"></report-dependency-list>
+                                    v-show="expanded[dependency.id]"
+                                    :dependency-list="dependency.dependencies"></report-dependency-list>
         </li>
     </ul>
 </template>
@@ -35,8 +36,8 @@
         toggle: (id: string) => void
     }
 
-    export default Vue.extend<{}, Methods, {}, Props>({
-        name: "report-dependency-list",
+    export default Vue.extend<Data, Methods, Record<string, never>, Props>({
+        name: "ReportDependencyList",
         props: {
             dependencyList: Array
         },
