@@ -61,9 +61,13 @@ Unit and integration tests are found in `src/app/src/test`. They can be run thro
 command line from the `src` directory with `./gradlew :app:test -i`
 
 Selenium tests are found in `src/customConfigTests/src/test`. They can be run through the IDE or on the 
-command line from the `src` directory with `./gradlew :customConfigTests:test -i`. You will have to run 
+command line from the `src` directory with `./gradlew :customConfigTests:test`. You will have to run 
 `./gradlew :customConfigTests:copyDemo` first.
-You will also have to install chromedriver: `./scripts/install-chromedriver.sh` 
+You will also have to install chromedriver: `./scripts/install-chromedriver.sh`.
+sl4j logging is disabled by default to make the output more legible; if needed for debugging, the log level
+can be configured by modifying `src/customConfigTests/src/test/resources/simplelogger.properties`. Also by default, 
+only `stderr` is printed to the console while running these tests; to get `stdout` as well, run in info/verbose mode 
+with the `-i` flag: `./gradlew :customConfigTests:test -i`
 
 Javascript tests are in `src/app/static/src/tests` and can be run from the `static` directory
 with `npm test`
