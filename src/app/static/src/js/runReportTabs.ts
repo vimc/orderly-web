@@ -14,11 +14,11 @@ $(document).ready(() => {
             components: {
                 runReportTabs: runReportTabs
             },
-            methods: {
-                ...mapActions({fetchMetadata: `git/${GitAction.FetchMetadata}`}),
-            },
             beforeMount: function () {
                 this.fetchMetadata()
+            },
+            methods: {
+                ...mapActions({fetchMetadata: `git/${GitAction.FetchMetadata}`}),
             }
         });
     }

@@ -18,7 +18,12 @@
     import AddReportReader from "../permissions/addReportReader";
 
     export default {
-        name: 'reportReadersList',
+        name: 'ReportReadersList',
+        components: {
+            AddReportReader,
+            UserList,
+            ErrorInfo
+        },
         props: ['report'],
         data() {
             return {
@@ -27,15 +32,6 @@
                 readers: [],
                 allUsers: []
             }
-        },
-        mounted() {
-            this.getReaders();
-            this.getUserEmails();
-        },
-        components: {
-            AddReportReader,
-            UserList,
-            ErrorInfo
         },
         computed: {
             availableUsers: function () {
@@ -49,6 +45,10 @@
                     scope_id: this.report.name
                 }
             }
+        },
+        mounted() {
+            this.getReaders();
+            this.getUserEmails();
         },
         methods: {
             getUserEmails: function () {
@@ -67,7 +67,7 @@
                         this.defaultMessage = "could not fetch list of users";
                     })
             },
-            removeUser: function(email) {
+            removeUser: function (email) {
                 const scopeId = this.permission.scope_id;
                 const scopePrefix = this.permission.scope_prefix;
                 const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";

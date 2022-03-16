@@ -1,12 +1,13 @@
 <template>
     <div class="mb-3 add-role mt-2">
-        <typeahead
-                size="sm"
-                v-model="newUser"
-                placeholder="email"
-                :data="availableUsers">
+        <typeahead v-model="newUser"
+                   size="sm"
+                   placeholder="email"
+                   :data="availableUsers">
             <template slot="append">
-                <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
+                <button type="submit" class="btn btn-sm" @click="add">
+                    Add user
+                </button>
             </template>
         </typeahead>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -19,7 +20,11 @@
     import Typeahead from "../typeahead/typeahead.vue";
 
     export default {
-        name: 'addUserToRole',
+        name: 'AddUserToRole',
+        components: {
+            ErrorInfo,
+            Typeahead
+        },
         props: ['role', 'availableUsers'],
         data() {
             return {
@@ -27,10 +32,6 @@
                 error: "",
                 defaultMessage: ""
             }
-        },
-        components: {
-            ErrorInfo,
-            Typeahead
         },
         watch: {
             newUser() {

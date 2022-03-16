@@ -9,7 +9,7 @@
                                 data-target="#sidebar">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                        <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
+                        <div id="sidebar" class="d-md-block mt-4 mt-md-0 collapse navbar-collapse">
                             <ul class="nav flex-column list-unstyled mb-0">
                                 <li class="nav-item">
                                     <a id="run-link"
@@ -34,13 +34,13 @@
             </div>
             <div class="col-12 col-md-8 tab-content">
                 <div v-if="selectedTab === 'RunReport'"
-                     class="tab-pane active pt-4 pt-md-1" role="tabpanel"
-                     id="run-tab">
+                     id="run-tab" class="tab-pane active pt-4 pt-md-1"
+                     role="tabpanel">
                     <run-report/>
                 </div>
                 <div v-if="selectedTab === 'ReportLogs'"
-                     class="tab-pane active pt-4 pt-md-1" role="tabpanel"
-                     id="logs-tab">
+                     id="logs-tab" class="tab-pane active pt-4 pt-md-1"
+                     role="tabpanel">
                     <report-log/>
                 </div>
             </div>
@@ -64,7 +64,7 @@
         switchTab: (tabName: RunReportTabName) => void
     }
 
-    export default Vue.extend<{}, Methods, Computed, {}>({
+    export default Vue.extend<Record<string, never>, Methods, Computed, Record<string, never>>({
         name: "RunReportTabs",
         components: {
             reportLog,

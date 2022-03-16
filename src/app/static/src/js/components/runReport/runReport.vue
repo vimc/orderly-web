@@ -2,13 +2,12 @@
     <div>
         <h2>Run a report</h2>
         <form class="mt-3">
-            <git-update-reports
-                :report-metadata="metadata"
-                :initial-branches="initialGitBranches"
-                :show-all-reports="false"
-                @branchSelected="branchSelected"
-                @commitSelected="commitSelected"
-                @reportsUpdate="updateReports">
+            <git-update-reports :report-metadata="metadata"
+                                :initial-branches="initialGitBranches"
+                                :show-all-reports="false"
+                                @branchSelected="branchSelected"
+                                @commitSelected="commitSelected"
+                                @reportsUpdate="updateReports">
             </git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
@@ -25,8 +24,8 @@
             </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list id="params-component" @paramsChanged="getParameterValues"
-                                :params="parameterValues"></parameter-list>
+                <parameter-list id="params-component" :params="parameterValues"
+                                @paramsChanged="getParameterValues"></parameter-list>
             </div>
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
@@ -36,12 +35,12 @@
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
-                    <button @click.prevent="runReport" class="btn" type="submit" :disabled="disableRun">
+                    <button class="btn" type="submit" :disabled="disableRun" @click.prevent="runReport">
                         Run report
                     </button>
-                    <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
+                    <div v-if="runningStatus" id="run-report-status" class="text-secondary mt-2">
                         {{ runningStatus }}
-                        <a @click.prevent="$emit('changeTab')" href="#">View log</a>
+                        <a href="#" @click.prevent="$emit('changeTab')">View log</a>
                     </div>
                 </div>
             </div>
@@ -59,8 +58,7 @@
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
     import Instances from "./instances.vue";
-    import {ChildCustomStyle, ReportWithDate, RunReportMetadataDependency} from "../../utils/types";
-    import {RunReportRootState} from "../../store/runReport/store";
+    import {ChildCustomStyle, ReportWithDate, RunnerRootState, RunReportMetadataDependency} from "../../utils/types";
     import {mapState} from "vuex";
 
     interface Data {
@@ -106,10 +104,7 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runReport",
-        props: {
-            initialReportName: String
-        },
+        name: "RunReport",
         components: {
             ErrorInfo,
             GitUpdateReports,
@@ -117,6 +112,9 @@
             ParameterList,
             ChangeLog,
             Instances
+        },
+        props: {
+            initialReportName: String
         },
         data: () => {
             return {
@@ -137,8 +135,8 @@
         },
         computed: {
             ...mapState({
-                initialGitBranches: (state: RunReportRootState) => state.git.git_branches,
-                metadata: (state: RunReportRootState) => state.git.metadata
+                initialGitBranches: (state: RunnerRootState) => state.git.git_branches,
+                metadata: (state: RunnerRootState) => state.git.metadata
             }),
             showReports() {
                 return this.reports && this.reports.length;
@@ -155,6 +153,37 @@
             showChangelog: function () {
                 return !!this.selectedReport && this.metadata?.changelog_types
             }
+        },
+        watch: {
+            metadata(val) {
+                if (val && val.instances_supported) {
+                    const instances = val.instances;
+                    for (const key in instances) {
+                        if (instances[key].length > 0) {
+                            this.$set(this.selectedInstances, key, instances[key][0]);
+                        }
+                    }
+                }
+            },
+            selectedReport: {
+                deep: true,
+                handler() {
+                    this.clearRun();
+                    if (this.selectedReport) {
+                        this.setParameters();
+                    }
+                    this.parameterValues.length = 0
+                }
+            },
+            selectedInstances: {
+                deep: true,
+                handler() {
+                    this.clearRun()
+                }
+            }
+        },
+        mounted() {
+            this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
         },
         methods: {
             handleInstancesValue: function (instances) {
@@ -237,37 +266,6 @@
                 this.runningKey = "";
                 this.disableRun = false;
                 this.changelog = null;
-            }
-        },
-        mounted() {
-            this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
-        },
-        watch: {
-            metadata(val) {
-                if (val && val.instances_supported) {
-                    const instances = val.instances;
-                    for (const key in instances) {
-                        if (instances[key].length > 0) {
-                            this.$set(this.selectedInstances, key, instances[key][0]);
-                        }
-                    }
-                }
-            },
-            selectedReport: {
-                deep: true,
-                handler() {
-                    this.clearRun();
-                    if (this.selectedReport) {
-                        this.setParameters();
-                    }
-                    this.parameterValues.length = 0
-                }
-            },
-            selectedInstances: {
-                deep: true,
-                handler() {
-                    this.clearRun()
-                }
             }
         }
     })

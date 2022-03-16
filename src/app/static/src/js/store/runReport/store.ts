@@ -22,4 +22,4 @@ export const storeOptions: StoreOptions<RunReportRootState> = {
 
 Vue.use(Vuex);
 
-export const store = new Vuex.Store<RunReportRootState>(storeOptions);
+export const store = new Vuex.Store<RunnerRootState>(storeOptions);

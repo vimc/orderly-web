@@ -1,19 +1,18 @@
 <template>
     <div>
-        <div
-            class="container mt-3"
-            id="workflow-progress-container"
-            v-if="workflowRunSummaries">
+        <div v-if="workflowRunSummaries"
+             id="workflow-progress-container"
+             class="container mt-3">
             <div class="row mb-3">
                 <label for="workflows" class="form-label col">Workflow</label>
                 <div class="col-10 px-0">
-                    <v-select :options="workflowRunSummaries"
+                    <v-select id="workflows"
+                              v-model="selectedWorkflowKey"
+                              :options="workflowRunSummaries"
                               label="name"
                               :reduce="(label) => label.key"
                               name="workflows"
-                              id="workflows"
-                              v-model="selectedWorkflowKey"
-                              :clearable = "false"
+                              :clearable="false"
                               placeholder="Select workflow or search by name...">
                         <template #option="{ name, date }">
                             <div>
@@ -26,20 +25,24 @@
                     </v-select>
                 </div>
             </div>
-            <div class="row" v-if="workflowRunStatus" id="workflow-table">
+            <div v-if="workflowRunStatus" id="workflow-table" class="row">
                 <label class="form-label col">Reports</label>
                 <table class="table-bordered col-10">
-                    <tr v-for="report in workflowRunStatus.reports">
+                    <tr v-for="report in workflowRunStatus.reports" :key="report.name">
                         <td v-if="report.status === 'success'" class="p-2">
                             <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
                                 {{ report.name }}
                             </a>
                         </td>
-                        <td v-else class="p-2">{{ report.name }}</td>
+                        <td v-else class="p-2">
+                            {{ report.name }}
+                        </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
                         </td>
-                        <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
+                        <td v-if="report.date" class="p-2">
+                            {{ formatDate(report.date) }}
+                        </td>
                         <td class="p-2">
                             <a v-if="viewLogLinkVisible(report.status)"
                                class="report-log-link"
@@ -56,206 +59,209 @@
                     Re-run workflow
                 </button>
                 <!-- Cancel button to be implemented in mrc-2549 -->
-                <button class="btn btn-secondary" type="button" v-if="false">
+                <button v-if="false" class="btn btn-secondary" type="button">
                     Cancel workflow
                 </button>
             </div>
         </div>
-        <p v-else>No workflows to show</p>
+        <p v-else>
+            No workflows to show
+        </p>
         <error-info :default-message="defaultMessage"
                     :api-error="error">
         </error-info>
         <workflow-report-log-dialog id="report-log-dialog"
-                                    :report-key=showLogForReportKey
-                                    :workflow-key=selectedWorkflowKey
+                                    :report-key="showLogForReportKey"
+                                    :workflow-key="selectedWorkflowKey"
                                     @close="closeReportLogDialog">
         </workflow-report-log-dialog>
     </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import vSelect from "vue-select";
-import { api } from "../../utils/api";
-import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
-import ErrorInfo from "../errorInfo.vue";
-import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
-import {
-    WorkflowRunSummary,
-    WorkflowRunStatus,
-} from "../../utils/types";
-import { buildFullUrl } from "../../utils/api";
+    import Vue from "vue";
+    import vSelect from "vue-select";
+    import {api} from "../../utils/api";
+    import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
+    import ErrorInfo from "../errorInfo.vue";
+    import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
+    import {
+        WorkflowRunSummary,
+        WorkflowRunStatus,
+    } from "../../utils/types";
+    import {buildFullUrl} from "../../utils/api";
 
-interface Data {
-    workflowRunSummaries: null | WorkflowRunSummary[];
-    selectedWorkflowKey: null | string;
-    workflowRunStatus: null | WorkflowRunStatus;
-    error: string;
-    defaultMessage: string;
-    pollingTimer: null | number;
-    showLogForReportKey: string | null;
-}
+    interface Data {
+        workflowRunSummaries: null | WorkflowRunSummary[];
+        selectedWorkflowKey: null | string;
+        workflowRunStatus: null | WorkflowRunStatus;
+        error: string;
+        defaultMessage: string;
+        pollingTimer: null | number;
+        showLogForReportKey: string | null;
+    }
 
-interface Methods {
-    getWorkflowRunSummaries: () => void;
-    getWorkflowRunStatus: (key: string) => void;
-    formatDate: (date: string) => string;
-    reportVersionHref: (name: string, version: string) => string;
-    statusColour: (status: string) => string;
-    interpretStatus: (status: string) => string;
-    rerun: () => void;
-    startPolling: () => void;
-    stopPolling: () => void;
-    viewLogLinkVisible: (status: string) => boolean;
-    showReportLog: (reportKey: string) => void;
-    closeReportLogDialog: () => void;
-}
+    interface Methods {
+        getWorkflowRunSummaries: () => void;
+        getWorkflowRunStatus: (key: string) => void;
+        formatDate: (date: string) => string;
+        reportVersionHref: (name: string, version: string) => string;
+        statusColour: (status: string) => string;
+        interpretStatus: (status: string) => string;
+        rerun: () => void;
+        startPolling: () => void;
+        stopPolling: () => void;
+        viewLogLinkVisible: (status: string) => boolean;
+        showReportLog: (reportKey: string) => void;
+        closeReportLogDialog: () => void;
+    }
 
-interface Props {
-    initialSelectedWorkflow: string;
-}
-const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
-const notStartedStates = ["queued", "deferred", "impossible", "missing"];
-const nonFailStateMessages = {
-    "success": "Complete",
-    "impossible": "Dependency failed",
-    "deferred": "Waiting for dependency"
-};
+    interface Props {
+        initialSelectedWorkflow: string;
+    }
 
-export default Vue.extend<Data, Methods, unknown, Props>({
-    name: "runWorkflowProgress",
-    components: {
-        ErrorInfo,
-        WorkflowReportLogDialog,
-        vSelect,
-    },
-    props: {
+    const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
+    const notStartedStates = ["queued", "deferred", "impossible", "missing"];
+    const nonFailStateMessages = {
+        "success": "Complete",
+        "impossible": "Dependency failed",
+        "deferred": "Waiting for dependency"
+    };
+
+    export default Vue.extend<Data, Methods, unknown, Props>({
+        name: "RunWorkflowProgress",
+        components: {
+            ErrorInfo,
+            WorkflowReportLogDialog,
+            vSelect,
+        },
+        props: {
             initialSelectedWorkflow: {
                 type: String,
                 required: true
             },
         },
-    data() {
-        return {
-            workflowRunSummaries: null,
-            selectedWorkflowKey: null,
-            workflowRunStatus: null,
-            error: "",
-            defaultMessage: "",
-            pollingTimer: null,
-            showLogForReportKey: null
-        };
-    },
-    methods: {
-        startPolling() {
-            if (!this.pollingTimer) {
-                this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+        data() {
+            return {
+                workflowRunSummaries: null,
+                selectedWorkflowKey: null,
+                workflowRunStatus: null,
+                error: "",
+                defaultMessage: "",
+                pollingTimer: null,
+                showLogForReportKey: null
+            };
+        },
+        watch: {
+            selectedWorkflowKey() {
+                this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
+                if (this.selectedWorkflowKey) {
+                    this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                    this.startPolling();
+                } else {
+                    this.workflowRunStatus = null;
+                }
+            },
+            workflowRunStatus(newWorkflowRunStatus) {
+                const interpretStatus = this.interpretStatus(newWorkflowRunStatus.status)
+                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                    this.stopPolling();
+                }
             }
         },
-        stopPolling() {
-            if(this.pollingTimer) {
-                clearInterval(this.pollingTimer)
-                this.pollingTimer = null
+        mounted() {
+            this.getWorkflowRunSummaries();
+            this.selectedWorkflowKey = this.initialSelectedWorkflow;
+        },
+        beforeDestroy() {
+            this.stopPolling();
+        },
+        methods: {
+            startPolling() {
+                if (!this.pollingTimer) {
+                    this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+                }
+            },
+            stopPolling() {
+                if (this.pollingTimer) {
+                    clearInterval(this.pollingTimer)
+                    this.pollingTimer = null
+                }
+            },
+            getWorkflowRunSummaries() {
+                api.get("/workflows")
+                    .then(({data}) => {
+                        this.workflowRunSummaries = data.data;
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage =
+                            "An error occurred fetching the workflows";
+                    });
+            },
+            getWorkflowRunStatus(key) {
+                api.get(`/workflows/${key}/status`)
+                    .then(({data}) => {
+                        this.workflowRunStatus = data.data;
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage =
+                            "An error occurred fetching the workflow reports";
+                    });
+            },
+            rerun() {
+                api.get(`/workflows/${this.selectedWorkflowKey}/`)
+                    .then(({data}) => {
+                        const reportMetadata = workflowRunDetailsToMetadata(data.data)
+                        this.$emit("rerun", reportMetadata);
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage =
+                            "An error occurred fetching workflow details";
+                    });
+            },
+            formatDate(date) {
+                return longTimestamp(new Date(date));
+            },
+            reportVersionHref(name, version) {
+                const url = `/report/${name}/${version}/`;
+                return buildFullUrl(url);
+            },
+            statusColour(status) {
+                if (["queued", "running"].includes(status)) {
+                    return "text-secondary";
+                } else if (failStates.includes(status)) {
+                    return "text-danger";
+                } else {
+                    return "";
+                }
+            },
+            interpretStatus(status) {
+                if (Object.keys(nonFailStateMessages).includes(status)) {
+                    return nonFailStateMessages[status]
+                } else if (
+                    failStates.includes(status)
+                ) {
+                    return "Failed";
+                } else {
+                    return status.charAt(0).toUpperCase() + status.slice(1);
+                }
+            },
+            viewLogLinkVisible(status) {
+                return !notStartedStates.includes(status);
+            },
+            showReportLog(reportKey) {
+                this.showLogForReportKey = reportKey;
+            },
+            closeReportLogDialog() {
+                this.showLogForReportKey = null;
             }
-        },
-        getWorkflowRunSummaries() {
-            api.get("/workflows")
-                .then(({ data }) => {
-                    this.workflowRunSummaries = data.data;
-                    this.error = "";
-                    this.defaultMessage = "";
-                })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage =
-                        "An error occurred fetching the workflows";
-                });
-        },
-        getWorkflowRunStatus(key) {
-            api.get(`/workflows/${key}/status`)
-                .then(({ data }) => {
-                    this.workflowRunStatus = data.data;
-                    this.error = "";
-                    this.defaultMessage = "";
-                })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage =
-                        "An error occurred fetching the workflow reports";
-                });
-        },
-        rerun() {
-            api.get(`/workflows/${this.selectedWorkflowKey}/`)
-                .then(({data}) => {
-                    const reportMetadata = workflowRunDetailsToMetadata(data.data)
-                    this.$emit("rerun", reportMetadata);
-                })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage =
-                        "An error occurred fetching workflow details";
-                });
-        },
-        formatDate(date) {
-            return longTimestamp(new Date(date));
-        },
-        reportVersionHref(name, version) {
-            const url = `/report/${name}/${version}/`;
-            return buildFullUrl(url);
-        },
-        statusColour(status) {
-            if (["queued", "running"].includes(status)) {
-                return "text-secondary";
-            } else if (failStates.includes(status)) {
-                return "text-danger";
-            } else {
-                return "";
-            }
-        },
-        interpretStatus(status) {
-            if (Object.keys(nonFailStateMessages).includes(status)) {
-                return nonFailStateMessages[status]
-            } else if (
-                failStates.includes(status)
-            ) {
-                return "Failed";
-            } else {
-                return status.charAt(0).toUpperCase() + status.slice(1);
-            }
-        },
-        viewLogLinkVisible(status) {
-            return !notStartedStates.includes(status);
-        },
-        showReportLog(reportKey) {
-            this.showLogForReportKey = reportKey;
-        },
-        closeReportLogDialog() {
-            this.showLogForReportKey = null;
         }
-    },
-    watch: {
-        selectedWorkflowKey() {
-            this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
-            if (this.selectedWorkflowKey) {
-                this.getWorkflowRunStatus(this.selectedWorkflowKey);
-                this.startPolling();
-            } else {
-                this.workflowRunStatus = null;
-            }
-        },
-        workflowRunStatus(newWorkflowRunStatus) {
-            const interpretStatus = this.interpretStatus(newWorkflowRunStatus.status)
-            if (interpretStatus === "Failed" || interpretStatus === "Complete") {
-                this.stopPolling();
-            }
-        }
-    },
-    mounted() {
-        this.getWorkflowRunSummaries();
-        this.selectedWorkflowKey = this.initialSelectedWorkflow;
-    },
-    beforeDestroy() {
-        this.stopPolling();
-    }
-});
+    });
 </script>

@@ -7,6 +7,6 @@
 
 <script>
     export default {
-        name: "fileIcon"
+        name: "FileIcon"
     }
 </script>

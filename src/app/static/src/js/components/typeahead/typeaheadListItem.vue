@@ -1,9 +1,7 @@
 <template>
-    <a
-            tabindex="0"
-            href="#"
-            :class="textClasses"
-    >
+    <a tabindex="0"
+       href="#"
+       :class="textClasses">
         <slot name="suggestion" v-bind="{ data: data, htmlText: htmlText }">
             <span v-html="htmlText"></span>
         </slot>
@@ -13,7 +11,6 @@
 <script>
     export default {
         name: 'VueBootstrapTypeaheadListItem',
-
         props: {
             data: {},
             htmlText: {

@@ -1,6 +1,6 @@
 import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
 import {GitState} from "../js/store/git/git";
-import {RunReportRootState, RunReportTabName} from "../js/store/runReport/store";
+import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
 
 export const mockRunReportMetadata = (props: Partial<RunReportMetadata> = {}): RunReportMetadata => {

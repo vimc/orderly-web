@@ -1,12 +1,14 @@
 import Vue from "vue";
 import documentPage from "./components/documents/documentPage.vue";
 
+declare const canManage: boolean;
+
 new Vue({
     el: '#app',
-    data: {
-        canManage
-    },
     components: {
         documentPage
+    },
+    data: {
+        canManage
     }
 });
