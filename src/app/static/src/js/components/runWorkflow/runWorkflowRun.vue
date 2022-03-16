@@ -1,15 +1,17 @@
 <template>
     <div id="run-workflow-id">
-        <h2 id="run-header">Run workflow</h2>
+        <h2 id="run-header">
+            Run workflow
+        </h2>
         <div id="workflow-name-div" class="form-group row">
             <label class="col-sm-4 col-form-label text-left">Name</label>
             <div class="col-sm-4">
-                <input type="text"
+                <input id="run-workflow-name"
+                       type="text"
                        :readonly="disableRename"
                        :value="workflowMetadata.name"
-                       @input="handleWorkflowName"
                        class="form-control"
-                       id="run-workflow-name">
+                       @input="handleWorkflowName">
                 <small class="text-danger">{{ workflowNameError }}</small>
             </div>
         </div>
@@ -20,12 +22,11 @@
                        @selectedValues="handleInstancesValue"/>
         </div>
         <div v-if="showChangelog">
-            <change-log
-                :changelog-type-options="runReportMetadata.changelog_types"
-                :custom-style="childCustomStyle"
-                :initial-message="initialChangelogMessage"
-                :initial-type="initialChangelogType"
-                @changelog="handleChangelog">
+            <change-log :changelog-type-options="runReportMetadata.changelog_types"
+                        :custom-style="childCustomStyle"
+                        :initial-message="initialChangelogMessage"
+                        :initial-type="initialChangelogType"
+                        @changelog="handleChangelog">
             </change-log>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -35,8 +36,7 @@
 <script lang="ts">
     import Vue from "vue"
     import {
-        ChildCustomStyle,
-        RunReportMetadata,
+        ChildCustomStyle, RunnerRootState,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowRunSummary
@@ -46,7 +46,6 @@
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
     import Instances from "../../../js/components/runReport/instances.vue";
     import {mapState} from "vuex";
-    import {RunReportRootState} from "../../store/runReport/store";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata | null
@@ -76,9 +75,17 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runWorkflowRun",
+        name: "RunWorkflowRun",
+        components: {
+            ErrorInfo,
+            ChangeLog,
+            Instances
+        },
         props: {
-            workflowMetadata: null,
+            workflowMetadata: {
+                required: true,
+                type: Object
+            },
             disableRename: {
                 required: false,
                 type: Boolean
@@ -95,7 +102,7 @@
         },
         computed: {
             ...mapState({
-                runReportMetadata: (state: RunReportRootState) => state.git.metadata
+                runReportMetadata: (state: RunnerRootState) => state.git.metadata
             }),
             showInstances() {
                 return !!this.runReportMetadata && this.runReportMetadata.instances_supported;
@@ -108,6 +115,13 @@
             },
             initialChangelogType() {
                 return this.workflowMetadata.changelog?.type
+            }
+        },
+        mounted() {
+            if (this.disableRename) {
+                this.$emit("valid", true);
+            } else {
+                this.getWorkflows();
             }
         },
         methods: {
@@ -145,18 +159,6 @@
                 }
                 this.$emit("valid", valid);
             }
-        },
-        mounted() {
-            if (this.disableRename) {
-                this.$emit("valid", true);
-            } else {
-                this.getWorkflows();
-            }
-        },
-        components: {
-            ErrorInfo,
-            ChangeLog,
-            Instances
         }
     })
 </script>

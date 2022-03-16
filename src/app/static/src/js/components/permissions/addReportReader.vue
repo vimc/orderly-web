@@ -1,12 +1,13 @@
 <template>
     <div class="mb-3">
-        <typeahead
-                size="sm"
-                v-model="newUserGroup"
-                :placeholder="placeholder"
-                :data="availableUserGroups">
+        <typeahead v-model="newUserGroup"
+                   size="sm"
+                   :placeholder="placeholder"
+                   :data="availableUserGroups">
             <template slot="append">
-                <button v-on:click="add" type="submit" class="btn btn-sm">Add {{type}}</button>
+                <button type="submit" class="btn btn-sm" @click="add">
+                    Add {{ type }}
+                </button>
             </template>
         </typeahead>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -19,7 +20,11 @@
     import ErrorInfo from "../errorInfo.vue";
 
     export default {
-        name: 'addReportReader',
+        name: 'AddReportReader',
+        components: {
+            ErrorInfo,
+            Typeahead
+        },
         props: ['reportName', 'availableUserGroups', 'type'],
         data() {
             return {
@@ -29,13 +34,9 @@
             }
         },
         computed: {
-          placeholder: function() {
-              return this.type === "user" ? "email" : "role name";
-          }
-        },
-        components: {
-            ErrorInfo,
-            Typeahead
+            placeholder: function () {
+                return this.type === "user" ? "email" : "role name";
+            }
         },
         watch: {
             newUserGroup() {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <file-icon></file-icon>
-        <span>{{doc.display_name}}:</span>
+        <span>{{ doc.display_name }}:</span>
         <a v-if="doc.can_open" :href="openUrl" target="_blank">open</a>
         <span v-if="doc.can_open">/</span>
         <a :href="doc.url">download</a>
@@ -12,11 +12,11 @@
     import fileIcon from "./fileIcon";
 
     export default {
-        props: ["doc"],
-        name: "file",
+        name: "File",
         components: {
             fileIcon
         },
+        props: ["doc"],
         computed: {
             openUrl() {
                 return this.doc.url + "?inline=true"

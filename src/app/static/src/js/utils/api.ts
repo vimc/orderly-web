@@ -1,5 +1,7 @@
 import axios from "axios";
 
+declare const appUrl: string | undefined;
+
 // appUrl var should be set externally in the browser
 const baseUrl = typeof appUrl !== "undefined" ? appUrl: "";
 
@@ -13,4 +15,3 @@ export const api = {
     post: (url, data, config = {}) => axios.post(buildFullUrl(url), data, {...config, withCredentials: true}),
     delete: (url) => axios.delete(buildFullUrl(url), {withCredentials: true}),
 };
-

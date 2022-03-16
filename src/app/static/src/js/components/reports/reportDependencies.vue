@@ -15,7 +15,7 @@
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import {ReportDependencies, ReportDependency, Error} from "../../utils/types";
+    import {ReportDependencies, ReportDependency, Error, Report} from "../../utils/types";
     import Vue from "vue";
     import ReportDependencyList from "./reportDependencyList.vue";
     import ErrorInfo from "../errorInfo.vue";
@@ -30,9 +30,19 @@
         childDependencies: ReportDependency[]
     }
 
-    export default Vue.extend<Data,{}, Computed, {}>({
-        name: "reportDependencies",
-        props: ['report'],
+    interface Props {
+        report: Report
+    }
+
+    export default Vue.extend<Data, Record<string, never>, Computed, Props>({
+        name: "ReportDependencies",
+        components: {
+            ReportDependencyList,
+            ErrorInfo
+        },
+        props: {
+            report: Object
+        },
         data: () => {
             return {
                 dependencies: null,
@@ -41,11 +51,11 @@
             }
         },
         computed: {
-          childDependencies(){
-              //The top level 'dependency_tree' value always has the report in question as the root item, but we don't
-              // want to display this report as its own dependency so we start from the next level down
-              return this.dependencies ? this.dependencies.dependency_tree.dependencies : [];
-          }
+            childDependencies() {
+                //The top level 'dependency_tree' value always has the report in question as the root item, but we don't
+                // want to display this report as its own dependency so we start from the next level down
+                return this.dependencies ? this.dependencies.dependency_tree.dependencies : [];
+            }
         },
         mounted() {
             const params = {id: this.report.id, direction: "upstream"};
@@ -57,10 +67,6 @@
                     this.defaultMessage = `Could not load report dependencies`;
                     this.error = error;
                 });
-        },
-        components: {
-            ReportDependencyList,
-            ErrorInfo
         }
     })
 </script>

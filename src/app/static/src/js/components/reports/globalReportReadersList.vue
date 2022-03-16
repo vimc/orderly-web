@@ -12,7 +12,11 @@
     import UserList from "../permissions/userList.vue";
 
     export default {
-        name: 'globalReportReadersList',
+        name: 'GlobalReportReadersList',
+        components: {
+            UserList,
+            ErrorInfo
+        },
         props: [],
         data() {
             return {
@@ -23,10 +27,6 @@
         },
         mounted() {
             this.getReaders();
-        },
-        components: {
-            UserList,
-            ErrorInfo
         },
         methods: {
             getReaders: function () {

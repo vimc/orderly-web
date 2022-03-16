@@ -126,12 +126,12 @@ export const options = (isReviewer, reports, customFields) => {
 };
 
 export const statusFilter = (selectedStatus, data) => {
+    const reTrue = new RegExp("true");
+    const reFalse = new RegExp("false");
     switch (selectedStatus) {
         case "published":
-            const reTrue = new RegExp("true");
             return reTrue.test(data[3]);
         case "internal":
-            const reFalse = new RegExp("false");
             return reFalse.test(data[3]);
         case "all":
         default:
