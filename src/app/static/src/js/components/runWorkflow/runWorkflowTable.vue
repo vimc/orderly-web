@@ -88,7 +88,7 @@
         computed: {
             anyParams() {
                 return !!this.workflowSummary?.reports.some(report => hasParams(report))
-            }
+            },
         },
         methods: {
             reportVersionHref(name, version) {
@@ -114,12 +114,5 @@
                 return formatDate(date)
             }
         },
-        watch: {
-            workflowSummary(){
-            console.log("workflowRunStatus", this.workflowRunStatus)
-            console.log("workflowSummary", this.workflowSummary)
-
-            }
-        }
     })
 </script>

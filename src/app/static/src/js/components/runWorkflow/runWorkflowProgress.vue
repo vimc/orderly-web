@@ -203,7 +203,11 @@
                 if (this.selectedWorkflowKey) {
                     api.get(`/workflows/${this.selectedWorkflowKey}/`)
                         .then(({data}) => {
-                            this.workflowMetadata = workflowRunDetailsToMetadata(data.data)
+                            const orderedReports = []
+                            this.workflowRunStatus.reports.forEach(report => {
+                                orderedReports.push(data.data.reports.find(r => r.key === report.key))
+                            });
+                            this.workflowMetadata = workflowRunDetailsToMetadata({...data.data, reports: orderedReports})
                             this.getWorkflowSummary()
                         })
                         .catch((error) => {
