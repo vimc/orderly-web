@@ -135,7 +135,6 @@
                 this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
                 if (this.selectedWorkflowKey) {
                     this.getWorkflowRunStatus(this.selectedWorkflowKey);
-                    this.getWorkflowMetadata();
                     this.startPolling();
                 } else {
                     this.workflowRunStatus = null;
@@ -153,7 +152,6 @@
         mounted() {
             this.getWorkflowRunSummaries();
             this.selectedWorkflowKey = this.initialSelectedWorkflow;
-            this.getWorkflowMetadata();
         },
         beforeDestroy() {
             this.stopPolling();
@@ -187,6 +185,7 @@
                 api.get(`/workflows/${key}/status`)
                     .then(({data}) => {
                         this.workflowRunStatus = data.data;
+                        this.getWorkflowMetadata();
                         this.error = "";
                         this.defaultMessage = "";
                     })
@@ -233,7 +232,7 @@
                     .catch((error) => {
                         this.error = error;
                         this.defaultMessage =
-                            "An error occurred fetching a report's dependencies";
+                            "An error occurred fetching the  workflow summary";
                     })
             },
             showReportLog(reportKey) {

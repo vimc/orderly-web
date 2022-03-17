@@ -240,7 +240,7 @@ describe(`runWorkflowProgress`, () => {
         const wrapper = getWrapper()
         wrapper.setData({ selectedWorkflowKey: "key1" })
         setTimeout(async () => {
-            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching a report's dependencies")
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the  workflow summary")
             expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
             expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
             done();

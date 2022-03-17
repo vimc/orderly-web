@@ -50,7 +50,7 @@
     import runWorkflowParameters from "./runWorkflowParameters.vue"
     import {WorkflowRunStatus, WorkflowSummaryResponse} from "../../utils/types";
     import {buildFullUrl} from "../../utils/api";
-    import {formatDate, failStates, notStartedStates, interpretStatus, hasParams} from "../../utils/helpers.ts";
+    import {formatDate, runninReportStates, interpretStatus, hasParams} from "../../utils/helpers.ts";
 
     interface Props {
         workflowRunStatus: WorkflowRunStatus
@@ -98,14 +98,14 @@
             statusColour(status) {
                 if (["queued", "running"].includes(status)) {
                     return "text-secondary";
-                } else if (failStates.includes(status)) {
+                } else if (runninReportStates.failStates.includes(status)) {
                     return "text-danger";
                 } else {
                     return "";
                 }
             },
             viewLogLinkVisible(status) {
-                return !notStartedStates.includes(status);
+                return !runninReportStates.notStartedStates.includes(status);
             },
             interpretStatus(status) {
                 return interpretStatus(status)

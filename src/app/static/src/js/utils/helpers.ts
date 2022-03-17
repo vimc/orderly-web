@@ -47,16 +47,18 @@ export function formatDate(date) {
     return longTimestamp(new Date(date));
 }
 
-export const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
-export const notStartedStates = ["queued", "deferred", "impossible", "missing"];
-const nonFailStateMessages = {
-    "success": "Complete",
-    "impossible": "Dependency failed",
-    "deferred": "Waiting for dependency"
-};
-
+export const runninReportStates = {
+    failStates: ["error", "orphan", "impossible", "missing", "interrupted"],
+    notStartedStates: ["queued", "deferred", "impossible", "missing"],
+    nonFailStateMessages: {
+        "success": "Complete",
+        "impossible": "Dependency failed",
+        "deferred": "Waiting for dependency"
+    }
+}
 
 export function interpretStatus(status) {
+    const { nonFailStateMessages, failStates } = runninReportStates
     if (Object.keys(nonFailStateMessages).includes(status)) {
         return nonFailStateMessages[status]
     } else if (
