@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 class MontaguAuthenticationTests : SeleniumTest()
 {
-    /*
     @Test
     fun `user is directed to login with Montagu`()
     {
@@ -51,6 +50,4 @@ class MontaguAuthenticationTests : SeleniumTest()
         //We should now be on the Montagu login page, logged out - give the proxy time to check user status with the api
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))
     }
-
-     */
 }

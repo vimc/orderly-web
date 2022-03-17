@@ -26,15 +26,12 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 
     override fun authenticate(token: String)
     {
-        println("AUTHENTICATING")
         connectToClient(token)
         user = getGitHubUser()
-        println("FINISHED AUTH")
     }
 
     override fun checkGitHubOrgAndTeamMembership()
     {
-        println("CHECKING MEMBERSHIP")
         checkAuthenticated()
 
         val orgName = appConfig["auth.github_org"]
@@ -54,16 +51,13 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
-        println("FINISHED CHECK")
     }
 
     override fun getUserEmail(): String
     {
-        println("GETTING EMAIL")
         checkAuthenticated()
         // If the GitHub user has no public email set, we need to make an extra call to get it
         val result = user!!.email ?: getEmailForUser()
-        println("FINISHED EMAIL")
         return result
     }
 

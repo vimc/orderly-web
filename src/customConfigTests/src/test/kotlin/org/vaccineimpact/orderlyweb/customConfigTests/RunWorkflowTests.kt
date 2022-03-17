@@ -31,7 +31,6 @@ class RunWorkflowTests : SeleniumTest()
         val url = RequestHelper.webBaseUrl + "/run-workflow/"
         driver.get(url)
     }
-    /*
 
     @Test
     fun `can view run workflow tab`()
@@ -435,7 +434,4 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
-
-
-     */
 }

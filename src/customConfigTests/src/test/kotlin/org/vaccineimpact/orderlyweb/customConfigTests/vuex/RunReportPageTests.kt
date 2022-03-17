@@ -27,7 +27,7 @@ class RunReportPageTests: SeleniumTest()
         val url = RequestHelper.webBaseUrl + "/vuex-run-report/"
         driver.get(url)
     }
-/*
+
     @Test
     fun `can view vuex run report page`()
     {
@@ -35,5 +35,4 @@ class RunReportPageTests: SeleniumTest()
         assertThat(tag.text).isEqualTo("Vuex Run Report Page")
     }
 
- */
 }

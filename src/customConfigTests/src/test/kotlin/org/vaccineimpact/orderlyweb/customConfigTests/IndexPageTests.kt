@@ -20,7 +20,6 @@ class IndexPageTests : SeleniumTest()
         insertReport("testreport2", "20180103-143015-1234abcd")
         insertReport("testreport2", "20180204-143015-1234abcd")
     }
-    /*
 
     @Test
     fun `datatable is rendered`()
@@ -180,6 +179,4 @@ class IndexPageTests : SeleniumTest()
         val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(0)
     }
-
-     */
 }

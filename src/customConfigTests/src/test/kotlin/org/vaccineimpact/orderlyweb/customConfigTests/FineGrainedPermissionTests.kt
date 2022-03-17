@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 
 class FineGrainedPermissionTests : CustomConfigTests()
 {
-    /*
     val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
     val url = "$apiBaseUrl/login/"
 
@@ -62,6 +61,4 @@ class FineGrainedPermissionTests : CustomConfigTests()
         assertThat(json["token_type"].textValue()).isEqualTo("bearer")
         assertThat(json["access_token"]).isNotNull
     }
-
-     */
 }

@@ -29,7 +29,6 @@ class GuestUserTests: SeleniumTest() {
                    .execute()
         }
     }
-    /*
 
     @Test
     fun `guest user can access homepage`() {
@@ -132,6 +131,4 @@ class GuestUserTests: SeleniumTest() {
         val button = driver.findElement(By.cssSelector(".login-link"))
         assertThat(button.text).isEqualToIgnoringWhitespace("Log in with GitHub")
     }
-
-     */
 }

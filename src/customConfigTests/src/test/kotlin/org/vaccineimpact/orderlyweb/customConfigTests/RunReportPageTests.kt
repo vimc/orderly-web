@@ -29,7 +29,6 @@ class RunReportPageTests : SeleniumTest()
         val url = RequestHelper.webBaseUrl + "/run-report/"
         driver.get(url)
     }
-    /*
 
     @Test
     fun `can view run tab`()
@@ -216,6 +215,4 @@ class RunReportPageTests : SeleniumTest()
         }
         return foundReportName == reportName
     }
-
-     */
 }
