@@ -47,27 +47,33 @@ class ReportRunController(
         var log = reportRunLogRepository.getReportRun(key)
         if (log.status in listOf(null, "queued", "running"))
         {
-            val generatedStartTime = Instant.now()
             val statusResponse = orderlyServerAPI.get(
                     "/v1/reports/$key/status/",
                     mapOf("output" to "true"))
             val latestStatus = statusResponse.data(ReportStatus::class.java)
-            val startDateTime = if (latestStatus.startTime != null)
-            {
-                Instant.ofEpochSecond(latestStatus.startTime)
-            } else
-            {
-                generatedStartTime
-            }
-            reportRunLogRepository.updateReportRun(
-                key,
-                latestStatus.status,
-                latestStatus.version,
-                latestStatus.output,
-                startDateTime)
+            updateReportRun(latestStatus, reportRunLogRepository, key)
             log = reportRunLogRepository.getReportRun(key)
         }
         return log
+    }
+
+    private fun updateReportRun(latestStatus: ReportStatus, reportRunLogRepository: ReportRunLogRepository, key: String)
+    {
+        val startDateTime = if (latestStatus.startTime != null)
+        {
+            Instant.ofEpochSecond(latestStatus.startTime)
+        } else
+        {
+            null
+        }
+
+        reportRunLogRepository.updateReportRun(
+            key,
+            latestStatus.status,
+            latestStatus.version,
+            latestStatus.output,
+            startDateTime
+        )
     }
 
     fun runningReports(): List<ReportRunWithDate>

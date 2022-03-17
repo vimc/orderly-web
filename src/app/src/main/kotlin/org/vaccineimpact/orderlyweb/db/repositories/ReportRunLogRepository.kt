@@ -14,6 +14,6 @@ interface ReportRunLogRepository
         status: String,
         version: String?,
         logs: List<String>?,
-        startTime: Instant
+        startTime: Instant?
     )
 }

@@ -1,9 +1,8 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.BadRequest
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
@@ -34,10 +33,9 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
         }
     }
 
-    override fun updateReportRun(key: String, status: String, version: String?, logs: List<String>?, startTime: Instant)
+    override fun updateReportRun(key: String, status: String, version: String?, logs: List<String>?, startTime: Instant?)
     {
         val logsString = logs?.joinToString(separator = "\n")
-
         val reportVersion = if (status == OrderlyWebReportRunRepository.SUCCESS_STATUS)
         {
             version
@@ -51,9 +49,16 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS, status)
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
                 .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS, logsString)
-                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE, Timestamp.from(startTime))
                 .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
                 .execute()
+
+            if (startTime != null)
+            {
+                it.dsl.update(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE, Timestamp.from(startTime))
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
+                    .execute()
+            }
         }
     }
 
