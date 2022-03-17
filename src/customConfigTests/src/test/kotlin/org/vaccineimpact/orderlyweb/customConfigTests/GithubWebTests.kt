@@ -8,7 +8,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class GithubWebTests : SeleniumTest()
 {
-    /*
     val url: String = "http://localhost:${AppConfig()["app.port"]}/"
     val loginUrl = "${url}login/"
 
@@ -30,6 +29,7 @@ class GithubWebTests : SeleniumTest()
         val header = driver.findElement(By.cssSelector(".reports-list"))
         assertThat(header.text).isEqualTo("Find a report")
     }
+    /*
 
     @Test
     fun `login with invalid code and secret fails`()
@@ -116,7 +116,5 @@ class GithubWebTests : SeleniumTest()
                 .contains("We have not been able to successfully identify you as a member of the app's configured GitHub org")
 
     }
-
-
-     */
+    */
 }

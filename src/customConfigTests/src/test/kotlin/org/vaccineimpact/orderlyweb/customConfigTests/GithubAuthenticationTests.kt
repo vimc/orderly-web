@@ -17,6 +17,8 @@ class GithubAuthenticationTests : CustomConfigTests()
     // repos. Token reversed so GitHub doesn't spot it and invalidate it
     val testUserPAT = "dyw4x210375dauDALEtMVdvjypgs8RuGcY8H_phg".reversed()
 
+    /*
+
     @Test
     fun `authentication fails without Auth header`()
     {
@@ -122,6 +124,8 @@ class GithubAuthenticationTests : CustomConfigTests()
         val result = HttpClient.options(url)
         assertThat(result.statusCode).isEqualTo(200)
     }
+
+     */
 
     private fun assertAuthSuccess(result: Response)
     {
