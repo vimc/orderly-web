@@ -33,7 +33,13 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
         }
     }
 
-    override fun updateReportRun(key: String, status: String, version: String?, logs: List<String>?, startTime: Instant?)
+    override fun updateReportRun(
+        key: String,
+        status: String,
+        version: String?,
+        logs: List<String>?,
+        startTime: Instant?
+    )
     {
         val logsString = logs?.joinToString(separator = "\n")
         val reportVersion = if (status == OrderlyWebReportRunRepository.SUCCESS_STATUS)

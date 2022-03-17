@@ -136,8 +136,6 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
                     .execute()
             }
-
         }
     }
-
 }
