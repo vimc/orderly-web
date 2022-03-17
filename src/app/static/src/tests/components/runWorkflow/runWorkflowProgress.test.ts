@@ -27,27 +27,27 @@ const workflowStatus1 = {
       "status": "running",
       "reports": [
         {
-          "key": "preterrestrial_andeancockoftherock",
-          "name": "report one a",
-          "status": "error",
-          "date": "2021-06-16T09:51:16Z"
+            "key": "preterrestrial_andeancockoftherock",
+              "name": "report1",
+            "status": "error",
+            "date": "2021-06-16T09:51:16Z"
         },
         {
-          "key": "hygienic_mammoth",
-          "name": "report two a",
-          "status": "success",
-          "version": "20210510-100458-8f1a9624",
-          "date": "2021-06-16T09:51:16Z"
+            "key": "hygienic_mammoth",
+            "name": "report2",
+            "status": "success",
+            "version": "20210510-100458-8f1a9624",
+            "date": "2021-06-16T09:51:16Z"
         },
         {
-          "key": "blue_bird",
-          "name": "report three a",
-          "status": "running",
-          "date": null
+            "key": "blue_bird",
+            "name": "report3",
+            "status": "running",
+            "date": null
         },
         {
             "key": "non_hygienic_mammoth",
-            "name": "report four a",
+            "name": "report4",
             "status": "impossible",
             "date": "2021-06-16T09:51:16Z"
           },
@@ -66,14 +66,26 @@ const workflowDetails = {
     reports: [
         {
             workflow_key: "curious_mongoose",
-            key: "terrified_ocelot",
+            key: "preterrestrial_andeancockoftherock",
             report: "report1",
             params: { p1: "v1" }
         },
         {
             workflow_key: "curious_mongoose",
-            key: "weird_anteater",
+            key: "hygienic_mammoth",
             report: "report2",
+            params: {}
+        },
+        {
+            workflow_key: "curious_mongoose",
+            key: "non_hygienic_mammoth",
+            report: "report4",
+            params: {}
+        },
+        {
+            workflow_key: "curious_mongoose",
+            key: "blue_bird",
+            report: "report3",
             params: {}
         }
     ]
@@ -268,6 +280,8 @@ describe(`runWorkflowProgress`, () => {
     });
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
+        mockAxios.onGet('http://app/workflows/test-key/status')
+            .reply(200, workflowStatus1);
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(200, {data: workflowDetails});
 
@@ -292,6 +306,14 @@ describe(`runWorkflowProgress`, () => {
                     },
                     {
                         name: "report2",
+                        params: {}
+                    },
+                    {
+                        name: "report3",
+                        params: {}
+                    },
+                    {
+                        name: "report4",
                         params: {}
                     }
                 ]
