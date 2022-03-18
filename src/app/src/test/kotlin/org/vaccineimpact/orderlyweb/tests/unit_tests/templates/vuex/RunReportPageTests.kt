@@ -37,7 +37,8 @@ class RunReportPageTests
     @Test
     fun `renders run report tabs correctly`()
     {
-        doc.select("#runReportTabsVueApp").select("run-report-tabs")
+        val tabs = doc.select("#runReportTabsVueApp").select("run-report-tabs")
+        assertThat(tabs.count()).isEqualTo(1)
     }
 
 }
