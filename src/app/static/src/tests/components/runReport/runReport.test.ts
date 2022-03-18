@@ -32,7 +32,7 @@ describe("runReport", () => {
             instances: {"source": []},
             changelog_types: ["internal", "public"]
         },
-        git_branches: ["master", "dev"]
+        branches: ["master", "dev"]
     }
 
     const createStore = (state: Partial<GitState> = gitState) => {
@@ -76,7 +76,7 @@ describe("runReport", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
         expect(gitUpdateReports.props("reportMetadata")).toBe(gitState.metadata);
-        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.git_branches);
+        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.branches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });
 
@@ -412,7 +412,7 @@ describe("runReport", () => {
                     changelog_types: ["internal", "public"],
                     instances: {}
                 },
-                git_branches: []
+                branches: []
             }),
             data() {
                 return {

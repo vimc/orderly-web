@@ -135,7 +135,7 @@
         },
         computed: {
             ...mapState({
-                initialGitBranches: (state: RunnerRootState) => state.git.git_branches,
+                initialGitBranches: (state: RunnerRootState) => state.git.branches,
                 metadata: (state: RunnerRootState) => state.git.metadata
             }),
             showReports() {

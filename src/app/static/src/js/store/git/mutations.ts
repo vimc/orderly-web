@@ -1,14 +1,26 @@
 import {MutationTree} from "vuex";
 import {GitState} from "./git";
-import {RunReportMetadata} from "../../utils/types";
+import {GitCommit, RunReportMetadata} from "../../utils/types";
 
 export enum GitMutation {
-    SetMetadata = "SetMetadata"
+    SetMetadata = "SetMetadata",
+    SelectBranch = "SelectBranch",
+    SetCommits = "SetCommits",
+    SelectCommit = "SelectCommit"
 }
 
 export const mutations: MutationTree<GitState> = {
     [GitMutation.SetMetadata](state: GitState, payload: RunReportMetadata) {
         state.metadata = payload.metadata;
-        state.git_branches = payload.git_branches;
+        state.branches = payload.git_branches;
+    },
+    [GitMutation.SelectBranch](state: GitState, payload: string) {
+        state.selectedBranch = payload;
+    },
+    [GitMutation.SetCommits](state: GitState, payload: GitCommit[]) {
+        state.commits = payload;
+    },
+    [GitMutation.SelectCommit](state: GitState, payload: string) {
+        state.selectedCommit = payload;
     }
 }

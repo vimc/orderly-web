@@ -9,7 +9,7 @@ describe("GitSelections", () => {
         return new Vuex.Store({
             state: mockRunReportRootState({
                 git: mockGitState({
-                    git_branches: ["master", "dev"]
+                    branches: ["master", "dev"]
                 })
             })
         });

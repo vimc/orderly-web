@@ -1,23 +1,29 @@
-import {RunReportMetadataDependency} from "../../utils/types";
+import {GitCommit, RunnerRootState, RunReportMetadataDependency} from "../../utils/types";
 import {Module} from "vuex";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
 
 export interface GitState {
-    git_branches: string[],
+    branches: string[],
     metadata: RunReportMetadataDependency
+    selectedBranch: string
+    commits: GitCommit[]
+    selectedCommit: string
 }
 
 export const initialGitState = (): GitState => {
     return {
         metadata: null,
-        git_branches: []
+        branches: [],
+        selectedBranch: "",
+        commits: [],
+        selectedCommit: ""
     }
 };
 
 const namespaced = true;
 
-export const git: Module<GitState, any> = {
+export const git: Module<GitState, RunnerRootState> = {
     namespaced,
     state: initialGitState(),
     actions,

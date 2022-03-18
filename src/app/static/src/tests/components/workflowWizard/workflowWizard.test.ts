@@ -53,7 +53,7 @@ describe(`workflowWizard`, () => {
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata({
-            git_branch: gitState.git_branches[0]
+            git_branch: gitState.branches[0]
         }));
     });
 
@@ -263,7 +263,7 @@ describe(`workflowWizard`, () => {
         wrapper.findComponent(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
 
-        const runWorkflowMetadata = {...mockRunWorkflowMetadata({git_branch: gitState.git_branches[0]}), newProp: "newVal"}
+        const runWorkflowMetadata = {...mockRunWorkflowMetadata({git_branch: gitState.branches[0]}), newProp: "newVal"}
 
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 
