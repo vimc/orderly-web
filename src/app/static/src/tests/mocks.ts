@@ -3,16 +3,24 @@ import {GitState} from "../js/store/git/git";
 import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
 
-export const mockRunReportMetadata = (props: Partial<RunReportMetadata> = {}): RunReportMetadata => {
+export type RecursivePartial<T> = {
+    [P in keyof T]?:
+    T[P] extends (infer U)[] ? RecursivePartial<U>[] :
+        T[P] extends object ? RecursivePartial<T[P]> :
+            T[P];
+};
+
+export const mockRunReportMetadata = (props: RecursivePartial<RunReportMetadata> = {}): RunReportMetadata => {
     return {
+        git_branches: ["master", "dev"],
+        ...props,
         metadata: {
             instances_supported: false,
             git_supported: true,
             instances: {"source": []},
-            changelog_types: ["published", "internal"]
-        },
-        git_branches: ["master", "dev"],
-        ...props
+            changelog_types: ["published", "internal"],
+            ...props.metadata
+        }
     }
 };
 
@@ -28,18 +36,18 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
     }
 };
 
-export const mockGitState = (props: Partial<GitState> = {}): GitState => {
+export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState => {
     return {
-        ...mockRunReportMetadata(),
-        ...props
+        ...props,
+        ...mockRunReportMetadata(props)
     }
 }
 
-export const mockRunReportRootState = (props: Partial<RunReportRootState> = {}): RunReportRootState => {
+export const mockRunReportRootState = (props: RecursivePartial<RunReportRootState> = {}): RunReportRootState => {
     return {
         selectedTab: "RunReport",
-        git: mockGitState(),
-        ...props
+        ...props,
+        git: mockGitState(props.git)
     }
 }
 
