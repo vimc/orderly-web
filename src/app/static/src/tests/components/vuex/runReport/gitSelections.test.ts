@@ -21,7 +21,7 @@ describe("GitSelections", () => {
                 metadata: {
                     git_supported: true
                 },
-                git_branches: ["master", "dev"]
+                branches: ["master", "dev"]
             })
         })
 
@@ -41,7 +41,7 @@ describe("GitSelections", () => {
                 metadata: {
                     git_supported: false
                 },
-                git_branches: ["master", "dev"]
+                branches: ["master", "dev"]
             })
         })
 

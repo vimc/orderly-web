@@ -38,8 +38,15 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
 
 export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState => {
     return {
+        branches: ["master", "dev"],
         ...props,
-        ...mockRunReportMetadata(props)
+        metadata: props.metadata !== null ? {
+            instances_supported: false,
+            git_supported: true,
+            instances: {"source": []},
+            changelog_types: ["published", "internal"],
+            ...props.metadata
+        } : null
     }
 }
 

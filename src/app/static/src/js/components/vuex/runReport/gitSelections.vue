@@ -29,7 +29,7 @@
         computed: {
             ...mapState({
                 metadata: (state: RunReportRootState) => state.git.metadata,
-                gitBranches: (state: RunReportRootState) => state.git.git_branches
+                gitBranches: (state: RunReportRootState) => state.git.branches
             })
         }
     });
