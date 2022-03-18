@@ -72,9 +72,9 @@ class RunWorkflowTests : SeleniumTest()
         val vSelectInput = driver.findElement(By.tagName("input"))
         vSelectInput.sendKeys("workf")
 
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("selected-report")))
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("selected-report")))
         assertThat(dropdownMenu[0].text).contains("workflow1 test.user@example.com | Tue Jun 15 2021, 14:50")
         dropdownMenu[0].click()
 
@@ -94,6 +94,7 @@ class RunWorkflowTests : SeleniumTest()
         val vSelectInput = driver.findElement(By.tagName("input"))
         vSelectInput.sendKeys("workf")
 
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("selected-report")))
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
         assertThat(dropdownMenu[0].text).contains("workflow1 test.user@example.com | Tue Jun 15 2021, 14:50")
