@@ -3,7 +3,7 @@ import {mount, Wrapper} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
-import {mockRunWorkflowMetadata, mockGitState, mockRunReportMetadata} from "../../../mocks";
+import {mockRunWorkflowMetadata, mockGitState} from "../../../mocks";
 import {GitState} from "../../../../js/store/git/git";
 import Vuex from "vuex";
 
@@ -17,7 +17,7 @@ const reports = [
     { name: "global", date: new Date() }
 ];
 
-const gitState: GitState = mockRunReportMetadata()
+const gitState: GitState = mockGitState()
 
 const createStore = (state: Partial<GitState> = gitState) => {
     return new Vuex.Store({

@@ -1,4 +1,5 @@
 import {GitCommit, RunnerRootState, RunReportMetadataDependency} from "../../utils/types";
+
 import {Module} from "vuex";
 import {mutations} from "./mutations";
 import {actions} from "./actions";

@@ -25,7 +25,7 @@ describe("runReport", () => {
     const minimal = {name: "minimal", date: new Date().toISOString()};
     const global = {name: "global", date: null};
 
-    const gitState: GitState = {
+    const gitState: GitState = mockGitState({
         metadata: {
             git_supported: true,
             instances_supported: false,
@@ -33,7 +33,7 @@ describe("runReport", () => {
             changelog_types: ["internal", "public"]
         },
         branches: ["master", "dev"]
-    }
+    })
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
@@ -75,7 +75,8 @@ describe("runReport", () => {
     it("renders gitUpdateReports component", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        expect(gitUpdateReports.props("reportMetadata")).toBe(gitState.metadata);
+
+        expect(gitUpdateReports.props("reportMetadata")).toEqual(gitState.metadata);
         expect(gitUpdateReports.props("initialBranches")).toBe(gitState.branches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });

@@ -15,7 +15,7 @@ describe(`workflowWizard`, () => {
         {name: "run", component: "runWorkflowRun"}
     ]
 
-    const gitState: GitState = mockRunReportMetadata()
+    const gitState: GitState = mockGitState()
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({

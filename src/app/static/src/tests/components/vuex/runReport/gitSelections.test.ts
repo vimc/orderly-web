@@ -1,24 +1,28 @@
 import {shallowMount} from "@vue/test-utils";
 import GitSelections from "../../../../js/components/vuex/runReport/gitSelections.vue";
 import Vuex from "vuex";
-import {mockGitState, mockRunReportRootState} from "../../../mocks";
+import {mockGitState, mockRunReportMetadata, mockRunReportRootState, RecursivePartial} from "../../../mocks";
+import {GitState} from "../../../../js/store/git/git";
 
 describe("GitSelections", () => {
 
-    const createStore = () => {
+    const createStore = (gitState: RecursivePartial<GitState>) => {
         return new Vuex.Store({
             state: mockRunReportRootState({
-                git: mockGitState({
-                    branches: ["master", "dev"]
-                })
+                git: mockGitState(gitState)
             })
-        });
-    };
+        })
+    }
 
     it("renders git branch drop down if git supported", () => {
 
         const wrapper = shallowMount(GitSelections, {
-            store: createStore()
+            store: createStore({
+                metadata: {
+                    git_supported: true
+                },
+                branches: ["master", "dev"]
+            })
         })
 
         expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
@@ -28,5 +32,19 @@ describe("GitSelections", () => {
         expect(options.at(0).attributes().value).toBe("master");
         expect(options.at(1).text()).toBe("dev");
         expect(options.at(1).attributes().value).toBe("dev");
+    });
+
+    it("does not render git branch drop down if git not supported", () => {
+
+        const wrapper = shallowMount(GitSelections, {
+            store: createStore({
+                metadata: {
+                    git_supported: false
+                },
+                branches: ["master", "dev"]
+            })
+        })
+
+        expect(wrapper.find("#git-branch-form-group").exists()).toBe(false);
     });
 })
