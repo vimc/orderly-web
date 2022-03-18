@@ -34,5 +34,4 @@ class RunReportPageTests: SeleniumTest()
         val tag = driver.findElement(By.tagName("h1"))
         assertThat(tag.text).isEqualTo("Vuex Run Report Page")
     }
-
 }

@@ -198,4 +198,5 @@ class ReportPageTests : SeleniumTest()
             assertThat(actualPaneClasses).contains(it)
         }
     }
+
 }

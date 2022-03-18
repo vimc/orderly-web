@@ -434,4 +434,5 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
+
 }
