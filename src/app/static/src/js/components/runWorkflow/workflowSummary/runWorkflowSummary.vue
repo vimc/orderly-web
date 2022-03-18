@@ -35,11 +35,6 @@
         getReportWorkflowSummary: () => void;
     }
 
-    interface Data {
-        workflowSummary: WorkflowSummaryResponse | null
-        error: string
-    }
-
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "RunWorkflowSummary",
         components: {
