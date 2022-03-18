@@ -37,11 +37,11 @@
                                                 <b-collapse :id="`collapseSummary-${index}`">
                                                     <p v-for="(param, paramIndex) in report.default_param_list"
                                                        :id="`default-params-collapse-${index}-${paramIndex}`"
-                                                       :key="param.name">{{ param.name }}: {{ param.value }}</p>
+                                                       :key="paramIndex">{{ param.name }}: {{ param.value }}</p>
                                                 </b-collapse>
                                             </div>
                                         </div>
-                                        <div v-else>
+                                        <div v-else class="noParams">
                                             <p>There are no parameters</p>
                                         </div>
                                     </div>
@@ -64,11 +64,11 @@
     import {BLink} from "bootstrap-vue/esm/components/link";
     import {BCollapse} from "bootstrap-vue/esm/components/collapse";
     import {VBToggle} from 'bootstrap-vue/esm/directives/toggle';
-    import {WorkflowSummary, WorkflowReportWithDependencies} from "../../../utils/types";
+    import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../../utils/types";
     import {VTooltip} from "v-tooltip";
 
     interface Props {
-        workflowSummary: WorkflowSummary
+        workflowSummary: WorkflowSummaryResponse
         gitCommit: string
     }
 
