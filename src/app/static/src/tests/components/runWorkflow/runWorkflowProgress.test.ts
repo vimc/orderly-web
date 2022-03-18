@@ -326,6 +326,8 @@ describe(`runWorkflowProgress`, () => {
     });
 
     it(`sets error when fail to fetch workflow details`, (done) => {
+        mockAxios.onGet('http://app/workflows/test-key/status')
+            .reply(200, workflowStatus1);
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper()
@@ -394,7 +396,7 @@ describe(`runWorkflowProgress`, () => {
             expect(clearInterval).toHaveBeenCalledTimes(0);
 
             await wrapper.setData({selectedWorkflowKey: key2})
-            expect(mockAxios.history.get[3].url).toBe(`http://app/workflows/${key2}/status`)
+            expect(mockAxios.history.get[2].url).toBe(`http://app/workflows/${key2}/status`)
             expect(wrapper.vm.$data.pollingTimer).toBe(100);
             expect(setInterval).toHaveBeenCalledTimes(0);
             expect(clearInterval).toHaveBeenCalledTimes(0);
