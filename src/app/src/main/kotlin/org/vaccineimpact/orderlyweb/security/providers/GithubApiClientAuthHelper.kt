@@ -70,7 +70,9 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     private fun checkAuthenticated()
     {
         if (user == null)
+        {
             throw IllegalStateException("User has not been authenticated")
+        }
     }
 
     private fun connectToClient(token: String)
@@ -93,7 +95,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
            if (e.responseCode == 401)
            {
-               throw CredentialsException(e.message?:"")
+               throw CredentialsException(e.message ?: "")
            }
             else throw e
         }
@@ -109,7 +111,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             if (e.responseCode == 401)
             {
-                throw CredentialsException(e.message?:"")
+                throw CredentialsException(e.message ?: "")
             }
             else throw e
         }
