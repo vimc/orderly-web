@@ -8,6 +8,7 @@ import org.junit.Test
 import org.pac4j.core.exception.CredentialsException
 import org.kohsuke.github.*
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 import org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper
 
@@ -90,6 +91,19 @@ class GithubApiClientAuthHelperTests
     {
         //default mock values should succeed
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubBuilder)
+        sut.authenticate(token)
+        sut.checkGitHubOrgAndTeamMembership()
+    }
+
+    @Test
+    fun `checkGithubUserCanAuthenticate succeeds when user is member of allowed org and team is not configured`()
+    {
+        val customMockAppConfig = mock<Config> {
+            on { get("auth.github_org") } doReturn orgName
+            on { get("auth.github_team") } doReturn ""
+        }
+
+        val sut = GithubApiClientAuthHelper(customMockAppConfig, mockGithubBuilder)
         sut.authenticate(token)
         sut.checkGitHubOrgAndTeamMembership()
     }
@@ -233,5 +247,80 @@ class GithubApiClientAuthHelperTests
             sut.getUserEmail()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("GitHub token must include scope user:email")
+    }
+
+    @Test
+    fun `throws CredentialsException if unauthorized when getting user`()
+    {
+        val customMockGithub = mock<GitHub> {
+            on { myself } doThrow HttpException("Test error", 401, "", "")
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
+        Assertions.assertThatThrownBy {
+            sut.authenticate(token)
+        }.isInstanceOf(CredentialsException::class.java)
+                .hasMessageContaining("Test error")
+    }
+
+    @Test
+    fun `throws non-401 HttpException when getting user`()
+    {
+        val httpException = HttpException("TestError", 500, "", "")
+        val customMockGithub = mock<GitHub> {
+            on { myself } doThrow httpException
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
+        Assertions.assertThatThrownBy {
+            sut.authenticate(token)
+        }.isSameAs(httpException)
+    }
+
+    @Test
+    fun `throws CredentialsException if unauthorized when getting org`()
+    {
+        val customMockGithub = mock<GitHub> {
+            on { myself } doReturn mockUser
+            on { getOrganization(orgName) } doThrow HttpException("Test error", 401, "", "")
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
+        sut.authenticate(token)
+        Assertions.assertThatThrownBy {
+            sut.checkGitHubOrgAndTeamMembership()
+        }.isInstanceOf(CredentialsException::class.java)
+                .hasMessageContaining("Test error")
+    }
+
+    @Test
+    fun `throws non-401 HttpException when getting org`()
+    {
+        val httpException = HttpException("TestError", 500, "", "")
+        val customMockGithub = mock<GitHub> {
+            on { myself } doReturn mockUser
+            on { getOrganization(orgName) } doThrow httpException
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
+        sut.authenticate(token)
+        Assertions.assertThatThrownBy {
+            sut.checkGitHubOrgAndTeamMembership()
+        }.isSameAs(httpException)
+    }
+
+    @Test
+    fun `throws InvalidConfigurationKey if configured org is empty`()
+    {
+        val customMockAppConfig = mock<Config> {
+            on { get("auth.github_org") } doReturn ""
+            on { get("auth.github_team") } doReturn ""
+        }
+        val sut = GithubApiClientAuthHelper(customMockAppConfig, mockGithubBuilder)
+        sut.authenticate(token)
+        Assertions.assertThatThrownBy {
+            sut.checkGitHubOrgAndTeamMembership()
+        }.isInstanceOf(InvalidConfigurationKey::class.java)
+                .hasMessage("Invalid configuration value '' for key 'auth.github_org'")
     }
 }
