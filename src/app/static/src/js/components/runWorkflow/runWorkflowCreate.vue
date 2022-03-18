@@ -19,7 +19,7 @@
                           :options="workflows.slice(0, 10)"
                           placeholder="Search by name or user...">
                     <template #option="{ name, email, date }">
-                        <div>
+                        <div id="selected-report">
                             <span>{{ name }}</span>
                             <span class="text-muted pl-3">{{ email }} | {{ getLongTimestamp(date) }}</span>
                         </div>
