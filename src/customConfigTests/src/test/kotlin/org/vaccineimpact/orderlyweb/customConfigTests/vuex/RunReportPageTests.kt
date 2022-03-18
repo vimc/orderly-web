@@ -4,10 +4,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.customConfigTests.RequestHelper
 import org.vaccineimpact.orderlyweb.customConfigTests.SeleniumTest
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 
 class RunReportPageTests: SeleniumTest()
@@ -29,9 +34,20 @@ class RunReportPageTests: SeleniumTest()
     }
 
     @Test
-    fun `can view vuex run report page`()
+    fun `can view run tab`()
     {
-        val tag = driver.findElement(By.tagName("h1"))
-        assertThat(tag.text).isEqualTo("Vuex Run Report Page")
+        val tab = driver.findElement(By.id("run-tab"))
+
+        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run a report")
+    }
+
+    @Test
+    fun `can view logs tab`()
+    {
+        driver.findElement(By.id("logs-link")).click()
+
+        val tab = driver.findElement(By.id("logs-tab"))
+        wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
+        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
     }
 }
