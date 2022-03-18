@@ -260,7 +260,21 @@ class GithubApiClientAuthHelperTests
         Assertions.assertThatThrownBy {
             sut.authenticate(token)
         }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("Test error")
+                .hasMessage("Test error")
+    }
+
+    @Test
+    fun `throws CredentialsException if unauthorized when getting user with null message`()
+    {
+        val customMockGithub = mock<GitHub> {
+            on { myself } doThrow HttpException(null, 401, "", "")
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
+        Assertions.assertThatThrownBy {
+            sut.authenticate(token)
+        }.isInstanceOf(CredentialsException::class.java)
+                .hasMessage("")
     }
 
     @Test
@@ -290,7 +304,23 @@ class GithubApiClientAuthHelperTests
         Assertions.assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("Test error")
+                .hasMessage("Test error")
+    }
+
+    @Test
+    fun `throws CredentialsException if unauthorized when getting org with null message`()
+    {
+        val customMockGithub = mock<GitHub> {
+            on { myself } doReturn mockUser
+            on { getOrganization(orgName) } doThrow HttpException(null, 401, "", "")
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
+        sut.authenticate(token)
+        Assertions.assertThatThrownBy {
+            sut.checkGitHubOrgAndTeamMembership()
+        }.isInstanceOf(CredentialsException::class.java)
+                .hasMessage("")
     }
 
     @Test
