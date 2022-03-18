@@ -4,7 +4,7 @@
             <th class="p-2">
                 Report
             </th>
-            <th v-if="anyParams" class="p-2">
+            <th v-if="anyParams" class="p-2" id="table-params-header">
                 Parameters
             </th>
             <th class="p-2">
@@ -15,15 +15,15 @@
             </th>
         </tr>
         <tr v-for="(report, index) in workflowRunStatus.reports" :key="report.key">
-            <td v-if="report.status === 'success'" class="p-2">
+            <td v-if="report.status === 'success'" class="p-2 row-name">
                 <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
                     {{ report.name }}
                 </a>
             </td>
-            <td v-else class="p-2">
+            <td v-else class="p-2 row-name">
                 {{ report.name }}
             </td>
-            <td v-if="anyParams" class="p-2">
+            <td v-if="anyParams" class="p-2 tableParams">
                 <run-workflow-parameters :report="workflowSummary.reports[index]"
                                          :report-index="index"></run-workflow-parameters>
             </td>

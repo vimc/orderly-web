@@ -3,10 +3,11 @@
         <p v-for="(param, paramIndex) in report.param_list"
            :key="paramIndex"
            class="non-default-param">{{ param.name }}: {{ param.value }}</p>
-        <p v-if="!report.param_list.length">
+        <p v-if="!report.param_list.length" class="no-non-default-params">
             No non-default parameters
         </p>
         <div v-if="report.default_param_list.length > 0"
+            class="default-params"
              :id="`default-params-${reportIndex}`">
             <b-link v-b-toggle="`collapseSummary-${reportIndex}`"
                     href="#"
@@ -14,14 +15,15 @@
                 <span class="when-closed">Show</span>
                 <span class="when-open">Hide</span> defaults...
             </b-link>
-            <b-collapse :id="`collapseSummary-${reportIndex}`">
+            <b-collapse :id="`collapseSummary-${reportIndex}`" class="collapseSummary">
                 <p v-for="(param, paramIndex) in report.default_param_list"
+                    class="default-params-collapse"
                    :id="`default-params-collapse-${reportIndex}-${paramIndex}`"
                    :key="paramIndex">{{ param.name }}: {{ param.value }}</p>
             </b-collapse>
         </div>
     </div>
-    <p v-else>
+    <p v-else class="no-params">
         No parameters
     </p>
 </template>
