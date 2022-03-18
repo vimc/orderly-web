@@ -76,7 +76,7 @@ To login and retrieve a bearer token that can be used to authenticate all other 
 users will need either a GitHub token or a Montagu token, depending on which provider the app is configured to run with.
  
 To authenticate with GitHub, first create a limited scope GitHub token by going [here](https://github.com/settings/tokens)
-and choosing `read:user` and `user:email` under section `user` as the only selected scopes.
+and choosing `read:org` and `user:email` under section `user` as the only selected scopes.
 
 To authenticate with Montagu, first retrieve a Montatgu token by following the instructions 
 [here](https://github.com/vimc/montagu-api/blob/master/docs/spec/Authentication.md#post-authenticate)
