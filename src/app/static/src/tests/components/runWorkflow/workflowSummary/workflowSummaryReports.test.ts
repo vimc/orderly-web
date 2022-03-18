@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import { WorkflowSummaryResponse } from "../../../../js/utils/types";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 import runWorkflowParameters from "../../../../js/components/runWorkflow/runWorkflowParameters.vue";
@@ -11,17 +11,17 @@ describe(`workflowSummaryReports`, () => {
         reports: [
             {
                 name: "testReport",
-                param_list: [{name: "disease", value: "Measles"}],
-                default_param_list: [{name: "nmin", value: "123"}],
+                param_list: [{ name: "disease", value: "Measles" }],
+                default_param_list: [{ name: "nmin", value: "123" }],
             },
             {
                 name: "testReport2",
                 param_list: [],
-                default_param_list: [{name: "nmin2", value: "234"}, {name: "disease", value: "HepC"}]
+                default_param_list: [{ name: "nmin2", value: "234" }, { name: "disease", value: "HepC" }]
             },
             {
                 name: "testReport2",
-                param_list: [{name: "nmin2", value: "345"}, {name: "disease", value: "Malaria"}],
+                param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
                 default_param_list: []
             }
         ]
@@ -36,17 +36,17 @@ describe(`workflowSummaryReports`, () => {
                     workflowSummary: summary,
                     gitCommit: "commit123"
                 },
-                directives: {"tooltip": mockTooltip}
+                directives: { "tooltip": mockTooltip }
             })
     }
 
     it(`it can render tooltip text for reports that run single and multiple times`, () => {
         const sameReports = [
-            {name: "testReport", param_list: [], default_param_list: []},
-            {name: "testReport", param_list: [], default_param_list: []},
-            {name: "testReport2", param_list: [], default_param_list: []}
+            { name: "testReport", param_list: [], default_param_list: [] },
+            { name: "testReport", param_list: [], default_param_list: [] },
+            { name: "testReport2", param_list: [], default_param_list: [] }
         ];
-        const wrapper = getWrapper({reports: sameReports});
+        const wrapper = getWrapper({ reports: sameReports });
 
         expect(wrapper.find("#workflow-summary").exists()).toBe(true)
         const reports = wrapper.findAll("#report-name-icon")

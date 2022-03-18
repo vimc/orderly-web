@@ -130,9 +130,9 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "adventurous_aardvark",
                 "success",
                 "version123",
-                listOf("log1","log2")
+                listOf("log1","log2"),
+                now
         )
-
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
                 "user@email.com",
                 now,
@@ -147,6 +147,43 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `does not update date column if startTime does not exist`()
+    {
+        insertUser("user@email.com", "user.name")
+        insertReport("testReport", "version123")
+
+        val sut = OrderlyWebReportRunRepository()
+        addTestReportRun(sut)
+
+        sut.updateReportRun(
+            "adventurous_aardvark",
+            "success",
+            "version123",
+            listOf("log1","log2"),
+            now
+        )
+
+        sut.updateReportRun(
+            "adventurous_aardvark",
+            "success",
+            "version123",
+            listOf("log1","log2"),
+            null
+        )
+        assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
+            "user@email.com",
+            now,
+            "report1",
+            mapOf("instance1" to "pre-staging"),
+            mapOf("parameter1" to "value1"),
+            "branch1",
+            "commit1",
+            "success",
+            "log1\nlog2",
+            "version123"))
+    }
+
+    @Test
     fun `update report run does not update version if status is not 'success'`()
     {
         insertUser("user@email.com", "user.name")
@@ -158,7 +195,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "adventurous_aardvark",
                 "running",
                 "version123",
-                listOf("log1", "log2")
+                listOf("log1", "log2"),
+                now
         )
 
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(

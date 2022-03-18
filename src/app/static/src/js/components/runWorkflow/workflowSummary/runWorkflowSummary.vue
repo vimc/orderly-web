@@ -1,20 +1,30 @@
 <template>
     <div id="summary-header">
+        <run-workflow-summary-header :workflow-summary="workflowSummary"></run-workflow-summary-header>
         <div v-if="hasDependenciesLength">
             <workflow-summary-reports :workflow-summary="workflowSummary"
                                       :git-commit="workflowMetadata.git_commit"/>
         </div>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
     import {RunWorkflowMetadata, WorkflowSummaryResponse} from "../../../utils/types";
+    import runWorkflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
+    import ErrorInfo from "../../../../js/components/errorInfo.vue";
     import {api} from "../../../utils/api";
     import WorkflowSummaryReports from "./workflowSummaryReports.vue"
 
     interface Props {
-        workflowMetadata: RunWorkflowMetadata;
+        workflowMetadata: RunWorkflowMetadata
+    }
+
+    interface Data {
+        workflowSummary: WorkflowSummaryResponse | null,
+        error: string,
+        defaultMessage: string,
     }
 
     interface Computed {
@@ -22,7 +32,7 @@
     }
 
     interface Methods {
-        getReportDependencies: () => void;
+        getReportWorkflowSummary: () => void;
     }
 
     interface Data {
@@ -33,7 +43,9 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "RunWorkflowSummary",
         components: {
-            WorkflowSummaryReports
+            WorkflowSummaryReports,
+            runWorkflowSummaryHeader,
+            ErrorInfo
         },
         props: {
             workflowMetadata: {
@@ -44,7 +56,8 @@
         data() {
             return {
                 workflowSummary: null,
-                error: ""
+                error: "",
+                defaultMessage: "",
             }
         },
         computed: {
@@ -53,11 +66,11 @@
             }
         },
         mounted() {
-            this.getReportDependencies();
+            this.getReportWorkflowSummary();
             this.$emit("valid", true)
         },
         methods: {
-            getReportDependencies() {
+            getReportWorkflowSummary() {
                 const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
                 api.post(`/workflows/summary/${commit}`, {
                     reports: this.workflowMetadata.reports,
@@ -66,11 +79,13 @@
                     .then(({data}) => {
                         this.workflowSummary = data.data;
                         this.error = "";
+                        this.defaultMessage = "";
                     })
                     .catch((error) => {
-                        this.error = error;
+                        this.error = error
+                        this.defaultMessage = "An error occurred while retrieving the workflow summary";
                     })
-            }
+            },
         }
     })
 </script>

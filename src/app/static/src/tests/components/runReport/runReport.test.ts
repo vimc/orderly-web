@@ -10,7 +10,7 @@ import changeLog from "../../../js/components/runReport/changeLog.vue";
 import VueSelect from "vue-select";
 import {GitState} from "../../../js/store/git/git";
 import Vuex from "vuex";
-import {mockGitState} from "../../mocks";
+import {mockGitState, mockRunReportRootState} from "../../mocks";
 
 describe("runReport", () => {
     const mockParams = [
@@ -37,7 +37,7 @@ describe("runReport", () => {
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
-            state: {},
+            state: mockRunReportRootState(),
             modules: {
                 git: {
                     namespaced: true,

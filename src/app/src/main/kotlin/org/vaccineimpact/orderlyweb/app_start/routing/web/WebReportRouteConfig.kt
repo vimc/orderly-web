@@ -49,6 +49,10 @@ object WebReportRouteConfig : RouteConfig
                     WorkflowRunController::class, "getRunWorkflow")
                     .secure(runReports),
             WebEndpoint(
+                    "/vuex-run-report/",
+                    org.vaccineimpact.orderlyweb.controllers.web.vuex.ReportController::class, "getRunReport")
+                    .secure(runReports),
+            WebEndpoint(
                     "/reports/runnable/",
                     ReportController::class, "getRunnableReports")
                     .json()
