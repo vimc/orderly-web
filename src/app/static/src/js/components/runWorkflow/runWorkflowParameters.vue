@@ -7,7 +7,7 @@
             No non-default parameters
         </p>
         <div v-if="report.default_param_list.length > 0"
-            class="default-params"
+             class="default-params"
              :id="`default-params-${reportIndex}`">
             <b-link v-b-toggle="`collapseSummary-${reportIndex}`"
                     href="#"
@@ -17,7 +17,7 @@
             </b-link>
             <b-collapse :id="`collapseSummary-${reportIndex}`" class="collapseSummary">
                 <p v-for="(param, paramIndex) in report.default_param_list"
-                    class="default-params-collapse"
+                   class="default-params-collapse"
                    :id="`default-params-collapse-${reportIndex}-${paramIndex}`"
                    :key="paramIndex">{{ param.name }}: {{ param.value }}</p>
             </b-collapse>
