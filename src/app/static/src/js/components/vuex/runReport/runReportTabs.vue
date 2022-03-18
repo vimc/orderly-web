@@ -52,9 +52,10 @@
     import Vue from "vue"
     import runReport from "./runReport.vue"
     import reportLog from "./../reportLog/reportLog.vue"
-    import {mapMutations, mapState} from "vuex";
+    import {mapState} from "vuex";
     import {RunReportRootState, RunReportTabName} from "../../../store/runReport/store";
     import {RunReportMutation} from "../../../store/runReport/mutations";
+    import {mapMutationByName} from "../../utils";
 
     interface Computed {
         selectedTab: string
@@ -76,7 +77,7 @@
             })
         },
         methods: {
-            ...mapMutations({switchTab: `${RunReportMutation.SwitchTab}`})
+            switchTab: mapMutationByName(null, RunReportMutation.SwitchTab)
         }
     })
 </script>

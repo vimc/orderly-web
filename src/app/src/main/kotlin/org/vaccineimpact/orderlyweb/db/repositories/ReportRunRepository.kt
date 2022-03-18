@@ -44,7 +44,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     )
     {
         JooqContext().use {
-            it.dsl.insertInto(Tables.ORDERLYWEB_REPORT_RUN)
+            it.dsl.insertInto(ORDERLYWEB_REPORT_RUN)
                 .set(ORDERLYWEB_REPORT_RUN.KEY, key)
                 .set(ORDERLYWEB_REPORT_RUN.EMAIL, user)
                 .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
@@ -108,7 +108,8 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         key: String,
         status: String,
         version: String?,
-        logs: List<String>?
+        logs: List<String>?,
+        startTime: Instant?
     )
     {
         val logsString = logs?.joinToString(separator = "\n")
@@ -122,11 +123,19 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         }
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_REPORT_RUN)
-                    .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
-                    .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, reportVersion)
-                    .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
+                .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
+                .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, reportVersion)
+                .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
+                .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+                .execute()
+
+            if (startTime != null)
+            {
+                it.dsl.update(ORDERLYWEB_REPORT_RUN)
+                    .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(startTime))
                     .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
                     .execute()
+            }
         }
     }
 }
