@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.security.authentication
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.eclipse.egit.github.core.User
 import org.junit.Test
+import org.kohsuke.github.GHUser
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
@@ -14,10 +14,11 @@ import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
 
 class GithubAuthenticatorTests
 {
-    private val mockUser = User().apply {
-        login = "user.name"
-        email = null
-        name = "full name"
+
+    private val mockUser = mock<GHUser>{
+        on { login  } doReturn "user.name"
+        on { email } doReturn null as String?
+        on { name } doReturn "full name"
     }
 
     private val mockGithubAuthHelper = mock<GithubAuthHelper> {

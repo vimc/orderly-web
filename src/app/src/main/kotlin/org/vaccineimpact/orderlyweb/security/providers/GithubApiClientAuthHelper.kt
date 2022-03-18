@@ -87,7 +87,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
     {
         try
         {
-            return github!!.getMyself()
+            return github!!.myself
         }
         catch(e: HttpException)
         {

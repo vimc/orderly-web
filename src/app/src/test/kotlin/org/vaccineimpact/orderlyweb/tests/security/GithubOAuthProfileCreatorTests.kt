@@ -4,8 +4,8 @@ import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.oauth.OAuth20Service
 import com.github.scribejava.core.model.Response
 import com.nhaarman.mockito_kotlin.*
-import org.eclipse.egit.github.core.User
 import org.junit.Test
+import org.kohsuke.github.GHUser
 import org.pac4j.oauth.config.OAuth20Configuration
 import org.pac4j.oauth.credentials.OAuth20Credentials
 import org.pac4j.oauth.profile.definition.OAuthProfileDefinition
@@ -18,10 +18,10 @@ import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
 
 class GithubOAuthProfileCreatorTests
 {
-    private val mockUser = User().apply {
-        login = "user.name"
-        email = null
-        name = "full name"
+    private val mockUser = mock<GHUser> {
+        on { login } doReturn "user.name"
+        on { email } doReturn null as String?
+        on { name } doReturn "full name"
     }
 
     private val mockResponse = mock<Response> {
@@ -71,5 +71,4 @@ class GithubOAuthProfileCreatorTests
         verify(mockGithubAuthHelper).getUserEmail()
         verify(mockUserRepo).addUser("email", "user.name", "full name", UserSource.GitHub)
     }
-
 }
