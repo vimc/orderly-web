@@ -409,9 +409,9 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(params.count()).isEqualTo(1)
         assertThat(params[0].text).contains("nmin: 1")
 
-        val noParams = driver.findElements(By.cssSelector(".noParams"))
+        val noParams = driver.findElements(By.cssSelector(".no-params"))
         assertThat(noParams.count()).isEqualTo(1)
-        assertThat(noParams[0].text).isEqualTo("There are no parameters")
+        assertThat(noParams[0].text).isEqualTo("No parameters")
 
         assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
 
