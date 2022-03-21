@@ -1,16 +1,21 @@
 import {shallowMount} from "@vue/test-utils";
 import GitSelections from "../../../../js/components/vuex/runReport/gitSelections.vue";
 import Vuex from "vuex";
-import {mockGitState, mockRunReportMetadata, mockRunReportRootState, RecursivePartial} from "../../../mocks";
+import {mockGitState, mockRunReportRootState, RecursivePartial} from "../../../mocks";
 import {GitState} from "../../../../js/store/git/git";
+import {namespace} from "../../../../js/store/runReport/store";
 
 describe("GitSelections", () => {
 
     const createStore = (gitState: RecursivePartial<GitState>) => {
         return new Vuex.Store({
-            state: mockRunReportRootState({
-                git: mockGitState(gitState)
-            })
+            state: mockRunReportRootState(),
+            modules: {
+                [namespace.git]: {
+                    namespaced: true,
+                    state: mockGitState(gitState)
+                }
+            }
         })
     }
 

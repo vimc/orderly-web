@@ -10,12 +10,16 @@ export interface RunReportRootState extends RunnerRootState {
     selectedTab: RunReportTabName
 }
 
+export const namespace = {
+    git: "git"
+}
+
 export const storeOptions: StoreOptions<RunReportRootState> = {
     state: {
         selectedTab: "RunReport"
     } as RunReportRootState,
     modules: {
-        git
+        [namespace.git]: git
     },
     mutations
 };

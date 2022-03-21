@@ -16,8 +16,9 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapState} from "vuex";
-    import {RunReportRootState} from "../../../store/runReport/store";
     import {EmptyObject, RunReportMetadataDependency} from "../../../utils/types";
+    import {GitState} from "../../../store/git/git";
+    import {namespace} from "../../../store/runReport/store";
 
     interface Computed {
         metadata: RunReportMetadataDependency
@@ -27,9 +28,9 @@
     export default Vue.extend<EmptyObject, EmptyObject, Computed, EmptyObject>({
         name: "GitSelections",
         computed: {
-            ...mapState({
-                metadata: (state: RunReportRootState) => state.git.metadata,
-                gitBranches: (state: RunReportRootState) => state.git.branches
+            ...mapState(namespace.git, {
+                metadata: (state: GitState) => state.metadata,
+                gitBranches: (state: GitState) => state.branches
             })
         }
     });
