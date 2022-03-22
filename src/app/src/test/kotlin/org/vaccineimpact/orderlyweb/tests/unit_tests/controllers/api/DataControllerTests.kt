@@ -191,5 +191,4 @@ class DataControllerTests : ControllerTest()
         assertThatThrownBy { sut.downloadData() }
                 .isInstanceOf(OrderlyFileNotFoundError::class.java)
     }
-
 }

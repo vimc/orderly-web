@@ -7,14 +7,12 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
-import java.util.regex.Pattern
 
 class ReportPageTests : SeleniumTest()
 {
@@ -56,43 +54,43 @@ class ReportPageTests : SeleniumTest()
     {
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(ReifiedPermission("reports.read"
-                , Scope.Global())))
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/")
 
-        //Confirm that we've started on the Report tab
+        // Confirm that we've started on the Report tab
         confirmTabActive("report-tab", true)
         confirmTabActive("downloads-tab", false)
 
-        //Change to Downloads tab
+        // Change to Downloads tab
         val downloadsLink = driver.findElement(By.cssSelector("a[href='#downloads-tab']"))
         downloadsLink.click()
         Thread.sleep(500)
         confirmTabActive("report-tab", false)
         confirmTabActive("downloads-tab", true)
-        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
+        assertThat(driver.currentUrl)
+                .isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
 
-        //Change to Metadata tab
+        // Change to Metadata tab
         val metadataLink = driver.findElement(By.cssSelector("a[href='#metadata-tab']"))
         metadataLink.click()
         Thread.sleep(500)
         confirmTabActive("downloads-tab", false)
         confirmTabActive("metadata-tab", true)
-        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#metadata")
+        assertThat(driver.currentUrl)
+                .isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#metadata")
 
-
-        //And back to Report
+        // And back to Report
         val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
         reportLink.click()
         Thread.sleep(500)
         confirmTabActive("report-tab", true)
         confirmTabActive("downloads-tab", false)
-        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#report")
-
+        assertThat(driver.currentUrl)
+                .isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#report")
     }
 
     @Test
@@ -100,8 +98,7 @@ class ReportPageTests : SeleniumTest()
     {
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(ReifiedPermission("reports.read"
-                , Scope.Global())))
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         insertReport("testreport", "20170103-143015-1234abcd")
 
@@ -170,8 +167,10 @@ class ReportPageTests : SeleniumTest()
 
         val versionSwitcher = Select(driver.findElement(By.cssSelector("#report-version-switcher")))
         versionSwitcher.selectByVisibleText("Tue Jan 03 2017, 14:30")
-        wait.until(ExpectedConditions.urlMatches(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd"))
-        assertThat(driver.findElement(By.cssSelector("p.small.text-muted")).text).isEqualTo("20170103-143015-1234abcd")
+        wait.until(ExpectedConditions
+                .urlMatches(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd"))
+        assertThat(driver.findElement(By.cssSelector("p.small.text-muted")).text)
+                .isEqualTo("20170103-143015-1234abcd")
     }
 
     private fun confirmTabActive(tabId: String, active: Boolean)
@@ -198,5 +197,4 @@ class ReportPageTests : SeleniumTest()
             assertThat(actualPaneClasses).contains(it)
         }
     }
-
 }

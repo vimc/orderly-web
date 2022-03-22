@@ -170,7 +170,6 @@ class IndexTests
         assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
         assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
         assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
-
     }
 
     @Test
@@ -197,7 +196,7 @@ class IndexTests
                 false, null, defaultModel, false)
 
         val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
-        assertThat(scriptEl.indexOf("var reportDisplayNames")).isEqualTo(-1);
+        assertThat(scriptEl.indexOf("var reportDisplayNames")).isEqualTo(-1)
     }
 
     @Test

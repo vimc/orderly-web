@@ -7,7 +7,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
@@ -20,7 +23,6 @@ import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
 import java.io.Reader
 import java.time.Instant
-import org.vaccineimpact.orderlyweb.models.Result
 
 class WorkflowRunControllerTests
 {

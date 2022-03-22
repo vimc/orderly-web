@@ -117,7 +117,7 @@ class UserControllerTests
 
         assertThat(result.count()).isEqualTo(3)
 
-        assertThat(result[0].username).isEqualTo("global.reader") //Should have been sorted by display name
+        assertThat(result[0].username).isEqualTo("global.reader") // Should have been sorted by display name
         assertThat(result[0].displayName).isEqualTo("Global Reader")
 
         assertThat(result[1].username).isEqualTo("group.reader")
@@ -125,7 +125,6 @@ class UserControllerTests
 
         assertThat(result[2].username).isEqualTo("scoped.reader")
         assertThat(result[2].displayName).isEqualTo("Scoped Reader")
-
     }
 
     @Test
@@ -150,7 +149,7 @@ class UserControllerTests
 
         assertThat(result.count()).isEqualTo(2)
 
-        assertThat(result[0].username).isEqualTo("global.reader.2") //Should have been sorted by displayname
+        assertThat(result[0].username).isEqualTo("global.reader.2") // Should have been sorted by displayname
         assertThat(result[0].displayName).isEqualTo("A Global Reader2")
         assertThat(result[0].email).isEqualTo("global.reader2@email.com")
 
@@ -198,7 +197,6 @@ class UserControllerTests
     fun `adds permission to user`()
     {
         assertAddsPermissionToUser("user1@example.com", "test.permission", "report", "report1")
-
     }
 
     @Test
@@ -239,7 +237,6 @@ class UserControllerTests
         {
             assertThat(permission.scope.value).isEqualTo("$scopePrefix:$scopeId")
         }
-
     }
 
     @Test
@@ -257,7 +254,7 @@ class UserControllerTests
         val authRepo = mock<AuthorizationRepository>()
 
         val sut = UserController(actionContext, mock(), authRepo, mock())
-        assertThatThrownBy{ sut.addPermission() }.isInstanceOf(BadRequest::class.java)
+        assertThatThrownBy { sut.addPermission() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Cannot grant reports.review permission to guest user")
     }
 

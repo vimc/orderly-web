@@ -30,6 +30,5 @@ class PermissionTests : IntegrationTest()
         assertThat(json["data"].toString())
                 .isEqualTo("[\"documents.manage\",\"documents.read\",\"pinned-reports.manage\",\"reports.read\"," +
                         "\"reports.review\",\"reports.run\",\"tags.manage\",\"users.manage\"]")
-
     }
 }

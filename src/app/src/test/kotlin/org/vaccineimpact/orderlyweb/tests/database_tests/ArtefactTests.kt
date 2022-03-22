@@ -2,16 +2,14 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.insertArtefact
 
 class ArtefactTests : CleanDatabaseTests()
 {
@@ -45,7 +43,6 @@ class ArtefactTests : CleanDatabaseTests()
 
         Assertions.assertThatThrownBy { sut.getArtefactHash("test", "version1", "details.csv") }
                 .isInstanceOf(UnknownObjectError::class.java)
-
     }
 
     @Test
@@ -113,5 +110,4 @@ class ArtefactTests : CleanDatabaseTests()
         val result = sut.getArtefacts("test", "version1")
         assertThat(result.count()).isEqualTo(0)
     }
-
 }

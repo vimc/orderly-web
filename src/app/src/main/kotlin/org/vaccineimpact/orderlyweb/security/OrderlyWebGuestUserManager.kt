@@ -18,13 +18,13 @@ interface GuestUserManager
                       context: SparkWebContext?,
                       config: Config?,
                       clients: String?)
-
 }
 
 class OrderlyWebGuestUserManager(
         private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : GuestUserManager
 {
-    companion object {
+    companion object
+    {
         const val GUEST_USER = "guest"
     }
 
@@ -50,12 +50,12 @@ class OrderlyWebGuestUserManager(
         }
         else
         {
-           manager.remove(true)
+            manager.remove(true)
         }
     }
 
     private fun addOrUpdateGuestProfile(currentProfile: Optional<CommonProfile>,
-                                       profileManager: ProfileManager<CommonProfile>)
+                                        profileManager: ProfileManager<CommonProfile>)
     {
         val permissions = PermissionSet(authRepo.getPermissionsForGroup(GUEST_USER))
 

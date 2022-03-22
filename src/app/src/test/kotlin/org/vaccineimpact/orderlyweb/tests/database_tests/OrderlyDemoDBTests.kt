@@ -1,34 +1,17 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import org.junit.Test
-import org.junit.Ignore
 import org.assertj.core.api.Assertions.assertThat
-
+import org.junit.Ignore
+import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.ARTEFACT_FORMAT
-import org.vaccineimpact.orderlyweb.db.Tables.CHANGELOG
-import org.vaccineimpact.orderlyweb.db.Tables.CHANGELOG_LABEL
-import org.vaccineimpact.orderlyweb.db.Tables.DATA
-import org.vaccineimpact.orderlyweb.db.Tables.DEPENDS
-import org.vaccineimpact.orderlyweb.db.Tables.FILE
-import org.vaccineimpact.orderlyweb.db.Tables.FILE_ARTEFACT
-import org.vaccineimpact.orderlyweb.db.Tables.FILE_INPUT
-import org.vaccineimpact.orderlyweb.db.Tables.FILE_PURPOSE
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLY_SCHEMA
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLY_SCHEMA_TABLES
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_DATA
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_PACKAGE
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
-
 
 class OrderlyDemoDBTests : DatabaseTests()
 {
-    //NB These tests hit the database directly to check that expected Demo data is present, because the Orderly
-    //class is not yet querying all the new tables. We do not not check the old Orderly table, which will shortly be
-    //deprecated
+    // NB These tests hit the database directly to check that expected Demo data is present, because the Orderly
+    // class is not yet querying all the new tables. We do not not check the old Orderly table, which will shortly be
+    // deprecated
 
     @Test
     fun `has expected artefact formats`()
@@ -38,13 +21,12 @@ class OrderlyDemoDBTests : DatabaseTests()
                     .orderBy(ARTEFACT_FORMAT.NAME.asc())
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("staticgraph")).isTrue()
             assertThat(names.contains("interactivegraph")).isTrue()
             assertThat(names.contains("data")).isTrue()
             assertThat(names.contains("report")).isTrue()
             assertThat(names.contains("interactivehtml")).isTrue()
-
         }
     }
 
@@ -60,7 +42,6 @@ class OrderlyDemoDBTests : DatabaseTests()
             assertThat(result[0].label).isEqualTo("public")
             assertThat(result[0].fromFile).isTrue()
             assertThat(result[0].reportVersion).isNotBlank()
-
         }
     }
 
@@ -77,7 +58,6 @@ class OrderlyDemoDBTests : DatabaseTests()
 
             assertThat(result[1].id).isEqualTo("public")
             assertThat(result[1].public).isTrue()
-
         }
     }
 
@@ -96,7 +76,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.sizeCsv).isGreaterThan(0)
                 assertThat(r.sizeRds).isGreaterThan(0)
             }
-
         }
     }
 
@@ -118,7 +97,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.isPinned).isNotNull()
                 assertThat(r.isLatest).isNotNull()
             }
-
         }
     }
 
@@ -136,7 +114,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.hash).isNotBlank()
                 assertThat(r.size).isNotNull()
             }
-
         }
     }
 
@@ -156,7 +133,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.fileHash).isNotBlank()
                 assertThat(r.filename).isNotBlank()
             }
-
         }
     }
 
@@ -177,7 +153,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.filename).isNotBlank()
                 assertThat(r.filePurpose).isNotBlank()
             }
-
         }
     }
 
@@ -188,17 +163,16 @@ class OrderlyDemoDBTests : DatabaseTests()
             val result = it.dsl.selectFrom(FILE_PURPOSE)
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("source")).isTrue()
             assertThat(names.contains("script")).isTrue()
             assertThat(names.contains("resource")).isTrue()
             assertThat(names.contains("orderly_yml")).isTrue()
-
         }
     }
 
     @Test
-    @Ignore //This fails at the moment because created Timestamp is stored as a number, which Jooq can't deal with
+    @Ignore // This fails at the moment because created Timestamp is stored as a number, which Jooq can't deal with
     fun `has populated orderly schema`()
     {
         JooqContext().use {
@@ -208,7 +182,6 @@ class OrderlyDemoDBTests : DatabaseTests()
             assertThat(result.schemaVersion.isNotBlank())
             assertThat(result.orderlyVersion.isNotBlank())
             assertThat(result.created.getTime()).isGreaterThan(0)
-
         }
     }
 
@@ -219,7 +192,7 @@ class OrderlyDemoDBTests : DatabaseTests()
             val result = it.dsl.selectFrom(ORDERLY_SCHEMA_TABLES)
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("artefact_format")).isTrue()
             assertThat(names.contains("changelog")).isTrue()
             assertThat(names.contains("changelog_label")).isTrue()
@@ -237,7 +210,6 @@ class OrderlyDemoDBTests : DatabaseTests()
             assertThat(names.contains("report_version_data")).isTrue()
             assertThat(names.contains("report_version_package")).isTrue()
             assertThat(names.contains("report_version_view")).isTrue()
-
         }
     }
 
@@ -249,14 +221,13 @@ class OrderlyDemoDBTests : DatabaseTests()
                     .orderBy(REPORT.NAME.asc())
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("changelog")).isTrue()
             assertThat(names.contains("connection")).isTrue()
             assertThat(names.contains("html")).isTrue()
             assertThat(names.contains("interactive")).isTrue()
             assertThat(names.contains("minimal")).isTrue()
             assertThat(names.contains("other")).isTrue()
-
         }
     }
 
@@ -283,11 +254,9 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.requester).isNotBlank()
                 assertThat(r.author).isNotBlank()
 
-
-                if (r.displayname?.isNotBlank()?:false) atLeastOneDisplayName = true
-                if (r.description?.isNotBlank()?:false) atLeastOneDescription = true
-                if (r.comment?.isNotBlank()?:false) atLeastOneComment = true
-
+                if (r.displayname?.isNotBlank() ?: false) atLeastOneDisplayName = true
+                if (r.description?.isNotBlank() ?: false) atLeastOneDescription = true
+                if (r.comment?.isNotBlank() ?: false) atLeastOneComment = true
             }
 
             assertThat(atLeastOneDisplayName)
@@ -295,7 +264,6 @@ class OrderlyDemoDBTests : DatabaseTests()
             assertThat(atLeastOneComment)
         }
     }
-
 
     @Test
     fun `has populated report versions artefacts`()
@@ -314,7 +282,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.description).isNotBlank()
                 assertThat(r.order).isGreaterThan(0)
             }
-
         }
     }
 
@@ -336,7 +303,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.database).isNotBlank()
                 assertThat(r.hash).isNotBlank()
             }
-
         }
     }
 
@@ -356,9 +322,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.packageName).isNotBlank()
                 assertThat(r.packageVersion).isNotBlank()
             }
-
         }
     }
-
-
 }

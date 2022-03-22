@@ -352,7 +352,7 @@ class VersionTests : IntegrationTest()
         }
         val versionId = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
         val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
-        val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
+        val url = "/reports/$reportName/versions/$versionId/run-meta/"
         val token = apiRequestHelper.generateOnetimeToken(url)
         val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
@@ -373,11 +373,10 @@ class VersionTests : IntegrationTest()
         }
         val versionId = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
         val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
-        val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
+        val url = "/reports/$reportName/versions/$versionId/run-meta/"
 
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", reportName))),
                 contentType = ContentTypes.binarydata)
     }
-
 }

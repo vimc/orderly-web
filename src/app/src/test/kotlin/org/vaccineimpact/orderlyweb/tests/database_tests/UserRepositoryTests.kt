@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
@@ -137,7 +137,6 @@ class UserRepositoryTests : CleanDatabaseTests()
         assertThat(result.lastLoggedIn).isBetween(then, Instant.now())
     }
 
-
     @Test
     fun `getIndividualReportReadersForReport gets readers with correctly scoped identity permissions`()
     {
@@ -206,7 +205,6 @@ class UserRepositoryTests : CleanDatabaseTests()
         assertThat(result.count()).isEqualTo(0)
     }
 
-
     @Test
     fun `getGlobalReportReaderUsers gets readers with global identity permissions`()
     {
@@ -239,7 +237,7 @@ class UserRepositoryTests : CleanDatabaseTests()
 
         insertUser("global.reader@email.com", "global.reader.name")
         giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
-        //it shouldn't matter if the global read also has scoped permission
+        // it shouldn't matter if the global read also has scoped permission
         giveUserGroupPermission("global.reader@email.com", "reports.read",
                 Scope.Specific("report", "report1"))
 

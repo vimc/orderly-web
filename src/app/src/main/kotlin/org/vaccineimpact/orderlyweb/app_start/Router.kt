@@ -12,7 +12,6 @@ import spark.Spark.notFound
 import spark.TemplateEngine
 import spark.template.freemarker.FreeMarkerEngine
 
-
 class Router(private val actionResolver: ActionResolver,
              private val authenticationRouteBuilder: AuthenticationRouteBuilder,
              private val sparkWrapper: SparkWrapper,

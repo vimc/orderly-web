@@ -80,7 +80,6 @@ sealed class Scope(val value: String)
                 Specific(scopePrefix, scopeId!!)
             }
         }
-
     }
 }
 

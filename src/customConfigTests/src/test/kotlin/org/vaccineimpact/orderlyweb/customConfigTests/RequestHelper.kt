@@ -6,8 +6,8 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.test_helpers.http.BasicAuthorization
-import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 
 class RequestHelper
 {
@@ -47,5 +47,4 @@ class RequestHelper
 
     private fun generateToken(emailAddress: String) =
             WebTokenHelper.instance.issuer.generateBearerToken(emailAddress)
-
 }

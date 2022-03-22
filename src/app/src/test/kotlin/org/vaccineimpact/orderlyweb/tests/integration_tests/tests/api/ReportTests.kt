@@ -8,7 +8,6 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
@@ -49,8 +48,8 @@ class ReportTests : IntegrationTest()
         assertSuccessfulWithResponseText(runResponse)
         val key = JSONValidator.getData(runResponse.text)["key"].asText()
 
-        //Until https://mrc-ide.myjetbrains.com/youtrack/issue/VIMC-3849 is fixed, the orderly server endpoint works but
-        //spuriously returns a 400 when successful. So here do not test response, but check status to see if kill worked
+        // Until https://mrc-ide.myjetbrains.com/youtrack/issue/VIMC-3849 is fixed, the orderly server endpoint works but
+        // spuriously returns a 400 when successful. So here do not test response, but check status to see if kill worked
         apiRequestHelper.delete("/reports/$key/kill/", userEmail = fakeGlobalReportReviewer())
 
         val statusResponse = apiRequestHelper.get("/reports/$key/status",
@@ -74,7 +73,7 @@ class ReportTests : IntegrationTest()
     {
         val url = "/reports/agronomic_seahorse/kill/"
 
-        val deniedChecker =  APIPermissionChecker(url, setOf(), ContentTypes.json, HttpMethod.delete)
+        val deniedChecker = APIPermissionChecker(url, setOf(), ContentTypes.json, HttpMethod.delete)
         var response = deniedChecker.requestWithPermissions(setOf())
         assertThat(response.statusCode).isEqualTo(403)
 
@@ -139,7 +138,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `can get latest changelog if reader permissions only`()
     {
-        //This report has been published so we should be able to see it, though it has no log items
+        // This report has been published so we should be able to see it, though it has no log items
         val response = apiRequestHelper.get("/reports/other/latest/changelog",
                 userEmail = fakeGlobalReportReviewer())
 
@@ -148,7 +147,6 @@ class ReportTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
         val count = (JSONValidator.getData(response.text) as ArrayNode).size()
         assertThat(count).isEqualTo(0)
-
     }
 
     @Test
@@ -161,5 +159,4 @@ class ReportTests : IntegrationTest()
         JSONValidator.validateError(response.text, "unknown-report",
                 "Unknown report")
     }
-
 }

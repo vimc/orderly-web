@@ -29,25 +29,26 @@ class MontaguAuthenticationTests : SeleniumTest()
 
         loginWithMontagu()
 
-        //Confirm that montagu tokens are set
+        // Confirm that montagu tokens are set
         val loggedInCookies = driver.manage().cookies
-        assertThat(loggedInCookies.first{ it.name == "jwt_token" }.value).isNotEmpty()
-        assertThat(loggedInCookies.first{ it.name == "montagu_jwt_token" }.value).isNotEmpty()
+        assertThat(loggedInCookies.first { it.name == "jwt_token" }.value).isNotEmpty()
+        assertThat(loggedInCookies.first { it.name == "montagu_jwt_token" }.value).isNotEmpty()
 
         driver.findElement(By.cssSelector(".nav-right .dropdown-toggle")).click()
         driver.findElement(By.id("logout-link")).click()
 
-        //This should log out of the montagu api then redirect to montagu
+        // This should log out of the montagu api then redirect to montagu
         wait.until(ExpectedConditions.titleIs("Vaccine Impact Modelling Consortium - Montagu"))
 
         assertThat(driver.currentUrl).contains(AppConfig()["montagu.url"])
 
-        //Check that montagu token cookies were cleared to logout of Montagu as well as OrderlyWeb
+        // Check that montagu token cookies were cleared to logout of Montagu as well as OrderlyWeb
         val loggedOutCookies = driver.manage().cookies
-        assertThat(loggedOutCookies.first{ it.name == "jwt_token" }.value).isEmpty()
-        assertThat(loggedOutCookies.first{ it.name == "montagu_jwt_token" }.value).isEmpty()
+        assertThat(loggedOutCookies.first { it.name == "jwt_token" }.value).isEmpty()
+        assertThat(loggedOutCookies.first { it.name == "montagu_jwt_token" }.value).isEmpty()
 
-        //We should now be on the Montagu login page, logged out - give the proxy time to check user status with the api
+        // We should now be on the Montagu login page, logged out
+        // give the proxy time to check user status with the api
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))
     }
 }

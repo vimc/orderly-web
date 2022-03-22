@@ -38,7 +38,7 @@ data class APIEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        var factory = configFactory?:APISecurityClientsConfigFactory()
+        var factory = configFactory ?: APISecurityClientsConfigFactory()
 
         factory = factory.setRequiredPermissions(this.requiredPermissions.toSet())
 
@@ -61,7 +61,6 @@ data class APIEndpoint(
                 SkipOptionsMatcher.name
         ))
     }
-
 }
 
 fun APIEndpoint.allowParameterAuthentication(): APIEndpoint

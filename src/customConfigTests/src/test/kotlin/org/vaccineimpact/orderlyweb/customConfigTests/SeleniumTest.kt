@@ -17,7 +17,7 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.util.concurrent.TimeUnit
 
-
+@Suppress("UnnecessaryAbstractClass")
 abstract class SeleniumTest : CustomConfigTests()
 {
     protected lateinit var driver: WebDriver
@@ -54,7 +54,7 @@ abstract class SeleniumTest : CustomConfigTests()
 
     protected fun clickOnLandingPageLink()
     {
-        //Click on the landing page link to navigate to auth provider
+        // Click on the landing page link to navigate to auth provider
         driver.findElement(By.className("btn-xl")).click()
     }
 
@@ -76,7 +76,7 @@ abstract class SeleniumTest : CustomConfigTests()
     {
         driver.get(RequestHelper.webBaseUrl)
 
-        //We should not hit the landing page for Montagu login, but be taken straight to Montagu
+        // We should not hit the landing page for Montagu login, but be taken straight to Montagu
         driver.findElement(By.name("email")).sendKeys("test.user@example.com")
         driver.findElement(By.name("password")).sendKeys("password")
         driver.findElement(By.id("login-button")).click()
@@ -86,12 +86,11 @@ abstract class SeleniumTest : CustomConfigTests()
 
     protected fun logout()
     {
-        //logout of Orderly Web
+        // logout of Orderly Web
         driver.get("${RequestHelper.webBaseUrl}/logout")
 
-        //Should have automatically logged out from Montagu
+        // Should have automatically logged out from Montagu
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))
-
     }
 
     protected fun addUserWithPermissions(permissions: List<ReifiedPermission>, email: String = "test.user@example.com")
@@ -118,15 +117,15 @@ abstract class SeleniumTest : CustomConfigTests()
         }
     }
 
-    protected fun addUserGroupWithPermissions(userGroupId: String, members: List<String>, permissions: List<ReifiedPermission>)
+    protected fun addUserGroupWithPermissions(userGroupId: String,
+                                              members: List<String>,
+                                              permissions: List<ReifiedPermission>)
     {
         val authRepo = OrderlyAuthorizationRepository()
 
         authRepo.createUserGroup(userGroupId)
         members.forEach { authRepo.ensureGroupHasMember(userGroupId, it) }
 
-        permissions.forEach{ authRepo.ensureUserGroupHasPermission(userGroupId, it) }
-
+        permissions.forEach { authRepo.ensureUserGroupHasPermission(userGroupId, it) }
     }
-
 }

@@ -16,15 +16,15 @@ class OnetimeTokenControllerTests : ControllerTest()
     @Test
     fun `can get token`()
     {
-        val mockUserProfile = mock<CommonProfile>{
+        val mockUserProfile = mock<CommonProfile> {
             on { it.id } doReturn "testuserid@example.com"
         }
 
-        val mockContext = mock<ActionContext>{
+        val mockContext = mock<ActionContext> {
             on { it.queryParams("url") } doReturn "testUrl"
             on { it.userProfile } doReturn mockUserProfile
         }
-        val mockTokenStore = mock<OnetimeTokenStore>{}
+        val mockTokenStore = mock<OnetimeTokenStore> {}
 
         val sut = OnetimeTokenController(mockContext, mockTokenStore)
         val token = sut.get()
@@ -37,6 +37,6 @@ class OnetimeTokenControllerTests : ControllerTest()
     {
         val sut = OnetimeTokenController(mock(), mock())
 
-        assertThatThrownBy{ sut.get() }.isInstanceOf(MissingParameterError::class.java)
+        assertThatThrownBy { sut.get() }.isInstanceOf(MissingParameterError::class.java)
     }
 }

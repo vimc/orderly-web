@@ -1,10 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.security.LogoutActionBuilders
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.pac4j.core.context.Cookie
 import org.pac4j.core.context.WebContext
 import org.vaccineimpact.orderlyweb.security.clients.MontaguLogoutActionBuilder
 
@@ -22,5 +21,4 @@ class MontaguLogoutActionBuilderTests
 
         assertThat(result.location).isEqualTo("http://localhost:8888")
     }
-
 }

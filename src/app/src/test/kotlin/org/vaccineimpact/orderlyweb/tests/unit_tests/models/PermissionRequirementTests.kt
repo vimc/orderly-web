@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.models.ScopeRequirement
 
-class PermissionRequimentTests
+class PermissionRequirementTests
 {
     @Test
     fun `can parse`()

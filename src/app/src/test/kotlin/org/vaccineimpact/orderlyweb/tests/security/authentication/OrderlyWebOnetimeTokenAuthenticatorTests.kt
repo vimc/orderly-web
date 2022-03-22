@@ -10,7 +10,7 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
-import org.vaccineimpact.orderlyweb.security.*
+import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebOnetimeTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import java.time.Instant
@@ -45,12 +45,10 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
             on(it.path) doReturn url
         }
 
-
         val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
         sut.validate(credentials, fakeContext)
-
     }
 
     @Test

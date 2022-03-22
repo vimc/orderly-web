@@ -9,7 +9,6 @@ import spark.Request
 import spark.Response
 import spark.TemplateEngine
 import java.lang.reflect.InvocationTargetException
-import spark.Spark as spk
 
 class ErrorHandler(templateEngine: TemplateEngine,
                    private val webErrorHandler: ResponseErrorHandler = WebResponseErrorHandler(templateEngine),
@@ -62,6 +61,7 @@ class ErrorHandler(templateEngine: TemplateEngine,
 
     fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
+        @Suppress // suppress Detekt line length warning
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
 
         if (req.pathInfo().startsWith(Router.apiUrlBase) || req.headers("Accept").contains("application/json"))

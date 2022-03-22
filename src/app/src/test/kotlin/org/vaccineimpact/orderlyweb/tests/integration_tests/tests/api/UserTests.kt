@@ -1,19 +1,17 @@
-
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeUserManager
-import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeUserManager
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 
-class UserTests: IntegrationTest()
+class UserTests : IntegrationTest()
 {
     private val ADDED_USER = "added.user@test.com"
 

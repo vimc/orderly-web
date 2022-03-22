@@ -1,10 +1,10 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth
 
 import com.github.fge.jackson.JsonLoader
-import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 

@@ -4,12 +4,12 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.insertFileInput
 
 class ResourceTests : CleanDatabaseTests()
 {
@@ -41,7 +41,6 @@ class ResourceTests : CleanDatabaseTests()
 
         Assertions.assertThatThrownBy { sut.getResourceHash("test", "version1", "details.csv") }
                 .isInstanceOf(UnknownObjectError::class.java)
-
     }
 
     @Test
@@ -76,7 +75,6 @@ class ResourceTests : CleanDatabaseTests()
         val result = sut.getResourceHashes("test", "version1")
         assertThat(result.count()).isEqualTo(0)
     }
-
 
     @Test
     fun `getResourceHashes does not return file inputs that are not resources`()

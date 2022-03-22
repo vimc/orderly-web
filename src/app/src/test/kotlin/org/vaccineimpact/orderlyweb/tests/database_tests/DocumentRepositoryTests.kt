@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 
@@ -22,7 +22,7 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         val expectedRoot1 = Document("root", "root", "/root/", false, false, listOf())
         val expectedRoot2 = Document("some", "some display", "/some/", false, false,
                 listOf(expectedLeaf3, expectedLeaf1, Document("path", "path", "/some/path/", false, false, listOf(expectedLeaf2)),
-                Document("http://external.com", "http://external.com", "/some/external.web.url", true, true, listOf())))
+                        Document("http://external.com", "http://external.com", "/some/external.web.url", true, true, listOf())))
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result.first()).isEqualTo(expectedRoot1)
@@ -70,7 +70,7 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         val result = sut.getAllFlat().sortedBy { it.path }
         assertThat(result.count()).isEqualTo(7)
         assertThat(result[0]).isEqualTo(Document("root", "root", "/root/", false, false, listOf()))
-        assertThat(result[1]).isEqualTo(Document("some","some display", "/some/", false, false, listOf()))
+        assertThat(result[1]).isEqualTo(Document("some", "some display", "/some/", false, false, listOf()))
         assertThat(result[2]).isEqualTo(Document("empty", "empty", "/some/empty/", false, false, listOf()))
         assertThat(result[3]).isEqualTo(Document("http://external.com", "http://external.com", "/some/external.web.url", true, true, listOf()))
         assertThat(result[4]).isEqualTo(Document("first.csv", "first.csv", "/some/first.csv", true, false, listOf()))
@@ -119,7 +119,6 @@ class DocumentRepositoryTests : CleanDatabaseTests()
             assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.EXTERNAL]).isEqualTo(1)
             assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/root/")
         }
-
     }
 
     @Test

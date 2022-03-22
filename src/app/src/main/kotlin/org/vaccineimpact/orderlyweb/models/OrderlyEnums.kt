@@ -9,7 +9,8 @@ enum class FilePurpose
     ORDERLY_YML,
     GLOBAL;
 
-    override fun toString(): String {
+    override fun toString(): String
+    {
         return this.name.toLowerCase()
     }
 }
@@ -22,7 +23,8 @@ enum class ArtefactFormat
     REPORT,
     INTERACTIVEHTML;
 
-    override fun toString(): String {
+    override fun toString(): String
+    {
         return this.name.toLowerCase()
     }
 }

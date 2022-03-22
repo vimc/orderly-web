@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class DownloadsTabTests: BaseVersionPageTests()
+class DownloadsTabTests : BaseVersionPageTests()
 {
     @Test
     fun `renders download tab title correctly`()
@@ -41,7 +41,6 @@ class DownloadsTabTests: BaseVersionPageTests()
         assertThat(artefact1FileLinks[1].select("span.download-icon").count()).isEqualTo(1)
         assertThat(artefact1FileSizeSpans[1].text()).isEqualTo("(123 bytes)")
 
-
         val artefactEl2 = artefactCards[1]
         assertThat(artefactEl2.select(".card-header").text()).isEqualTo("artefact2")
         assertThat(artefactEl2.select("img").count()).isEqualTo(0)
@@ -73,7 +72,7 @@ class DownloadsTabTests: BaseVersionPageTests()
         val linkRow1Csv = linkRow1.select("ul li")[0]
         assertThat(linkRow1Csv.select("a").attr("href")).isEqualTo("http://key1/csv")
         assertThat(linkRow1Csv.select("a").text()).isEqualTo("key1.csv")
-        //Currently failing because of weird commons ui rounding behaviour...
+        // Currently failing because of weird commons ui rounding behaviour...
         assertThat(linkRow1Csv.select("span.file-size").text()).isEqualTo("(1.6 MB)")
 
         val linkRow1Rds = linkRow1.select("ul li")[1]
@@ -140,7 +139,7 @@ class DownloadsTabTests: BaseVersionPageTests()
         assertThat(zipFileLink.attr("href")).isEqualTo("http://zipFileUrl")
         assertThat(zipFileLink.text()).isEqualTo("zipFileName")
         assertThat(zipFileLink.select("span.download-icon").count()).isEqualTo(1)
-        //should not have rendered size link, as no size info
+        // should not have rendered size link, as no size info
         assertThat(zipFileEl.select("span.file-link").count()).isEqualTo(0)
     }
 

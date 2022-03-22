@@ -12,8 +12,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
 import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
@@ -33,16 +33,16 @@ class RoleControllerTests
             ), testPermissions))
 
     private val multipleRolesFromRepo = listOf(
-        Role("Science", listOf(), listOf()),
-        Role("Funders", listOf(), listOf()),
-        Role("Tech", listOf(), listOf())
+            Role("Science", listOf(), listOf()),
+            Role("Funders", listOf(), listOf()),
+            Role("Tech", listOf(), listOf())
     )
 
     private val roleForAlphabeticFromRepo = listOf(Role("Science", listOf(
             User("c.user", "C User", "testc@example.com"),
             User("a.user", "A User", "test@example.com"),
             User("b.user", "B User", "testb@example.com")
-        ), listOf()))
+    ), listOf()))
 
     private fun assertExpectedSingleRoleViewModel(result: List<RoleViewModel>)
     {
@@ -199,7 +199,7 @@ class RoleControllerTests
             on { getScopedReportReaderRoles("r1") } doReturn roleForAlphabeticFromRepo
         }
 
-        val sut = RoleController(actionContextWithReport,repo, mock())
+        val sut = RoleController(actionContextWithReport, repo, mock())
         val result = sut.getScopedReportReaders()
         assertExpectedAlphabeticRoleMembers(result)
     }
@@ -284,7 +284,7 @@ class RoleControllerTests
 
         val authRepo = mock<AuthorizationRepository>()
         val sut = RoleController(actionContext, mock(), authRepo)
-        assertThatThrownBy{ sut.removePermission() }.isInstanceOf(InvalidOperationError::class.java)
+        assertThatThrownBy { sut.removePermission() }.isInstanceOf(InvalidOperationError::class.java)
                 .hasMessageContaining("You cannot remove permissions from the Admin role")
     }
 
@@ -298,10 +298,9 @@ class RoleControllerTests
 
         val authRepo = mock<AuthorizationRepository>()
         val sut = RoleController(actionContext, mock(), authRepo)
-        assertThatThrownBy{ sut.addPermission() }.isInstanceOf(InvalidOperationError::class.java)
+        assertThatThrownBy { sut.addPermission() }.isInstanceOf(InvalidOperationError::class.java)
                 .hasMessageContaining("You cannot add permissions to the Admin role")
     }
-
 
     @Test
     fun `adds new role`()
@@ -412,7 +411,7 @@ class RoleControllerTests
     @Test
     fun `throws exception if remove current user from Admin role`()
     {
-        val mockProfile = mock<CommonProfile>{
+        val mockProfile = mock<CommonProfile> {
             on { id } doReturn "test@example.com"
         }
 
@@ -431,7 +430,7 @@ class RoleControllerTests
     @Test
     fun `does not throw exception if remove different user from Admin role`()
     {
-        val mockProfile = mock<CommonProfile>{
+        val mockProfile = mock<CommonProfile> {
             on { id } doReturn "test@example.com"
         }
 
@@ -442,6 +441,6 @@ class RoleControllerTests
         }
 
         val sut = RoleController(mockContext, mock(), mock())
-        sut.removeUser();
+        sut.removeUser()
     }
 }

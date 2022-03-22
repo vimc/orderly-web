@@ -5,7 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.viewmodels.ChangelogItemViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ChangelogViewModel
 
-class ChangelogTabTests: BaseVersionPageTests()
+class ChangelogTabTests : BaseVersionPageTests()
 {
     @Test
     fun `renders changelog tab title`()
@@ -17,7 +17,7 @@ class ChangelogTabTests: BaseVersionPageTests()
     @Test
     fun `renders changelog rows`()
     {
-        val entries =  listOf(ChangelogItemViewModel("custom-public-label", "something public", "public"),
+        val entries = listOf(ChangelogItemViewModel("custom-public-label", "something public", "public"),
                 ChangelogItemViewModel("custom-internal-label", "something internal", "internal"))
 
         val changelog = listOf(ChangelogViewModel("14 Jun 2018", "v1", entries))
@@ -42,7 +42,6 @@ class ChangelogTabTests: BaseVersionPageTests()
         assertThat(cells[1].select("div")[3].className()).isEqualTo("changelog-item internal")
         assertThat(cells[1].select("div")[3].text()).isEqualTo("something internal")
     }
-
 
     @Test
     fun `renders no changelog message when changelog is empty`()

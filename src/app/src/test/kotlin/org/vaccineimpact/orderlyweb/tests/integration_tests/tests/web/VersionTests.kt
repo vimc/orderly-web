@@ -5,7 +5,6 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
-import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -97,7 +96,7 @@ class VersionTests : IntegrationTest()
     {
         val version = JooqContext().use {
 
-            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID,ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                     .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()

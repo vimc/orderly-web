@@ -48,7 +48,7 @@ class OrderlyServerTests
     fun `passes invalid query string using overloaded GET method`()
     {
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path/", emptyMap() )
+        OrderlyServer(mockConfig, client).get("/some/path/", emptyMap())
 
         verify(client).newCall(
                 check {
@@ -65,7 +65,7 @@ class OrderlyServerTests
         val key = "report"
         val nullKey = "emptyVal"
         val queryParams: Map<String, String> = mapOf(key to "minimal", nullKey to "")
-        OrderlyServer(mockConfig, client).get("/some/path/", queryParams )
+        OrderlyServer(mockConfig, client).get("/some/path/", queryParams)
 
         verify(client).newCall(
                 check {
@@ -82,9 +82,9 @@ class OrderlyServerTests
         OrderlyServer(mockConfig, client).get("/some/path?key1=val1", context = mock())
 
         verify(client).newCall(
-            check {
-                assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key1=val1")
-            }
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key1=val1")
+                }
         )
     }
 
@@ -347,26 +347,25 @@ class OrderlyServerTests
         assertThat(deleteResult.statusCode).isEqualTo(400)
     }
 
-
     @Test
     fun `makes direct POST request`()
     {
         val client = getHttpClient()
         OrderlyServer(mockConfig, client).post(
-            "/some/path",
-            """{"key1": "val1"}""",
-            mapOf(
-                "key2" to "val2"
-            )
+                "/some/path",
+                """{"key1": "val1"}""",
+                mapOf(
+                        "key2" to "val2"
+                )
         )
         verify(client).newCall(
-            check {
-                assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key2=val2")
-                assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
-                val buffer = Buffer()
-                it.body!!.writeTo(buffer)
-                assertThat(buffer.readUtf8()).isEqualTo("""{"key1": "val1"}""")
-            }
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key2=val2")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                    val buffer = Buffer()
+                    it.body!!.writeTo(buffer)
+                    assertThat(buffer.readUtf8()).isEqualTo("""{"key1": "val1"}""")
+                }
         )
     }
 
@@ -388,9 +387,9 @@ class OrderlyServerTests
         val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
         assertThatThrownBy {
             orderlyServerAPI.post(
-                "/some/path/",
-                "null",
-                emptyMap()
+                    "/some/path/",
+                    "null",
+                    emptyMap()
             )
         }.isInstanceOf(OrderlyServerError::class.java)
     }
@@ -405,10 +404,10 @@ class OrderlyServerTests
         assertThat(result).hasSameElementsAs(listOf("report1", "report2"))
 
         verify(client).newCall(
-            check {
-                assertThat(it.url.toString()).isEqualTo("http://orderly/reports/source?branch=testBranch&commit=testCommit")
-                assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
-            }
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/reports/source?branch=testBranch&commit=testCommit")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
         )
     }
 
@@ -425,8 +424,8 @@ class OrderlyServerTests
         val client = getHttpClient(mockResponse)
         val result = OrderlyServer(mockConfig, client).getReportParameters("report1", mockQueryParams)
         assertThat(result).hasSameElementsAs(listOf(
-            Parameter("param1", "1"),
-            Parameter("param2", "2")
+                Parameter("param1", "1"),
+                Parameter("param2", "2")
         ))
 
         verify(client).newCall(
@@ -456,6 +455,4 @@ class OrderlyServerTests
             on { newCall(any()) } doReturn call
         }
     }
-
 }
-

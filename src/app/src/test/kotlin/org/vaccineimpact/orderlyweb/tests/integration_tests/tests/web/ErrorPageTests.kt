@@ -7,8 +7,8 @@ import org.jsoup.nodes.Document
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -62,7 +62,7 @@ class ErrorPageTests : IntegrationTest()
                     .set(REPORT_VERSION_ARTEFACT.FORMAT, "BAD-FORMAT")
                     .execute()
 
-            val report = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT,ORDERLYWEB_REPORT_VERSION_FULL.ID)
+            val report = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
                     .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .first()
@@ -92,6 +92,5 @@ class ErrorPageTests : IntegrationTest()
         assertThat(breadcrumbs.last().text()).isEqualTo(expectedText)
         assertThat(breadcrumbs.last().child(0).`is`("span"))
                 .withFailMessage("Expected breadcrumb with null url to be a span").isTrue()
-
     }
 }

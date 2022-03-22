@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.security.clients
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
@@ -29,6 +29,5 @@ class GithubDirectClientTests
         val ags = sut.authorizationGenerators
         Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
-
     }
 }

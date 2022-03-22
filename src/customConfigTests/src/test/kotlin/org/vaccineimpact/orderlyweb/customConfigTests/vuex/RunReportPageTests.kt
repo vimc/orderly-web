@@ -5,17 +5,13 @@ import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.customConfigTests.RequestHelper
 import org.vaccineimpact.orderlyweb.customConfigTests.SeleniumTest
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 
-class RunReportPageTests: SeleniumTest()
+class RunReportPageTests : SeleniumTest()
 {
     @Before
     fun setUp()
@@ -47,8 +43,7 @@ class RunReportPageTests: SeleniumTest()
         driver.findElement(By.id("logs-link")).click()
 
         val tab = driver.findElement(By.id("logs-tab"))
-        wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
+        wait.until(ExpectedConditions.attributeToBe(tab, "display", "block"))
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
     }
-
 }

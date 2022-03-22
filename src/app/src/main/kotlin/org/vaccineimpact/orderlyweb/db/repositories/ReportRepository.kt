@@ -17,37 +17,22 @@ interface ReportRepository
 
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
-
     fun togglePublishStatus(name: String, version: String): Boolean
 
     @Throws(UnknownObjectError::class)
-
     fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
-
     fun getAllReportVersions(): List<ReportVersionWithDescLatest>
-
     fun getAllCustomFields(): Map<String, String?>
-
     fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
-
     fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
-
     fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
-
     fun getLatestVersion(report: String): ReportVersionWithDescLatest
-
     fun setGlobalPinnedReports(reportNames: List<String>)
-
     fun reportExists(reportName: String): Boolean
-
     fun getDrafts(): List<ReportVersionWithChangelogsParams>
-
     fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
-
     fun publish(ids: List<String>)
-
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
-
     fun getReportVersionInstances(version: String): Map<String, String>
 }
 
@@ -56,7 +41,8 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                               reportReadingScopes: List<String> = listOf()) : ReportRepository
 {
 
-    constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+    constructor(context: ActionContext)
+            : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
 
     override fun getAllReports(): List<Report>
     {
@@ -125,19 +111,19 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     {
         JooqContext().use {
             return it.dsl.select(
-                REPORT_VERSION_INSTANCE.INSTANCE,
-                REPORT_VERSION_INSTANCE.TYPE)
+                    REPORT_VERSION_INSTANCE.INSTANCE,
+                    REPORT_VERSION_INSTANCE.TYPE)
                     .from(REPORT_VERSION_INSTANCE)
                     .where(REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
                     .fetch()
-                    .map {r -> r[REPORT_VERSION_INSTANCE.TYPE] to r[REPORT_VERSION_INSTANCE.INSTANCE]}
+                    .map { r -> r[REPORT_VERSION_INSTANCE.TYPE] to r[REPORT_VERSION_INSTANCE.INSTANCE] }
                     .toMap()
         }
     }
 
     override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
     {
-        //raise exception if version does not belong to named report, or version does not exist
+        // raise exception if version does not belong to named report, or version does not exist
         JooqContext().use {
             return getReportVersion(name, version, it)
         }
@@ -220,7 +206,12 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
                     .fetch()
                     .groupBy { it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
-                    .mapValues { it.value.associate { it[REPORT_VERSION_CUSTOM_FIELDS.KEY] to it[REPORT_VERSION_CUSTOM_FIELDS.VALUE] } }
+                    .mapValues {
+                        it.value.associate {
+                            it[REPORT_VERSION_CUSTOM_FIELDS.KEY] to
+                                    it[REPORT_VERSION_CUSTOM_FIELDS.VALUE]
+                        }
+                    }
         }
     }
 
@@ -298,7 +289,8 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(shouldIncludeReportVersion)
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
-                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
+                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java)
+                    ?: throw UnknownObjectError(report, "report")
         }
     }
 
@@ -383,7 +375,8 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    private fun getParametersForVersions(versionIds: Collection<String>, ctx: JooqContext): Map<String, Map<String, String>>
+    private fun getParametersForVersions(versionIds: Collection<String>,
+                                         ctx: JooqContext): Map<String, Map<String, String>>
     {
         return ctx.dsl.select(
                 PARAMETERS.REPORT_VERSION,
@@ -442,13 +435,13 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     {
         JooqContext().use {
             return it.dsl.select(
-                ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
-                ORDERLYWEB_REPORT_VERSION_FULL.DATE.max().`as`("date")
+                    ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                    ORDERLYWEB_REPORT_VERSION_FULL.DATE.max().`as`("date")
             )
-                .from(ORDERLYWEB_REPORT_VERSION_FULL)
-                .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
-                .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
-                .fetchInto(ReportWithDate::class.java)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
+                    .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .fetchInto(ReportWithDate::class.java)
         }
     }
 
@@ -459,13 +452,21 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
     private val shouldIncludeChangelogItem =
             if (isReviewer)
+            {
                 trueCondition()
+            }
             else
+            {
                 CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
+            }
 
     private val changelogReportVersionColumnForUser =
             if (isReviewer)
+            {
                 CHANGELOG.REPORT_VERSION
+            }
             else
+            {
                 CHANGELOG.REPORT_VERSION_PUBLIC
+            }
 }

@@ -16,9 +16,8 @@ class ReportControllerTests
         val model = sut.getRunReport()
 
         assertThat(model.breadcrumbs).containsExactly(
-            IndexViewModel.breadcrumb,
-            Breadcrumb("Run a report", "http://localhost:8888/vuex-run-report")
+                IndexViewModel.breadcrumb,
+                Breadcrumb("Run a report", "http://localhost:8888/vuex-run-report")
         )
     }
-
 }

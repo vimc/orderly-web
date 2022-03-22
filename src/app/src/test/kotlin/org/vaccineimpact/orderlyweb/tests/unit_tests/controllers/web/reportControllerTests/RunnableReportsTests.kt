@@ -4,7 +4,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
@@ -16,12 +17,12 @@ class RunnableReportsTests
     fun `can list all reports`()
     {
         val mockQueryParams: Map<String, String> = mapOf()
-        val mockContext: ActionContext = mock<ActionContext>{
+        val mockContext: ActionContext = mock<ActionContext> {
             on { queryParams() } doReturn mockQueryParams
         }
         val reports = listOf(
-            "report1",
-            "report2"
+                "report1",
+                "report2"
         )
         val mockOrderlyServer: OrderlyServerAPI = mock {
             on { getRunnableReportNames(mockQueryParams) } doReturn reports
@@ -30,18 +31,18 @@ class RunnableReportsTests
         val date2 = date1.minusSeconds(60)
         val mockReportRepo: ReportRepository = mock {
             on { getLatestReportVersions(reports) } doReturn
-                listOf(
-                    ReportWithDate("report1", date1),
-                    ReportWithDate("report2", date2)
-                )
+                    listOf(
+                            ReportWithDate("report1", date1),
+                            ReportWithDate("report2", date2)
+                    )
         }
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mockReportRepo, mock())
         val result = sut.getRunnableReports()
         assertThat(result).isEqualTo(
-            listOf(
-                ReportWithDate("report1", date1),
-                ReportWithDate("report2", date2)
-            )
+                listOf(
+                        ReportWithDate("report1", date1),
+                        ReportWithDate("report2", date2)
+                )
         )
     }
 
@@ -53,8 +54,8 @@ class RunnableReportsTests
             on { queryParams() } doReturn mockQueryParams
         }
         val reports = listOf(
-            "report_that_has_been_run",
-            "report_that_has_not_been_run"
+                "report_that_has_been_run",
+                "report_that_has_not_been_run"
         )
         val mockOrderlyServer: OrderlyServerAPI = mock {
             on { getRunnableReportNames(mockQueryParams) } doReturn reports
@@ -62,17 +63,17 @@ class RunnableReportsTests
         val now = Instant.now()
         val mockReportRepo: ReportRepository = mock {
             on { getLatestReportVersions(reports) } doReturn
-                listOf(
-                    ReportWithDate("report_that_has_been_run", now)
-                )
+                    listOf(
+                            ReportWithDate("report_that_has_been_run", now)
+                    )
         }
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mockReportRepo, mock())
         val result = sut.getRunnableReports()
         assertThat(result).isEqualTo(
-            listOf(
-                ReportWithDate("report_that_has_been_run", now),
-                ReportWithDate("report_that_has_not_been_run", null)
-            )
+                listOf(
+                        ReportWithDate("report_that_has_been_run", now),
+                        ReportWithDate("report_that_has_not_been_run", null)
+                )
         )
     }
 }

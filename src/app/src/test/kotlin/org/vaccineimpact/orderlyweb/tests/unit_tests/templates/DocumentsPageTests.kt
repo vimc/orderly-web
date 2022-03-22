@@ -49,5 +49,4 @@ class DocumentsPageTests
         script = doc.getElementsByTag("script")[4].html().split("\n")[1]
         Assertions.assertThat(script.trim()).isEqualTo("var canManage = true;")
     }
-
 }

@@ -18,31 +18,32 @@ class GetByNameAndVersionTests
 {
     private val versionId = "20170103-143015-1234abcd"
     private val mockLatestVersion = ReportVersionWithDescLatest("r1",
-        "a fake report",
-        versionId,
-        true,
-        Instant.now(),
-        "latest v",
-        "a fake report"
+            "a fake report",
+            versionId,
+            true,
+            Instant.now(),
+            "latest v",
+            "a fake report"
     )
     private val mockReportDetails = ReportVersionWithArtefactsDataDescParamsResources(
             ReportVersionWithDescLatestElapsed("r1",
-                "a fake report",
-                versionId,
-                true,
-                Instant.now(),
-                "latest v",
-                "a fake report",
-                3754.3,
-                "master",
-                "abc123"),
+                    "a fake report",
+                    versionId,
+                    true,
+                    Instant.now(),
+                    "latest v",
+                    "a fake report",
+                    3754.3,
+                    "master",
+                    "abc123"),
             listOf(),
             listOf(),
             listOf(),
             mapOf("p1" to "v1", "p2" to "v2"),
             mapOf("p1" to "v1", "p2" to "v2"))
 
-    private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
+    private val mockChangelog = listOf(
+            Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
             Changelog("20160103-143015-1234abcd", "public", "something public", true, true),
             Changelog("20170106-143015-1234abcd", "internal", "something internal in 2017", true, false),
             Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true, true))
@@ -167,7 +168,8 @@ class GetByNameAndVersionTests
     {
         val mockReportRepo = mock<ReportRepository> {
             on { this.getReportsByName("r1") } doReturn
-                    listOf("20170104-091500-1234dcba", "20170204-093000-1234dcba", versionId, "20170202-093000-1234dcba")
+                    listOf("20170104-091500-1234dcba", "20170204-093000-1234dcba",
+                            versionId, "20170202-093000-1234dcba")
 
             on { this.getLatestVersion("r1") } doReturn mockLatestVersion
         }
@@ -180,7 +182,6 @@ class GetByNameAndVersionTests
         assertThat(result.versions[2].date).isEqualTo("Wed Jan 04 2017, 09:15")
         assertThat(result.versions[3].date).isEqualTo("Tue Jan 03 2017, 14:30")
     }
-
 
     @Test
     fun `builds changelog viewmodels`()
@@ -258,7 +259,8 @@ class GetByNameAndVersionTests
         val sut = ReportController(mockActionContext, orderly, mock(), mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.focalArtefactUrl).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Asuitable.png?inline=true")
+        assertThat(result.focalArtefactUrl)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Asuitable.png?inline=true")
     }
 
     @Test
@@ -282,23 +284,26 @@ class GetByNameAndVersionTests
         assertThat(result.artefacts[0].artefact).isEqualTo(artefacts[0])
         assertThat(result.artefacts[0].files.count()).isEqualTo(1)
         assertThat(result.artefacts[0].files[0].name).isEqualTo("unsuitable.csv")
-        assertThat(result.artefacts[0].files[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/unsuitable.csv?inline=false")
+        assertThat(result.artefacts[0].files[0].url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/unsuitable.csv?inline=false")
         assertThat(result.artefacts[0].files[0].size).isEqualTo(100)
 
         assertThat(result.artefacts[1].artefact).isEqualTo(artefacts[1])
         assertThat(result.artefacts[1].files.count()).isEqualTo(2)
         assertThat(result.artefacts[1].files[0].name).isEqualTo("subdir/another.csv")
-        assertThat(result.artefacts[1].files[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Aanother.csv?inline=false")
+        assertThat(result.artefacts[1].files[0].url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Aanother.csv?inline=false")
         assertThat(result.artefacts[1].files[0].size).isEqualTo(200)
         assertThat(result.artefacts[1].files[1].name).isEqualTo("suitable.png")
-        assertThat(result.artefacts[1].files[1].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.png?inline=false")
+        assertThat(result.artefacts[1].files[1].url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.png?inline=false")
         assertThat(result.artefacts[1].files[1].size).isEqualTo(2000)
     }
 
     @Test
     fun `artefacts have expected inline figures`()
     {
-        //Expect only the first file in an artefact to be considered for inline figure
+        // Expect only the first file in an artefact to be considered for inline figure
         val artefacts = listOf(
                 Artefact(ArtefactFormat.DATA, "desc",
                         listOf(FileInfo("unsuitable.csv", 1), FileInfo("suitable.png", 1))),
@@ -314,7 +319,8 @@ class GetByNameAndVersionTests
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts[0].inlineArtefactFigure).isNull()
-        assertThat(result.artefacts[1].inlineArtefactFigure).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.jpg?inline=true")
+        assertThat(result.artefacts[1].inlineArtefactFigure)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.jpg?inline=true")
     }
 
     @Test
@@ -334,18 +340,22 @@ class GetByNameAndVersionTests
 
         assertThat(result.dataLinks[0].key).isEqualTo("data1")
         assertThat(result.dataLinks[0].csv.name).isEqualTo("csv")
-        assertThat(result.dataLinks[0].csv.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=csv")
+        assertThat(result.dataLinks[0].csv.url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=csv")
         assertThat(result.dataLinks[0].csv.size).isEqualTo(100)
         assertThat(result.dataLinks[0].rds.name).isEqualTo("rds")
-        assertThat(result.dataLinks[0].rds.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=rds")
+        assertThat(result.dataLinks[0].rds.url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=rds")
         assertThat(result.dataLinks[0].rds.size).isEqualTo(1000)
 
         assertThat(result.dataLinks[1].key).isEqualTo("data2")
         assertThat(result.dataLinks[1].csv.name).isEqualTo("csv")
-        assertThat(result.dataLinks[1].csv.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=csv")
+        assertThat(result.dataLinks[1].csv.url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=csv")
         assertThat(result.dataLinks[1].csv.size).isEqualTo(200)
         assertThat(result.dataLinks[1].rds.name).isEqualTo("rds")
-        assertThat(result.dataLinks[1].rds.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=rds")
+        assertThat(result.dataLinks[1].rds.url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=rds")
         assertThat(result.dataLinks[1].rds.size).isEqualTo(2000)
     }
 
@@ -354,7 +364,8 @@ class GetByNameAndVersionTests
     {
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
-                    mockReportDetails.copy(resources = listOf(FileInfo("resource1.Rmd", 100), FileInfo("subdir/resource2.Rmd", 200)))
+                    mockReportDetails.copy(resources = listOf(FileInfo("resource1.Rmd", 100),
+                            FileInfo("subdir/resource2.Rmd", 200)))
         }
 
         val sut = ReportController(mockActionContext, orderly, mock(), mockReportRepo, mock())
@@ -362,10 +373,12 @@ class GetByNameAndVersionTests
 
         assertThat(result.resources.count()).isEqualTo(2)
         assertThat(result.resources[0].name).isEqualTo("resource1.Rmd")
-        assertThat(result.resources[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/resource1.Rmd")
+        assertThat(result.resources[0].url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/resource1.Rmd")
         assertThat(result.resources[0].size).isEqualTo(100)
         assertThat(result.resources[1].name).isEqualTo("subdir/resource2.Rmd")
-        assertThat(result.resources[1].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/subdir%3Aresource2.Rmd")
+        assertThat(result.resources[1].url)
+                .isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/subdir%3Aresource2.Rmd")
         assertThat(result.resources[1].size).isEqualTo(200)
     }
 

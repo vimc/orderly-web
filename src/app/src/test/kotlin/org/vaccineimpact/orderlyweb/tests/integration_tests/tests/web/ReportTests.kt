@@ -1,11 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import com.github.fge.jsonschema.main.JsonValidator
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -139,7 +136,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `report runners can get report run metadata`()
     {
-        val url="/report/run-metadata"
+        val url = "/report/run-metadata"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.get,

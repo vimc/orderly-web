@@ -21,12 +21,14 @@ class ActionResolverTests
 
     class FakeController(actionContext: ActionContext) : Controller(actionContext)
     {
+        @Suppress("FunctionOnlyReturningConstant")
         fun simpleAction(): Int
         {
             return 1234
         }
 
         @Template("whatever")
+        @Suppress("FunctionOnlyReturningConstant")
         fun templateAction(): Int
         {
             return 1234
@@ -56,7 +58,7 @@ class ActionResolverTests
     {
         val sut = ActionResolver(mockTemplateEngine)
         val endpoint = APIEndpoint("/url", FakeController::class, "nonexistentAction")
-        assertThatThrownBy{sut.invokeControllerAction(endpoint, mock())}.isInstanceOf(NoSuchMethodException::class.java)
-
+        assertThatThrownBy { sut.invokeControllerAction(endpoint, mock()) }
+                .isInstanceOf(NoSuchMethodException::class.java)
     }
 }

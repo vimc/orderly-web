@@ -9,7 +9,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.util.zip.ZipFile
 
 class ZipTests : DatabaseTests()
 {
@@ -53,5 +52,4 @@ class ZipTests : DatabaseTests()
         assertThat(File(resultSourceDir, "text.csv").isFile).isTrue()
         assertThat(File(resultSourceDir, "subdir/test.txt").isFile).isTrue()
     }
-
 }

@@ -43,5 +43,4 @@ class OrderlyWebOnetimeTokenAuthenticator(
 
         credentials.userProfile?.id = claims.getClaim("id").toString()
     }
-
 }

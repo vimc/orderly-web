@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
+import com.nimbusds.jwt.JWTParser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import com.nimbusds.jwt.JWTParser
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import org.vaccineimpact.orderlyweb.security.issuing.TokenIssuer
@@ -12,7 +12,7 @@ import java.util.*
 
 class TokenIssuerTests
 {
-    private val keyPair= KeyHelper.generateKeyPair()
+    private val keyPair = KeyHelper.generateKeyPair()
     private val userEmail = "test@email.com"
 
     @Test

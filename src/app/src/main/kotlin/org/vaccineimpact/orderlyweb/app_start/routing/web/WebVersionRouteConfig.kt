@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.api.*
 import spark.route.HttpMethod
 
-object  WebVersionRouteConfig : RouteConfig
+object WebVersionRouteConfig : RouteConfig
 {
     private val readReports = setOf("report:<name>/reports.read")
     private val reviewReports = setOf("*/reports.review")

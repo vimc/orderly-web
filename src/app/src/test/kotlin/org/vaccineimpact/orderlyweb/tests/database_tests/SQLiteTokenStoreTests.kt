@@ -59,14 +59,12 @@ class SQLiteTokenStoreTests
                     .fetchAny()
 
             assertThat(result).isNotNull()
-
         }
     }
 
     @Test
     fun `verifyToken returns true if token exists`()
     {
-
 
         val token = "testtoken"
         val sut = SQLiteTokenStore()
@@ -82,11 +80,9 @@ class SQLiteTokenStoreTests
         assertThat(result).isTrue()
     }
 
-
     @Test
     fun `verifyToken deletes token after retrieval`()
     {
-
 
         val token = "testtoken"
         val sut = SQLiteTokenStore()
@@ -108,11 +104,9 @@ class SQLiteTokenStoreTests
         }
     }
 
-
     @Test
     fun `verifyToken returns false if token does not exist`()
     {
-
 
         val token = "testtoken"
         val sut = SQLiteTokenStore()
@@ -121,5 +115,4 @@ class SQLiteTokenStoreTests
 
         assertThat(result).isFalse()
     }
-
 }

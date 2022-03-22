@@ -12,10 +12,10 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
-import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import java.time.Instant
 
@@ -32,11 +32,12 @@ class ReportControllerTests : ControllerTest()
     private val reports = listOf(Report(reportName, "test full name 1", "v1"),
             Report("testname2", "test full name 2", "v1"))
 
-
     private val reportVersions = listOf(
-            ReportVersionWithDescCustomFieldsLatestParamsTags(ReportVersionWithDescLatest(reportName, "display1", "v1", true, Instant.now(), "v1", "desc"),
+            ReportVersionWithDescCustomFieldsLatestParamsTags(
+                    ReportVersionWithDescLatest(reportName, "display1", "v1", true, Instant.now(), "v1", "desc"),
                     mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1"), listOf("t1", "t2")),
-            ReportVersionWithDescCustomFieldsLatestParamsTags(ReportVersionWithDescLatest("r2", "display2", "v2", true, Instant.now(), "v1", "v2"),
+            ReportVersionWithDescCustomFieldsLatestParamsTags(
+                    ReportVersionWithDescLatest("r2", "display2", "v2", true, Instant.now(), "v1", "v2"),
                     mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1"))
     )
 
@@ -95,7 +96,6 @@ class ReportControllerTests : ControllerTest()
         assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
 
-
     @Test
     fun `getLatestChangelogByName returns changelog`()
     {
@@ -146,5 +146,4 @@ class ReportControllerTests : ControllerTest()
 
         verify(mockReportRepo).togglePublishStatus(name, version)
     }
-
 }

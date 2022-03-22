@@ -102,7 +102,7 @@ class IndexPageTests : IntegrationTest()
     {
         val reportsTag = page.getElementsByTag("script")[4].html()
                 .split("var rawReports = ")[1]
-        val reportsString =  reportsTag.split(";")[0]
+        val reportsString = reportsTag.split(";")[0]
         return JsonParser().parse(reportsString) as JsonArray
     }
 }

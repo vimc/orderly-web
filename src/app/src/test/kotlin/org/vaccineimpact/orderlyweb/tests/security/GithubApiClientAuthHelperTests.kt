@@ -47,7 +47,6 @@ class GithubApiClientAuthHelperTests
                 GitHubResponse(mock(), listOf(mockTeam))
         on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
                 GitHubResponse(mock(), listOf(mockUser))
-
     }
 
     @Test
@@ -71,7 +70,7 @@ class GithubApiClientAuthHelperTests
     @Test
     fun `checkGithubUserCanAuthenticate succeeds when user is member of allowed org and team`()
     {
-        //default mock values should succeed
+        // default mock values should succeed
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         sut.authenticate("token")
         sut.checkGitHubOrgAndTeamMembership()
@@ -99,7 +98,7 @@ class GithubApiClientAuthHelperTests
     @Test
     fun `can getUserEmail when email is private`()
     {
-        //defaults should get the sut to find null email in user so fetch details from client
+        // defaults should get the sut to find null email in user so fetch details from client
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         sut.authenticate("token")
         val result = sut.getUserEmail()
@@ -169,7 +168,7 @@ class GithubApiClientAuthHelperTests
         val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.endsWith("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("user/orgs") } ) } doReturn GitHubResponse(mock(),
+            on { get(argWhere { it.uri.contains("user/orgs") }) } doReturn GitHubResponse(mock(),
                     listOf<User>())
         }
 
@@ -254,7 +253,5 @@ class GithubApiClientAuthHelperTests
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("GitHub token must include scope read:user")
-
     }
-
 }

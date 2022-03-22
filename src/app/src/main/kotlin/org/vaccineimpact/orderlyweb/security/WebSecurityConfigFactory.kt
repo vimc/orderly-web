@@ -4,9 +4,8 @@ import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
-import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.credentials.Credentials
-
+import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer

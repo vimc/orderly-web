@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.security.clients
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.jwt.config.signature.AbstractSignatureConfiguration
@@ -37,5 +38,4 @@ class JWTCookieClientTests
         assertThat(errorInfo.code).isEqualTo("cookie-bearer-token-invalid")
         assertThat(errorInfo.message).isEqualTo("Bearer token not supplied in cookie 'orderlyweb_jwt_token', or bearer token was invalid")
     }
-
 }

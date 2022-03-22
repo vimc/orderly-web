@@ -31,7 +31,7 @@ class WebEndpointTests
 
         sut.additionalSetup("/test")
 
-        val filterArg : ArgumentCaptor<Filter> = ArgumentCaptor.forClass(Filter::class.java)
+        val filterArg: ArgumentCaptor<Filter> = ArgumentCaptor.forClass(Filter::class.java)
         verify(mockSpark).after(eq("/test"), eq(ContentTypes.json), capture(filterArg))
         val filter = filterArg.value
         assertThat(filter is DefaultHeadersFilter).isTrue()
@@ -70,10 +70,10 @@ class WebEndpointTests
 
         sut.additionalSetup("/test")
 
-        //Verify all expected methods were called
+        // Verify all expected methods were called
         verify(mockConfigFactory).build()
 
-        //verify the security filter has been created as expected
+        // verify the security filter has been created as expected
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
         verify(mockSpark).before(eq("/test"), eq("text/html"), eq(HttpMethod.get), capture(securityFilterArg))
         val securityFilter = securityFilterArg.value
@@ -94,7 +94,6 @@ class WebEndpointTests
 
         val matchers = securityFilter.matchers
         assertThat(matchers).isEqualTo("SkipOptions")
-
     }
 
     @Test
@@ -116,10 +115,10 @@ class WebEndpointTests
 
         sut.additionalSetup("/test")
 
-        //Verify all expected methods were called
+        // Verify all expected methods were called
         verify(mockConfigFactory).build()
 
-        //verify the security filter has been created as expected
+        // verify the security filter has been created as expected
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
         verify(mockSpark).before(eq("/test"), eq("text/html"), eq(HttpMethod.get), capture(securityFilterArg))
         val securityFilter = securityFilterArg.value
@@ -134,7 +133,6 @@ class WebEndpointTests
         field.isAccessible = true
         val clients = field.get(securityFilter)
         assertThat(clients).isEqualTo("MontaguIndirectClient")
-
     }
 
     @Test
@@ -160,10 +158,10 @@ class WebEndpointTests
 
         sut.additionalSetup("/test")
 
-        //Verify all expected methods were called
+        // Verify all expected methods were called
         verify(mockConfigFactory).build()
 
-        //verify the security filter has been created as expected
+        // verify the security filter has been created as expected
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
         verify(mockSpark).before(eq("/test"), eq("text/html"), eq(HttpMethod.get), capture(securityFilterArg))
         val securityFilter = securityFilterArg.value
@@ -178,7 +176,6 @@ class WebEndpointTests
         field.isAccessible = true
         val clients = field.get(securityFilter)
         assertThat(clients).isEqualTo("OrderlyWebIndirectClient")
-
     }
 
     @Test
@@ -196,7 +193,7 @@ class WebEndpointTests
                 spark = mockSpark, configFactory = mockConfigFactory)
         sut.additionalSetup("/test")
 
-        //verify that config factory and spark were not called
+        // verify that config factory and spark were not called
         verify(mockConfigFactory, times(0)).build()
         verify(mockSpark, times(0)).before(anyString(), any(), any(), any())
     }

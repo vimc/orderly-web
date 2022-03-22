@@ -137,5 +137,4 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                 .where(ORDERLYWEB_USER.EMAIL.eq(email))
                 .singleOrNull()
     }
-
 }

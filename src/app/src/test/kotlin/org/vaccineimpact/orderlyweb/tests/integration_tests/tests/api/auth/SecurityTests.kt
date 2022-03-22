@@ -50,7 +50,6 @@ class SecurityTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
                 "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.read")
-
     }
 
     @Test
@@ -104,7 +103,6 @@ class SecurityTests : IntegrationTest()
         JSONValidator.validateError(response.text, "forbidden",
                 "This token is issued for /api/v1/reports/testname/versions/testversion/artefacts/someartefact/ but the " +
                         "current request is for /api/v1/reports/testname/versions/testversion/artefacts/someotherartefact/")
-
     }
 
     @Test
@@ -118,7 +116,6 @@ class SecurityTests : IntegrationTest()
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
-
     }
 
     @Test
@@ -149,6 +146,4 @@ class SecurityTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
     }
-
-
 }

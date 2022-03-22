@@ -50,5 +50,4 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
         userRepository.addUser(user.email, user.username, user.name ?: "", UserSource.Montagu)
         return user.email
     }
-
 }

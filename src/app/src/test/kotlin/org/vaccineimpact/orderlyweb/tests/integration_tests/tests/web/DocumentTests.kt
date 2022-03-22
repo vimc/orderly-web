@@ -1,7 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.toJsonArray
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.After
@@ -29,7 +27,8 @@ class DocumentTests : IntegrationTest()
     }
 
     @Before
-    fun setup() {
+    fun setup()
+    {
         File("documents/some/path").mkdirs()
         File("documents/some/path/file.csv").createNewFile()
     }
@@ -155,6 +154,5 @@ class DocumentTests : IntegrationTest()
         assertThat(data.isArray).isTrue()
         val doc = data[0]
         assertThat(doc.get("path").textValue()).isEqualTo("/path")
-
     }
 }

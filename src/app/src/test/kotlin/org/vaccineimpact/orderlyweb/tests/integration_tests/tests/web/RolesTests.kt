@@ -131,6 +131,7 @@ class RolesTests : IntegrationTest()
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.delete, contentType = ContentTypes.json)
     }
+
     @Test
     fun `only user managers can add permission`()
     {

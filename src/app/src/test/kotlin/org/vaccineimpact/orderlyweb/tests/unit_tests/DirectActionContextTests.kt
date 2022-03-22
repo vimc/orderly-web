@@ -2,7 +2,8 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.nhaarman.mockito_kotlin.*
 import org.apache.commons.io.IOUtils
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
@@ -52,7 +53,6 @@ class DirectActionContextTests
         on {
             it.sparkRequest
         } doReturn mockPostRequest
-
     }
 
     @Test
@@ -94,7 +94,7 @@ class DirectActionContextTests
     {
         val sut = DirectActionContext(mockPostSparkContext)
 
-        assertThatThrownBy{ sut.postData("something else") }.isInstanceOf(MissingParameterError::class.java)
+        assertThatThrownBy { sut.postData("something else") }.isInstanceOf(MissingParameterError::class.java)
     }
 
     @Test
@@ -109,7 +109,6 @@ class DirectActionContextTests
             on {
                 it.sparkRequest
             } doReturn request
-
         }
 
         val sut = DirectActionContext(context)
@@ -133,7 +132,6 @@ class DirectActionContextTests
             on {
                 it.sparkResponse
             } doReturn response
-
         }
 
         val sut = DirectActionContext(context)
@@ -187,7 +185,6 @@ class DirectActionContextTests
         val sut = DirectActionContext(context, profileManager = mockProfileManager)
         assertThatThrownBy { sut.requirePermission(ReifiedPermission("users.manage", Scope.Global())) }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
-
     }
 
     @Test
@@ -208,7 +205,6 @@ class DirectActionContextTests
             on {
                 it.sparkResponse
             } doReturn mockResponse
-
         }
 
         val sut = DirectActionContext(context)
@@ -283,8 +279,8 @@ class DirectActionContextTests
         val sut = DirectActionContext(context)
 
         assertThat(sut.queryParams()).isEqualTo(mapOf<String, String?>(
-            "a" to "b",
-            "c" to null
+                "a" to "b",
+                "c" to null
         ))
     }
 
@@ -323,7 +319,7 @@ class DirectActionContextTests
     @Test
     fun `getPartReader throws BadRequest when content is empty`()
     {
-        val mockRequest = mock<Request>{
+        val mockRequest = mock<Request> {
             on { contentLength() } doReturn 0
         }
         val mockContext = mock<SparkWebContext> {
@@ -331,7 +327,7 @@ class DirectActionContextTests
         }
 
         val sut = DirectActionContext(mockContext)
-        assertThatThrownBy{ sut.getPartReader("file") }
+        assertThatThrownBy { sut.getPartReader("file") }
                 .isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("No data provided")
     }

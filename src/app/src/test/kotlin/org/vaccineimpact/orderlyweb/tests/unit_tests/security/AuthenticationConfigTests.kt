@@ -7,8 +7,8 @@ import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.SettingsRepository
-import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.UnknownAuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.GitHubDirectClient
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
@@ -112,10 +112,10 @@ class AuthenticationConfigTests
     @Test
     fun `allowGuestUser returns expected result`()
     {
-        val mockSettingsRepo = mock<SettingsRepository>{
+        val mockSettingsRepo = mock<SettingsRepository> {
             on { getAuthAllowGuest() } doReturn true
         }
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn true
             on { get("auth.provider") } doReturn AuthenticationProvider.GitHub.toString()
         }
@@ -128,10 +128,10 @@ class AuthenticationConfigTests
     @Test
     fun `allowGuestUser ignores repo content and returns false if cannot allow guest`()
     {
-        val mockSettingsRepo = mock<SettingsRepository>{
+        val mockSettingsRepo = mock<SettingsRepository> {
             on { getAuthAllowGuest() } doReturn true
         }
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn false
         }
         val sut = OrderlyWebAuthenticationConfig(mockConfig, mockSettingsRepo)
@@ -143,7 +143,7 @@ class AuthenticationConfigTests
     @Test
     fun `canAllowGuestUser returns false if auth provider is Montagu`()
     {
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn true
             on { get("auth.provider") } doReturn AuthenticationProvider.Montagu.toString()
         }
@@ -154,7 +154,7 @@ class AuthenticationConfigTests
     @Test
     fun `canAllowGuestUser returns false if authorization is not enabled`()
     {
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn false
             on { get("auth.provider") } doReturn AuthenticationProvider.GitHub.toString()
         }
@@ -165,7 +165,7 @@ class AuthenticationConfigTests
     @Test
     fun `canAllowGuestUser returns true if config allows guest user`()
     {
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn true
             on { get("auth.provider") } doReturn AuthenticationProvider.GitHub.toString()
         }

@@ -7,8 +7,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import spark.route.HttpMethod
 
 class WebRequestHelper : RequestHelper()
@@ -30,7 +30,7 @@ class WebRequestHelper : RequestHelper()
                                        withPermissions: Set<ReifiedPermission>,
                                        contentType: String = "text/html",
                                        method: HttpMethod = HttpMethod.get,
-                                       postData: Map<String, Any> ): Response
+                                       postData: Map<String, Any>): Response
     {
         val sessionCookie = webLoginWithMontagu(withPermissions)
         return requestWithSessionCookie(url, sessionCookie, contentType, method, postData)
@@ -108,5 +108,4 @@ class WebRequestHelper : RequestHelper()
     {
         return GsonBuilder().create().toJson(this)
     }
-
 }

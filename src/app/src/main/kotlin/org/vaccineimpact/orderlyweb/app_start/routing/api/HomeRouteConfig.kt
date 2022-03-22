@@ -18,5 +18,4 @@ object HomeRouteConfig : RouteConfig
                     .json()
                     .transform()
     )
-
 }

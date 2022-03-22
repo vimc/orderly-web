@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
 import com.google.gson.reflect.TypeToken
+import org.ocpsoft.prettytime.PrettyTime
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import spark.Filter
@@ -13,9 +14,8 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.servlet.http.HttpServletResponse
-import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
+import javax.servlet.http.HttpServletResponse
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
 // specific aims.
@@ -30,7 +30,6 @@ fun addDefaultResponseHeaders(res: HttpServletResponse,
         // This allows cookies to be received over AJAX
         res.addHeader("Access-Control-Allow-Credentials", "true")
     }
-
 }
 
 class DefaultHeadersFilter(val contentType: String) : Filter
@@ -43,7 +42,7 @@ class DefaultHeadersFilter(val contentType: String) : Filter
 
 fun parseRouteParamToFilepath(routeParam: String): String
 {
-    return URLDecoder.decode(routeParam.replace(":", "/"), "UTF-8") //route param may include URL encoding
+    return URLDecoder.decode(routeParam.replace(":", "/"), "UTF-8") // route param may include URL encoding
 }
 
 fun encodeFilename(filename: String): String
@@ -87,13 +86,14 @@ fun canRenderInBrowser(fileName: String): Boolean
     return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm", "bmp"))
 }
 
-//Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
-//Improved version of the same method in commons.io FileUtils, supporting greater precision
-//and rounding up as well as down
+// Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
+// Improved version of the same method in commons.io FileUtils, supporting greater precision
+// and rounding up as well as down
 private enum class SizeSuffix
 {
     bytes, KB, MB, GB, TB, PB, EB, ZB, YB
 }
+
 fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
 {
     val KILO_DIVISOR = BigDecimal(1024L)
@@ -151,13 +151,13 @@ fun getDateStringFromVersionId(id: String): LocalDateTime
 }
 
 private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
-fun getFriendlyDateTime(date: LocalDateTime) : String
+fun getFriendlyDateTime(date: LocalDateTime): String
 {
     return formatter.format(date)
 }
 
 private val prettyTime = PrettyTime()
-fun getFriendlyRelativeDateTime(date: Date) : String
+fun getFriendlyRelativeDateTime(date: Date): String
 {
     return prettyTime.format(date)
 }

@@ -1,14 +1,11 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.*
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 
 class DataController(context: ActionContext,
                      private val orderly: OrderlyClient,
@@ -50,8 +47,9 @@ class DataController(context: ActionContext,
         var type = context.queryParams("type")
 
         if (type.isNullOrEmpty())
+        {
             type = "csv"
-
+        }
         val hash = orderly.getDatum(name, version, id)
 
         val absoluteFilePath = "${this.config["orderly.root"]}data/$type/$hash.$type"

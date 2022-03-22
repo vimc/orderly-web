@@ -18,7 +18,7 @@ class GithubIndirectClientTests
         val sut = GithubIndirectClient("testkey", "testsecret")
         sut.init()
 
-        //base class should be GithubClient
+        // base class should be GithubClient
         assertThat(sut.javaClass.superclass.name).isEqualTo("org.pac4j.oauth.client.GitHubClient")
 
         val authenticator = sut.authenticator
@@ -33,6 +33,5 @@ class GithubIndirectClientTests
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("http://localhost:8888/login")
-
     }
 }

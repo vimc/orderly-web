@@ -35,7 +35,7 @@ class GithubWebTests : SeleniumTest()
     {
         startApp("auth.provider=github")
 
-        //This spoofs the callback by github after user has provided valid credentials
+        // This spoofs the callback by github after user has provided valid credentials
         val fullUrl = "$loginUrl?code=fake&secret=fake"
 
         driver.get(fullUrl)
@@ -55,9 +55,8 @@ class GithubWebTests : SeleniumTest()
         login()
 
         val helpText = driver.findElements(By.cssSelector("p")).first()
-        assertThat(helpText.text)
-                .contains("We have not been able to successfully identify you as a member of the app's configured GitHub org")
-
+        assertThat(helpText.text).contains(
+                "We have not been able to successfully identify you as a member of the app's configured GitHub org")
     }
 
     @Test
@@ -89,7 +88,7 @@ class GithubWebTests : SeleniumTest()
         driver.get(url)
 
         val authProvider = driver.findElement(By.cssSelector(".login-link"))
-        assertThat(authProvider.getAttribute("href")).isEqualTo("${url}weblogin/external?requestedUrl=${url}")
+        assertThat(authProvider.getAttribute("href")).isEqualTo("${url}weblogin/external?requestedUrl=$url")
     }
 
     @Test
@@ -111,8 +110,7 @@ class GithubWebTests : SeleniumTest()
         login()
 
         val helpText = driver.findElements(By.cssSelector("p")).first()
-        assertThat(helpText.text)
-                .contains("We have not been able to successfully identify you as a member of the app's configured GitHub org")
-
+        assertThat(helpText.text).contains(
+                "We have not been able to successfully identify you as a member of the app's configured GitHub org")
     }
 }

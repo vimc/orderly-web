@@ -28,7 +28,6 @@ class _401Tests
             on { logo } doReturn "logo.png"
             on { montaguUrl } doReturn "http://test-montagu"
             on { appUrl } doReturn "http://app"
-
         }
 
         val xmlResponse = template.xmlResponseFor(mockModel)

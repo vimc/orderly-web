@@ -8,11 +8,12 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.viewmodels.*
+import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.VersionPickerViewModel
 
-//This will also test the partials which the report-page template includes
-
-class VersionPageTests: BaseVersionPageTests()
+// This will also test the partials which the report-page template includes
+class VersionPageTests : BaseVersionPageTests()
 {
     @Test
     fun `renders outline correctly`()
@@ -148,7 +149,7 @@ class VersionPageTests: BaseVersionPageTests()
         }
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
-        val mockModel = VersionPageTestData.testModel.copy(isRunner=false, appViewModel = defaultModel)
+        val mockModel = VersionPageTestData.testModel.copy(isRunner = false, appViewModel = defaultModel)
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val runReport = htmlResponse.getElementById("runReportVueApp")

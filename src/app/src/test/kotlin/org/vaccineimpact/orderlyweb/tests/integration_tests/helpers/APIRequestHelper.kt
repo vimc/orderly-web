@@ -11,8 +11,8 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
@@ -37,8 +37,8 @@ class APIRequestHelper : RequestHelper()
     }
 
     fun deleteWithPermissions(url: String,
-                           contentType: String = ContentTypes.json,
-                           withPermissions: Set<ReifiedPermission> = setOf()): Response
+                              contentType: String = ContentTypes.json,
+                              withPermissions: Set<ReifiedPermission> = setOf()): Response
     {
         userRepo.addUser(MontaguTestUser, "test.user", "Test User", UserSource.CLI)
         withPermissions.forEach {
@@ -68,7 +68,7 @@ class APIRequestHelper : RequestHelper()
     }
 
     fun delete(url: String, contentType: String = ContentTypes.json,
-            userEmail: String = fakeGlobalReportReader()): Response
+               userEmail: String = fakeGlobalReportReader()): Response
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
@@ -124,7 +124,6 @@ class APIRequestHelper : RequestHelper()
 
     private fun generateToken(emailAddress: String) =
             WebTokenHelper.instance.issuer.generateBearerToken(emailAddress)
-
 }
 
 fun fakeReportReader(reportName: String, addReport: Boolean = true): String

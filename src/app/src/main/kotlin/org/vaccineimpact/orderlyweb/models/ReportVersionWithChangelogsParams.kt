@@ -18,4 +18,4 @@ constructor(override val name: String,
             override val date: Instant,
             override val published: Boolean,
             val parameterValues: Map<String, String>,
-            val changelogs: List<Changelog>): ReportVersion
+            val changelogs: List<Changelog>) : ReportVersion

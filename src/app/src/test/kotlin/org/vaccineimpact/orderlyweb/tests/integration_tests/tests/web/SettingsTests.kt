@@ -17,7 +17,7 @@ class SettingsTests : IntegrationTest()
     @Test
     fun `only user managers can get auth allow guest`()
     {
-       assertWebUrlSecured(allowGuestUrl, setOf(ReifiedPermission("users.manage", Scope.Global())),
+        assertWebUrlSecured(allowGuestUrl, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json)
     }
 
@@ -58,6 +58,5 @@ class SettingsTests : IntegrationTest()
         val json = JsonLoader.fromString(response.text)
         AssertionsForClassTypes.assertThat(json["errors"][0]["code"].asText())
                 .isEqualTo("invalid-operation-error")
-
     }
 }

@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.db
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.TempTable
 
 class TempTableTests

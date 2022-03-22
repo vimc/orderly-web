@@ -1,16 +1,14 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.junit.Test
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.assertj.core.api.Assertions.assertThat
-import org.openqa.selenium.remote.RemoteWebElement
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
-import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertRole
-import java.time.Duration
+import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 
 class AdminPageTests : SeleniumTest()
 {
@@ -43,7 +41,7 @@ class AdminPageTests : SeleniumTest()
         assertThat(listItems.size).isEqualTo(2)
         assertThat(listItems[1].getAttribute("id")).isEqualTo("Funders")
 
-        //expand the role
+        // expand the role
         listItems[1].findElement(By.tagName("span")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles li ul li")))
         val memberItems = listItems[1].findElements(By.cssSelector("li"))
@@ -54,7 +52,7 @@ class AdminPageTests : SeleniumTest()
     @Test
     fun `can edit roles and members`()
     {
-        //Add role
+        // Add role
         val input = driver.findElement(By.cssSelector("#manage-roles input[placeholder='role name']"))
         input.sendKeys("NewRole")
         val button = driver.findElement(By.id("add-role-btn"))
@@ -62,44 +60,49 @@ class AdminPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles li[id='NewRole']")))
 
-        //Add member
-        val roleListItem =  driver.findElement(By.cssSelector("#manage-roles li[id='NewRole']"))
+        // Add member
+        val roleListItem = driver.findElement(By.cssSelector("#manage-roles li[id='NewRole']"))
         roleListItem.findElement(By.className("role-name")).click()
 
         val memberInput = roleListItem.findElement(By.cssSelector("input[placeholder='email']"))
         memberInput.sendKeys("test.user@example.com")
         val addMemberButton = roleListItem.findElement(By.tagName("button"))
         addMemberButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles li[id='NewRole'] li[id='test.user@example.com']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-roles li[id='NewRole'] li[id='test.user@example.com']")))
 
-        //Remove member
-        val memberListItem = roleListItem.findElement(By.cssSelector("li[id='test.user@example.com'"))
+        // Remove member
+        val memberListItem = roleListItem.findElement(By.cssSelector("li[id='test.user@example.com']"))
         val removeButton = memberListItem.findElement(By.cssSelector("span.remove"))
         removeButton.click()
         wait.until(ExpectedConditions.not(
-                ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-roles li[id='NewRole'] li[id='test.user@example.com']")
+                ExpectedConditions.presenceOfAllElementsLocatedBy(
+                        By.cssSelector("#manage-roles li[id='NewRole'] li[id='test.user@example.com']")
                 )))
 
-        //Delete role
+        // Delete role
         roleListItem.findElement(By.className("remove")).click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles #confirm-delete-btn")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-roles #confirm-delete-btn")))
         driver.findElement(By.cssSelector("#manage-roles #confirm-delete-btn")).click()
         wait.until(ExpectedConditions.not(
-                ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-roles li[id='NewRole']")
+                ExpectedConditions.presenceOfAllElementsLocatedBy(
+                        By.cssSelector("#manage-roles li[id='NewRole']")
                 )))
     }
 
     @Test
     fun `can see search results when adding user to role`()
     {
-        val roleListItem =  driver.findElement(By.cssSelector("#manage-roles li[id='Funders']"))
+        val roleListItem = driver.findElement(By.cssSelector("#manage-roles li[id='Funders']"))
 
         roleListItem.findElement(By.className("role-name")).click()
 
         val memberInput = roleListItem.findElement(By.cssSelector("input[placeholder='email']"))
         memberInput.sendKeys("ano")
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles li[id='Funders'] .vbt-autcomplete-list")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-roles li[id='Funders'] .vbt-autcomplete-list")))
         val autoList = roleListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
         assertThat(links.size).isEqualTo(1)
@@ -109,36 +112,40 @@ class AdminPageTests : SeleniumTest()
     @Test
     fun `can view and edit role permissions`()
     {
-        val roleListItem =  driver.findElement(By.cssSelector("#manage-role-permissions li[id='Funders']"))
+        val roleListItem = driver.findElement(By.cssSelector("#manage-role-permissions li[id='Funders']"))
         roleListItem.findElement(By.tagName("span")).click()
 
         val permissionItem = roleListItem.findElement(By.tagName("li"))
-        assertThat(permissionItem.findElement(By.className("name")).text).isEqualToIgnoringWhitespace("reports.read")
+        assertThat(permissionItem.findElement(By.className("name")).text)
+                .isEqualToIgnoringWhitespace("reports.read")
 
-        //remove permission
+        // remove permission
         permissionItem.findElement(By.className("remove")).click()
         wait.until(ExpectedConditions.not(
-                ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-role-permissions li[id='Funders'] li")
+                ExpectedConditions.presenceOfAllElementsLocatedBy(
+                        By.cssSelector("#manage-role-permissions li[id='Funders'] li")
                 )))
 
-        //add permission
+        // add permission
         val addPermission = roleListItem.findElement(By.className("add-permission"))
         addPermission.findElement(By.tagName("input")).sendKeys("reports.review")
         addPermission.findElement(By.tagName("button")).click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions li[id='Funders'] li span[id='reports.review']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-role-permissions li[id='Funders'] li span[id='reports.review']")))
     }
 
     @Test
     fun `can see search results when adding permission to role`()
     {
-        val roleListItem =  driver.findElement(By.cssSelector("#manage-role-permissions li[id='Funders']"))
+        val roleListItem = driver.findElement(By.cssSelector("#manage-role-permissions li[id='Funders']"))
         roleListItem.findElement(By.tagName("span")).click()
 
         val addPermission = roleListItem.findElement(By.className("add-permission"))
         addPermission.findElement(By.tagName("input")).sendKeys("rep")
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions li[id='Funders'] .vbt-autcomplete-list")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-role-permissions li[id='Funders'] .vbt-autcomplete-list")))
         val autoList = roleListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
         assertThat(links.size).isEqualTo(3)
@@ -155,8 +162,9 @@ class AdminPageTests : SeleniumTest()
         findUsersInput.sendKeys("test")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users div.email")))
-        val userListItem = manageUsers.findElement(By.className("role"));
-        assertThat(userListItem.findElement(By.cssSelector("div.email")).text).isEqualToIgnoringWhitespace("test.user@example.com")
+        val userListItem = manageUsers.findElement(By.className("role"))
+        assertThat(userListItem.findElement(By.cssSelector("div.email")).text)
+                .isEqualToIgnoringWhitespace("test.user@example.com")
 
         userListItem.findElement(By.className("role-name")).click()
         val permissionsListItems = userListItem.findElements(By.tagName("li"))
@@ -166,15 +174,16 @@ class AdminPageTests : SeleniumTest()
         assertThat(permissionsListItems[1].findElement(By.className("name")).text).isEqualTo("reports.review")
         assertThat(permissionsListItems[2].findElement(By.className("name")).text).isEqualTo("users.manage")
 
-        //remove permission
+        // remove permission
         permissionsListItems[1].findElement(By.className("remove")).click()
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#manage-users li li"), 2))
 
-        //add permission
+        // add permission
         val addPermission = userListItem.findElement(By.className("add-permission"))
         addPermission.findElement(By.tagName("input")).sendKeys("reports.run")
         addPermission.findElement(By.tagName("button")).click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li li span[id='reports.run']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-users li li span[id='reports.run']")))
     }
 
     @Test
@@ -185,13 +194,14 @@ class AdminPageTests : SeleniumTest()
         findUsersInput.sendKeys("test")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users div.email")))
-        val userListItem = manageUsers.findElement(By.tagName("li"));
+        val userListItem = manageUsers.findElement(By.tagName("li"))
         userListItem.findElement(By.className("role-name")).click()
 
         val addPermission = userListItem.findElement(By.className("add-permission"))
         addPermission.findElement(By.tagName("input")).sendKeys("rep")
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li .vbt-autcomplete-list")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("#manage-users li .vbt-autcomplete-list")))
         val autoList = userListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
         assertThat(links.size).isEqualTo(3)

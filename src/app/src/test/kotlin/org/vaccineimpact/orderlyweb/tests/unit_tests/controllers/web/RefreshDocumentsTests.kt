@@ -64,18 +64,22 @@ class RefreshDocumentsTests : ControllerTest()
             on { getAllChildren("/documents", "/documents") } doReturn listOf(
                     DocumentDetails("child1", "child1 display", "/documents/child1", "/child1", false, false),
                     DocumentDetails("child2", "child2 display", "/documents/child2", "/child2", false, false),
-                    DocumentDetails("rootFile1.csv", "rootFile display", "/documents/rootFile1.csv", "/rootFile1.csv", true, false)
+                    DocumentDetails("rootFile1.csv", "rootFile display", "/documents/rootFile1.csv",
+                            "/rootFile1.csv", true, false)
             )
 
             on { getAllChildren("/documents/child1", "/documents") } doReturn listOf(
-                    DocumentDetails("grandchild", "grandchild display", "/documents/child1/grandchild", "/child1/grandchild", false, false)
+                    DocumentDetails("grandchild", "grandchild display", "/documents/child1/grandchild",
+                            "/child1/grandchild", false, false)
             )
             on { getAllChildren("/documents/child2", "/documents") } doReturn listOf(
-                    DocumentDetails("http://external.com", "external display", "http://external.com", "http://external.com", true, true)
+                    DocumentDetails("http://external.com", "external display", "http://external.com",
+                            "http://external.com", true, true)
             )
 
             on { getAllChildren("/documents/child1/grandchild", "/documents") } doReturn listOf(
-                    DocumentDetails("grandchildFile1.csv", "grandchildFile1 display", "/documents/child1/grandchild/grandchildFile1.csv",
+                    DocumentDetails("grandchildFile1.csv", "grandchildFile1 display",
+                            "/documents/child1/grandchild/grandchildFile1.csv",
                             "/child1/grandchild/grandchildFile1.csv", true, false)
             )
         }
@@ -83,13 +87,14 @@ class RefreshDocumentsTests : ControllerTest()
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
 
-        //Expect create
+        // Expect create
         verify(mockRepo).add("/child1", "child1", "child1 display", false, false, null)
         verify(mockRepo).add("/child2", "child2", "child2 display", false, false, null)
         verify(mockRepo).add("http://external.com", "http://external.com", "external display", true, true, "/child2")
         verify(mockRepo).add("/rootFile1.csv", "rootFile1.csv", "rootFile display", true, false, null)
         verify(mockRepo).add("/child1/grandchild", "grandchild", "grandchild display", false, false, "/child1")
-        verify(mockRepo).add("/child1/grandchild/grandchildFile1.csv", "grandchildFile1.csv", "grandchildFile1 display", true, false, "/child1/grandchild")
+        verify(mockRepo).add("/child1/grandchild/grandchildFile1.csv", "grandchildFile1.csv", "grandchildFile1 display",
+                true, false, "/child1/grandchild")
     }
 
     @Test
@@ -99,10 +104,15 @@ class RefreshDocumentsTests : ControllerTest()
             on { getAbsolutePath("documents") } doReturn ("/documents")
 
             on { getAllChildren("/documents", "/documents") } doReturn listOf(
-                    DocumentDetails("stillExists", "stillExists display", "/documents/stillExists", "/stillExists", false, false),
-                    DocumentDetails("reAdded", "reAdded display", "/documents/reAdded", "/reAdded", false, false),
-                    DocumentDetails("stillExists.csv", "stillExists display", "/documents/stillExists.csv", "/stillExists.csv", true, false),
-                    DocumentDetails("reAdded.csv", "reAdded display", "/documents/reAdded.csv", "/reAdded.csv", true, false)
+                    DocumentDetails("stillExists", "stillExists display", "/documents/stillExists", "/stillExists",
+                            false, false),
+                    DocumentDetails("reAdded", "reAdded display", "/documents/reAdded", "/reAdded",
+                            false, false),
+                    DocumentDetails("stillExists.csv", "stillExists display", "/documents/stillExists.csv",
+                            "/stillExists.csv",
+                            true, false),
+                    DocumentDetails("reAdded.csv", "reAdded display", "/documents/reAdded.csv", "/reAdded.csv",
+                            true, false)
             )
 
             on { getAllChildren("/documents/stillExists", "/documents") } doReturn listOf<DocumentDetails>()
@@ -126,14 +136,13 @@ class RefreshDocumentsTests : ControllerTest()
         sut.refreshDocuments()
 
         verify(mockRepo).setVisibility(listOf(flatDocs[0]), true) // still exists
-        verify(mockRepo).setVisibility(listOf(flatDocs[2]), true) //re-added file
-        verify(mockRepo).setVisibility(listOf(flatDocs[3]), true) //still exists
-        verify(mockRepo).setVisibility(listOf(flatDocs[5]), true) //re-added folder
+        verify(mockRepo).setVisibility(listOf(flatDocs[2]), true) // re-added file
+        verify(mockRepo).setVisibility(listOf(flatDocs[3]), true) // still exists
+        verify(mockRepo).setVisibility(listOf(flatDocs[5]), true) // re-added folder
 
-        verify(mockRepo).setVisibility(listOf(flatDocs[1], flatDocs[4]), false) //deleted folder
+        verify(mockRepo).setVisibility(listOf(flatDocs[1], flatDocs[4]), false) // deleted folder
 
         verify(mockRepo, times(0)).add(any(), any(), any(), any(), any(), any())
-
     }
 
     @Test

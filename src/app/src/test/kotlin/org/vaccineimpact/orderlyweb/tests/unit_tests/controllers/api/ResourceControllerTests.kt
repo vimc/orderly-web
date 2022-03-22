@@ -3,9 +3,9 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import com.nhaarman.mockito_kotlin.verify
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.api.ResourceController
@@ -70,7 +70,8 @@ class ResourceControllerTests : ControllerTest()
 
         sut.download()
 
-        verify(actionContext).addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testresource\"")
+        verify(actionContext)
+                .addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testresource\"")
     }
 
     @Test
@@ -123,6 +124,4 @@ class ResourceControllerTests : ControllerTest()
         Assertions.assertThatThrownBy { sut.download() }
                 .isInstanceOf(OrderlyFileNotFoundError::class.java)
     }
-
-
 }

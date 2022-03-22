@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import java.nio.file.Files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -12,6 +11,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
+import java.nio.file.Files
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -56,10 +56,10 @@ class RunWorkflowTests : SeleniumTest()
         val commitValue = commitSelect.getAttribute("value")
         assertThat(commitValue).isNotBlank()
 
-        //Select a git branch
+        // Select a git branch
         Select(branchSelect).selectByIndex(1)
         assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
-        //Default commit value should update when new branch selected
+        // Default commit value should update when new branch selected
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
@@ -108,7 +108,6 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-report-header")))
     }
 
-
     @Test
     fun `can add and remove reports from workflow`()
     {
@@ -116,8 +115,10 @@ class RunWorkflowTests : SeleniumTest()
         val nextButton = driver.findElement(By.id("next-workflow"))
         assertThat(nextButton.isEnabled).isFalse()
         addReport("minimal")
-        assertThat(driver.findElement(By.cssSelector("#workflow-report-0 label")).text).isEqualTo("minimal")
-        assertThat(driver.findElement(By.cssSelector("#workflow-report-0 .text-secondary")).text).isEqualTo("No parameters")
+        assertThat(driver.findElement(By.cssSelector("#workflow-report-0 label")).text)
+                .isEqualTo("minimal")
+        assertThat(driver.findElement(By.cssSelector("#workflow-report-0 .text-secondary")).text)
+                .isEqualTo("No parameters")
         assertThat(nextButton.isEnabled).isTrue()
 
         driver.findElement(By.cssSelector(".remove-report-button")).click()
@@ -130,10 +131,10 @@ class RunWorkflowTests : SeleniumTest()
     {
         createWorkflow()
 
-        //Change branch to find report with parameter
+        // Change branch to find report with parameter
         changeToOtherBranch()
 
-        //Add the report - Next button should be disabled until we set the parameter value
+        // Add the report - Next button should be disabled until we set the parameter value
         addReport("other")
         val nextButton = driver.findElement(By.id("next-workflow"))
         assertThat(nextButton.isEnabled).isFalse()
@@ -154,12 +155,12 @@ class RunWorkflowTests : SeleniumTest()
         changeToOtherBranch()
         addReport("other")
 
-        //Expect report to be removed from workflow when change to a branch where report does not exist
+        // Expect report to be removed from workflow when change to a branch where report does not exist
         changeToMasterBranch()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
         assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
                 "The following items are not present in this git commit and have been removed from the workflow:\n" +
-                "Report 'other'")
+                        "Report 'other'")
     }
 
     @Test
@@ -172,7 +173,9 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
+        // We generally expect one git commit option in demo orderly before refresh,
+        // but have found that this can be two commits on Buildkite run.
+        // This may be related to having run a workflow in another test
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
@@ -248,7 +251,7 @@ class RunWorkflowTests : SeleniumTest()
         val commitValue = commitSelect.getAttribute("value")
         assertThat(commitValue).isNotBlank()
 
-        //Select a git branch
+        // Select a git branch
         Select(branchSelect).selectByIndex(newBranchIndex)
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
         assertThat(branchSelect.getAttribute("value")).isEqualTo(newBranch)
@@ -256,6 +259,7 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
+    @Suppress("MaxLineLength")
     fun `can create a workflow and select the view progress link to navigate to the progress tab with workflow preselected and reports table generated, which persists when navigating off tab and back again, and re-run workflow in progress`()
     {
         // creates workflow with ui and navigates to the progress page with it selected
@@ -294,24 +298,28 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(table.text).contains("Reports")
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
-        val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
-        val minimalRowStatus = minimalRow.findElement(By.cssSelector("td:nth-child(2)"))
-        assertThat(minimalRowStatus.text).isIn(listOf("Queued", "Running"))
-        val globalRow = rows.find{ it.text.startsWith("global") }!!
-        val globalRowStatus = globalRow.findElement(By.cssSelector("td:nth-child(2)"))
-        assertThat(globalRowStatus.text).isIn(listOf("Queued", "Running"))
-        wait.until(ExpectedConditions.textToBePresentInElement(minimalRowStatus,"Complete"))
-        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"Complete"))
+        val minimalRow = rows.find { it.text.startsWith("minimal") }
+        val minimalRowStatus = minimalRow?.findElement(By.cssSelector("td:nth-child(2)"))
+        assertThat(minimalRowStatus?.text).isIn(listOf("Queued", "Running"))
+        val globalRow = rows.find { it.text.startsWith("global") }
+        val globalRowStatus = globalRow?.findElement(By.cssSelector("td:nth-child(2)"))
+        assertThat(globalRowStatus?.text).isIn(listOf("Queued", "Running"))
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRowStatus, "Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow, "Complete"))
 
         // view report log
-        val viewLogLink = minimalRow.findElement(By.cssSelector("a.report-log-link"))
-        viewLogLink.click()
+        val viewLogLink = minimalRow?.findElement(By.cssSelector("a.report-log-link"))
+        viewLogLink?.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-name")))
 
-        assertThat(driver.findElement(By.cssSelector("#report-name span.font-weight-bold")).text).isEqualTo("minimal")
-        assertThat(driver.findElement(By.cssSelector("#report-git-branch span.font-weight-bold")).text).isEqualTo("master")
-        assertThat(driver.findElement(By.cssSelector("#report-status span.font-weight-bold")).text).isEqualTo("success")
-        assertThat(driver.findElement(By.cssSelector("#report-logs textarea")).getAttribute("value")).startsWith("[ git")
+        assertThat(driver.findElement(By.cssSelector("#report-name span.font-weight-bold")).text)
+                .isEqualTo("minimal")
+        assertThat(driver.findElement(By.cssSelector("#report-git-branch span.font-weight-bold")).text)
+                .isEqualTo("master")
+        assertThat(driver.findElement(By.cssSelector("#report-status span.font-weight-bold")).text)
+                .isEqualTo("success")
+        assertThat(driver.findElement(By.cssSelector("#report-logs textarea")).getAttribute("value"))
+                .startsWith("[ git")
 
         val closeLogButton = driver.findElement(By.cssSelector("#report-log-dialog button.modal-buttons"))
         closeLogButton.click()
@@ -371,10 +379,10 @@ class RunWorkflowTests : SeleniumTest()
     {
         createWorkflow()
 
-        //Change branch to find report with parameter
+        // Change branch to find report with parameter
         changeToOtherBranch()
 
-        //Add the report - Next button should be disabled until we set the parameter value
+        // Add the report - Next button should be disabled until we set the parameter value
         addReport("other")
         val nextButton = driver.findElement(By.id("next-workflow"))
         assertThat(nextButton.isEnabled).isFalse()
@@ -391,9 +399,11 @@ class RunWorkflowTests : SeleniumTest()
         // now on summary page
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
 
-        assertThat(driver.findElement(By.cssSelector("#summary-warning .d-inline-block")).text).isEqualTo("Some reports depend on the latest version of other reports that are not included in your workflow:")
+        assertThat(driver.findElement(By.cssSelector("#summary-warning .d-inline-block")).text).isEqualTo(
+                "Some reports depend on the latest version of other reports that are not included in your workflow:")
         assertThat(driver.findElements(By.cssSelector("#summary-warning .font-weight-bold")).count()).isEqualTo(1)
-        assertThat(driver.findElement(By.cssSelector("#summary-warning .font-weight-bold")).text).isEqualTo("use_dependency_2")
+        assertThat(driver.findElement(By.cssSelector("#summary-warning .font-weight-bold")).text)
+                .isEqualTo("use_dependency_2")
         assertThat(driver.findElements(By.cssSelector("#summary-warning li")).count()).isEqualTo(1)
         assertThat(driver.findElement(By.cssSelector("#summary-warning li")).text).isEqualTo("use_dependency")
 
@@ -419,7 +429,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val backButton = driver.findElement(By.id("previous-workflow"))
         backButton.click()
-        
+
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-1")))
         val removeReportBtns = driver.findElements(By.cssSelector(".remove-report-button"))
         removeReportBtns[1].click()
@@ -464,12 +474,13 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.visibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Hide defaults...")
 
-        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).getAttribute("innerHTML")).isEqualTo("disease: HepB")
-        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).getAttribute("innerHTML"))
+                .isEqualTo("disease: HepB")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).getAttribute("innerHTML"))
+                .isEqualTo("nmin: 0.5")
 
         showDefault.click()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
-
 }

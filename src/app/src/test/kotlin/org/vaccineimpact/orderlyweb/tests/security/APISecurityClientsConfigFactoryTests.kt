@@ -54,7 +54,7 @@ class APISecurityClientsConfigFactoryTests
     @Test
     fun `allows external authentication with Montagu if configured auth provider`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig> () {
+        val mockAuthConfig = mock<AuthenticationConfig>() {
             on { getAuthenticationDirectClient() } doReturn MontaguDirectClient()
         }
         val sut = APISecurityClientsConfigFactory(mockAuthConfig)
@@ -69,7 +69,7 @@ class APISecurityClientsConfigFactoryTests
     @Test
     fun `allows external authentication with GitHub if configured auth provider`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig> () {
+        val mockAuthConfig = mock<AuthenticationConfig>() {
             on { getAuthenticationDirectClient() } doReturn GitHubDirectClient()
         }
         val sut = APISecurityClientsConfigFactory(mockAuthConfig)
@@ -112,5 +112,4 @@ class APISecurityClientsConfigFactoryTests
 
         assertThat(authElements).isEqualTo(requiredPermissions)
     }
-
 }

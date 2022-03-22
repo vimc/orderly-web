@@ -1,13 +1,15 @@
 package org.vaccineimpact.orderlyweb.app_start.routing.api
 
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.APIEndpoint
 import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.api.GitController
 import org.vaccineimpact.orderlyweb.json
+import org.vaccineimpact.orderlyweb.secure
 import spark.route.HttpMethod
 
-object GitRouteConfig : RouteConfig {
+object GitRouteConfig : RouteConfig
+{
     private val runReports = setOf("*/reports.run")
     private val controller = GitController::class
 
@@ -37,5 +39,4 @@ object GitRouteConfig : RouteConfig {
                     .json()
                     .secure(runReports)
     )
-
 }

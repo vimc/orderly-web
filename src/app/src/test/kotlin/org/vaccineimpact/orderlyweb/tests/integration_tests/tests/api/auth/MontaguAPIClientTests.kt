@@ -31,7 +31,6 @@ class MontaguAPIClientTests
         }.isInstanceOf(MontaguAPIException::class.java)
     }
 
-
     @Test
     fun `okhttpMontaguAPIClient can get user details`()
     {
@@ -46,7 +45,7 @@ class MontaguAPIClientTests
     @Test
     fun `okhttpMontaguAPIClient can get user details not allowing localhost`()
     {
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { getBool("allow.localhost") } doReturn false
             on { get("montagu.api_url") } doReturn AppConfig()["montagu.api_url"]
         }
@@ -58,5 +57,4 @@ class MontaguAPIClientTests
     }
 
     private fun login() = APIRequestHelper().loginWithMontagu()
-
 }

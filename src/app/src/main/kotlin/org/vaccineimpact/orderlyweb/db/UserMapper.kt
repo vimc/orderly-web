@@ -1,9 +1,7 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
-import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 class UserMapper
 {

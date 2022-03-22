@@ -30,18 +30,18 @@ class ReportRunControllerTests : ControllerTest()
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
             on { postData<Any>() } doReturn mapOf(
-                "instances" to mapOf("instance" to "i1"),
-                "params" to params,
-                "changelog" to changelog,
-                "gitBranch" to "branch1",
-                "gitCommit" to "abc123"
+                    "instances" to mapOf("instance" to "i1"),
+                    "params" to params,
+                    "changelog" to changelog,
+                    "gitBranch" to "branch1",
+                    "gitCommit" to "abc123"
             )
             on { queryParams("timeout") } doReturn "600"
             on { userProfile } doReturn CommonProfile().apply { id = "a@b.com" }
         }
 
         val mockAPIResponseText =
-            """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
+                """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
@@ -51,13 +51,15 @@ class ReportRunControllerTests : ControllerTest()
                 "timeout" to "600"
         )
         val apiClient: OrderlyServerAPI = mock {
-            on { post(
-                    eq("/v1/reports/$reportName/run/"),
-                    eq(Gson().toJson(mapOf(
-                            "params" to params,
-                            "changelog" to changelog
-                    ))),
-                    eq(expectedQs)) } doReturn mockAPIResponse
+            on {
+                post(
+                        eq("/v1/reports/$reportName/run/"),
+                        eq(Gson().toJson(mapOf(
+                                "params" to params,
+                                "changelog" to changelog
+                        ))),
+                        eq(expectedQs))
+            } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -68,14 +70,14 @@ class ReportRunControllerTests : ControllerTest()
         assertThat(result).isEqualTo(mockAPIResponseText)
 
         verify(mockReportRunRepo).addReportRun(
-            eq(reportKey),
-            eq("a@b.com"),
-            any<Instant>(),
-            eq(reportName),
-            eq(mapOf("instance" to "i1")),
-            eq(params),
-            eq("branch1"),
-            eq("abc123")
+                eq(reportKey),
+                eq("a@b.com"),
+                any<Instant>(),
+                eq(reportName),
+                eq(mapOf("instance" to "i1")),
+                eq(params),
+                eq("branch1"),
+                eq("abc123")
         )
     }
 
@@ -88,7 +90,7 @@ class ReportRunControllerTests : ControllerTest()
         }
 
         val mockAPIResponseText =
-            """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
+                """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
@@ -104,14 +106,14 @@ class ReportRunControllerTests : ControllerTest()
 
         assertThat(result).isEqualTo(mockAPIResponseText)
         verify(mockReportRunRepo).addReportRun(
-            eq(reportKey),
-            eq("a@b.com"),
-            any<Instant>(),
-            eq(reportName),
-            eq(mapOf()),
-            eq(mapOf()),
-            eq(null),
-            eq(null)
+                eq(reportKey),
+                eq("a@b.com"),
+                any<Instant>(),
+                eq(reportName),
+                eq(mapOf()),
+                eq(mapOf()),
+                eq(null),
+                eq(null)
         )
     }
 
@@ -133,8 +135,8 @@ class ReportRunControllerTests : ControllerTest()
         val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
 
         assertThatThrownBy { sut.run() }
-            .isInstanceOf(OrderlyServerError::class.java)
-            .matches { (it as OrderlyServerError).httpStatus == 500 }
+                .isInstanceOf(OrderlyServerError::class.java)
+                .matches { (it as OrderlyServerError).httpStatus == 500 }
         verifyZeroInteractions(mockReportRunRepo)
     }
 

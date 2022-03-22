@@ -12,32 +12,32 @@ class AllowedOriginsFilterTests
     @Test
     fun `adds header if origin matches allowed origin`()
     {
-        val request = mock<Request>{
+        val request = mock<Request> {
             on { headers("Origin") } doReturn "https://montagu.vaccineimpact.org/"
         }
 
         val rawResponse = mock<HttpServletResponse>()
 
-        val response = mock<Response>{
+        val response = mock<Response> {
             on { it.raw() } doReturn rawResponse
         }
 
         val sut = AllowedOriginsFilter(false)
         sut.handle(request, response)
 
-        assertHeaderWasAdded(rawResponse,"https://montagu.vaccineimpact.org/")
+        assertHeaderWasAdded(rawResponse, "https://montagu.vaccineimpact.org/")
     }
 
     @Test
     fun `does not adds header if origin does not match allowed origin`()
     {
-        val request = mock<Request>{
+        val request = mock<Request> {
             on { headers("Origin") } doReturn "https://somewhereelse.vaccineimpact.org/"
         }
 
         val rawResponse = mock<HttpServletResponse>()
 
-        val response = mock<Response>{
+        val response = mock<Response> {
             on { it.raw() } doReturn rawResponse
         }
 
@@ -50,32 +50,32 @@ class AllowedOriginsFilterTests
     @Test
     fun `adds header if origin matches localhost and localhost is allowed`()
     {
-        val request = mock<Request>{
+        val request = mock<Request> {
             on { headers("Origin") } doReturn "https://localhost"
         }
 
         val rawResponse = mock<HttpServletResponse>()
 
-        val response = mock<Response>{
+        val response = mock<Response> {
             on { it.raw() } doReturn rawResponse
         }
 
         val sut = AllowedOriginsFilter(true)
         sut.handle(request, response)
 
-        assertHeaderWasAdded(rawResponse,"https://localhost")
+        assertHeaderWasAdded(rawResponse, "https://localhost")
     }
 
     @Test
     fun `does not add header if origin matches localhost and localhost is not allowed`()
     {
-        val request = mock<Request>{
+        val request = mock<Request> {
             on { headers("Origin") } doReturn "https://localhost"
         }
 
         val rawResponse = mock<HttpServletResponse>()
 
-        val response = mock<Response>{
+        val response = mock<Response> {
             on { it.raw() } doReturn rawResponse
         }
 
@@ -88,13 +88,13 @@ class AllowedOriginsFilterTests
     @Test
     fun `does not add header if origin is not set`()
     {
-        val request = mock<Request>{
+        val request = mock<Request> {
             on { headers("Origin") } doReturn ""
         }
 
         val rawResponse = mock<HttpServletResponse>()
 
-        val response = mock<Response>{
+        val response = mock<Response> {
             on { it.raw() } doReturn rawResponse
         }
 

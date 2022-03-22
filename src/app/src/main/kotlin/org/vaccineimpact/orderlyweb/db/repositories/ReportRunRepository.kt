@@ -1,26 +1,26 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
-import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.jsonToStringMap
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 import java.sql.Timestamp
 import java.time.Instant
-import org.vaccineimpact.orderlyweb.jsonToStringMap
-import org.vaccineimpact.orderlyweb.models.ReportRunLog
 
 interface ReportRunRepository : ReportRunLogRepository
 {
     fun addReportRun(
-        key: String,
-        user: String,
-        date: Instant,
-        report: String,
-        instances: Map<String, String>,
-        params: Map<String, String>,
-        gitBranch: String?,
-        gitCommit: String?
+            key: String,
+            user: String,
+            date: Instant,
+            report: String,
+            instances: Map<String, String>,
+            params: Map<String, String>,
+            gitBranch: String?,
+            gitCommit: String?
     )
 
     fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
@@ -28,32 +28,33 @@ interface ReportRunRepository : ReportRunLogRepository
 
 class OrderlyWebReportRunRepository : ReportRunRepository
 {
-    companion object {
+    companion object
+    {
         const val SUCCESS_STATUS = "success"
     }
 
     override fun addReportRun(
-        key: String,
-        user: String,
-        date: Instant,
-        report: String,
-        instances: Map<String, String>,
-        params: Map<String, String>,
-        gitBranch: String?,
-        gitCommit: String?
+            key: String,
+            user: String,
+            date: Instant,
+            report: String,
+            instances: Map<String, String>,
+            params: Map<String, String>,
+            gitBranch: String?,
+            gitCommit: String?
     )
     {
         JooqContext().use {
             it.dsl.insertInto(ORDERLYWEB_REPORT_RUN)
-                .set(ORDERLYWEB_REPORT_RUN.KEY, key)
-                .set(ORDERLYWEB_REPORT_RUN.EMAIL, user)
-                .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
-                .set(ORDERLYWEB_REPORT_RUN.REPORT, report)
-                .set(ORDERLYWEB_REPORT_RUN.INSTANCES, Gson().toJson(instances))
-                .set(ORDERLYWEB_REPORT_RUN.PARAMS, Gson().toJson(params))
-                .set(ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
-                .set(ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
-                .execute()
+                    .set(ORDERLYWEB_REPORT_RUN.KEY, key)
+                    .set(ORDERLYWEB_REPORT_RUN.EMAIL, user)
+                    .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
+                    .set(ORDERLYWEB_REPORT_RUN.REPORT, report)
+                    .set(ORDERLYWEB_REPORT_RUN.INSTANCES, Gson().toJson(instances))
+                    .set(ORDERLYWEB_REPORT_RUN.PARAMS, Gson().toJson(params))
+                    .set(ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
+                    .set(ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
+                    .execute()
         }
     }
 
@@ -105,11 +106,11 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     }
 
     override fun updateReportRun(
-        key: String,
-        status: String,
-        version: String?,
-        logs: List<String>?,
-        startTime: Instant?
+            key: String,
+            status: String,
+            version: String?,
+            logs: List<String>?,
+            startTime: Instant?
     )
     {
         val logsString = logs?.joinToString(separator = "\n")
@@ -123,18 +124,18 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         }
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_REPORT_RUN)
-                .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
-                .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, reportVersion)
-                .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
-                .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
-                .execute()
+                    .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
+                    .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, reportVersion)
+                    .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
+                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+                    .execute()
 
             if (startTime != null)
             {
                 it.dsl.update(ORDERLYWEB_REPORT_RUN)
-                    .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(startTime))
-                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
-                    .execute()
+                        .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(startTime))
+                        .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+                        .execute()
             }
         }
     }

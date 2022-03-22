@@ -1,13 +1,13 @@
 package org.vaccineimpact.orderlyweb.security.providers
 
 import org.eclipse.egit.github.core.User
-import org.pac4j.core.exception.CredentialsException
-import org.pac4j.core.util.CommonHelper
 import org.eclipse.egit.github.core.client.GitHubClient
 import org.eclipse.egit.github.core.client.RequestException
 import org.eclipse.egit.github.core.service.OrganizationService
 import org.eclipse.egit.github.core.service.TeamService
 import org.eclipse.egit.github.core.service.UserService
+import org.pac4j.core.exception.CredentialsException
+import org.pac4j.core.util.CommonHelper
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
@@ -96,7 +96,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             if (e.status == 401)
             {
-                throw CredentialsException(e.message?:"")
+                throw CredentialsException(e.message ?: "")
             }
             else throw e
         }
@@ -108,7 +108,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             val userService = OrganizationService(githubApiClient)
             val orgs = userService.organizations
-            return orgs.map{ it.login }.contains(githubOrg)
+            return orgs.map { it.login }.contains(githubOrg)
         }
         catch (e: RequestException)
         {
@@ -118,7 +118,6 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
             }
             else throw e
         }
-
     }
 
     private fun userBelongsToTeam(githubOrg: String, teamName: String, user: User): Boolean
@@ -131,7 +130,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
 
         val members = teamService.getMembers(team.id)
-        return members.map{ it.login }.contains(user.login)
+        return members.map { it.login }.contains(user.login)
     }
 
     private fun getEmailForUser(): String
@@ -149,5 +148,4 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
             else throw e
         }
     }
-
 }

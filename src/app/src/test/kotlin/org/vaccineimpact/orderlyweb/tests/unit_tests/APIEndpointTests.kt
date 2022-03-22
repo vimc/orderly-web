@@ -2,15 +2,15 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.authorization.authorizer.Authorizer
-import org.vaccineimpact.orderlyweb.*
-import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.pac4j.sparkjava.SecurityFilter
 import org.pac4j.core.config.Config
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.sparkjava.SecurityFilter
+import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import spark.Filter
@@ -25,11 +25,11 @@ class APIEndpointTests
     {
         val mockSpark = mock<SparkWrapper>()
         val sut = APIEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
-                    contentType = ContentTypes.json, spark = mockSpark)
+                contentType = ContentTypes.json, spark = mockSpark)
 
         sut.additionalSetup("/test")
 
-        val filterArg : ArgumentCaptor<Filter> = ArgumentCaptor.forClass(Filter::class.java)
+        val filterArg: ArgumentCaptor<Filter> = ArgumentCaptor.forClass(Filter::class.java)
         verify(mockSpark).after(eq("/test"), eq(ContentTypes.json), capture(filterArg))
         val filter = filterArg.value
         assertThat(filter is DefaultHeadersFilter).isTrue()
@@ -57,8 +57,8 @@ class APIEndpointTests
             on { authorizers } doReturn mapOf("dummyAuthorizer" to mockAuthorizer)
         }
         val mockConfigFactory = mock<APISecurityConfigFactory> {
-            on { allClients() } doReturn("testclients")
-            on { build() } doReturn(mockConfig)
+            on { allClients() } doReturn ("testclients")
+            on { build() } doReturn (mockConfig)
         }
 
         whenever(mockConfigFactory.setRequiredPermissions(any())).doReturn(mockConfigFactory)
@@ -74,7 +74,7 @@ class APIEndpointTests
 
         sut.additionalSetup("/test")
 
-        //Verify all expected methods were called or not called
+        // Verify all expected methods were called or not called
         verify(mockConfigFactory).setRequiredPermissions(check {
             assertThat(it.size).isEqualTo(1)
             assertThat(it.first()).isEqualTo(permissionRequirement)
@@ -86,7 +86,7 @@ class APIEndpointTests
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
         verify(mockSpark).before(eq("/test"), eq(ContentTypes.binarydata), eq(HttpMethod.get), capture(securityFilterArg))
 
-        //verify the security filter has been created as expected
+        // verify the security filter has been created as expected
         val securityFilterClass = SecurityFilter::class.java
         val securityFilter = securityFilterArg.value
 
@@ -106,7 +106,7 @@ class APIEndpointTests
         val matchers = securityFilter.matchers
         Assertions.assertThat(matchers).isEqualTo("SkipOptions")
 
-        //Should not have called these methods
+        // Should not have called these methods
         verify(mockConfigFactory, times(0)).allowParameterAuthentication()
         verify(mockConfigFactory, times(0)).externalAuthentication()
     }
@@ -119,8 +119,8 @@ class APIEndpointTests
             on { authorizers } doReturn mapOf()
         }
         val mockConfigFactory = mock<APISecurityConfigFactory> {
-            on { allClients() } doReturn("")
-            on { build() } doReturn(mockConfig)
+            on { allClients() } doReturn ("")
+            on { build() } doReturn (mockConfig)
         }
 
         whenever(mockConfigFactory.setRequiredPermissions(any())).doReturn(mockConfigFactory)
@@ -138,7 +138,7 @@ class APIEndpointTests
 
         sut.additionalSetup("/test")
 
-        //Verify all expectedt methods were called or not called
+        // Verify all expectedt methods were called or not called
         verify(mockConfigFactory).setRequiredPermissions(check {
             assertThat(it.size).isEqualTo(1)
             assertThat(it.first()).isEqualTo(permissionRequirement)
@@ -150,7 +150,7 @@ class APIEndpointTests
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
         verify(mockSpark).before(eq("/test"), eq(ContentTypes.binarydata), eq(HttpMethod.get), capture(securityFilterArg))
 
-        //verify the security filter has been created with mockConfig
+        // verify the security filter has been created with mockConfig
         val securityFilterClass = SecurityFilter::class.java
         val field = securityFilterClass.getDeclaredField("config")
         field.isAccessible = true
@@ -166,11 +166,11 @@ class APIEndpointTests
     {
         val mockSpark = mock<SparkWrapper>()
         val sut = APIEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
-                contentType = ContentTypes.json, secure=false, spark = mockSpark)
+                contentType = ContentTypes.json, secure = false, spark = mockSpark)
 
         sut.additionalSetup("/test")
 
-        verify(mockSpark, times(0)).before(any(),any(), any(), any())
+        verify(mockSpark, times(0)).before(any(), any(), any(), any())
     }
 
     @Test

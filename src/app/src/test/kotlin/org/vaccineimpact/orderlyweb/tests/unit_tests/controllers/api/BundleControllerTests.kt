@@ -44,7 +44,8 @@ class BundleControllerTests : ControllerTest()
         verify(httpClient).newCall(
                 check {
                     assertThat(it.body!!.contentType().toString()).isEqualTo("application/json; charset=utf-8")
-                    assertThat(it.body!!.contentLength()).isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
+                    assertThat(it.body!!.contentLength())
+                            .isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
                 }
         )
         verify(servletResponse).contentType = "application/zip"
@@ -75,7 +76,8 @@ class BundleControllerTests : ControllerTest()
         val context = mock<ActionContext> {
             on { params(":name") } doReturn "report2"
         }
-        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}", responseCode = 500, responseMessage = "Internal Server Error")
+        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}",
+                responseCode = 500, responseMessage = "Internal Server Error")
         val controller = BundleController(context, config, OrderlyServer(config, httpClient).throwOnError())
 
         assertThatThrownBy { controller.pack() }.isInstanceOf(OrderlyServerError::class.java)
@@ -99,7 +101,8 @@ class BundleControllerTests : ControllerTest()
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
-        val httpClient = getHttpClient("/v1/bundle/import", """{"status":"success","errors":null,"data":true}""".toByteArray())
+        val httpClient = getHttpClient("/v1/bundle/import", """{"status":"success","errors":null,"data":true}"""
+                .toByteArray())
         val controller = BundleController(context, config, OrderlyServer(config, httpClient))
         assertThat(controller.import()).isEqualTo("""{"data":true,"errors":[],"status":"success"}""")
     }
@@ -110,13 +113,17 @@ class BundleControllerTests : ControllerTest()
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
-        val httpClient = getHttpClient("/v1/bundle/import", responseCode = 500, responseMessage = "Internal Server Error")
+        val httpClient = getHttpClient("/v1/bundle/import", responseCode = 500,
+                responseMessage = "Internal Server Error")
         val controller = BundleController(context, config, OrderlyServer(config, httpClient).throwOnError())
 
         assertThatThrownBy { controller.import() }.isInstanceOf(OrderlyServerError::class.java)
     }
 
-    private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient
+    private fun getHttpClient(path: String,
+                              responseBody: ByteArray = ByteArray(0),
+                              responseCode: Int = 200,
+                              responseMessage: String = "OK"): OkHttpClient
     {
         val request = Request.Builder()
                 .url(config["orderly.server"] + path)

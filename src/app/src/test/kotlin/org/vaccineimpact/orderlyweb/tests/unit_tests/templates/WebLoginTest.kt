@@ -46,7 +46,7 @@ class WebLoginTest
 
         Assertions.assertThat(link.count()).isEqualTo(1)
         Assertions.assertThat(link.attr("href"))
-            .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
+                .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
 
         Assertions.assertThat(link.text()).isEqualToIgnoringCase("Log in with ${AppConfig()["auth.provider"]}")
     }

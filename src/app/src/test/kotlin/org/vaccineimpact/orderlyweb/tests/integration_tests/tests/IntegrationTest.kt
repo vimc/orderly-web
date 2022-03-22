@@ -21,6 +21,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHe
 import spark.route.HttpMethod
 import java.io.File
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class IntegrationTest
 {
     val apiRequestHelper = APIRequestHelper()
@@ -81,8 +82,7 @@ abstract class IntegrationTest
                 .isEqualTo(403)
 
         JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: report:${reportName}/reports.read")
-
+                "You do not have sufficient permissions to access this resource. Missing these permissions: report:$reportName/reports.read")
     }
 
     protected fun assertJsonContentType(response: Response)
@@ -94,6 +94,7 @@ abstract class IntegrationTest
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
     }
+
     protected fun assertPlainTextContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/plain;charset=utf-8")

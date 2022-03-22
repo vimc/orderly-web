@@ -25,5 +25,4 @@ object WebDocumentRouteConfig : RouteConfig
                     .json()
                     .secure(manageDocuments)
     )
-
 }

@@ -70,5 +70,4 @@ class PermissionSetTests
         val sut = PermissionSet(perms)
         assertThat(sut.toString()).isEqualTo("[*/testName, testPrefix:testId/anotherTestName]")
     }
-
 }

@@ -25,7 +25,7 @@ class GuestUserManagerTests
     private val guestUser = CommonProfile().apply { id = "guest" }
 
     private val authRepo = mock<AuthorizationRepository> {
-        on {getPermissionsForGroup("guest")} doReturn listOf(ReifiedPermission("reports.read", Scope.Global()))
+        on { getPermissionsForGroup("guest") } doReturn listOf(ReifiedPermission("reports.read", Scope.Global()))
     }
 
     private fun setUpMockSession(user: CommonProfile? = null): SparkWebContext

@@ -6,8 +6,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.permissionFromPostData
@@ -43,17 +43,19 @@ class RoleController(context: ActionContext,
         return roleRepo.getAllRoleNames()
     }
 
-    fun addRole(): String {
+    fun addRole(): String
+    {
         val name = context.postData<String>()["name"] ?: throw MissingParameterError("name")
         authRepo.createUserGroup(name)
         return okayResponse()
     }
 
-    fun deleteRole(): String {
+    fun deleteRole(): String
+    {
         val roleId = roleId()
         if (roleId == RoleRepository.ADMIN_ROLE)
         {
-            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.");
+            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.")
         }
 
         val roleNames = getAllRoleNames()
@@ -120,9 +122,9 @@ class RoleController(context: ActionContext,
 
     private fun roleId(): String = context.params(":role-id")
 
-    private fun List<Role>.toSortedViewModels() : List<RoleViewModel>
+    private fun List<Role>.toSortedViewModels(): List<RoleViewModel>
     {
         return this.map { RoleViewModel.build(it) }
-                .sortedBy{ it.name }
+                .sortedBy { it.name }
     }
 }

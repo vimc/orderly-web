@@ -28,7 +28,6 @@ class DataTests : IntegrationTest()
         val responseData = JSONValidator.getData(response.text)
         Assertions.assertThat(responseData.count()).isEqualTo(1)
         Assertions.assertThat(responseData["testdata"].asText()).isEqualTo("123456")
-
     }
 
     @Test
@@ -108,7 +107,6 @@ class DataTests : IntegrationTest()
         JSONValidator.validateError(response.text, "file-not-found", "File with name '$fakehash.csv' does not exist")
     }
 
-
     @Test
     fun `gets rds data file`()
     {
@@ -162,5 +160,4 @@ class DataTests : IntegrationTest()
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoRDS.rds")
     }
-
 }

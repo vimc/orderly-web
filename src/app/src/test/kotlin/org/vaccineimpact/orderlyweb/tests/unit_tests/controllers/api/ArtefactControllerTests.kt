@@ -11,7 +11,6 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.api.ArtefactController
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -88,7 +87,8 @@ class ArtefactControllerTests : ControllerTest()
 
         sut.getFile()
 
-        verify(actionContext).addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testartefact\"")
+        verify(actionContext)
+                .addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testartefact\"")
     }
 
     @Test
@@ -106,14 +106,13 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":artefact") } doReturn artefact
         }
         val reportRepo = mock<ReportRepository> {
-            on {this.getReportVersion(name, version)} doThrow UnknownObjectError("report", "")
+            on { this.getReportVersion(name, version) } doThrow UnknownObjectError("report", "")
         }
 
         val sut = ArtefactController(actionContext, reportRepo, repo, mock<FileSystem>(), mockConfig)
         assertThatThrownBy { sut.getFile() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
-
 
     @Test
     fun `throws unknown object error if artefact does not exist for report`()
@@ -203,5 +202,4 @@ class ArtefactControllerTests : ControllerTest()
 
         verify(actionContext).addDefaultResponseHeaders(expectedContentType)
     }
-
 }

@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests
 
-
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -79,5 +78,4 @@ abstract class PermissionChecker(protected val url: String,
                 .withFailMessage(assertionText)
                 .isEqualTo(200)
     }
-
 }

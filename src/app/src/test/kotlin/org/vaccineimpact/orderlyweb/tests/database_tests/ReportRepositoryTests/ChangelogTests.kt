@@ -50,7 +50,7 @@ class ChangelogTests : CleanDatabaseTests()
 
         Assertions.assertThat(results.count()).isEqualTo(2)
 
-        //changelog items are returned in desc order
+        // changelog items are returned in desc order
         assertChangelogValuesMatch(results[0], "version1", "internal", "did something awful", false, false)
         assertChangelogValuesMatch(results[1], "version1", "public", "did something great", true, true)
     }
@@ -96,7 +96,6 @@ class ChangelogTests : CleanDatabaseTests()
         val results = sut.getDatedChangelogForReport("test", Instant.now())
 
         assertExpectedTestChangelogValues("version3", results)
-
     }
 
     @Test
@@ -281,7 +280,6 @@ class ChangelogTests : CleanDatabaseTests()
                         false,
                         6,
                         "version3"))
-
     }
 
     private fun assertExpectedTestChangelogValues(latestVersion: String, results: List<Changelog>)
@@ -333,7 +331,7 @@ class ChangelogTests : CleanDatabaseTests()
 
         if (latestVersion == "version2" || index > 0)
         {
-            //The public version of this changelog item is version3, while the 'real' version is version2
+            // The public version of this changelog item is version3, while the 'real' version is version2
             assertChangelogValuesMatch(results[index], "version3", "public", "did something great v2", true, true)
 
             index++

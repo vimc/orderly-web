@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -145,7 +145,6 @@ class OrderlyTests : CleanDatabaseTests()
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
-
     @Test
     fun `getAllReportVersions returns version, report and orderly tags`()
     {
@@ -178,7 +177,7 @@ class OrderlyTests : CleanDatabaseTests()
         val results = sut.getAllReportVersions()
 
         assertThat(results[0].id).isEqualTo("v1")
-        //tags should be sorted and distinct
+        // tags should be sorted and distinct
         assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "d-tag"))
 
         assertThat(results[1].id).isEqualTo("v2")
@@ -251,5 +250,4 @@ class OrderlyTests : CleanDatabaseTests()
         assertThat(result[0])
                 .isEqualToComparingFieldByField(Changelog("v1", "public", "getByNameAndVersion", true, true))
     }
-
 }

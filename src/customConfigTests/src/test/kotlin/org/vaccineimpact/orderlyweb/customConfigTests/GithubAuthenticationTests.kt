@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
@@ -12,6 +11,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 class GithubAuthenticationTests : CustomConfigTests()
 {
     val JSONValidator = JSONValidator()
+
     // this is a PAT for a test user who only has access to a test org with no repos
     // reversed so GitHub doesn't spot it and invalidate it
     val testUserPAT = "fcef1c6821f7561259ce45d4840965642607e5a4".reversed()

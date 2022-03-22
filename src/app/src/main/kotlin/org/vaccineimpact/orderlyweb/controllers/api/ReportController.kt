@@ -15,10 +15,10 @@ import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLate
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 
 class ReportController(
-    context: ActionContext,
-    private val orderly: OrderlyClient,
-    private val reportRepository: ReportRepository,
-    config: Config
+        context: ActionContext,
+        private val orderly: OrderlyClient,
+        private val reportRepository: ReportRepository,
+        config: Config
 ) : Controller(context, config)
 {
     constructor(context: ActionContext) :

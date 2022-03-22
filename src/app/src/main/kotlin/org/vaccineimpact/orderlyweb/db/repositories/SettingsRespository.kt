@@ -9,7 +9,7 @@ interface SettingsRepository
     fun setAuthAllowGuest(value: Boolean);
 }
 
-class OrderlySettingsRepository: SettingsRepository
+class OrderlySettingsRepository : SettingsRepository
 {
     override fun getAuthAllowGuest(): Boolean
     {
@@ -28,5 +28,4 @@ class OrderlySettingsRepository: SettingsRepository
                     .execute()
         }
     }
-
 }

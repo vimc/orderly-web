@@ -7,22 +7,22 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
-import org.vaccineimpact.orderlyweb.models.ReportStatus
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
+import org.vaccineimpact.orderlyweb.models.ReportStatus
 import java.time.Instant
 
 class ReportRunController(
-    context: ActionContext,
-    private val reportRunRepository: ReportRunRepository,
-    private val workflowRunReportRepository: WorkflowRunReportRepository,
-    private val orderlyServerAPI: OrderlyServerAPI
+        context: ActionContext,
+        private val reportRunRepository: ReportRunRepository,
+        private val workflowRunReportRepository: WorkflowRunReportRepository,
+        private val orderlyServerAPI: OrderlyServerAPI
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
-        context,
-        OrderlyWebReportRunRepository(),
-        OrderlyWebWorkflowRunReportRepository(),
-        OrderlyServer(AppConfig()).throwOnError()
+            context,
+            OrderlyWebReportRunRepository(),
+            OrderlyWebWorkflowRunReportRepository(),
+            OrderlyServer(AppConfig()).throwOnError()
     )
 
     fun getRunningReportLogs(): ReportRunLog
@@ -41,7 +41,7 @@ class ReportRunController(
         }
         else
         {
-           workflowRunReportRepository
+            workflowRunReportRepository
         }
 
         var log = reportRunLogRepository.getReportRun(key)
@@ -62,17 +62,18 @@ class ReportRunController(
         val startDateTime = if (latestStatus.startTime != null)
         {
             Instant.ofEpochSecond(latestStatus.startTime)
-        } else
+        }
+        else
         {
             null
         }
 
         reportRunLogRepository.updateReportRun(
-            key,
-            latestStatus.status,
-            latestStatus.version,
-            latestStatus.output,
-            startDateTime
+                key,
+                latestStatus.status,
+                latestStatus.version,
+                latestStatus.output,
+                startDateTime
         )
     }
 

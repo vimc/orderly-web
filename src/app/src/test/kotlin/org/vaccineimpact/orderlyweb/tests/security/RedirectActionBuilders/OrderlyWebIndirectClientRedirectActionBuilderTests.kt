@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.tests.security.RedirectActionBuilders
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.redirect.RedirectAction
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClientRedirectActionBuilder

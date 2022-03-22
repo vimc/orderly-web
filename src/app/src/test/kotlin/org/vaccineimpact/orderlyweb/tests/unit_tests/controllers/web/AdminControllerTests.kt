@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.controllers.web.AdminController
@@ -17,5 +17,4 @@ class AdminControllerTests
         assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
                 Breadcrumb("Manage access", "http://localhost:8888/manage-access"))
     }
-
 }

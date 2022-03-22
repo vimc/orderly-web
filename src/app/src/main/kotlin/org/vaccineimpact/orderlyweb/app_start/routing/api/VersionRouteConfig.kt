@@ -2,11 +2,7 @@ package org.vaccineimpact.orderlyweb.app_start.routing.api
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
-import org.vaccineimpact.orderlyweb.controllers.api.ArtefactController
-import org.vaccineimpact.orderlyweb.controllers.api.DataController
-import org.vaccineimpact.orderlyweb.controllers.api.ReportController
-import org.vaccineimpact.orderlyweb.controllers.api.ResourceController
-import org.vaccineimpact.orderlyweb.controllers.api.VersionController
+import org.vaccineimpact.orderlyweb.controllers.api.*
 import spark.route.HttpMethod
 
 object VersionRouteConfig : RouteConfig
@@ -42,7 +38,8 @@ object VersionRouteConfig : RouteConfig
                     .transform()
                     .secure(reviewReports),
 
-            APIEndpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
+            APIEndpoint("/reports/:name/versions/:version/changelog/", versionController,
+                    "getChangelogByNameAndVersion")
                     .json()
                     .transform()
                     .secure(readReports)

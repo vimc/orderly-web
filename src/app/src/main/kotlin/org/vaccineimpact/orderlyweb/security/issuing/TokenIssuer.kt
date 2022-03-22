@@ -3,12 +3,12 @@ package org.vaccineimpact.orderlyweb.security.issuing
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.security.KeyPair
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import org.vaccineimpact.orderlyweb.db.AppConfig
 
 open class TokenIssuer(keyPair: KeyPair, val issuer: String)
 {

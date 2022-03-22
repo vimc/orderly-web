@@ -14,7 +14,6 @@ interface DocumentRepository
 
     fun add(path: String, name: String, displayName: String, isFile: Boolean, external: Boolean, parentPath: String?)
     fun setVisibility(documents: List<Document>, show: Boolean)
-
 }
 
 class OrderlyDocumentRepository : DocumentRepository

@@ -33,7 +33,6 @@ class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient
             authenticationErrors
     ))
 
-
     override fun adapt(code: Int, context: SparkWebContext): Any? = when (code)
     {
         HttpConstants.UNAUTHORIZED ->

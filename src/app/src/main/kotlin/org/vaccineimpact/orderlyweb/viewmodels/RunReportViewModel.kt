@@ -13,15 +13,15 @@ data class RunReportViewModel(
 ) : AppViewModel by appViewModel
 {
     constructor(
-        context: ActionContext,
-        runReportMetadata: RunReportMetadata,
-        gitBranches: List<String>,
-        reportName: String?
+            context: ActionContext,
+            runReportMetadata: RunReportMetadata,
+            gitBranches: List<String>,
+            reportName: String?
     ) : this(
-        runReportMetadata,
-        gitBranches,
-        reportName,
-        DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb)
+            runReportMetadata,
+            gitBranches,
+            reportName,
+            DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb)
     )
 
     companion object

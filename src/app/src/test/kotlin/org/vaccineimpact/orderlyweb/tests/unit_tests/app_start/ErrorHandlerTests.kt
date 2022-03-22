@@ -75,7 +75,7 @@ class ErrorHandlerTests
     {
         val sut = ErrorHandler(mock(), mockWebHandler, mockAPIHandler)
 
-        val mockInvocationError = mock<InvocationTargetException>{
+        val mockInvocationError = mock<InvocationTargetException> {
             on { cause } doReturn mockError
         }
 
@@ -90,7 +90,7 @@ class ErrorHandlerTests
         val sut = ErrorHandler(mock(), mockWebHandler, mockAPIHandler)
         val exception = JsonSyntaxException("test json exception")
 
-        val mockInvocationError = mock<InvocationTargetException>{
+        val mockInvocationError = mock<InvocationTargetException> {
             on { cause } doReturn exception
         }
 
@@ -109,7 +109,7 @@ class ErrorHandlerTests
         val sut = ErrorHandler(mock(), mockWebHandler, mockAPIHandler)
         val exception = Exception("any exception")
 
-        val mockInvocationError = mock<InvocationTargetException>{
+        val mockInvocationError = mock<InvocationTargetException> {
             on { cause } doReturn exception
         }
 

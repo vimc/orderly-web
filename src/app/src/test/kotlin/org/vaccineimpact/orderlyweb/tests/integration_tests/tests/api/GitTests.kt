@@ -52,7 +52,7 @@ class GitTests : IntegrationTest()
     @Test
     fun fetches()
     {
-        val response = apiRequestHelper.post("/git/fetch/", mapOf(),  userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/git/fetch/", mapOf(), userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)

@@ -9,29 +9,29 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import kotlin.math.roundToLong
 
 data class ReportVersionPageViewModel(
-    @Serialise("reportJson") val report: ReportVersionWithDescLatestElapsed,
-    val focalArtefactUrl: String?,
-    val isRunner: Boolean,
-    val artefacts: List<ArtefactViewModel>,
-    val dataLinks: List<InputDataViewModel>,
-    val resources: List<DownloadableFileViewModel>,
-    val zipFile: DownloadableFileViewModel,
-    val versions: List<VersionPickerViewModel>,
-    val changelog: List<ChangelogViewModel>,
-    val parameterValues: String?,
-    val instances: Map<String, String>,
-    val startTimeString: String,
-    val elapsedString: String,
-    val appViewModel: AppViewModel
+        @Serialise("reportJson") val report: ReportVersionWithDescLatestElapsed,
+        val focalArtefactUrl: String?,
+        val isRunner: Boolean,
+        val artefacts: List<ArtefactViewModel>,
+        val dataLinks: List<InputDataViewModel>,
+        val resources: List<DownloadableFileViewModel>,
+        val zipFile: DownloadableFileViewModel,
+        val versions: List<VersionPickerViewModel>,
+        val changelog: List<ChangelogViewModel>,
+        val parameterValues: String?,
+        val instances: Map<String, String>,
+        val startTimeString: String,
+        val elapsedString: String,
+        val appViewModel: AppViewModel
 ) : AppViewModel by appViewModel
 {
     companion object
     {
         fun build(
-            report: ReportVersionWithArtefactsDataDescParamsResources,
-            versions: List<String>,
-            changelog: List<Changelog>,
-            context: ActionContext
+                report: ReportVersionWithArtefactsDataDescParamsResources,
+                versions: List<String>,
+                changelog: List<Changelog>,
+                context: ActionContext
         ): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report.name, report.id)
@@ -173,15 +173,15 @@ data class ReportVersionPageViewModel(
 data class VersionPickerViewModel(val url: String, val date: String, val selected: Boolean)
 
 data class ArtefactViewModel(
-    val artefact: Artefact,
-    val files: List<DownloadableFileViewModel>,
-    val inlineArtefactFigure: String?
+        val artefact: Artefact,
+        val files: List<DownloadableFileViewModel>,
+        val inlineArtefactFigure: String?
 )
 
 data class InputDataViewModel(
-    val key: String,
-    val csv: DownloadableFileViewModel,
-    val rds: DownloadableFileViewModel
+        val key: String,
+        val csv: DownloadableFileViewModel,
+        val rds: DownloadableFileViewModel
 )
 
 data class DownloadableFileViewModel(val name: String, val url: String, val size: Long?)

@@ -4,7 +4,6 @@ import org.pac4j.sparkjava.CallbackRoute
 import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 
 interface AuthenticationRouteBuilder

@@ -6,6 +6,7 @@ import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class ControllerTest
 {
     protected val mockOutputStream = mock<ServletOutputStream>()
@@ -18,5 +19,4 @@ abstract class ControllerTest
     protected val mockSparkResponse = mock<Response>() {
         on { this.raw() } doReturn servletResponse
     }
-
 }

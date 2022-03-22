@@ -87,7 +87,8 @@ class DocumentControllerTests : ControllerTest()
     fun `creates correct breadcrumbs`()
     {
         val mockRepo = mock<DocumentRepository> {
-            on { getAllVisibleDocuments() } doReturn listOf(Document("name", "display name", "path", true, false, listOf()))
+            on { getAllVisibleDocuments() } doReturn listOf(Document("name", "display name", "path", true, false,
+                    listOf()))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getIndex()
@@ -103,7 +104,8 @@ class DocumentControllerTests : ControllerTest()
             on { getAllVisibleDocuments() } doReturn
                     listOf(Document("name", "displayName", "/path", false, false, listOf(
                             Document("child", "child display name", "/childpath", true, false, listOf()),
-                            Document("www.externalchild.com", "external display name", "/childpath.url", true, true, listOf())
+                            Document("www.externalchild.com", "external display name", "/childpath.url", true, true,
+                                    listOf())
 
                     )))
         }
@@ -141,7 +143,8 @@ class DocumentControllerTests : ControllerTest()
             on { getAllVisibleDocuments() } doReturn
                     listOf(Document("name", "displayName", "/path", false, false, listOf(
                             Document("child", "child display name", "/childpath", true, false, listOf()),
-                            Document("www.externalchild.com", "external display name", "/childpath.url", true, true, listOf())
+                            Document("www.externalchild.com", "external display name", "/childpath.url", true, true,
+                                    listOf())
 
                     )))
         }
@@ -224,17 +227,49 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("toplevelwithonenonemptychild", "toplevelwithonenonemptychild display name", "toplevelwithonenonemptychild", false, false, listOf(
-                            Document("emptychild", "emptychild display name", "emptychild", false, false, listOf()),
-                            Document("file", "file display name", "file", true, false, listOf())
-                    )),
-                            Document("toplevelempty", "toplevelempty display name", "toplevelempty", false, false, listOf()),
-                            Document("toplevelwithemptychild", "toplevelwithemptychild display name", "toplevelwithemptychild", false, false,
-                                    listOf(Document("emptychild", "emptychild display name", "emptychild", false, false, listOf()))),
-                            Document("toplevelwithemptygrandchild", "toplevelwithemptygrandchild display name", "toplevelwithemptygrandchild", false, false,
-                                    listOf(Document("childwithemptygrandchild", "childwithemptygrandchild display name", "childwithemptygrandchild", false, false, listOf(
-                                            Document("grandchildempty", "grandchildempty display name", "grandchildempty", false, false, listOf())
-                                    )))))
+                    listOf(Document("toplevelwithonenonemptychild",
+                            "toplevelwithonenonemptychild display name",
+                            "toplevelwithonenonemptychild",
+                            false, false,
+                            listOf(
+                                    Document("emptychild", "emptychild display name", "emptychild",
+                                            false, false,
+                                            listOf()),
+                                    Document("file", "file display name", "file",
+                                            true, false,
+                                            listOf())
+                            )),
+                            Document("toplevelempty",
+                                    "toplevelempty display name",
+                                    "toplevelempty",
+                                    false, false,
+                                    listOf()),
+                            Document("toplevelwithemptychild",
+                                    "toplevelwithemptychild display name",
+                                    "toplevelwithemptychild",
+                                    false, false,
+                                    listOf(
+                                            Document("emptychild",
+                                                    "emptychild display name",
+                                                    "emptychild",
+                                                    false, false,
+                                                    listOf()))),
+                            Document("toplevelwithemptygrandchild",
+                                    "toplevelwithemptygrandchild display name",
+                                    "toplevelwithemptygrandchild",
+                                    false, false,
+                                    listOf(
+                                            Document("childwithemptygrandchild",
+                                                    "childwithemptygrandchild display name",
+                                                    "childwithemptygrandchild",
+                                                    false, false,
+                                                    listOf(
+                                                            Document("grandchildempty",
+                                                                    "grandchildempty display name",
+                                                                    "grandchildempty",
+                                                                    false, false,
+                                                                    listOf())
+                                                    )))))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getIndex()
@@ -264,5 +299,4 @@ class DocumentControllerTests : ControllerTest()
         assertThat(result.docs[2].displayName).isEqualTo("anotherfile display name")
         assertThat(result.docs[3].displayName).isEqualTo("file display name")
     }
-
 }

@@ -5,8 +5,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
-import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
@@ -52,7 +50,7 @@ class ZipTests : IntegrationTest()
 
         try
         {
-            val url ="/reports/testname/versions/testversion/all/"
+            val url = "/reports/testname/versions/testversion/all/"
             assertAPIUrlSecured(url,
                     setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
                     contentType = ContentTypes.zip)
@@ -60,7 +58,6 @@ class ZipTests : IntegrationTest()
         {
             deleteArchiveFolder("testname", "testversion")
         }
-
     }
 
     @Test

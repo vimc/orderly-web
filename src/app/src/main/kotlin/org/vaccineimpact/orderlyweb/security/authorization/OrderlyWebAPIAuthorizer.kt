@@ -24,7 +24,6 @@ open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequiremen
             requestedUrl = requestedUrl + "?" + queryParameters
                     .map { "${it.key}=${context.getRequestParameter(it.key)}" }
                     .joinToString("&")
-
         }
 
         if (claimedUrl == "*" || requestedUrl == claimedUrl)
@@ -37,6 +36,5 @@ open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequiremen
             profile.mismatchedURL = "This token is issued for $claimedUrl but the current request is for $requestedUrl"
             return false
         }
-
     }
 }

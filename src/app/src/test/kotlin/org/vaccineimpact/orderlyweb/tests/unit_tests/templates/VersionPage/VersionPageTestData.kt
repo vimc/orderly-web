@@ -1,6 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 
-import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.models.Artefact
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatestElapsed
 import org.vaccineimpact.orderlyweb.viewmodels.*
 import java.sql.Timestamp
 
@@ -14,15 +17,15 @@ object VersionPageTestData
             latestVersion = "v1",
             description = "r1 description",
             elapsed = 1.5,
-            gitBranch="master",
-            gitCommit="abc123")
+            gitBranch = "master",
+            gitCommit = "abc123")
 
     val testReport = ReportVersionWithArtefactsDataDescParamsResources(testBasicReportVersion,
             artefacts = listOf(),
             resources = listOf(),
             dataInfo = listOf(),
             parameterValues = mapOf("p1" to "v1", "p2" to "v2"),
-            instances=mapOf("p1" to "v1", "p2" to "v2"))
+            instances = mapOf("p1" to "v1", "p2" to "v2"))
 
     val testArtefactViewModels = listOf(
             ArtefactViewModel(
@@ -63,18 +66,18 @@ object VersionPageTestData
             breadcrumbs = listOf(Breadcrumb("name", "url")))
 
     val testModel = ReportVersionPageViewModel(
-                testReport.basicReportVersion,
-                "/testFocalArtefactUrl",
-                false,
-                testArtefactViewModels,
-                testDataLinks,
-                testResources,
-                DownloadableFileViewModel("zipFileName", "http://zipFileUrl", null),
-                listOf(),
-                listOf(),
-                "p1=v1, p2=v2",
-                mapOf(),
-                "Mon 12 Jun 2020 14:23",
-                "3 hours 2 minutes",
-                testDefaultModel)
+            testReport.basicReportVersion,
+            "/testFocalArtefactUrl",
+            false,
+            testArtefactViewModels,
+            testDataLinks,
+            testResources,
+            DownloadableFileViewModel("zipFileName", "http://zipFileUrl", null),
+            listOf(),
+            listOf(),
+            "p1=v1, p2=v2",
+            mapOf(),
+            "Mon 12 Jun 2020 14:23",
+            "3 hours 2 minutes",
+            testDefaultModel)
 }

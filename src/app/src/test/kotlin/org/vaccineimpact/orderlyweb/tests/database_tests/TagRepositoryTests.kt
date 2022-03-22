@@ -6,13 +6,8 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
-import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
-import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.test_helpers.insertReportTags
-import org.vaccineimpact.orderlyweb.test_helpers.insertVersionTags
-
+import org.vaccineimpact.orderlyweb.test_helpers.*
 
 class TagRepositoryTests : CleanDatabaseTests()
 {
@@ -147,5 +142,4 @@ class TagRepositoryTests : CleanDatabaseTests()
         assertThat(result["v1"]).containsExactlyElementsOf(listOf("b", "d"))
         assertThat(result["v2"]).containsExactlyElementsOf(listOf("f", "e"))
     }
-
 }

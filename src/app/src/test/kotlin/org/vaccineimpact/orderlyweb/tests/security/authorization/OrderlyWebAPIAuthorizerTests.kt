@@ -127,6 +127,5 @@ class OrderlyWebAPIAuthorizerTests
         val result = sut.isAuthorized(fakeContext, listOf(profile))
 
         assertThat(result).isTrue()
-
     }
 }

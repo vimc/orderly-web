@@ -17,10 +17,11 @@ interface TagRepository
 
 class OrderlyWebTagRepository : TagRepository
 {
-    override fun getAllTags(): List<String> {
+    override fun getAllTags(): List<String>
+    {
         JooqContext().use {
             return it.dsl.select(
-                            ORDERLYWEB_REPORT_TAG.TAG)
+                    ORDERLYWEB_REPORT_TAG.TAG)
                     .from(ORDERLYWEB_REPORT_TAG)
                     .union(it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                             .from(ORDERLYWEB_REPORT_VERSION_TAG))

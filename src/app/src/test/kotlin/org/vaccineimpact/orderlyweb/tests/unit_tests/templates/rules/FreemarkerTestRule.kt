@@ -20,9 +20,7 @@ import java.io.Writer
 import java.net.URL
 import javax.xml.transform.Source
 
-
-//This is a simplified kotlinised version of this: https://github.com/Todderz/freemarker-unit-test
-
+// This is a simplified kotlinised version of this: https://github.com/Todderz/freemarker-unit-test
 class FreemarkerTestRule(val templateName: String, val templatePath: String = "templates") : TestRule
 {
     companion object
@@ -38,24 +36,25 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
         }
 
         val anyWindow = getWebClient().currentWindow
-
     }
 
     private var template: Template? = null
 
     override fun apply(base: Statement, description: Description): Statement
     {
-        return object : Statement() {
-            override fun evaluate() {
+        return object : Statement()
+        {
+            override fun evaluate()
+            {
 
                 loadTemplate()
-                //execute the test
+                // execute the test
                 base.evaluate()
             }
         }
     }
 
-    private fun getTemplate() : Template
+    private fun getTemplate(): Template
     {
         return template ?: throw IllegalStateException()
     }

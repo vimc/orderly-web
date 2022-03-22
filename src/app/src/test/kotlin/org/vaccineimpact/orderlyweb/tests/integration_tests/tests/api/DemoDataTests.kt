@@ -1,9 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import org.junit.Test
-import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
@@ -62,7 +62,7 @@ class DemoDataTests : IntegrationTest()
     @Test
     fun `can get all demo version data`()
     {
-        //This is hitting the Report_Version table rather than Orderly
+        // This is hitting the Report_Version table rather than Orderly
 
         val response = apiRequestHelper.get("/versions/", userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
@@ -71,12 +71,11 @@ class DemoDataTests : IntegrationTest()
         assertThat(data is ArrayNode)
         val versionArray = data as ArrayNode
 
-        //Check that we have one expected version which should contain values for all fields
+        // Check that we have one expected version which should contain values for all fields
         val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
         val versionObj = versionArray.find { it.get("id").asText() == reportVersion } as ObjectNode
         assertThat(versionObj.get("date").asText()).isNotBlank()
         assertExpectedOtherReportVersionProperties(versionObj, reportVersion)
-
     }
 
     @Test
@@ -115,27 +114,23 @@ class DemoDataTests : IntegrationTest()
         assertThat(entry3.get("label").asText()).isEqualTo("internal")
         assertThat(entry3.get("from_file").asBoolean()).isTrue()
         assertThat(entry3.get("value").asText()).startsWith("Well, the way they make shows is, they make one show.")
-
     }
 
-    private fun assertExpectedOtherReportVersionProperties(dataObj : ObjectNode, reportVersion : String)
+    private fun assertExpectedOtherReportVersionProperties(dataObj: ObjectNode, reportVersion: String)
     {
         assertThat(dataObj.get("name").asText()).isEqualTo(OTHER_REPORT_NAME)
         assertThat(dataObj.get("id").asText()).isEqualTo(reportVersion)
 
         assertThat(dataObj.get("published").asInt()).isEqualTo(1)
-
     }
 
-    private fun getLatestReportVersion(report: String) : String
+    private fun getLatestReportVersion(report: String): String
     {
-        //report versions are different every time the data is generated, so fetch whatever is there at the moment
-        val response = apiRequestHelper.get("/reports/$report",  userEmail = fakeGlobalReportReviewer())
+        // report versions are different every time the data is generated, so fetch whatever is there at the moment
+        val response = apiRequestHelper.get("/reports/$report", userEmail = fakeGlobalReportReviewer())
 
         val data = JSONValidator.getData(response.text)
         val dataArray = data as ArrayNode
-        return dataArray[dataArray.size()-1].asText()
-
-
+        return dataArray[dataArray.size() - 1].asText()
     }
 }

@@ -2,8 +2,10 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.errors
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.errors.*
-import java.security.Permission
+import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException
+import org.vaccineimpact.orderlyweb.errors.ReifiedPermissionParseException
+import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 
 class ExceptionTests
 {
@@ -13,7 +15,6 @@ class ExceptionTests
         val sut = UnsupportedValueException("test")
         Assertions.assertThat(sut.message).isEqualTo(
                 "Unsupported value 'test' of type 'String'")
-
     }
 
     @Test

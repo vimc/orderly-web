@@ -21,7 +21,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     constructor(userProfile: CommonProfile?, isReviewer: Boolean, isAdmin: Boolean, isGuest: Boolean, breadcrumbs: List<Breadcrumb>, appConfig: Config) :
             this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
 
-    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()):
+    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()) :
             this(context.userProfile,
                     context.hasPermission(ReifiedPermission("reports.review", Scope.Global())),
                     context.hasPermission(ReifiedPermission("users.manage", Scope.Global())),

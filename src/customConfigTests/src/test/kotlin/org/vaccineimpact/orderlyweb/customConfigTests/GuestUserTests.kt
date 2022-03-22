@@ -12,26 +12,28 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
-class GuestUserTests: SeleniumTest() {
+class GuestUserTests : SeleniumTest()
+{
 
     private fun login()
     {
-       wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login_field")))
-       loginWithGithub()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login_field")))
+        loginWithGithub()
     }
 
     @Before
     fun setUp()
     {
         JooqContext().use {
-           it.dsl.update(Tables.ORDERLYWEB_SETTINGS)
-                   .set(Tables.ORDERLYWEB_SETTINGS.AUTH_ALLOW_GUEST, true)
-                   .execute()
+            it.dsl.update(Tables.ORDERLYWEB_SETTINGS)
+                    .set(Tables.ORDERLYWEB_SETTINGS.AUTH_ALLOW_GUEST, true)
+                    .execute()
         }
     }
 
     @Test
-    fun `guest user can access homepage`() {
+    fun `guest user can access homepage`()
+    {
         startApp("auth.provider=github")
 
         driver.get(RequestHelper.webBaseUrl)
@@ -45,7 +47,8 @@ class GuestUserTests: SeleniumTest() {
     }
 
     @Test
-    fun `guest user permisisons are updated immediately`() {
+    fun `guest user permisisons are updated immediately`()
+    {
 
         startApp("auth.provider=github")
         driver.get(RequestHelper.webBaseUrl)
@@ -76,7 +79,8 @@ class GuestUserTests: SeleniumTest() {
     }
 
     @Test
-    fun `guest user can login to escalate privileges`() {
+    fun `guest user can login to escalate privileges`()
+    {
 
         insertReport("testreport", "20170103-143015-1234abcd")
         insertReport("testreport2", "20180103-143015-1234abcd")

@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 
 class SettingsControllerTests
 {
-    val mockAuthConfig = mock<AuthenticationConfig>{
+    val mockAuthConfig = mock<AuthenticationConfig> {
         on { canAllowGuestUser } doReturn true
         on { allowGuestUser } doReturn true
     }
@@ -32,8 +32,8 @@ class SettingsControllerTests
     fun `setAuthAllowGuest sets setting in database`()
     {
         val mockRepo = mock<SettingsRepository>()
-        val mockContext = mock<ActionContext>{
-            on {getRequestBody()} doReturn "true"
+        val mockContext = mock<ActionContext> {
+            on { getRequestBody() } doReturn "true"
         }
 
         val sut = SettingsController(mockContext, mockRepo, mockAuthConfig)
@@ -47,12 +47,12 @@ class SettingsControllerTests
     fun `setAuthAllowGuest throws InvalidOperationError if cannot allow guest user`()
     {
         val mockRepo = mock<SettingsRepository>()
-        val cannotAllowConfig = mock<AuthenticationConfig>{
+        val cannotAllowConfig = mock<AuthenticationConfig> {
             on { canAllowGuestUser } doReturn false
         }
 
         val sut = SettingsController(mock(), mockRepo, cannotAllowConfig)
-        assertThatThrownBy{ sut.setAuthAllowGuest() }
+        assertThatThrownBy { sut.setAuthAllowGuest() }
                 .isInstanceOf(InvalidOperationError::class.java)
                 .hasMessageContaining("Cannot set auth-allow-guest with current application configuration")
 

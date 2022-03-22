@@ -11,6 +11,7 @@ import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
 
+@Suppress("UnnecessaryAbstractClass")
 abstract class CustomConfigTests
 {
     fun startApp(customConfig: String)

@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class MetadataTabTests: BaseVersionPageTests()
+class MetadataTabTests : BaseVersionPageTests()
 {
     @Test
     fun `renders metadata tab title correctly`()

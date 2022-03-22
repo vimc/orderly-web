@@ -5,7 +5,7 @@ import javax.servlet.ServletContext
 import javax.servlet.http.HttpSession
 import javax.servlet.http.HttpSessionContext
 
-class FakeSession() : HttpSession
+class FakeSession : HttpSession
 {
     val attributes = mutableMapOf<Any?, Any?>()
     override fun getLastAccessedTime(): Long
@@ -92,5 +92,4 @@ class FakeSession() : HttpSession
     {
         TODO("Not yet implemented")
     }
-
 }

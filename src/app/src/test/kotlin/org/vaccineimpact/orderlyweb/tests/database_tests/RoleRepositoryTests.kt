@@ -31,14 +31,12 @@ class RoleRepositoryTests : CleanDatabaseTests()
         assertThat(result[0].name).isEqualTo("Funder")
         assertThat(result[0].members.map { it.email })
                 .containsExactlyElementsOf(listOf("funder.a@example.com", "funder.b@example.com"))
-        assertThat(result[0].permissions).
-                containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertThat(result[0].permissions).containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[1].members.map { it.email })
                 .containsExactlyElementsOf(listOf("science.user@example.com"))
-        assertThat(result[1].permissions).
-                containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertThat(result[1].permissions).containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 
     @Test
@@ -52,7 +50,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
         insertUser("notInARole@example.com", "Not Role")
 
         val sut = OrderlyRoleRepository()
-        val result = sut.getAllRoles().sortedBy{r -> r.name}
+        val result = sut.getAllRoles().sortedBy { r -> r.name }
 
         assertThat(result.count()).isEqualTo(3)
         assertThat(result[0].name).isEqualTo("Admin")
@@ -206,7 +204,8 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getAllRoleNames gets non-id group names`() {
+    fun `getAllRoleNames gets non-id group names`()
+    {
 
         insertUser("test.user@example.com", "Test User")
 
@@ -220,5 +219,4 @@ class RoleRepositoryTests : CleanDatabaseTests()
 
         assertThat(result).containsExactly("Admin", "Funder")
     }
-
 }

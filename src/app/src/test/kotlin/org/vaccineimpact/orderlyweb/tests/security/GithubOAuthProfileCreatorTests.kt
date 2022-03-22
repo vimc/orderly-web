@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
 import com.github.scribejava.core.model.OAuth2AccessToken
-import com.github.scribejava.core.oauth.OAuth20Service
 import com.github.scribejava.core.model.Response
+import com.github.scribejava.core.oauth.OAuth20Service
 import com.nhaarman.mockito_kotlin.*
 import org.eclipse.egit.github.core.User
 import org.junit.Test
@@ -14,7 +14,6 @@ import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
-
 
 class GithubOAuthProfileCreatorTests
 {
@@ -34,11 +33,11 @@ class GithubOAuthProfileCreatorTests
     }
 
     private val mockProfileDefinition = mock<OAuthProfileDefinition<GitHubProfile, OAuth2AccessToken, OAuth20Configuration>>() {
-        on {extractUserProfile(any())} doReturn mock<GitHubProfile>()
+        on { extractUserProfile(any()) } doReturn mock<GitHubProfile>()
     }
 
     private val mockConfiguration = mock<OAuth20Configuration> {
-        on { buildService(any(), any(), eq(null) )} doReturn mockService
+        on { buildService(any(), any(), eq(null)) } doReturn mockService
         on { getProfileDefinition() } doReturn mockProfileDefinition
     }
 
@@ -52,11 +51,10 @@ class GithubOAuthProfileCreatorTests
     }
 
     private val mockCredentials = mock<OAuth20Credentials> {
-       on { accessToken } doReturn mockAccessToken
+        on { accessToken } doReturn mockAccessToken
     }
 
     private val mockUserRepo = mock<UserRepository> {
-
     }
 
     @Test
@@ -64,12 +62,11 @@ class GithubOAuthProfileCreatorTests
     {
         val sut = GithubOAuthProfileCreator(mockConfiguration, mock(), mockUserRepo, mock(), mockGithubAuthHelper)
 
-        sut.create(mockCredentials, mock()) //This calls the overridden retrieveUserProfileFromToken method
+        sut.create(mockCredentials, mock()) // This calls the overridden retrieveUserProfileFromToken method
 
         verify(mockGithubAuthHelper).authenticate("1234567")
         verify(mockGithubAuthHelper).getUser()
         verify(mockGithubAuthHelper).getUserEmail()
         verify(mockUserRepo).addUser("email", "user.name", "full name", UserSource.GitHub)
     }
-
 }

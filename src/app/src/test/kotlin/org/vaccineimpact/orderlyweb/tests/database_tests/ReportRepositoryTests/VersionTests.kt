@@ -6,13 +6,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_INSTANCE
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertUser
-import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_INSTANCE
 
 class VersionTests : CleanDatabaseTests()
 {
@@ -75,7 +75,6 @@ class VersionTests : CleanDatabaseTests()
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
-
     @Test
     fun `getReportVersion throws unknown object error if report name not found`()
     {
@@ -90,7 +89,7 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get version details for report with no publish record`()
     {
-        insertReport("test", "version1", elapsed=4.3, gitBranch="master", gitCommit="abc123",
+        insertReport("test", "version1", elapsed = 4.3, gitBranch = "master", gitCommit = "abc123",
                 addOrderlyWebReportVersion = false)
 
         val sut = createSut(isReviewer = true)
@@ -108,7 +107,7 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get unpublished version details`()
     {
-        insertReport("test", "version1", published = false, elapsed=4.3,  gitBranch="master", gitCommit="abc123")
+        insertReport("test", "version1", published = false, elapsed = 4.3, gitBranch = "master", gitCommit = "abc123")
 
         val sut = createSut(isReviewer = true)
 
@@ -125,9 +124,9 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `version details can include git branch from report run table`()
     {
-        insertReport("test", "version1", published = false, gitBranch=null, gitCommit="abc123")
+        insertReport("test", "version1", published = false, gitBranch = null, gitCommit = "abc123")
         insertUser("test.user@example.com", "user.name")
-        insertReportRun("weird_gazelle", "test.user@example.com", "test", gitBranch="master", reportVersion="version1")
+        insertReportRun("weird_gazelle", "test.user@example.com", "test", gitBranch = "master", reportVersion = "version1")
         val sut = createSut(isReviewer = true)
         val result = sut.getReportVersion("test", "version1")
         assertThat(result.name).isEqualTo("test")
@@ -354,16 +353,16 @@ class VersionTests : CleanDatabaseTests()
 
         JooqContext().use {
             it.dsl.insertInto(REPORT_VERSION_INSTANCE)
-                .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
-                .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance1")
-                .set(REPORT_VERSION_INSTANCE.TYPE, "type1")
-                .execute()
+                    .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
+                    .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance1")
+                    .set(REPORT_VERSION_INSTANCE.TYPE, "type1")
+                    .execute()
 
             it.dsl.insertInto(REPORT_VERSION_INSTANCE)
-                .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
-                .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance2")
-                .set(REPORT_VERSION_INSTANCE.TYPE, "type2")
-                .execute()
+                    .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
+                    .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance2")
+                    .set(REPORT_VERSION_INSTANCE.TYPE, "type2")
+                    .execute()
         }
 
         val sut = createSut()
@@ -383,5 +382,4 @@ class VersionTests : CleanDatabaseTests()
         val results = sut.getReportVersionInstances("version1")
         assertThat(results).isEqualTo(map)
     }
-
 }

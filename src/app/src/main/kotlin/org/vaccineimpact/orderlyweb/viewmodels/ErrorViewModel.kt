@@ -16,5 +16,4 @@ data class ServerErrorViewModel(val errors: List<ErrorInfo>,
 {
     constructor(error: OrderlyWebError, context: ActionContext) :
             this(error.problems.toList(), ErrorViewModel("Something went wrong", context))
-
 }

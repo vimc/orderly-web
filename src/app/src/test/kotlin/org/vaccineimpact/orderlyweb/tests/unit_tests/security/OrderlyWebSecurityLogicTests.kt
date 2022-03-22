@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.security
 
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Test
-import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.security.GuestUserManager
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig

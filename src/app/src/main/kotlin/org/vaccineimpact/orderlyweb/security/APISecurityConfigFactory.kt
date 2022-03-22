@@ -25,7 +25,6 @@ interface APISecurityConfigFactory : ConfigFactory
     fun externalAuthentication(): APISecurityConfigFactory
 }
 
-
 class APISecurityClientsConfigFactory(
         private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig())
     : APISecurityConfigFactory
@@ -81,6 +80,4 @@ class APISecurityClientsConfigFactory(
         allClients.add(authenticationConfig.getAuthenticationDirectClient())
         return this
     }
-
 }
-

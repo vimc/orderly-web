@@ -6,8 +6,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.insertData
 
 class DataTests : CleanDatabaseTests()
 {
@@ -57,5 +57,4 @@ class DataTests : CleanDatabaseTests()
 
         assertThat(result["data.csv"]).isEqualTo("07dffb00305279935544238b39d7b14b")
     }
-
 }

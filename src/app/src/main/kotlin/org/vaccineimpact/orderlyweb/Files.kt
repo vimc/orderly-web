@@ -16,6 +16,7 @@ interface FileSystem
     fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     fun getAbsolutePath(sourcePath: String): String
     fun getAllChildren(sourceAbsolutePath: String, documentsRoot: String): List<DocumentDetails>
+
     @Throws(ZipException::class)
     fun saveArchiveFromUrl(url: URL, targetAbsolutePath: String)
 }
@@ -48,7 +49,6 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
     {
         return File(absoluteFilePath).exists()
     }
-
 
     override fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     {

@@ -5,17 +5,20 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.*
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupMember
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.insertUser
+import org.vaccineimpact.orderlyweb.tests.insertUserGroup
 
-class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
+class OrderlyAuthorizationRepositoryTests : CleanDatabaseTests()
 {
     @Test
     fun `can get permission names sorted alphabetically`()
@@ -55,7 +58,6 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r1"))
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r2"))
-
         }
 
         val sut = OrderlyAuthorizationRepository()
@@ -81,7 +83,6 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
             giveUserGroupPermission("Science", "reports.review", Scope.Global())
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r1"))
-
         }
 
         val sut = OrderlyAuthorizationRepository()
@@ -184,7 +185,6 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         }
     }
 
-
     @Test
     fun `cannot add duplicate user groups`()
     {
@@ -281,7 +281,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyAuthorizationRepository()
 
-        //Add permissions - as tested above
+        // Add permissions - as tested above
         sut.ensureUserGroupHasPermission("user@email.com",
                 ReifiedPermission("reports.review", Scope.Global()))
 
@@ -297,7 +297,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         sut.ensureUserGroupHasPermission("user@email.com",
                 ReifiedPermission("reports.read", Scope.Specific("version", "v2")))
 
-        //..then remove some
+        // then remove some
         sut.ensureUserGroupDoesNotHavePermission("user@email.com",
                 ReifiedPermission("reports.review", Scope.Global()))
 
@@ -306,7 +306,6 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         sut.ensureUserGroupDoesNotHavePermission("user@email.com",
                 ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
-
 
         val result = sut.getPermissionsForUser("user@email.com")
 
@@ -471,5 +470,4 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown user : 'user@email.com'")
     }
-
 }

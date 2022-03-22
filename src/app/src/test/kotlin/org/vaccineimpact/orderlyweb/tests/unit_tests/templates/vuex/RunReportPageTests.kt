@@ -8,7 +8,6 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.vuex.RunReportViewModel
 
-
 class RunReportPageTests
 {
     companion object
@@ -40,5 +39,4 @@ class RunReportPageTests
         val tabs = doc.select("#runReportTabsVueApp").select("run-report-tabs")
         assertThat(tabs.count()).isEqualTo(1)
     }
-
 }

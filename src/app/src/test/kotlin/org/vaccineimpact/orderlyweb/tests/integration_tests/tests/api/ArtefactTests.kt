@@ -4,9 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -25,7 +23,6 @@ class ArtefactTests : IntegrationTest()
         insertReport("testname", "testversion")
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/artefacts/",
                 userEmail = fakeReportReader("testname"))
-
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -135,6 +132,4 @@ class ArtefactTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "file-not-found", "File with name '$fakeartefact' does not exist")
     }
-
-
 }

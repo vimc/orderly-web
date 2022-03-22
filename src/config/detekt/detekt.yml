@@ -17,6 +17,12 @@ formatting:
     active: false
   SpacingAroundKeyword:
     active: false
+  SpacingAroundColon:
+    active: false
+  MaximumLineLength:
+    active: false
+  PackageName:
+    active: false
 
 style:
   MandatoryBracesIfStatements:

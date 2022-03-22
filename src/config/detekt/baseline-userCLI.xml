@@ -3,25 +3,9 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.userCLI.App.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.userCLI.tests.AddMembersTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserGroupTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserTests.kt:1</ID>
-    <ID>MaxLineLength:AddPermissionTests.kt$AddPermissionTests$grantPermissions(mapOf("&lt;group&gt;" to "[test.user@email.com]", "&lt;permission&gt;" to listOf("[*/permission.read]")))</ID>
-    <ID>MaxLineLength:AddPermissionTests.kt$AddPermissionTests$grantPermissions(mapOf("&lt;group&gt;" to "[test.user@email.com]", "&lt;permission&gt;" to listOf("[badlyformatted/reports.read]")))</ID>
-    <ID>MaxLineLength:AddPermissionTests.kt$AddPermissionTests$val result = grantPermissions(mapOf("&lt;group&gt;" to "[test.user@email.com]", "&lt;permission&gt;" to listOf("[*/reports.read]", "[report:testreport/reports.review]")))</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:20</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:54</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:58</ID>
-    <ID>NewLineAtEndOfFile:AddMembersTests.kt$org.vaccineimpact.orderlyweb.userCLI.tests.AddMembersTests.kt</ID>
-    <ID>NewLineAtEndOfFile:AddPermissionTests.kt$org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt</ID>
-    <ID>NewLineAtEndOfFile:AddUserGroupTests.kt$org.vaccineimpact.orderlyweb.userCLI.tests.AddUserGroupTests.kt</ID>
-    <ID>NewLineAtEndOfFile:AddUserTests.kt$org.vaccineimpact.orderlyweb.userCLI.tests.AddUserTests.kt</ID>
     <ID>NewLineAtEndOfFile:App.kt$org.vaccineimpact.orderlyweb.userCLI.App.kt</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.userCLI.GrantPermission.kt:17</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:40</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.userCLI.AddMembers.kt:19</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:47</ID>
     <ID>SpacingAroundComma:org.vaccineimpact.orderlyweb.userCLI.App.kt:45</ID>
     <ID>TooGenericExceptionCaught:App.kt$e: Exception</ID>
     <ID>TopLevelPropertyNaming:App.kt$const val doc = """ OrderlyWeb User CLI Usage: app add-users &lt;email&gt;... app add-groups &lt;name&gt;... app add-members &lt;group&gt; &lt;email&gt;... app grant &lt;group&gt; &lt;permission&gt;... """</ID>

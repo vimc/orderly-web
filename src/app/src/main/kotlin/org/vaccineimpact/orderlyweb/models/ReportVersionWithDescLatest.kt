@@ -11,4 +11,4 @@ constructor(override val name: String,
             override val published: Boolean,
             override val date: Instant,
             val latestVersion: String,
-            val description: String?): ReportVersion
+            val description: String?) : ReportVersion

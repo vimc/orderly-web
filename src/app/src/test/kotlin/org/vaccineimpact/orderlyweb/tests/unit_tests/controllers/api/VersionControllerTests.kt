@@ -107,8 +107,8 @@ class VersionControllerTests : ControllerTest()
 
         val report = ReportVersionWithArtefactsDataDescParamsResources(
                 ReportVersionWithDescLatestElapsed(displayName = "displayName", id = "id", date = Instant.now(),
-                name = "name", published = true, description = "description", latestVersion = "v1", elapsed = 1.5,
-                gitBranch="master", gitCommit="abc123"),
+                        name = "name", published = true, description = "description", latestVersion = "v1",
+                        elapsed = 1.5, gitBranch = "master", gitCommit = "abc123"),
                 artefacts = listOf(),
                 resources = listOf(), dataInfo = listOf(), parameterValues = mapOf(), instances = mapOf())
 
@@ -204,7 +204,8 @@ class VersionControllerTests : ControllerTest()
                     "table.xlsx" to "456")
         }
         val mockArtefactRepo = mock<ArtefactRepository> {
-            on { getArtefactHashes(reportName, reportVersion) } doReturn mapOf("file1.csv" to "312", "file2.pdf" to "789")
+            on { getArtefactHashes(reportName, reportVersion) } doReturn
+                    mapOf("file1.csv" to "312", "file2.pdf" to "789")
         }
 
         val sut = VersionController(actionContext, mockOrderlyClient, mock(), mockArtefactRepo, mockZipClient,
@@ -214,7 +215,8 @@ class VersionControllerTests : ControllerTest()
 
         val sourcePath = File("root/archive/$reportName/$reportVersion/").absolutePath
         verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream,
-                listOf("$sourcePath/file1.csv", "$sourcePath/file2.pdf", "$sourcePath/meta/inputs1.rds", "$sourcePath/table.xlsx"))
+                listOf("$sourcePath/file1.csv", "$sourcePath/file2.pdf",
+                        "$sourcePath/meta/inputs1.rds", "$sourcePath/table.xlsx"))
     }
 
     @Test
@@ -233,7 +235,6 @@ class VersionControllerTests : ControllerTest()
 
         Assertions.assertThatThrownBy { sut.getZippedByNameAndVersion() }
                 .isInstanceOf(UnknownObjectError::class.java)
-
     }
 
     @Test
@@ -270,5 +271,4 @@ class VersionControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
     }
-
 }

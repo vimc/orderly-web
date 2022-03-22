@@ -21,8 +21,7 @@ data class ReifiedPermission(
 
     override fun hashCode() = toString().hashCode()
 
-    fun satisfiedBy(permission: ReifiedPermission)
-            = name == permission.name && permission.scope.encompasses(scope)
+    fun satisfiedBy(permission: ReifiedPermission) = name == permission.name && permission.scope.encompasses(scope)
 
     companion object
     {
@@ -34,7 +33,8 @@ data class ReifiedPermission(
                 val rawScope = parts[0]
                 val name = parts[1]
                 return ReifiedPermission(name, Scope.parse(rawScope))
-            } catch (e: Exception)
+            }
+            catch (e: Exception)
             {
                 throw ReifiedPermissionParseException(raw)
             }

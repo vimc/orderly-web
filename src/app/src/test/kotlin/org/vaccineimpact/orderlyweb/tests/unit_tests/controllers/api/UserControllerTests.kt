@@ -27,7 +27,7 @@ class UserControllerTests
         val sut = UserController(actionContext, WebTokenHelper.instance, mockRepo)
         val result = sut.addUser()
         verify(mockRepo).addUser("test@test.com", "firstname.lastname", "Firstname Lastname",
-                                    UserSource.Montagu)
+                UserSource.Montagu)
         assertThat(result).isEqualToIgnoringCase("ok")
     }
 }

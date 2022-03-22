@@ -16,7 +16,7 @@ class QueueControllerTests : ControllerTest()
     {
         val mockContext = mock<ActionContext>()
         val mockResponse = OrderlyServerResponse("testResponse", 200)
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderly = mock<OrderlyServerAPI> {
             on { it.get("/v1/queue/status/", mockContext) } doReturn mockResponse
         }
 

@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
-import java.net.URLEncoder
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.Credentials
@@ -10,11 +9,13 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.redirect.RedirectAction
 import org.pac4j.core.redirect.RedirectActionBuilder
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import java.net.URLEncoder
 
+class OrderlyWebIndirectClient() : IndirectClient<Credentials, CommonProfile>()
+{
 
-class OrderlyWebIndirectClient() : IndirectClient<Credentials, CommonProfile>(){
-
-    init {
+    init
+    {
         setCallbackUrl("/login")
     }
 
@@ -26,12 +27,11 @@ class OrderlyWebIndirectClient() : IndirectClient<Credentials, CommonProfile>(){
 
         defaultAuthenticator(NeverInvokedAuthenticator())
     }
-
 }
 
-class OrderlyWebIndirectClientRedirectActionBuilder: RedirectActionBuilder
+class OrderlyWebIndirectClientRedirectActionBuilder : RedirectActionBuilder
 {
-    override fun redirect(context: WebContext) : RedirectAction
+    override fun redirect(context: WebContext): RedirectAction
     {
         //Attach the originally requested url to the redirect url as a query string parameter, so we can redirect
         //there once authenticated via the 'landing page'
@@ -44,7 +44,8 @@ class OrderlyWebIndirectClientRedirectActionBuilder: RedirectActionBuilder
 //The OrderlyIndirectClient is only used to forward the user on to the appropriate auth provider via the landing page.
 //We need to provide a CredentialsExtractor object to keep pac4j happy, but it should never actually be invoked.
 // Similarly for NeverInvokedAuthenticator
-class NeverInvokedCredentialsExtractor: CredentialsExtractor<Credentials> {
+class NeverInvokedCredentialsExtractor : CredentialsExtractor<Credentials>
+{
 
     override fun extract(context: WebContext): Credentials
     {
@@ -52,9 +53,10 @@ class NeverInvokedCredentialsExtractor: CredentialsExtractor<Credentials> {
     }
 }
 
-class NeverInvokedAuthenticator: Authenticator<Credentials> {
-    override fun validate(credentials: Credentials, context: WebContext) {
+class NeverInvokedAuthenticator : Authenticator<Credentials>
+{
+    override fun validate(credentials: Credentials, context: WebContext)
+    {
         throw UnsupportedOperationException("NeverInvokedAuthenticator should not be invoked.")
     }
 }
-

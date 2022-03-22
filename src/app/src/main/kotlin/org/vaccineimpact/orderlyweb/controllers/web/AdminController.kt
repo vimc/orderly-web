@@ -17,5 +17,4 @@ class AdminController(context: ActionContext,
     {
         return AdminViewModel(context, authConfig.canAllowGuestUser)
     }
-
 }

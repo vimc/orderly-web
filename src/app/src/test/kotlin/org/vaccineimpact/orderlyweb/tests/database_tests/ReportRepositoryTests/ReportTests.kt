@@ -7,11 +7,12 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
-import org.vaccineimpact.orderlyweb.test_helpers.*
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -131,7 +132,6 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results.count()).isEqualTo(2)
         assertThat(results[0]).isEqualTo("version1")
         assertThat(results[1]).isEqualTo("version2")
-
     }
 
     @Test
@@ -170,7 +170,6 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[0]).isEqualTo("version1")
         assertThat(results[1]).isEqualTo("version2")
         assertThat(results[2]).isEqualTo("version3")
-
     }
 
     @Test
@@ -189,7 +188,6 @@ class ReportTests : CleanDatabaseTests()
         assertThat(result).isTrue()
 
         assertThat(sut.getReportVersion("test", "version1").published).isTrue()
-
     }
 
     @Test
@@ -301,7 +299,6 @@ class ReportTests : CleanDatabaseTests()
         assertThat(sut.reportExists("r1")).isTrue()
     }
 
-
     @Test
     fun `can get reports with publish status`()
     {
@@ -343,12 +340,12 @@ class ReportTests : CleanDatabaseTests()
 
         val sut = createSut()
         val result = sut.getLatestReportVersions(listOf(
-            "test1",
-            "test2"
+                "test1",
+                "test2"
         ))
         assertThat(result).containsExactly(
-            ReportWithDate("test1", now),
-            ReportWithDate("test2", now)
+                ReportWithDate("test1", now),
+                ReportWithDate("test2", now)
         )
     }
 }

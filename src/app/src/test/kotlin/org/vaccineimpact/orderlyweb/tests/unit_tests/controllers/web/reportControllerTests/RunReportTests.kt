@@ -5,13 +5,19 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.models.Parameter
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
+import org.vaccineimpact.orderlyweb.models.ReportStatus
+import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import java.time.Instant
 
 class RunReportTests
@@ -201,7 +207,8 @@ class RunReportTests
      }"""
 
     @Test
-    fun `can deserialise ReportStatus`() {
+    fun `can deserialise ReportStatus`()
+    {
         val status = Serializer.instance.gson.fromJson(testStatusJson, ReportStatus::class.java)
         assertThat(status.key).isEqualTo("fakeKey")
         assertThat(status.status).isEqualTo("updatedStatus")
@@ -224,10 +231,10 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val mockOrderlyResponse = OrderlyServerResponse("""{"data": $testStatusJson}""",200)
+        val mockOrderlyResponse = OrderlyServerResponse("""{"data": $testStatusJson}""", 200)
 
         val mockAPI = mock<OrderlyServerAPI> {
-            on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn  mockOrderlyResponse
+            on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn mockOrderlyResponse
         }
 
         val sut = ReportRunController(mockContext, mockRepo, mock(), mockAPI)
@@ -235,11 +242,11 @@ class RunReportTests
         verify(mockRepo, times(2)).getReportRun("fakeKey")
         assertThat(result).isSameAs(incompleteLog)
         verify(mockRepo).updateReportRun(
-            eq("fakeKey"),
-            eq("updatedStatus"),
-            eq("1233"),
-            eq(listOf("output item")),
-            eq(Instant.ofEpochSecond(1647340549L)))
+                eq("fakeKey"),
+                eq("updatedStatus"),
+                eq("1233"),
+                eq(listOf("output item")),
+                eq(Instant.ofEpochSecond(1647340549L)))
     }
 
     @Test

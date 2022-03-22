@@ -6,7 +6,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.errors.*
 import org.vaccineimpact.orderlyweb.models.ResultStatus
 
-
 class OrderlyWebErrorTests
 {
 
@@ -15,7 +14,7 @@ class OrderlyWebErrorTests
     {
         val sut = InvalidOneTimeLinkToken("testCode", "testMessage")
         assertExpectedOrderlyWebError(sut, 400,
-                "testMessage", "invalid-token-testCode" )
+                "testMessage", "invalid-token-testCode")
     }
 
     @Test
@@ -23,7 +22,7 @@ class OrderlyWebErrorTests
     {
         val sut = MissingParameterError("testParam")
         assertExpectedOrderlyWebError(sut, 400,
-                "Missing parameter 'testParam'", "bad-request" )
+                "Missing parameter 'testParam'", "bad-request")
     }
 
     @Test
@@ -52,7 +51,7 @@ class OrderlyWebErrorTests
         val sut = UnknownObjectError("123", org.vaccineimpact.orderlyweb.models.Report::class)
 
         assertExpectedOrderlyWebError(sut, 404,
-                "Unknown report : '123'", "unknown-report" )
+                "Unknown report : '123'", "unknown-report")
     }
 
     private fun assertExpectedOrderlyWebError(sut: OrderlyWebError, expectedHttpStatus: Int, expectedMessage: String,

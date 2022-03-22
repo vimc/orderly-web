@@ -26,13 +26,12 @@ class ReportPagePermissionTests : SeleniumTest()
                 .isEqualTo(testListItemUser)
     }
 
-
     private fun canViewGlobalReportReaders(widgetId: String)
     {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId li")))
         val listItems = driver.findElements(By.cssSelector("#$widgetId li"))
 
-        //Expect to find the global test user as well
+        // Expect to find the global test user as well
         assertThat(listItems.count()).isEqualTo(2)
         assertThat(listItems[0].findElement(By.cssSelector("span.display-name")).text)
                 .isEqualTo(globalTestUser)
@@ -46,7 +45,8 @@ class ReportPagePermissionTests : SeleniumTest()
         return driver.findElements(By.cssSelector("#$widgetId .role-name"))
     }
 
-    private fun canAddUserGroup(widgetId: String, userGroup: String) {
+    private fun canAddUserGroup(widgetId: String, userGroup: String)
+    {
 
         var listItems = driver.findElements(By.cssSelector("#$widgetId li"))
         assertThat(listItems.count()).isEqualTo(0)
@@ -64,8 +64,9 @@ class ReportPagePermissionTests : SeleniumTest()
         assertThat(listItems[0].getAttribute("id")).isEqualTo(userGroup)
     }
 
-    private fun canRemoveUserGroup(widgetId: String) {
-        //let existing readers load first
+    private fun canRemoveUserGroup(widgetId: String)
+    {
+        // let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId > ul > li")))
 
         val removeReader = driver.findElement(By.cssSelector("#$widgetId  span.remove"))

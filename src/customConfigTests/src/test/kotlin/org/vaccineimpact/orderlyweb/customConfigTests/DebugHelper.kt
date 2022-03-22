@@ -6,7 +6,7 @@ import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.logging.LogType
 
-class DebugHelper: TestWatcher()
+class DebugHelper : TestWatcher()
 {
     lateinit var driver: WebDriver
 

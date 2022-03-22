@@ -84,5 +84,4 @@ class RouterTests
         verify(mockSparkWrapper).mapGet(eq("login"), any())
         verify(mockSparkWrapper).mapGet(eq("login/"), any())
     }
-
 }

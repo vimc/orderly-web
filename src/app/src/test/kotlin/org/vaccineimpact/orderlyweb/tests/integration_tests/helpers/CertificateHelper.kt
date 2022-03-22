@@ -19,10 +19,12 @@ object CertificateHelper
     class TrustAll : X509TrustManager
     {
         override fun getAcceptedIssuers() = emptyArray<X509Certificate>()
+        @Suppress("EmptyFunctionBlock")
         override fun checkClientTrusted(certs: Array<X509Certificate>, authType: String)
         {
         }
 
+        @Suppress("EmptyFunctionBlock")
         override fun checkServerTrusted(certs: Array<X509Certificate>, authType: String)
         {
         }

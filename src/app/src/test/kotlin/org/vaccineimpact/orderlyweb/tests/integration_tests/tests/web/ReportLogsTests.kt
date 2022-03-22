@@ -1,21 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.assertj.core.api.Assertions
+import com.fasterxml.jackson.databind.node.ArrayNode
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
-import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
-import spark.route.HttpMethod
 import java.time.Instant
-import org.assertj.core.api.Assertions.assertThat
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.sun.mail.handlers.text_plain
-import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 
 class ReportLogsTests : IntegrationTest()
 {
@@ -32,27 +25,27 @@ class ReportLogsTests : IntegrationTest()
         val now2 = Instant.now()
 
         OrderlyWebReportRunRepository().addReportRun(
-            "key1",
-            "test.user@example.com",
-            now,
-            "report1",
-            mapOf("instance1" to "pre-staging"),
-            mapOf("parameter1" to "value1"),
-            "branch1",
-            "commit1"
+                "key1",
+                "test.user@example.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
         )
 
         OrderlyWebReportRunRepository().addReportRun(
-            "key2",
-            "test.user@example.com",
-            now2,
-            "report2",
-            mapOf("instance1" to "pre-staging"),
-            mapOf("parameter1" to "value1"),
-            "branch1",
-            "commit1"
+                "key2",
+                "test.user@example.com",
+                now2,
+                "report2",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
         )
-         
+
         val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie, contentType)
 
         assertSuccessful(response)

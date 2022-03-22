@@ -13,13 +13,15 @@ interface RoleRepository
     fun getAllRoleNames(): List<String>
     fun getAllRoles(): List<Role>
 
-    companion object {
-        const val ADMIN_ROLE = "Admin";
+    companion object
+    {
+        const val ADMIN_ROLE = "Admin"
     }
 }
 
 class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
-                            private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : RoleRepository
+                            private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository())
+    : RoleRepository
 {
     override fun getAllRoleNames(): List<String>
     {
@@ -46,7 +48,7 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
                             ORDERLYWEB_USER, joinType = JoinType.LEFT_OUTER_JOIN)
                     .where(ORDERLYWEB_USER_GROUP.ID.`in`(roleNames))
                     .fetch()
-                    .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID]}
+                    .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID] }
                     .map(::mapUserGroup)
         }
     }
@@ -103,5 +105,4 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
             }
         }, permissions)
     }
-
 }

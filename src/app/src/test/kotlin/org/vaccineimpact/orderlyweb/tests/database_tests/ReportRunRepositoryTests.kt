@@ -7,11 +7,11 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
-import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
@@ -40,14 +40,14 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
 
         addTestReportRun(sut)
         sut.addReportRun(
-            "benevolent_badger",
-            "user@email.com",
-            now,
-            "report2",
-            mapOf("instance2" to "post-staging"),
-            mapOf("parameter2" to "value2"),
-            "branch1",
-            "commit2"
+                "benevolent_badger",
+                "user@email.com",
+                now,
+                "report2",
+                mapOf("instance2" to "post-staging"),
+                mapOf("parameter2" to "value2"),
+                "branch1",
+                "commit2"
         )
         JooqContext().use {
             val result = it.dsl.selectFrom(Tables.ORDERLYWEB_REPORT_RUN).fetch()
@@ -74,14 +74,14 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebReportRunRepository()
         assertThatThrownBy {
             sut.addReportRun(
-                "adventurous_aardvark",
-                "test.user@example.com",
-                Instant.now(),
-                "report2",
-                mapOf("instance2" to "post-staging"),
-                mapOf("parameter2" to "value2"),
-                "branch1",
-                "commit2"
+                    "adventurous_aardvark",
+                    "test.user@example.com",
+                    Instant.now(),
+                    "report2",
+                    mapOf("instance2" to "post-staging"),
+                    mapOf("parameter2" to "value2"),
+                    "branch1",
+                    "commit2"
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }
@@ -130,7 +130,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "adventurous_aardvark",
                 "success",
                 "version123",
-                listOf("log1","log2"),
+                listOf("log1", "log2"),
                 now
         )
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
@@ -156,31 +156,31 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
         addTestReportRun(sut)
 
         sut.updateReportRun(
-            "adventurous_aardvark",
-            "success",
-            "version123",
-            listOf("log1","log2"),
-            now
+                "adventurous_aardvark",
+                "success",
+                "version123",
+                listOf("log1", "log2"),
+                now
         )
 
         sut.updateReportRun(
-            "adventurous_aardvark",
-            "success",
-            "version123",
-            listOf("log1","log2"),
-            null
+                "adventurous_aardvark",
+                "success",
+                "version123",
+                listOf("log1", "log2"),
+                null
         )
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
-            "user@email.com",
-            now,
-            "report1",
-            mapOf("instance1" to "pre-staging"),
-            mapOf("parameter1" to "value1"),
-            "branch1",
-            "commit1",
-            "success",
-            "log1\nlog2",
-            "version123"))
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1",
+                "success",
+                "log1\nlog2",
+                "version123"))
     }
 
     @Test
@@ -214,33 +214,33 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
 
     fun `can get all running reports for current user only`()
     {
-         insertUser("user@email.com", "user.name")
-         insertUser("user2@email.com", "user2.name")
+        insertUser("user@email.com", "user.name")
+        insertUser("user2@email.com", "user2.name")
 
         val now = Instant.now()
 
         val sut = OrderlyWebReportRunRepository()
 
         sut.addReportRun(
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            "report1",
-            mapOf("instance1" to "post-staging"),
-            mapOf("parameter1" to "value1"),
-            "branch1",
-            "commit1"
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "post-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
         )
 
         sut.addReportRun(
-            "benevolent_badger",
-            "user2@email.com",
-            now,
-            "report2",
-            mapOf("instance2" to "post-staging"),
-            mapOf("parameter2" to "value2"),
-            "branch1",
-            "commit2"
+                "benevolent_badger",
+                "user2@email.com",
+                now,
+                "report2",
+                mapOf("instance2" to "post-staging"),
+                mapOf("parameter2" to "value2"),
+                "branch1",
+                "commit2"
         )
 
         val result = sut.getAllReportRunsForUser("user@email.com")

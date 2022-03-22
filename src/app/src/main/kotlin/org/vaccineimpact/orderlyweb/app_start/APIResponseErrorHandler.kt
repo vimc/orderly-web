@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 import spark.Request
 import spark.Response
 
-class APIResponseErrorHandler: ResponseErrorHandler
+class APIResponseErrorHandler : ResponseErrorHandler
 {
     override fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {

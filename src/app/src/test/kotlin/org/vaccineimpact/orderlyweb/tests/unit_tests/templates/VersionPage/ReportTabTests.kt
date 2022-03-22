@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 import org.assertj.core.api.Assertions
 import org.junit.Test
 
-class ReportTabTests: BaseVersionPageTests()
+class ReportTabTests : BaseVersionPageTests()
 {
     @Test
     fun `renders report tab correctly`()

@@ -23,7 +23,7 @@ class RunReportPageTests
                     mapOf("source" to listOf("support", "annex")),
                     listOf("internal", "published")),
             listOf("master", "dev"),
-    "minimal")
+            "minimal")
 
     private val doc = template.jsoupDocFor(testModel)
 
@@ -51,6 +51,6 @@ class RunReportPageTests
         val script = doc.select("script")[4]
         val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)
         val initialReportName = Serializer.instance.gson.toJson(testModel.reportName)
-        assertThat(script.html()).isEqualToIgnoringWhitespace("var initialReportName = ${initialReportName};")
+        assertThat(script.html()).isEqualToIgnoringWhitespace("var initialReportName = $initialReportName;")
     }
 }
