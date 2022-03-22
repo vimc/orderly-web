@@ -1,9 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
 import com.nhaarman.mockito_kotlin.*
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertSame
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.pac4j.core.exception.CredentialsException
 import org.kohsuke.github.*
@@ -72,7 +71,7 @@ class GithubApiClientAuthHelperTests
     {
         val sut = GithubApiClientAuthHelper(mock(), mock())
 
-        Assertions.assertThatThrownBy { sut.authenticate("") }
+        assertThatThrownBy { sut.authenticate("") }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("Token cannot be blank")
     }
@@ -114,7 +113,7 @@ class GithubApiClientAuthHelperTests
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubBuilder)
         sut.authenticate(token)
         val result = sut.getUser()
-        assertSame(mockUser, result)
+        assertThat(mockUser).isSameAs(result)
     }
 
     @Test
@@ -124,7 +123,7 @@ class GithubApiClientAuthHelperTests
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubBuilder)
         sut.authenticate(token)
         val result = sut.getUserEmail()
-        assertEquals("privateEmail", result)
+        assertThat(result).isEqualTo("privateEmail")
     }
 
     @Test
@@ -141,14 +140,14 @@ class GithubApiClientAuthHelperTests
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
         sut.authenticate(token)
         val result = sut.getUserEmail()
-        assertEquals("publicEmail", result)
+        assertThat(result).isEqualTo("publicEmail")
     }
 
     @Test
     fun `on checkGithubOrgAndTeamMembership IllegalStateException thrown if not authenticated`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubBuilder)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("User has not been authenticated")
@@ -158,7 +157,7 @@ class GithubApiClientAuthHelperTests
     fun `on getUser, IllegalStateException thrown if not authenticated`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubBuilder)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.getUser()
         }.isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("User has not been authenticated")
@@ -168,7 +167,7 @@ class GithubApiClientAuthHelperTests
     fun `on getUserEmail, IllegalStateException thrown if not authenticated`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubBuilder)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.getUserEmail()
         }.isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("User has not been authenticated")
@@ -186,7 +185,7 @@ class GithubApiClientAuthHelperTests
 
         sut.authenticate("token")
 
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(BadConfigurationError::class.java)
                 .hasMessageContaining("GitHub org orgName has no team called teamNotInOrg")
@@ -204,7 +203,7 @@ class GithubApiClientAuthHelperTests
 
         sut.authenticate("token")
 
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub org orgName")
@@ -222,7 +221,7 @@ class GithubApiClientAuthHelperTests
 
         sut.authenticate("token")
 
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub team teamName")
@@ -243,7 +242,7 @@ class GithubApiClientAuthHelperTests
 
         sut.authenticate("token")
 
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.getUserEmail()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("GitHub token must include scope user:email")
@@ -257,7 +256,7 @@ class GithubApiClientAuthHelperTests
         }
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.authenticate(token)
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessage("Test error")
@@ -271,7 +270,7 @@ class GithubApiClientAuthHelperTests
         }
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.authenticate(token)
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessage("")
@@ -286,7 +285,7 @@ class GithubApiClientAuthHelperTests
         }
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.authenticate(token)
         }.isSameAs(httpException)
     }
@@ -301,7 +300,7 @@ class GithubApiClientAuthHelperTests
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
         sut.authenticate(token)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessage("Test error")
@@ -317,7 +316,7 @@ class GithubApiClientAuthHelperTests
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
         sut.authenticate(token)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessage("")
@@ -334,7 +333,7 @@ class GithubApiClientAuthHelperTests
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, getGitHubBuilder(customMockGithub))
         sut.authenticate(token)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isSameAs(httpException)
     }
@@ -348,7 +347,7 @@ class GithubApiClientAuthHelperTests
         }
         val sut = GithubApiClientAuthHelper(customMockAppConfig, mockGithubBuilder)
         sut.authenticate(token)
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(InvalidConfigurationKey::class.java)
                 .hasMessage("Invalid configuration value '' for key 'auth.github_org'")
