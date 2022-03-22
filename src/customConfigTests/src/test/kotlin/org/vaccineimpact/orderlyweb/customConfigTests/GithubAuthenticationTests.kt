@@ -11,11 +11,11 @@ import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 
 class GithubAuthenticationTests : CustomConfigTests()
 {
-    val JSONValidator = JSONValidator()
+    private val JSONValidator = JSONValidator()
 
     // Token with read:org and user:email scope, for a test user who only has access to a test org with no
     // repos. Token reversed so GitHub doesn't spot it and invalidate it
-    val testUserPAT = "dyw4x210375dauDALEtMVdvjypgs8RuGcY8H_phg".reversed()
+    private val testUserPAT = "dyw4x210375dauDALEtMVdvjypgs8RuGcY8H_phg".reversed()
 
     @Test
     fun `authentication fails without Auth header`()
