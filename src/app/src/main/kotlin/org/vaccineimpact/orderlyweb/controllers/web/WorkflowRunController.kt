@@ -71,10 +71,14 @@ class WorkflowRunController(
         return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
 
+    internal data class WorkflowQueuedReport(val key: String,
+                                             @SerializedName(value = "execution_order")
+                                             val executionOrder: Int)
+
     internal data class WorkflowRunResponse(
             @SerializedName(value = "workflow_key")
             val key: String,
-            val reports: List<String>
+            val reports: List<WorkflowQueuedReport>
     )
 
     fun createWorkflowRun(): String
@@ -124,10 +128,11 @@ class WorkflowRunController(
                             @Suppress("UnsafeCallOnNullableType")
                             context.userProfile!!.id,
                             Instant.now(),
-                            workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                            workflowRunRequest.reports.zip(workflowRun.reports) { report, queuedReport ->
                                 WorkflowRunReport(
                                         workflowRun.key,
-                                        reportKey,
+                                        queuedReport.key,
+                                        queuedReport.executionOrder,
                                         report.name,
                                         report.params
                                 )
@@ -170,13 +175,14 @@ class WorkflowRunController(
 
         return WorkflowRunStatus(
                 workflowRunStatusResponse.status,
-                workflowRunStatusResponse.reports.map { report ->
+                runWorkflow.reports.sortedBy { it.executionOrder }.map { report ->
+                    @Suppress("UnsafeCallOnNullableType")
+                    val status = workflowRunStatusResponse.reports.find { it.key == report.key }!!
                     WorkflowRunStatus.WorkflowRunReportStatus(
-                            @Suppress("UnsafeCallOnNullableType")
-                            runWorkflow.reports.find { it.key == report.key }!!.report,
+                            report.report,
                             report.key,
-                            report.status,
-                            report.version
+                            status.status,
+                            status.version
                     )
                 })
     }

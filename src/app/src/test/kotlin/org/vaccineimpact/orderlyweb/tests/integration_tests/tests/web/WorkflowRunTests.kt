@@ -17,9 +17,9 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
-import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import spark.route.HttpMethod
 import java.time.Instant
 
@@ -44,10 +44,10 @@ class WorkflowRunTests : IntegrationTest()
 
         val url = "/workflows/adventurous_aardvark/"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(
-            url,
-            setOf(ReifiedPermission("reports.run", Scope.Global())),
-            method = HttpMethod.get,
-            contentType = ContentTypes.json
+                url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json
         )
 
         assertSuccessful(response)
@@ -64,10 +64,10 @@ class WorkflowRunTests : IntegrationTest()
     {
         val url = "/workflows/fakeKey/"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(
-            url,
-            setOf(ReifiedPermission("reports.run", Scope.Global())),
-            method = HttpMethod.get,
-            contentType = ContentTypes.json
+                url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json
         )
 
         assertJsonContentType(response)
@@ -102,21 +102,22 @@ class WorkflowRunTests : IntegrationTest()
         val email = "test.user@example.com"
         val date = Instant.now()
         val runWorkflowReport = listOf(
-            WorkflowRunReport(
-                "adventurous_aardvark",
-                "preterrestrial_andeancockoftherock",
-                "Report A",
-                emptyMap()
-            )
+                WorkflowRunReport(
+                        "adventurous_aardvark",
+                        "preterrestrial_andeancockoftherock",
+                        1,
+                        "Report A",
+                        emptyMap()
+                )
         )
 
         val repo = OrderlyWebWorkflowRunRepository()
         repo.addWorkflowRun(WorkflowRun(name, key, email, date, runWorkflowReport, emptyMap()))
 
         val response = webRequestHelper.requestWithSessionCookie(
-            "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
-            sessionCookie,
-            ContentTypes.json
+                "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
+                sessionCookie,
+                ContentTypes.json
         )
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -143,48 +144,49 @@ class WorkflowRunTests : IntegrationTest()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
 
         val runResponse = OrderlyServer(AppConfig()).post(
-            "/v1/workflow/run/",
-            """{"name": "minimal", "reports": [{"name": "minimal"}]}""",
-            emptyMap()
+                "/v1/workflow/run/",
+                """{"name": "minimal", "reports": [{"name": "minimal"}]}""",
+                emptyMap()
         )
         val workflowRunResponse = runResponse.data(WorkflowRunController.WorkflowRunResponse::class.java)
         val repo = OrderlyWebWorkflowRunRepository()
         repo.addWorkflowRun(
-            WorkflowRun(
-                "minimal workflow",
-                workflowRunResponse.key,
-                "test.user@example.com",
-                Instant.now(),
-                listOf(
-                    WorkflowRunReport(
+                WorkflowRun(
+                        "minimal workflow",
                         workflowRunResponse.key,
-                        workflowRunResponse.reports.first(),
-                        "minimal",
+                        "test.user@example.com",
+                        Instant.now(),
+                        listOf(
+                                WorkflowRunReport(
+                                        workflowRunResponse.key,
+                                        workflowRunResponse.reports.first().key,
+                                        workflowRunResponse.reports.first().executionOrder,
+                                        "minimal",
+                                        emptyMap()
+                                )
+                        ),
                         emptyMap()
-                    )
-                ),
-                emptyMap()
-            )
+                )
         )
 
         assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
 
         val response = webRequestHelper.requestWithSessionCookie(
-            "/workflows/${workflowRunResponse.key}/status",
-            sessionCookie,
-            ContentTypes.json
+                "/workflows/${workflowRunResponse.key}/status",
+                sessionCookie,
+                ContentTypes.json
         )
         assertSuccessful(response)
         assertJsonContentType(response)
         val workflowRunStatus = Serializer.instance.gson.fromJson(
-            JSONValidator.getData(response.text).toString(),
-            WorkflowRunStatus::class.java
+                JSONValidator.getData(response.text).toString(),
+                WorkflowRunStatus::class.java
         )
 
         val orderlyServerResponse =
-            OrderlyServer(AppConfig()).get("/v1/workflow/${workflowRunResponse.key}/status/", emptyMap())
+                OrderlyServer(AppConfig()).get("/v1/workflow/${workflowRunResponse.key}/status/", emptyMap())
         val workflowRunStatusResponse =
-            orderlyServerResponse.data(WorkflowRunController.WorkflowRunStatusResponse::class.java)
+                orderlyServerResponse.data(WorkflowRunController.WorkflowRunStatusResponse::class.java)
         assertThat(workflowRunStatus.status).isEqualTo(workflowRunStatusResponse.status)
         assertThat(workflowRunStatus.reports[0].name).isEqualTo("minimal")
         assertThat(workflowRunStatus.reports[0].status).isEqualTo(workflowRunStatusResponse.reports[0].status)
@@ -198,9 +200,9 @@ class WorkflowRunTests : IntegrationTest()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
 
         val response = webRequestHelper.requestWithSessionCookie(
-            "/workflows/fake/status",
-            sessionCookie,
-            ContentTypes.json
+                "/workflows/fake/status",
+                sessionCookie,
+                ContentTypes.json
         )
         assertThat(response.statusCode).isEqualTo(404)
     }
@@ -228,10 +230,10 @@ class WorkflowRunTests : IntegrationTest()
 
         val url = "/running/$reportKey/logs?workflow=$workflowKey"
         val logsResponse = webRequestHelper.requestWithSessionCookie(
-            url,
-            sessionCookie,
-            ContentTypes.json,
-            HttpMethod.get
+                url,
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.get
         )
         assertSuccessful(logsResponse)
         val logsResponseJson = JSONValidator.getData(logsResponse.text)
@@ -246,14 +248,14 @@ class WorkflowRunTests : IntegrationTest()
         // check status was persisted
         JooqContext().use {
             val result = it.dsl.select(
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
             )
-            .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-            .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(reportKey))
-            .fetchOne()
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(reportKey))
+                    .fetchOne()
 
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("other")
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo(logsResponseJson["status"].textValue())
@@ -279,7 +281,7 @@ class WorkflowRunTests : IntegrationTest()
         )
         assertThat(logsResponse.statusCode).isEqualTo(400)
         JSONValidator.validateError(logsResponse.text, "bad-request",
-            "Report with key $reportKey does not belong to workflow with key wrongWorkflowKey")
+                "Report with key $reportKey does not belong to workflow with key wrongWorkflowKey")
 
     }
 
@@ -297,12 +299,12 @@ class WorkflowRunTests : IntegrationTest()
         --XXXX--
         """.trimIndent()
         val response = webRequestHelper.requestWithSessionCookie(
-            url,
-            sessionCookie,
-            ContentTypes.json,
-            HttpMethod.post,
-            formData,
-            mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+                url,
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
         )
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -361,7 +363,7 @@ class WorkflowRunTests : IntegrationTest()
     @Test
     fun `returns workflow header validation error`()
     {
-       val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val formData = """
         --XXXX
         Content-Disposition: form-data; name="file"; filename="test.csv"
@@ -474,11 +476,11 @@ class WorkflowRunTests : IntegrationTest()
 
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie(
-            "/workflows/summary",
-            sessionCookie,
-            ContentTypes.json,
-            HttpMethod.post,
-            """{
+                "/workflows/summary",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                """{
                 "ref": "$ref", 
                 "reports": [
                 {"name": "global", "params": {"nmin": "20"}},
@@ -571,27 +573,29 @@ class WorkflowRunTests : IntegrationTest()
         val now = Instant.now()
 
         val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            listOf(
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key",
-                    "report one",
-                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key",
+                                1,
+                                "report one",
+                                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key2",
+                                2,
+                                "report two",
+                                mapOf("param1" to "one", "param2" to "three")
+                        )
                 ),
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key2",
-                    "report two",
-                    mapOf("param1" to "one", "param2" to "three")
-                )
-            ),
-            mapOf("instanceA" to "pre-staging"),
-            "branch1",
-            "commit1"
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
         )
 
         val sut = OrderlyWebWorkflowRunRepository()
