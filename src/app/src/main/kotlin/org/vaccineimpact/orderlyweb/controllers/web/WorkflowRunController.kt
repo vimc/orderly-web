@@ -71,9 +71,11 @@ class WorkflowRunController(
         return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
 
-    internal data class WorkflowQueuedReport(val key: String,
+    internal data class WorkflowQueuedReport(val name: String,
+                                             val key: String,
                                              @SerializedName(value = "execution_order")
-                                             val executionOrder: Int)
+                                             val executionOrder: Int,
+                                             val params: Map<String, String>)
 
     internal data class WorkflowRunResponse(
             @SerializedName(value = "workflow_key")
@@ -128,13 +130,13 @@ class WorkflowRunController(
                             @Suppress("UnsafeCallOnNullableType")
                             context.userProfile!!.id,
                             Instant.now(),
-                            workflowRunRequest.reports.zip(workflowRun.reports) { report, queuedReport ->
+                            workflowRun.reports.map {
                                 WorkflowRunReport(
                                         workflowRun.key,
-                                        queuedReport.key,
-                                        queuedReport.executionOrder,
-                                        report.name,
-                                        report.params
+                                        it.key,
+                                        it.executionOrder,
+                                        it.name,
+                                        it.params
                                 )
                             },
                             workflowRunRequest.instances ?: emptyMap(),

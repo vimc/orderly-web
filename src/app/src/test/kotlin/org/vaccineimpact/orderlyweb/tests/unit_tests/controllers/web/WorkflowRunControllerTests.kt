@@ -265,8 +265,10 @@ class WorkflowRunControllerTests
                 )
         ).isEqualTo(
                 WorkflowRunController.WorkflowRunResponse("workflow_key1",
-                        listOf(WorkflowRunController.WorkflowQueuedReport("report_key1", 1),
-                                WorkflowRunController.WorkflowQueuedReport("report_key2", 2))
+                        listOf(WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[0].name,
+                                "report_key1", 1, workflowRunRequest.reports[0].params),
+                                WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[1].name,
+                                        "report_key2", 2, workflowRunRequest.reports[1].params))
                 )
         )
 
@@ -397,7 +399,7 @@ class WorkflowRunControllerTests
     }
 
     @Test
-    fun `can get the status of a workflow`()
+    fun `can get the status of a workflow, ordered by execution order`()
     {
         val context = mock<ActionContext> {
             on { params(":key") } doReturn "workflow_key1"
@@ -420,14 +422,14 @@ class WorkflowRunControllerTests
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "hygienic_mammoth",
-                                2,
+                                3,
                                 "Report B",
                                 emptyMap()
                         ),
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "supercurious_woodlouse",
-                                3,
+                                2,
                                 "Report C",
                                 emptyMap()
                         )
@@ -480,15 +482,15 @@ class WorkflowRunControllerTests
                                         "error"
                                 ),
                                 WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report C",
+                                        "supercurious_woodlouse",
+                                        "running"
+                                ),
+                                WorkflowRunStatus.WorkflowRunReportStatus(
                                         "Report B",
                                         "hygienic_mammoth",
                                         "success",
                                         "20210510-100458-8f1a9624"
-                                ),
-                                WorkflowRunStatus.WorkflowRunReportStatus(
-                                        "Report C",
-                                        "supercurious_woodlouse",
-                                        "running"
                                 )
                         )
                 )

@@ -76,6 +76,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
             val resultForReports = it.dsl.select(
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.EXECUTION_ORDER,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
             )
