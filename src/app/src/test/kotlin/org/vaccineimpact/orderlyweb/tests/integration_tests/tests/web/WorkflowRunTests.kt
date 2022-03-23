@@ -550,7 +550,7 @@ class WorkflowRunTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-    //    JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
 
         val workflowRunResponse = Serializer.instance.gson.fromJson(
                 JSONValidator.getData(response.text).toString(),
