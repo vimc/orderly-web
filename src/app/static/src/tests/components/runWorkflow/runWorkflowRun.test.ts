@@ -14,7 +14,7 @@ describe(`runWorkflowRun`, () => {
     const changelogTypes = ["internal", "public"]
     const source = ["prod", "uat"]
     const gitState: GitState = {
-        git_branches: [],
+        branches: [],
         metadata: {
             changelog_types: changelogTypes,
             git_supported: true,

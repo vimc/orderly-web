@@ -20,7 +20,7 @@ export const gitState: GitState = {
         instances: {"source": []},
         changelog_types: ["published", "internal"]
     },
-    git_branches: ["master", "dev"]
+    branches: ["master", "dev"]
 };
 
 const createStore = (state: Partial<GitState> = gitState) => {
@@ -82,7 +82,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
             expect(git.props("reportMetadata")).toStrictEqual(gitState.metadata);
-            expect(git.props("initialBranches")).toStrictEqual(gitState.git_branches);
+            expect(git.props("initialBranches")).toStrictEqual(gitState.branches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
             expect(git.props("showAllReports")).toBe(true);
