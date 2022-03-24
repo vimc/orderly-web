@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 
-class RunReportPageTests: SeleniumTest()
+class RunReportPageTests : SeleniumTest()
 {
     @Before
     fun setUp()
@@ -47,7 +47,17 @@ class RunReportPageTests: SeleniumTest()
         driver.findElement(By.id("logs-link")).click()
 
         val tab = driver.findElement(By.id("logs-tab"))
-        wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
+        wait.until(ExpectedConditions.attributeToBe(tab, "display", "block"))
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
     }
+
+    @Test
+    fun `can view git branches`()
+    {
+        val gitBranch = Select(driver.findElement(By.id("git-branch")))
+        assertThat(gitBranch.options.size).isEqualTo(2)
+        assertThat(gitBranch.options.map { it.text })
+                .containsExactly("master", "other")
+    }
+
 }

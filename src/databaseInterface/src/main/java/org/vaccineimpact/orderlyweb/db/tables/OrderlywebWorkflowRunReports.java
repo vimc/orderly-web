@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebWorkflowRunRepor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRunReportsRecord> {
 
-    private static final long serialVersionUID = -1637282095;
+    private static final long serialVersionUID = 1387639878;
 
     /**
      * The reference instance of <code>orderlyweb_workflow_run_reports</code>
@@ -90,6 +90,11 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
      * The column <code>orderlyweb_workflow_run_reports.report_version</code>.
      */
     public final TableField<OrderlywebWorkflowRunReportsRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_workflow_run_reports.execution_order</code>.
+     */
+    public final TableField<OrderlywebWorkflowRunReportsRecord, Integer> EXECUTION_ORDER = createField(DSL.name("execution_order"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>orderlyweb_workflow_run_reports</code> table reference
@@ -175,11 +180,11 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Integer, String, String, String, String, String, String, Timestamp, String> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<Integer, String, String, String, String, String, String, Timestamp, String, Integer> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }
