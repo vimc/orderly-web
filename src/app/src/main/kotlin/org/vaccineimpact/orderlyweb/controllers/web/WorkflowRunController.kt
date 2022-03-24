@@ -75,7 +75,7 @@ class WorkflowRunController(
                                              val key: String,
                                              @SerializedName(value = "execution_order")
                                              val executionOrder: Int,
-                                             val params: Map<String, String>)
+                                             val params: Map<String, String>?)
 
     internal data class WorkflowRunResponse(
             @SerializedName(value = "workflow_key")
@@ -136,7 +136,7 @@ class WorkflowRunController(
                                         it.key,
                                         it.executionOrder,
                                         it.name,
-                                        it.params
+                                        it.params ?: mapOf()
                                 )
                             },
                             workflowRunRequest.instances ?: emptyMap(),

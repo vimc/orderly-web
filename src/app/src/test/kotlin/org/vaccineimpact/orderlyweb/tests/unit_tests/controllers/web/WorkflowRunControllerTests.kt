@@ -220,7 +220,25 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
 
-        val mockAPIResponseText = """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1", "report_key2"]}}"""
+        val mockAPIResponseText = """
+            {
+            "data": {
+                "workflow_key": "workflow_key1",
+                "reports": [
+                 {    
+                    "name": "report1",
+                    "key": "report_key1",
+                    "execution_order": 1,
+                    "params": {
+                       "param1": "value1"
+                    }
+                 },
+                 {    
+                    "name": "report2",
+                    "key": "report_key2",
+                    "execution_order": 2              
+                 }]
+             }}""".trimIndent()
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
@@ -268,7 +286,7 @@ class WorkflowRunControllerTests
                         listOf(WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[0].name,
                                 "report_key1", 1, workflowRunRequest.reports[0].params),
                                 WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[1].name,
-                                        "report_key2", 2, workflowRunRequest.reports[1].params))
+                                        "report_key2", 2, null))
                 )
         )
 
@@ -293,7 +311,7 @@ class WorkflowRunControllerTests
                                     "report_key2",
                                     2,
                                     workflowRunRequest.reports[1].name,
-                                    workflowRunRequest.reports[1].params
+                                    mapOf()
                             )
                     )
             )
@@ -374,7 +392,9 @@ class WorkflowRunControllerTests
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
-                    """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}""",
+                    """{"data": {"workflow_key": "workflow_key1",
+                        | "reports": [{"key": "report_key1", "execution_order": 1,
+                        |  "name": "report1", "params": {"key": "value"}}]}}""".trimMargin(),
                     200
             )
         }
@@ -523,14 +543,14 @@ class WorkflowRunControllerTests
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "hygienic_mammoth",
-                                2,
+                                3,
                                 "Report B",
                                 emptyMap()
                         ),
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "supercurious_woodlouse",
-                                3,
+                                2,
                                 "Report C",
                                 emptyMap()
                         )
