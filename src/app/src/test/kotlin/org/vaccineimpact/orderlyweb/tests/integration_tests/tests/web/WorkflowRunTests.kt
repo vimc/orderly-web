@@ -142,37 +142,11 @@ class WorkflowRunTests : IntegrationTest()
     fun `gets workflow status`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
-
-        val runResponse = OrderlyServer(AppConfig()).post(
-                "/v1/workflow/run/",
-                """{"name": "minimal", "reports": [{"name": "minimal"}]}""",
-                emptyMap()
-        )
-        val workflowRunResponse = runResponse.data(WorkflowRunController.WorkflowRunResponse::class.java)
-        val repo = OrderlyWebWorkflowRunRepository()
-        repo.addWorkflowRun(
-                WorkflowRun(
-                        "minimal workflow",
-                        workflowRunResponse.key,
-                        "test.user@example.com",
-                        Instant.now(),
-                        listOf(
-                                WorkflowRunReport(
-                                        workflowRunResponse.key,
-                                        workflowRunResponse.reports.first().key,
-                                        workflowRunResponse.reports.first().executionOrder,
-                                        "minimal",
-                                        emptyMap()
-                                )
-                        ),
-                        emptyMap()
-                )
-        )
-
-        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
-
+        val runResponse = runExampleWorkflow(sessionCookie)
+        val runResponseJson = JSONValidator.getData(runResponse.text)
+        val key = runResponseJson["workflow_key"].textValue()
         val response = webRequestHelper.requestWithSessionCookie(
-                "/workflows/${workflowRunResponse.key}/status",
+                "/workflows/$key/status",
                 sessionCookie,
                 ContentTypes.json
         )
@@ -184,14 +158,41 @@ class WorkflowRunTests : IntegrationTest()
         )
 
         val orderlyServerResponse =
-                OrderlyServer(AppConfig()).get("/v1/workflow/${workflowRunResponse.key}/status/", emptyMap())
-        val workflowRunStatusResponse =
+                OrderlyServer(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
+        val orderlyWorkflowRunStatusResponse =
                 orderlyServerResponse.data(WorkflowRunController.WorkflowRunStatusResponse::class.java)
-        assertThat(workflowRunStatus.status).isEqualTo(workflowRunStatusResponse.status)
-        assertThat(workflowRunStatus.reports[0].name).isEqualTo("minimal")
-        assertThat(workflowRunStatus.reports[0].status).isEqualTo(workflowRunStatusResponse.reports[0].status)
-        assertThat(workflowRunStatus.reports[0].key).isEqualTo(workflowRunStatusResponse.reports[0].key)
-        assertThat(workflowRunStatus.reports[0].version).isEqualTo(workflowRunStatusResponse.reports[0].version)
+
+        assertThat(workflowRunStatus.status).isEqualTo(orderlyWorkflowRunStatusResponse.status)
+
+        var report = workflowRunStatus.reports[0]
+        var orderlyServerStatus = orderlyWorkflowRunStatusResponse.reports.find { it.key == report.key }!!
+        assertThat(report.name).isEqualTo("other")
+        assertThat(report.status).isEqualTo(orderlyServerStatus.status)
+        assertThat(report.key).isEqualTo(orderlyServerStatus.key)
+        assertThat(report.version).isEqualTo(orderlyServerStatus.version)
+
+        // these were queued in order: other, minimal, other, global
+        // but should now be ordered other, other, minimal, global because that will  be their execution order
+        report = workflowRunStatus.reports[1]
+        orderlyServerStatus = orderlyWorkflowRunStatusResponse.reports.find { it.key == report.key }!!
+        assertThat(report.name).isEqualTo("other")
+        assertThat(report.status).isEqualTo(orderlyServerStatus.status)
+        assertThat(report.key).isEqualTo(orderlyServerStatus.key)
+        assertThat(report.version).isEqualTo(orderlyServerStatus.version)
+
+        report = workflowRunStatus.reports[2]
+        orderlyServerStatus = orderlyWorkflowRunStatusResponse.reports.find { it.key == report.key }!!
+        assertThat(report.name).isEqualTo("minimal")
+        assertThat(report.status).isEqualTo(orderlyServerStatus.status)
+        assertThat(report.key).isEqualTo(orderlyServerStatus.key)
+        assertThat(report.version).isEqualTo(orderlyServerStatus.version)
+
+        report = workflowRunStatus.reports[3]
+        orderlyServerStatus = orderlyWorkflowRunStatusResponse.reports.find { it.key == report.key }!!
+        assertThat(report.name).isEqualTo("global")
+        assertThat(report.status).isEqualTo(orderlyServerStatus.status)
+        assertThat(report.key).isEqualTo(orderlyServerStatus.key)
+        assertThat(report.version).isEqualTo(orderlyServerStatus.version)
     }
 
     @Test
@@ -517,14 +518,14 @@ class WorkflowRunTests : IntegrationTest()
                       }
                     },
                     {
+                      "name": "minimal",
+                      "params": {}
+                    },
+                    {
                       "name": "other",
                       "params": {
                         "nmin": "0.75"
                       }
-                    },
-                    {
-                      "name": "minimal",
-                      "params": {}
                     },
                     {
                       "name": "global",
@@ -580,15 +581,15 @@ class WorkflowRunTests : IntegrationTest()
                 listOf(
                         WorkflowRunReport(
                                 "adventurous_aardvark",
-                                "adventurous_key",
-                                1,
+                                "adventurous_key2",
+                                2,
                                 "report one",
                                 mapOf("param1" to "one", "param1" to "one", "param2" to "two")
                         ),
                         WorkflowRunReport(
                                 "adventurous_aardvark",
-                                "adventurous_key2",
-                                2,
+                                "adventurous_key1",
+                                1,
                                 "report two",
                                 mapOf("param1" to "one", "param2" to "three")
                         )
