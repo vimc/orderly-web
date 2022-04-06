@@ -48,7 +48,12 @@
                             <span class="d-inline-block"></span>
                             <!--Dependencies boxes should go here, you might want to consider using slots or
                              perhaps add html here directly instead of creating another component -->
-                             <div>Missing dependency:</div>
+                             <div v-if="workflowSummary.missing_dependencies[report.name].length">
+                                 <h5>Missing dependency:</h5>
+                                 <ul>
+                                     <li v-for="missingDependency in workflowSummary.missing_dependencies[report.name]" :key="missingDependency">{{ missingDependency }}</li>
+                                 </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -100,6 +105,10 @@
                 return (report.param_list && report.param_list.length > 0) ||
                     (report.default_param_list && report.default_param_list.length > 0)
             }
+        },
+        mounted(){
+            console.log("workflowSumamry mounted", this.workflowSummary)
+
         },
         watch: {
             workflowSummary(){
