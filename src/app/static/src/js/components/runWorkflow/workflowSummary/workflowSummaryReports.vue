@@ -48,6 +48,12 @@
                             <span class="d-inline-block"></span>
                             <!--Dependencies boxes should go here, you might want to consider using slots or
                              perhaps add html here directly instead of creating another component -->
+                             <div v-if="report.depends_on">
+                                 <h5>Depends on:</h5>
+                                 <ul>
+                                     <li v-for="dependency in report.depends_on" :key="dependency">{{ dependency }}</li>
+                                 </ul>
+                             </div>
                              <div v-if="workflowSummary.missing_dependencies[report.name].length">
                                  <h5>Missing dependency:</h5>
                                  <ul>
