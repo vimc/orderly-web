@@ -32,7 +32,7 @@ describe(`runWorkflow`, () => {
     });
 
     const gitState: GitState = {
-        git_branches: ["master", "dev"],
+        branches: ["master", "dev"],
         metadata: {
             changelog_types: ["public", "internal"],
             git_supported: true,

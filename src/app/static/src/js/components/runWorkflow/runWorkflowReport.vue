@@ -230,7 +230,7 @@
         },
         computed: {
             ...mapState({
-                initialBranches: (state: RunnerRootState) => state.git.git_branches,
+                initialBranches: (state: RunnerRootState) => state.git.branches,
                 runReportMetadata: (state: RunnerRootState) => state.git.metadata
             }),
             showImportFromCsv() {

@@ -9,6 +9,6 @@ export enum GitMutation {
 export const mutations: MutationTree<GitState> = {
     [GitMutation.SetMetadata](state: GitState, payload: RunReportMetadata) {
         state.metadata = payload.metadata;
-        state.git_branches = payload.git_branches;
+        state.branches = payload.git_branches;
     }
 }
