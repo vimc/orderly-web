@@ -1,10 +1,10 @@
 import {shallowMount} from "@vue/test-utils";
-import {WorkflowSummary} from "../../../../js/utils/types";
+import {WorkflowSummaryResponse} from "../../../../js/utils/types";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`workflowSummaryReports`, () => {
 
-    const workflowSummary: WorkflowSummary = {
+    const workflowSummary: WorkflowSummaryResponse = {
         ref: "commit123",
         missing_dependencies: {},
         reports: [
@@ -26,7 +26,7 @@ describe(`workflowSummaryReports`, () => {
         ]
     }
 
-    const workflowSummary2: WorkflowSummary = {
+    const workflowSummary2: WorkflowSummaryResponse = {
         ref: "commit123",
         missing_dependencies: {
             no_dependency: [],
@@ -57,7 +57,7 @@ describe(`workflowSummaryReports`, () => {
 
     const mockTooltip = jest.fn();
 
-    const getWrapper = (summary: Partial<WorkflowSummary> = {}) => {
+    const getWrapper = (summary: Partial<WorkflowSummaryResponse> = {}) => {
         return shallowMount(workflowSummaryReports,
             {
                 propsData: {

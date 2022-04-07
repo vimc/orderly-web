@@ -1,17 +1,29 @@
 import Vue from "vue";
 import Vuex, {StoreOptions} from "vuex";
-import {git, GitState} from "../git/git";
+import {git} from "../git/git";
 import {RunnerRootState} from "../../utils/types";
+import {mutations} from "./mutations";
 
-export interface RunReportRootState extends RunnerRootState {}
+export type RunReportTabName = "RunReport" | "ReportLogs"
+
+export interface RunReportRootState extends RunnerRootState {
+    selectedTab: RunReportTabName
+}
+
+export const namespace = {
+    git: "git"
+}
 
 export const storeOptions: StoreOptions<RunReportRootState> = {
-    state: {} as RunReportRootState,
+    state: {
+        selectedTab: "RunReport"
+    } as RunReportRootState,
     modules: {
-        git
-    }
+        [namespace.git]: git
+    },
+    mutations
 };
 
 Vue.use(Vuex);
 
-export const store = new Vuex.Store<RunReportRootState>(storeOptions);
+export const store = new Vuex.Store<RunnerRootState>(storeOptions);

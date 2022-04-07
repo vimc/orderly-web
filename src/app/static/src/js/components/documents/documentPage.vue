@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-8" v-if="canManage">
+            <div v-if="canManage" class="col-8">
                 <label class="font-weight-bold">Manage project docs</label>
                 <refresh-documents @refreshed="getDocs"></refresh-documents>
             </div>
@@ -16,16 +16,19 @@
     import refreshDocuments from "./refreshDocuments";
 
     export default {
-        name: "document-app",
+        name: "DocumentApp",
+        components: {
+            documentList,
+            refreshDocuments
+        },
         props: ["canManage"],
         data() {
             return {
                 docs: []
             }
         },
-        components: {
-            documentList,
-            refreshDocuments
+        created() {
+            this.getDocs()
         },
         methods: {
             getDocs() {
@@ -34,9 +37,6 @@
                         this.docs = data.data;
                     })
             }
-        },
-        created() {
-            this.getDocs()
         }
     }
 

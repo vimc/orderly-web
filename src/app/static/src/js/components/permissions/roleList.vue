@@ -1,26 +1,27 @@
 <template>
-    <ul class="list-unstyled roles" v-if="roles.length > 0">
+    <ul v-if="roles.length > 0" class="list-unstyled roles">
         <li v-for="role in roles"
-            v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[role.name]}, {'has-children': canAddMembers || (role.members.length > 0)}]">
-            <div class="expander" v-on:click="toggle(role.name)"></div>
-            <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
+            :id="role.name"
+            :key="role.name"
+            :class="['role', {'open':expanded[role.name]}, {'has-children': canAddMembers || (role.members.length > 0)}]">
+            <div class="expander" @click="toggle(role.name)"></div>
+            <span class="role-name" @click="toggle(role.name)" v-text="role.name"></span>
 
             <span v-if="canRemoveRole(role.name)"
-                  v-on:click="removed(role.name)"
-                  class="remove d-inline-block ml-2 large">×</span>
+                  class="remove d-inline-block ml-2 large"
+                  @click="removed(role.name)">×</span>
 
             <user-list v-if="role.members.length > 0"
                        v-show="expanded[role.name]"
-                       cssClass="children"
+                       css-class="children"
                        :users="role.members"
-                       :canRemove="canRemoveMembers"
+                       :can-remove="canRemoveMembers"
                        @removed="function(email){removeMember(role.name, email)}"></user-list>
 
             <add-user-to-role v-if="canAddMembers && expanded[role.name]"
-                        :role="role.name"
-                        :available-users="availableUsersForRole(role)"
-                        @added="$emit('added')"></add-user-to-role>
+                              :role="role.name"
+                              :available-users="availableUsersForRole(role)"
+                              @added="$emit('added')"></add-user-to-role>
 
         </li>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -35,7 +36,12 @@
     import {api} from "../../utils/api";
 
     export default {
-        name: 'roleList',
+        name: 'RoleList',
+        components: {
+            UserList,
+            AddUserToRole,
+            ErrorInfo
+        },
         props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "availableUsers", "permission"],
         data() {
             return {
@@ -68,11 +74,6 @@
             removed: function (roleName) {
                 this.$emit("removed", roleName);
             }
-        },
-        components: {
-            UserList,
-            AddUserToRole,
-            ErrorInfo
         }
     };
 </script>

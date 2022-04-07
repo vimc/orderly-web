@@ -7,7 +7,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
@@ -20,7 +23,6 @@ import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
 import java.io.Reader
 import java.time.Instant
-import org.vaccineimpact.orderlyweb.models.Result
 
 class WorkflowRunControllerTests
 {
@@ -121,12 +123,14 @@ class WorkflowRunControllerTests
                         WorkflowRunReport(
                                 "adventurous_aardvark",
                                 "adventurous_key",
+                                1,
                                 "report one",
                                 mapOf("param1" to "one", "param1" to "one", "param2" to "two")
                         ),
                         WorkflowRunReport(
                                 "adventurous_aardvark",
                                 "adventurous_key2",
+                                2,
                                 "report two",
                                 mapOf("param1" to "one", "param2" to "three")
                         )
@@ -202,7 +206,7 @@ class WorkflowRunControllerTests
 
         assertThat(validateAgainstSchema(json)).isTrue()
 
-        var workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
+        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
         assertThat(workflowRunRequest).isEqualTo(getWorkflowRunRequestExample())
     }
 
@@ -216,7 +220,25 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
 
-        val mockAPIResponseText = """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1", "report_key2"]}}"""
+        val mockAPIResponseText = """
+            {
+            "data": {
+                "workflow_key": "workflow_key1",
+                "reports": [
+                 {    
+                    "name": "report1",
+                    "key": "report_key1",
+                    "execution_order": 1,
+                    "params": {
+                       "param1": "value1"
+                    }
+                 },
+                 {    
+                    "name": "report2",
+                    "key": "report_key2",
+                    "execution_order": 2              
+                 }]
+             }}""".trimIndent()
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
@@ -260,7 +282,12 @@ class WorkflowRunControllerTests
                         WorkflowRunController.WorkflowRunResponse::class.java
                 )
         ).isEqualTo(
-                WorkflowRunController.WorkflowRunResponse("workflow_key1", listOf("report_key1", "report_key2"))
+                WorkflowRunController.WorkflowRunResponse("workflow_key1",
+                        listOf(WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[0].name,
+                                "report_key1", 1, workflowRunRequest.reports[0].params),
+                                WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[1].name,
+                                        "report_key2", 2, null))
+                )
         )
 
         verify(repo).addWorkflowRun(check {
@@ -275,14 +302,16 @@ class WorkflowRunControllerTests
                             WorkflowRunReport(
                                     "workflow_key1",
                                     "report_key1",
+                                    1,
                                     workflowRunRequest.reports[0].name,
                                     workflowRunRequest.reports[0].params
                             ),
                             WorkflowRunReport(
                                     "workflow_key1",
                                     "report_key2",
+                                    2,
                                     workflowRunRequest.reports[1].name,
-                                    workflowRunRequest.reports[1].params
+                                    mapOf()
                             )
                     )
             )
@@ -363,7 +392,9 @@ class WorkflowRunControllerTests
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
-                    """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}""",
+                    """{"data": {"workflow_key": "workflow_key1",
+                        | "reports": [{"key": "report_key1", "execution_order": 1,
+                        |  "name": "report1", "params": {"key": "value"}}]}}""".trimMargin(),
                     200
             )
         }
@@ -388,7 +419,7 @@ class WorkflowRunControllerTests
     }
 
     @Test
-    fun `can get the status of a workflow`()
+    fun `can get the status of a workflow, ordered by execution order`()
     {
         val context = mock<ActionContext> {
             on { params(":key") } doReturn "workflow_key1"
@@ -404,18 +435,21 @@ class WorkflowRunControllerTests
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "preterrestrial_andeancockoftherock",
+                                1,
                                 "Report A",
                                 emptyMap()
                         ),
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "hygienic_mammoth",
+                                3,
                                 "Report B",
                                 emptyMap()
                         ),
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "supercurious_woodlouse",
+                                2,
                                 "Report C",
                                 emptyMap()
                         )
@@ -468,15 +502,15 @@ class WorkflowRunControllerTests
                                         "error"
                                 ),
                                 WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report C",
+                                        "supercurious_woodlouse",
+                                        "running"
+                                ),
+                                WorkflowRunStatus.WorkflowRunReportStatus(
                                         "Report B",
                                         "hygienic_mammoth",
                                         "success",
                                         "20210510-100458-8f1a9624"
-                                ),
-                                WorkflowRunStatus.WorkflowRunReportStatus(
-                                        "Report C",
-                                        "supercurious_woodlouse",
-                                        "running"
                                 )
                         )
                 )
@@ -502,18 +536,21 @@ class WorkflowRunControllerTests
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "preterrestrial_andeancockoftherock",
+                                1,
                                 "Report A",
                                 emptyMap()
                         ),
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "hygienic_mammoth",
+                                3,
                                 "Report B",
                                 emptyMap()
                         ),
                         WorkflowRunReport(
                                 "workflow_key1",
                                 "supercurious_woodlouse",
+                                2,
                                 "Report C",
                                 emptyMap()
                         )

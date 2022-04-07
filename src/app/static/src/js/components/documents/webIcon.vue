@@ -7,6 +7,6 @@
 
 <script>
     export default {
-        name: "webIcon"
+        name: "WebIcon"
     }
 </script>

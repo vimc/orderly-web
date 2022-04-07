@@ -1,14 +1,13 @@
 <template>
     <div class="list-group shadow">
         <vue-bootstrap-typeahead-list-item
-                v-for="(item, id) in matchedItems" :key="id"
-                :data="item.data"
-                :html-text="highlight(item.text)"
-                :background-variant="backgroundVariant"
-                :text-variant="textVariant"
-                :active="isListItemActive(id)"
-                @click.native="handleHit(item, $event)"
-        >
+            v-for="(item, id) in matchedItems" :key="id"
+            :data="item.data"
+            :html-text="highlight(item.text)"
+            :background-variant="backgroundVariant"
+            :text-variant="textVariant"
+            :active="isListItemActive(id)"
+            @click.native="handleHit(item, $event)">
             <template v-if="$scopedSlots.suggestion" slot="suggestion" slot-scope="{ data, htmlText }">
                 <slot name="suggestion" v-bind="{ data, htmlText }"/>
             </template>
@@ -105,6 +104,12 @@
                     }).slice(0, this.maxMatches)
             }
         },
+        created() {
+            this.$parent.$on('input', this.resetActiveListItem)
+            this.$parent.$on('keyup.down', this.selectNextListItem)
+            this.$parent.$on('keyup.up', this.selectPreviousListItem)
+            this.$parent.$on('keyup.enter', this.hitActiveListItem)
+        },
 
         methods: {
             handleHit(item, evt) {
@@ -136,12 +141,6 @@
                     this.$emit('hit', this.matchedItems[this.activeListItem])
                 }
             }
-        },
-        created() {
-            this.$parent.$on('input', this.resetActiveListItem)
-            this.$parent.$on('keyup.down', this.selectNextListItem)
-            this.$parent.$on('keyup.up', this.selectPreviousListItem)
-            this.$parent.$on('keyup.enter', this.hitActiveListItem)
         }
     }
 </script>

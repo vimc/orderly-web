@@ -10,7 +10,7 @@ import changeLog from "../../../js/components/runReport/changeLog.vue";
 import VueSelect from "vue-select";
 import {GitState} from "../../../js/store/git/git";
 import Vuex from "vuex";
-import {mockGitState} from "../../mocks";
+import {mockGitState, mockRunReportRootState} from "../../mocks";
 
 describe("runReport", () => {
     const mockParams = [
@@ -32,12 +32,12 @@ describe("runReport", () => {
             instances: {"source": []},
             changelog_types: ["internal", "public"]
         },
-        git_branches: ["master", "dev"]
+        branches: ["master", "dev"]
     }
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
-            state: {},
+            state: mockRunReportRootState(),
             modules: {
                 git: {
                     namespaced: true,
@@ -75,8 +75,8 @@ describe("runReport", () => {
     it("renders gitUpdateReports component", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        expect(gitUpdateReports.props("reportMetadata")).toBe(gitState.metadata);
-        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.git_branches);
+        expect(gitUpdateReports.props("reportMetadata")).toEqual(gitState.metadata);
+        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.branches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });
 
@@ -412,7 +412,7 @@ describe("runReport", () => {
                     changelog_types: ["internal", "public"],
                     instances: {}
                 },
-                git_branches: []
+                branches: []
             }),
             data() {
                 return {

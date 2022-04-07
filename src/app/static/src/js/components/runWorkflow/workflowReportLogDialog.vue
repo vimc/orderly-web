@@ -1,9 +1,11 @@
 <template>
-    <div id="workflow-report-log-container" @click="backgroundClick"
-         :class="['modal-background', {'modal-hide':!show}, {'modal-show':show}]">
+    <div id="workflow-report-log-container" :class="['modal-background', {'modal-hide':!show}, {'modal-show':show}]"
+         @click="backgroundClick">
         <div class="modal-main px-3" style="min-width: 50em;">
             <div class="modal-header">
-                <h5 class="modal-title">Report Log</h5>
+                <h5 class="modal-title">
+                    Report Log
+                </h5>
             </div>
             <running-report-details v-if="show"
                                     :report-key="reportKey"
@@ -11,10 +13,10 @@
                                     class="px-3">
             </running-report-details>
             <div class="modal-footer mt-4">
-                <button @click="$emit('close')"
-                        id="workflow-report-log-close"
+                <button id="workflow-report-log-close"
                         type="submit"
-                        class="modal-buttons btn px-4">
+                        class="modal-buttons btn px-4"
+                        @click="$emit('close')">
                     Close
                 </button>
             </div>
@@ -40,7 +42,10 @@
     }
 
     export default Vue.extend<unknown, Methods, Computed, Props>({
-        name: "workflowReportLogDialog",
+        name: "WorkflowReportLogDialog",
+        components: {
+            RunningReportDetails
+        },
         props: {
             workflowKey: {
                 type: String,
@@ -57,15 +62,12 @@
             }
         },
         methods: {
-          backgroundClick(e: Event) {
-              // Close only if click on background div
-              if (e.target === e.currentTarget) {
-                  this.$emit("close");
-              }
-          }
-        },
-        components: {
-            RunningReportDetails
+            backgroundClick(e: Event) {
+                // Close only if click on background div
+                if (e.target === e.currentTarget) {
+                    this.$emit("close");
+                }
+            }
         }
     });
 </script>

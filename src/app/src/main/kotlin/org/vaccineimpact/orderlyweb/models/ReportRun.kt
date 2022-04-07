@@ -10,7 +10,8 @@ data class ReportStatus(
     val name: String,
     val version: String,
     val output: List<String>? = null,
-    val queue: List<Any>? = null
+    val queue: List<Any>? = null,
+    val startTime: Long? = null
 )
 
 data class ReportRunLog(
