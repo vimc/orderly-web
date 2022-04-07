@@ -120,15 +120,6 @@
             hasMissingDependencies(report) {
                 return report.name && this.workflowSummary?.missing_dependencies && this.workflowSummary.missing_dependencies[report.name]?.length
             }
-        },
-        mounted(){
-            console.log("workflowSumamry mounted", this.workflowSummary)
-
-        },
-        watch: {
-            workflowSummary(){
-                console.log("workflowSumamry", this.workflowSummary)
-            }
         }
     });
 </script>
