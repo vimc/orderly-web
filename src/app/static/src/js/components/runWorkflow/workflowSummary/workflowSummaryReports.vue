@@ -37,7 +37,7 @@
                                                 <b-collapse :id="`collapseSummary-${index}`">
                                                     <p :id="`default-params-collapse-${index}-${paramIndex}`"
                                                        v-for="(param, paramIndex) in report.default_param_list"
-                                                       :key="key">{{ param.name }}: {{ param.value }}</p>
+                                                       :key="paramIndex">{{ param.name }}: {{ param.value }}</p>
                                                 </b-collapse>
                                             </div>
                                         </div>
@@ -46,20 +46,18 @@
                                 </div>
                             </div>
                             <span class="d-inline-block"></span>
-                            <!--Dependencies boxes should go here, you might want to consider using slots or
-                             perhaps add html here directly instead of creating another component -->
-                             <div v-if="report.depends_on">
-                                 <h5>Depends on:</h5>
-                                 <ul>
-                                     <li v-for="dependency in report.depends_on" :key="dependency">{{ dependency }}</li>
-                                 </ul>
+                             <div v-if="report.depends_on || workflowSummary.missing_dependencies[report.name].length" class="single-workflow-summary-content">
+                                <div class="workflow-summary-text">
+                                    <div v-if="report.depends_on">
+                                        <h6 class="text-muted m-0">Depends on</h6>
+                                        <p v-for="dependency in report.depends_on" :key="dependency">{{ dependency }}</p>
+                                    </div>
+                                    <div v-if="workflowSummary.missing_dependencies[report.name].length">
+                                        <h6 class="text-danger m-0">Missing dependency</h6>
+                                        <p v-for="missingDependency in workflowSummary.missing_dependencies[report.name]" :key="missingDependency">{{ missingDependency }}</p>
+                                    </div>
+                                </div>
                              </div>
-                             <div v-if="workflowSummary.missing_dependencies[report.name].length">
-                                 <h5>Missing dependency:</h5>
-                                 <ul>
-                                     <li v-for="missingDependency in workflowSummary.missing_dependencies[report.name]" :key="missingDependency">{{ missingDependency }}</li>
-                                 </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
