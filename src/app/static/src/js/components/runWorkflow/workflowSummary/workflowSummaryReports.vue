@@ -46,13 +46,13 @@
                                 </div>
                             </div>
                             <span class="d-inline-block"></span>
-                             <div v-if="report.depends_on || workflowSummary.missing_dependencies[report.name].length" class="single-workflow-summary-content">
+                             <div v-if="report.depends_on || hasMissingDependencies(report)" class="single-workflow-summary-content dependencies">
                                 <div class="workflow-summary-text">
-                                    <div v-if="report.depends_on">
+                                    <div v-if="report.depends_on" class="dependsOn">
                                         <h6 class="text-muted m-0">Depends on</h6>
                                         <p v-for="dependency in report.depends_on" :key="dependency">{{ dependency }}</p>
                                     </div>
-                                    <div v-if="workflowSummary.missing_dependencies[report.name].length">
+                                    <div v-if="hasMissingDependencies(report)" class="missingDependency">
                                         <h6 class="text-danger m-0">Missing dependency</h6>
                                         <p v-for="missingDependency in workflowSummary.missing_dependencies[report.name]" :key="missingDependency">{{ missingDependency }}</p>
                                     </div>
@@ -83,6 +83,7 @@
 
     interface Methods {
         hasParams: (report: WorkflowReportWithDependencies) => boolean
+        hasMissingDependencies: (report: WorkflowReportWithDependencies) => boolean
         reportInfo: (reportName: string) => string
     }
 
@@ -108,6 +109,9 @@
             hasParams(report) {
                 return (report.param_list && report.param_list.length > 0) ||
                     (report.default_param_list && report.default_param_list.length > 0)
+            },
+            hasMissingDependencies(report) {
+                return report.name && this.workflowSummary?.missing_dependencies && this.workflowSummary.missing_dependencies[report.name]?.length
             }
         },
         mounted(){

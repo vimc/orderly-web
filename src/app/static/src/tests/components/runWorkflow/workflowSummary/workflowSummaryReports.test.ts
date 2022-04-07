@@ -26,6 +26,35 @@ describe(`workflowSummaryReports`, () => {
         ]
     }
 
+    const workflowSummary2: WorkflowSummary = {
+        ref: "commit123",
+        missing_dependencies: {
+            no_dependency: [],
+            use_dependency: ["other"],
+            use_dependency2: []
+        },
+        reports: [
+            {
+                name: "no_dependency",
+                depends_on: null,
+                param_list: [],
+                default_param_list: [],
+            },
+            {
+                name: "use_dependency",
+                depends_on: null,
+                param_list: [],
+                default_param_list: [],
+            },
+            {
+                name: "use_dependency2",
+                depends_on: ["use_dependency"],
+                param_list: [],
+                default_param_list: []
+            },
+        ]
+    }
+
     const mockTooltip = jest.fn();
 
     const getWrapper = (summary: Partial<WorkflowSummary> = {}) => {
@@ -143,6 +172,23 @@ describe(`workflowSummaryReports`, () => {
 
         expect(wrapper.find("#default-params-2 b-link-stub.show-defaults").exists()).toBe(false);
 
+    });
+
+    it(`it can render depends on dependencies and missing dependencies`, () => {
+        const wrapper = getWrapper(workflowSummary2);
+
+        const dependencies = wrapper.findAll(".dependencies");
+        expect(dependencies.length).toBe(2);
+
+        const dependsOn = wrapper.findAll(".dependsOn");
+        expect(dependsOn.length).toBe(1);
+        expect(dependsOn.at(0).find("h6").text()).toEqual("Depends on");
+        expect(dependsOn.at(0).find("p").text()).toEqual("use_dependency");
+
+        const missingDependency = wrapper.findAll(".missingDependency");
+        expect(missingDependency.length).toBe(1);
+        expect(missingDependency.at(0).find("h6").text()).toEqual("Missing dependency");
+        expect(missingDependency.at(0).find("p").text()).toEqual("other");
     });
 
 });
