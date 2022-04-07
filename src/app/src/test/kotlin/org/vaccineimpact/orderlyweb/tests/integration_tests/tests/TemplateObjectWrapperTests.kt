@@ -60,7 +60,7 @@ class TemplateObjectWrapperTests
 
         val files = wrappedArtefact["files"] as SimpleSequence
         val fileModel = files[0] as StringModel
-        assertThat(fileModel["name"].toString()).isEqualTo("graph.png")
+        assertThat(fileModel["filename"].toString()).isEqualTo("graph.png")
         assertThat(fileModel["size"].toString()).isEqualTo("1234")
 
         val data = result["dataInfo"] as SimpleSequence
