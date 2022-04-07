@@ -15,6 +15,11 @@ export interface ReportWithDate {
     date: Date | null
 }
 
+export interface Report {
+    name: string,
+    id: string
+}
+
 export interface ReportLog{
     email: string,
     date: string,
@@ -140,7 +145,7 @@ export interface WorkflowReportWithDependencies {
     depends_on?: string[]
 }
 
-export interface WorkflowSummary {
+export interface WorkflowSummaryResponse {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
     ref: string
@@ -149,3 +154,5 @@ export interface WorkflowSummary {
 export interface RunnerRootState {
     git: GitState
 }
+
+export type EmptyObject = Record<string, never>

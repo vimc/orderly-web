@@ -17,6 +17,16 @@
                 }
             ]
         },
+        "start_time": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "number"
+                }
+            ]
+        },
         "output": {
             "oneOf": [
                 {

@@ -14,7 +14,7 @@ describe(`runWorkflowRun`, () => {
     const changelogTypes = ["internal", "public"]
     const source = ["prod", "uat"]
     const gitState: GitState = {
-        git_branches: [],
+        branches: [],
         metadata: {
             changelog_types: changelogTypes,
             git_supported: true,
@@ -172,7 +172,7 @@ describe(`runWorkflowRun`, () => {
             expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
             expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annex": "one", "source": "prod"})
 
-            const label = wrapper.findAll("#instances-div label")
+            const label = wrapper.findAll(".instance-div label")
             expect(label.length).toBe(1)
             expect(label.at(0).text()).toBe("Database \"source\"")
 
@@ -192,7 +192,7 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            const label = wrapper.findAll("#instances-div label")
+            const label = wrapper.findAll(".instance-div label")
             expect(label.length).toBe(1)
             expect(label.at(0).text()).toBe("Database \"source\"")
 

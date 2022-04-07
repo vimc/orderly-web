@@ -8,13 +8,19 @@
             @dismissed="workflowRemovals=null">
             The following items are not present in this git commit and have been removed from the workflow:
             <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                <li v-for="item in workflowRemovals">{{item}}</li>
+                <li v-for="item in workflowRemovals" :key="item">
+                    {{ item }}
+                </li>
             </ul>
         </b-alert>
-        <h2 id="add-report-header" class="pb-2">Add reports</h2>
+        <h2 id="add-report-header" class="pb-2">
+            Add reports
+        </h2>
         <div v-if="isReady">
             <div class="pb-4">
-                <h3 id="git-header">Git</h3>
+                <h3 id="git-header">
+                    Git
+                </h3>
                 <div>
                     <git-update-reports
                         :report-metadata="runReportMetadata"
@@ -24,27 +30,28 @@
                         :show-all-reports="true"
                         @branchSelected="branchSelected"
                         @commitSelected="commitSelected"
-                        @reportsUpdate="updateAvailableReportsFromGit"
-                    ></git-update-reports>
+                        @reportsUpdate="updateAvailableReportsFromGit"></git-update-reports>
                 </div>
             </div>
-            <div class="pb-4" id="workflow-reports">
-                <h3 id="report-sub-header">Reports</h3>
+            <div id="workflow-reports" class="pb-4">
+                <h3 id="report-sub-header">
+                    Reports
+                </h3>
                 <div v-if="importFromCsvIsEnabled" id="choose-import-from">
                     <div class="col-sm-2 d-inline-block"></div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label id="choose-from-list-label"
                                class="btn btn-outline-primary btn-toggle shadow-none"
                                :class="reportsOrigin === 'list' ? 'active' : ''">
-                            <input type="radio" id="choose-from-list"
-                                   v-model="reportsOrigin" value="list"
+                            <input id="choose-from-list" v-model="reportsOrigin"
+                                   type="radio" value="list"
                                    autocomplete="off"> Choose from list
                         </label>
                         <label id="import-from-csv-label"
                                class="btn btn-outline-primary btn-toggle shadow-none"
                                :class="reportsOrigin === 'csv' ? 'active' : ''">
-                            <input type="radio" id="import-from-csv"
-                                   v-model="reportsOrigin" value="csv"
+                            <input id="import-from-csv" v-model="reportsOrigin"
+                                   type="radio" value="csv"
                                    autocomplete="off"> Import from csv
                         </label>
                     </div>
@@ -52,26 +59,26 @@
                 <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
                     <div class="col-sm-2 d-inline-block"></div>
                     <div class="custom-file col-sm-6">
-                        <input type="file" class="custom-file-input"
-                               @change="handleImportedFile($event)"
-                               @click="handleClickImport($event)"
+                        <input id="import-csv" type="file"
+                               class="custom-file-input"
                                accept="text/csv"
-                               id="import-csv"
-                               lang="en">
+                               lang="en"
+                               @change="handleImportedFile($event)"
+                               @click="handleClickImport($event)">
                         <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
                     </div>
                     <div>
                         <div class="col-sm-2 d-inline-block"></div>
-                        <b-alert :show="!!validationErrors.length"
-                                 id="import-validation-errors"
+                        <b-alert id="import-validation-errors"
+                                 :show="!!validationErrors.length"
                                  dismissible
                                  variant="danger"
                                  class="col-sm-6 mt-4 d-inline-block"
                                  @dismissed="validationErrors=[]">
                             Failed to import from csv. The following issues were found:
                             <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                                <li v-for="error in validationErrors" class="import-validation-error">
-                                    {{error.message}}
+                                <li v-for="e in validationErrors" :key="e.message" class="import-validation-error">
+                                    {{ e.message }}
                                 </li>
                             </ul>
                         </b-alert>
@@ -83,12 +90,11 @@
                      class="form-group row pt-4">
 
                     <label class="col-sm-2 col-form-label text-right text-truncate"
-                           :title="report.name">{{report.name}}</label>
+                           :title="report.name">{{ report.name }}</label>
                     <parameter-list
                         v-if="reportParameters[index].length > 0"
                         :params="reportParameters[index]"
-                        @paramsChanged="(...eventArgs) => paramsChanged(index, ...eventArgs)"
-                    ></parameter-list>
+                        @paramsChanged="(...eventArgs) => paramsChanged(index, ...eventArgs)"></parameter-list>
                     <div v-if="reportParameters[index].length === 0"
                          class="col-sm-6 col-form-label text-secondary no-parameters">
                         <em>No parameters</em>
@@ -97,8 +103,7 @@
                         <button
                             type="button"
                             class="remove-report-button btn btn-primary"
-                            @click="removeReport(index)"
-                        >Remove report
+                            @click="removeReport(index)">Remove report
                         </button>
                     </div>
                     <hr/>
@@ -113,8 +118,8 @@
                                          :selected-report.sync="selectedReport"/>
                         </div>
                         <div class="col-sm-2">
-                            <button :disabled="!selectedReport"
-                                    id="add-report-button"
+                            <button id="add-report-button"
+                                    :disabled="!selectedReport"
                                     type="button"
                                     class="px-2 btn btn-primary"
                                     @click="addReport">Add report
@@ -134,7 +139,7 @@
     import {
         Error,
         Parameter,
-        ReportWithDate,
+        ReportWithDate, RunnerRootState,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowReportWithParams
@@ -149,7 +154,6 @@
     import {switches} from '../../featureSwitches.ts';
     import {session} from "../../utils/session";
     import {mapState} from "vuex";
-    import {RunReportRootState} from "../../store/runReport/store";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata
@@ -197,16 +201,16 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runWorkflowReport",
-        props: {
-            workflowMetadata: Object
-        },
+        name: "RunWorkflowReport",
         components: {
             GitUpdateReports,
             ReportList,
             ParameterList,
             ErrorInfo,
             BAlert
+        },
+        props: {
+            workflowMetadata: Object
         },
         data() {
             return {
@@ -226,8 +230,8 @@
         },
         computed: {
             ...mapState({
-                initialBranches: (state: RunReportRootState) => state.git.git_branches,
-                runReportMetadata: (state: RunReportRootState) => state.git.metadata
+                initialBranches: (state: RunnerRootState) => state.git.branches,
+                runReportMetadata: (state: RunnerRootState) => state.git.metadata
             }),
             showImportFromCsv() {
                 return this.reportsOrigin === "csv"
@@ -244,6 +248,17 @@
             stepIsValid: function () {
                 return (this.reportsValid.length > 0) && (this.reportsValid.every(v => v));
             }
+        },
+        watch: {
+            stepIsValid(newVal) {
+                this.$emit("valid", newVal);
+            },
+            reportsOrigin(newVal) {
+                session.setSelectedWorkflowReportSource(newVal);
+            }
+        },
+        beforeMount() {
+            this.reportsValid = this.workflowMetadata.reports.map(r => this.initialValidValue(r));
         },
         methods: {
             removeImportedFile: function () {
@@ -428,17 +443,6 @@
                         this.reportsValid = [];
                         this.validationErrors = error.response.data?.errors || [];
                     });
-            }
-        },
-        beforeMount() {
-            this.reportsValid = this.workflowMetadata.reports.map(r => this.initialValidValue(r));
-        },
-        watch: {
-            stepIsValid(newVal) {
-                this.$emit("valid", newVal);
-            },
-            reportsOrigin(newVal) {
-                session.setSelectedWorkflowReportSource(newVal);
             }
         }
     })

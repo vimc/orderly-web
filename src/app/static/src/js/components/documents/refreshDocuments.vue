@@ -2,15 +2,19 @@
     <div class="mb-3">
         <label>Download files from:</label>
         <div class="input-group input-group-sm">
-            <input type="text" class="form-control" placeholder="url" v-model="url"
+            <input v-model="url" type="text" class="form-control" placeholder="url"
                    aria-label="url">
             <div class="input-group-append">
-                <button :disabled="!url || disabled" class="btn btn-success" type="button" v-on:click="update">{{btnText}}</button>
+                <button :disabled="!url || disabled" class="btn btn-success" type="button" @click="update">
+                    {{ btnText }}
+                </button>
             </div>
         </div>
-        <div class="small text-muted mb-2">Provide a link to the zipped document folder, e.g. Dropbox share link</div>
+        <div class="small text-muted mb-2">
+            Provide a link to the zipped document folder, e.g. Dropbox share link
+        </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-        <div class="text-success small" v-if="hasSuccess">
+        <div v-if="hasSuccess" class="text-success small">
             Documents have been updated!
         </div>
     </div>
@@ -20,7 +24,7 @@
     import errorInfo from "../errorInfo";
 
     export default {
-        name: "refreshDocuments",
+        name: "RefreshDocuments",
         components: {errorInfo},
         data() {
             return {

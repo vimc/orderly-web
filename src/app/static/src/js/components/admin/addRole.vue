@@ -2,14 +2,16 @@
     <div>
         <div class="input-group input-group-sm">
             <input v-model="role" type="text" placeholder="role name" class="form-control">
-            <button v-on:click="add" type="submit" id="add-role-btn" class="btn btn-sm" :disabled="!role">Add role</button>
+            <button id="add-role-btn" type="submit" class="btn btn-sm" :disabled="!role" @click="add">
+                Add role
+            </button>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: 'addRole',
+        name: 'AddRole',
         props: ['error', 'defaultMessage'],
         data() {
             return {
