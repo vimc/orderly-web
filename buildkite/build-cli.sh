@@ -30,7 +30,7 @@ trap cleanup EXIT
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \
-    -v $PWD/demo:/api/src/userCLI/demo \
+    -v $PWD/git:/api/src/userCLI/git \
     --network=host \
     orderly-web-cli-build
 
