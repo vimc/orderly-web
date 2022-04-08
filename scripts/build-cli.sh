@@ -27,7 +27,7 @@ docker build --tag orderly-web-cli-build \
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $docker_auth_path:/root/.docker/config.json \
-    -v $PWD/git:/api/src/userCLI/git \
+    -v $PWD/demo:/api/src/userCLI/demo \
     --network=host \
     orderly-web-cli-build
 
