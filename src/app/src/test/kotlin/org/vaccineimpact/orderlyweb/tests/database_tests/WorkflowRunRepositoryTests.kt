@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -9,8 +8,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.jsonToStringMap
-import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.models.WorkflowRunReport
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
@@ -28,48 +25,51 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val now = Instant.now()
 
         val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            listOf(
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key",
-                    "report one",
-                    mapOf("param1" to "one", "param2" to "two", "param3" to "three")
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key",
+                                2,
+                                "report one",
+                                mapOf("param1" to "one", "param2" to "two", "param3" to "three")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key2",
+                                1,
+                                "report two",
+                                mapOf("param2" to "two", "param3" to "three")
+                        )
                 ),
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key2",
-                    "report two",
-                    mapOf("param2" to "two", "param3" to "three")
-                )
-            ),
-            mapOf("instanceA" to "pre-staging"),
-            "branch1",
-            "commit1"
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
         )
 
         val sut = OrderlyWebWorkflowRunRepository()
 
         sut.addWorkflowRun(workflowRun)
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Final report",
-                "benevolent_badger",
-                "user@email.com",
-                now,
-                listOf(
-                    WorkflowRunReport(
-                        "adventurous_aardvark",
-                        "adventurous_key3",
-                        "report three",
-                        mapOf("param1" to "one", "param2" to "two")
-                    )
-                ),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Final report",
+                        "benevolent_badger",
+                        "user@email.com",
+                        now,
+                        listOf(
+                                WorkflowRunReport(
+                                        "adventurous_aardvark",
+                                        "adventurous_key3",
+                                        3,
+                                        "report three",
+                                        mapOf("param1" to "one", "param2" to "two")
+                                )
+                        ),
+                        emptyMap()
+                )
         )
         JooqContext().use {
             val result = it.dsl.selectFrom(Tables.ORDERLYWEB_WORKFLOW_RUN).fetch()
@@ -101,16 +101,19 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("report one")
             assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY]).isEqualTo("adventurous_aardvark")
             assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY]).isEqualTo("adventurous_key")
+            assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.EXECUTION_ORDER]).isEqualTo(2)
             assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]).isEqualTo(Gson().toJson(mapOf("param1" to "one", "param2" to "two", "param3" to "three")))
 
             assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("report two")
             assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY]).isEqualTo("adventurous_aardvark")
             assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY]).isEqualTo("adventurous_key2")
+            assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.EXECUTION_ORDER]).isEqualTo(1)
             assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]).isEqualTo(Gson().toJson(mapOf("param2" to "two", "param3" to "three")))
 
             assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("report three")
             assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY]).isEqualTo("adventurous_aardvark")
             assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY]).isEqualTo("adventurous_key3")
+            assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.EXECUTION_ORDER]).isEqualTo(3)
             assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]).isEqualTo(Gson().toJson(mapOf("param1" to "one", "param2" to "two")))
         }
     }
@@ -121,14 +124,14 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
         assertThatThrownBy {
             sut.addWorkflowRun(
-                WorkflowRun(
-                    "Interim report",
-                    "adventurous_aardvark",
-                    "user@email.com",
-                    Instant.now(),
-                    emptyList(),
-                    emptyMap()
-                )
+                    WorkflowRun(
+                            "Interim report",
+                            "adventurous_aardvark",
+                            "user@email.com",
+                            Instant.now(),
+                            emptyList(),
+                            emptyMap()
+                    )
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }
@@ -140,25 +143,25 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        Instant.now(),
+                        emptyList(),
+                        emptyMap()
+                )
         )
         assertThatThrownBy {
             sut.addWorkflowRun(
-                WorkflowRun(
-                    "Interim report",
-                    "adventurous_aardvark",
-                    "user@email.com",
-                    Instant.now(),
-                    emptyList(),
-                    emptyMap()
-                )
+                    WorkflowRun(
+                            "Interim report",
+                            "adventurous_aardvark",
+                            "user@email.com",
+                            Instant.now(),
+                            emptyList(),
+                            emptyMap()
+                    )
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.key")
     }
@@ -170,26 +173,28 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
 
-        val workflowRun= WorkflowRun(
-        "Interim report",
-        "adventurous_aardvark",
-        "user@email.com",
-        Instant.now(),
-        listOf(
-            WorkflowRunReport(
+        val workflowRun = WorkflowRun(
+                "Interim report",
                 "adventurous_aardvark",
-                "same_key",
-                "report one",
-                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
-            ),
-            WorkflowRunReport(
-                "adventurous_aardvark",
-                "same_key",
-                "report two",
-                mapOf("param1" to "one", "param2" to "three")
-            )
-        ),
-        emptyMap()
+                "user@email.com",
+                Instant.now(),
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "same_key",
+                                1,
+                                "report one",
+                                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "same_key",
+                                2,
+                                "report two",
+                                mapOf("param1" to "one", "param2" to "three")
+                        )
+                ),
+                emptyMap()
         )
 
         assertThatThrownBy {
@@ -206,25 +211,25 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
         assertThatThrownBy {
             sut.addWorkflowRun(
-                WorkflowRun(
-                    "Interim report",
-                    "benevolent_badger",
-                    "user@email.com",
-                    now,
-                    emptyList(),
-                    emptyMap()
-                )
+                    WorkflowRun(
+                            "Interim report",
+                            "benevolent_badger",
+                            "user@email.com",
+                            now,
+                            emptyList(),
+                            emptyMap()
+                    )
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.name, orderlyweb_workflow_run.date")
     }
@@ -238,14 +243,14 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
 
         val result = sut.getWorkflowRunSummaries()
@@ -263,34 +268,34 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Report two",
-                "adventurous_aardvark",
-                "user@email.com",
-                Instant.now().minusMillis(1000),
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Report two",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        Instant.now().minusMillis(1000),
+                        emptyList(),
+                        emptyMap()
+                )
         )
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Report one",
-                "benevolent_badger",
-                "user@email.com",
-                Instant.now().minusMillis(2000),
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Report one",
+                        "benevolent_badger",
+                        "user@email.com",
+                        Instant.now().minusMillis(2000),
+                        emptyList(),
+                        emptyMap()
+                )
         )
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Report three",
-                "charming_chipmunk",
-                "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Report three",
+                        "charming_chipmunk",
+                        "user@email.com",
+                        Instant.now(),
+                        emptyList(),
+                        emptyMap()
+                )
         )
 
         val result = sut.getWorkflowRunSummaries()
@@ -310,37 +315,37 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Final report",
-                "benevolent_badger",
-                "user2@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Final report",
+                        "benevolent_badger",
+                        "user2@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
 
         val result = sut.getWorkflowRunSummaries("user@email.com")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result).isEqualTo(
-            listOf(
-                WorkflowRunSummary(
-                    "Interim report",
-                    "adventurous_aardvark",
-                    "user@email.com",
-                    now
+                listOf(
+                        WorkflowRunSummary(
+                                "Interim report",
+                                "adventurous_aardvark",
+                                "user@email.com",
+                                now
+                        )
                 )
-            )
         )
     }
 
@@ -354,37 +359,37 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Final report",
-                "benevolent_badger",
-                "user2@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Final report",
+                        "benevolent_badger",
+                        "user2@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
 
         val result = sut.getWorkflowRunSummaries("user2@email.com", "")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result).isEqualTo(
-            listOf(
-                WorkflowRunSummary(
-                    "Final report",
-                    "benevolent_badger",
-                    "user2@email.com",
-                    now
+                listOf(
+                        WorkflowRunSummary(
+                                "Final report",
+                                "benevolent_badger",
+                                "user2@email.com",
+                                now
+                        )
                 )
-            )
         )
     }
 
@@ -397,37 +402,37 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Final report",
-                "benevolent_badger",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Final report",
+                        "benevolent_badger",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
 
         val result = sut.getWorkflowRunSummaries(namePrefix = "final")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result).isEqualTo(
-            listOf(
-                WorkflowRunSummary(
-                    "Final report",
-                    "benevolent_badger",
-                    "user@email.com",
-                    now
+                listOf(
+                        WorkflowRunSummary(
+                                "Final report",
+                                "benevolent_badger",
+                                "user@email.com",
+                                now
+                        )
                 )
-            )
         )
     }
 
@@ -440,37 +445,37 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
         sut.addWorkflowRun(
-            WorkflowRun(
-                "Final report",
-                "benevolent_badger",
-                "user@email.com",
-                now,
-                emptyList(),
-                emptyMap()
-            )
+                WorkflowRun(
+                        "Final report",
+                        "benevolent_badger",
+                        "user@email.com",
+                        now,
+                        emptyList(),
+                        emptyMap()
+                )
         )
 
         val result = sut.getWorkflowRunSummaries("user@email.com", "interim")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result).isEqualTo(
-            listOf(
-                WorkflowRunSummary(
-                    "Interim report",
-                    "adventurous_aardvark",
-                    "user@email.com",
-                    now
+                listOf(
+                        WorkflowRunSummary(
+                                "Interim report",
+                                "adventurous_aardvark",
+                                "user@email.com",
+                                now
+                        )
                 )
-            )
         )
     }
 
@@ -484,27 +489,29 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
 
         val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            listOf(
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key",
-                    "report one",
-                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key",
+                                1,
+                                "report one",
+                                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key2",
+                                2,
+                                "report two",
+                                mapOf("param1" to "one", "param2" to "three")
+                        )
                 ),
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key2",
-                    "report two",
-                    mapOf("param1" to "one", "param2" to "three")
-                )
-            ),
-            mapOf("instanceA" to "pre-staging"),
-            "branch1",
-            "commit1"
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
         )
 
         sut.addWorkflowRun(workflowRun)
@@ -523,25 +530,27 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
 
         val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            listOf(
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key",
-                    "report one",
-                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key",
+                                1,
+                                "report one",
+                                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key2",
+                                2,
+                                "report two",
+                                mapOf("param1" to "one", "param2" to "three")
+                        )
                 ),
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key2",
-                    "report two",
-                    mapOf("param1" to "one", "param2" to "three")
-                )
-            ),
-            emptyMap()
+                emptyMap()
         )
 
         sut.addWorkflowRun(workflowRun)
@@ -559,25 +568,27 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
 
         val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            Instant.now(),
-            listOf(
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key",
-                    "report one",
-                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                Instant.now(),
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key",
+                                1,
+                                "report one",
+                                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key2",
+                                2,
+                                "report two",
+                                mapOf("param1" to "one", "param2" to "three")
+                        )
                 ),
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key2",
-                    "report two",
-                    mapOf("param1" to "one", "param2" to "three")
-                )
-            ),
-            emptyMap()
+                emptyMap()
         )
 
         sut.addWorkflowRun(workflowRun)
@@ -607,8 +618,8 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         assertThatThrownBy {
             sut.updateWorkflowRun("adventurous_aardvark", "success")
         }
-            .isInstanceOf(UnknownObjectError::class.java)
-            .hasMessageContaining("adventurous_aardvark")
+                .isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("adventurous_aardvark")
     }
 
 }
