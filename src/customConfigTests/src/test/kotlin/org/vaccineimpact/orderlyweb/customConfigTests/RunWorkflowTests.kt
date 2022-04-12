@@ -487,9 +487,9 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("dependencies")))
         val dependencies = driver.findElements(By.className("dependencies"))
         assertThat(dependencies.count()).isEqualTo(2)
-        assertThat(dependencies[0].findElement(By.cssSelector("h6")).text).isEqualTo("Missing dependency")
+        assertThat(dependencies[0].findElement(By.cssSelector("span")).text).isEqualTo("Missing dependency")
         assertThat(dependencies[0].findElement(By.cssSelector("p")).text).isEqualTo("other")
-        assertThat(dependencies[1].findElement(By.cssSelector("h6")).text).isEqualTo("Depends on")
+        assertThat(dependencies[1].findElement(By.cssSelector("span")).text).isEqualTo("Depends on")
         assertThat(dependencies[1].findElement(By.cssSelector("p")).text).isEqualTo("use_dependency")
     }
 

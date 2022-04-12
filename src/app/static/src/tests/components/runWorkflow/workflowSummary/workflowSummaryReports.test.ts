@@ -182,12 +182,12 @@ describe(`workflowSummaryReports`, () => {
 
         const dependsOn = wrapper.findAll(".dependsOn");
         expect(dependsOn.length).toBe(1);
-        expect(dependsOn.at(0).find("h6").text()).toEqual("Depends on");
+        expect(dependsOn.at(0).find("span").text()).toEqual("Depends on");
         expect(dependsOn.at(0).find("p").text()).toEqual("use_dependency");
 
         const missingDependency = wrapper.findAll(".missingDependency");
         expect(missingDependency.length).toBe(1);
-        expect(missingDependency.at(0).find("h6").text()).toEqual("Missing dependency");
+        expect(missingDependency.at(0).find("span").text()).toEqual("Missing dependency");
         expect(missingDependency.at(0).find("p").text()).toEqual("other");
     });
 
