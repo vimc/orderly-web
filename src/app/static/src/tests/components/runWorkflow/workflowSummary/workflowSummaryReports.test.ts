@@ -177,18 +177,24 @@ describe(`workflowSummaryReports`, () => {
     it(`it can render depends on dependencies and missing dependencies`, () => {
         const wrapper = getWrapper(workflowSummary2);
 
+        const reports = wrapper.findAll(".single-workflow-summary-area");
+        expect(reports.length).toBe(3);
+
         const dependencies = wrapper.findAll(".dependencies");
         expect(dependencies.length).toBe(2);
+        expect(reports.at(0).findAll(".dependencies").length).toEqual(0);
 
-        const dependsOn = wrapper.findAll(".dependsOn");
-        expect(dependsOn.length).toBe(1);
-        expect(dependsOn.at(0).find("span").text()).toEqual("Depends on");
-        expect(dependsOn.at(0).find("p").text()).toEqual("use_dependency");
+        const dependsOn1 = reports.at(1).find(".dependsOn");
+        expect(dependsOn1.exists()).toBe(false);
+        const missingDependency1 = reports.at(1).find(".missingDependency");
+        expect(missingDependency1.find("span").text()).toEqual("Missing dependency");
+        expect(missingDependency1.find("p").text()).toEqual("other");
 
-        const missingDependency = wrapper.findAll(".missingDependency");
-        expect(missingDependency.length).toBe(1);
-        expect(missingDependency.at(0).find("span").text()).toEqual("Missing dependency");
-        expect(missingDependency.at(0).find("p").text()).toEqual("other");
+        const dependsOn2 = reports.at(2).find(".dependsOn");
+        expect(dependsOn2.find("span").text()).toEqual("Depends on");
+        expect(dependsOn2.find("p").text()).toEqual("use_dependency");
+        const missingDependency2 = reports.at(2).find(".missingDependency");
+        expect(missingDependency2.exists()).toBe(false);
     });
 
 });
