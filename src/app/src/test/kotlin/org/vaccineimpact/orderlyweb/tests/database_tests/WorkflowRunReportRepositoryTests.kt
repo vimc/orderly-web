@@ -18,6 +18,8 @@ import java.time.Instant
 
 class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
 {
+    private val startTime = Instant.now()
+
     @Before
     fun createWorkflow()
     {
@@ -46,7 +48,7 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     fun `can update report run`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
-        sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"))
+        sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"), startTime)
 
         JooqContext().use {
             val result = it.dsl.select(
@@ -67,10 +69,28 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `does not update date field if startTime is null`()
+    {
+        val sut = OrderlyWebWorkflowRunReportRepository()
+        sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"), startTime)
+        sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"), null)
+            JooqContext().use {
+                val result = it.dsl.select(
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE
+                )
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
+                    .fetchOne()
+
+                assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE].toInstant()).isEqualTo(startTime)
+        }
+    }
+
+    @Test
     fun `can update report run with null logs and version`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
-        sut.updateReportRun("test_report_key", "error", null, null)
+        sut.updateReportRun("test_report_key", "error", null, null, startTime)
         JooqContext().use {
             val result = it.dsl.select(
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
@@ -93,12 +113,13 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     fun `does not update report version if status is not success`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
-        sut.updateReportRun("test_report_key", "running", "report_version_1", listOf("log1", "log2"))
+        sut.updateReportRun("test_report_key", "running", "report_version_1", listOf("log1", "log2"), startTime)
         JooqContext().use {
             val result = it.dsl.select(
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE
             )
             .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
             .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
@@ -106,6 +127,7 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
 
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]).isNull()
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo("running")
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE].toInstant()).isEqualTo(startTime)
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS]).isEqualTo("log1\nlog2")
         }
     }
@@ -114,11 +136,11 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     fun `can get report run`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
-        sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"))
+        sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"), startTime)
 
         val result = sut.getReportRun("test_report_key")
         assertThat(result.email).isEqualTo("test@email.com")
-        assertThat(result.date).isNull()
+        assertThat(result.date).isEqualTo(startTime)
         assertThat(result.gitBranch).isEqualTo("main")
         assertThat(result.gitCommit).isEqualTo("abc123")
         assertThat(result.instances).isEqualTo(mapOf("source" to "dev"))

@@ -1,6 +1,6 @@
-import {MutationTree} from "vuex";
-import {GitState} from "./git";
-import {GitCommit, RunReportMetadata} from "../../utils/types";
+import { MutationTree } from "vuex";
+import { GitState } from "./git";
+import { GitCommit, RunReportMetadata } from "../../utils/types";
 
 export enum GitMutation {
     SetMetadata = "SetMetadata",

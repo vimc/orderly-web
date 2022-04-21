@@ -71,10 +71,16 @@ class WorkflowRunController(
         return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
 
+    internal data class WorkflowQueuedReport(val name: String,
+                                             val key: String,
+                                             @SerializedName(value = "execution_order")
+                                             val executionOrder: Int,
+                                             val params: Map<String, String>?)
+
     internal data class WorkflowRunResponse(
             @SerializedName(value = "workflow_key")
             val key: String,
-            val reports: List<String>
+            val reports: List<WorkflowQueuedReport>
     )
 
     fun createWorkflowRun(): String
@@ -124,12 +130,13 @@ class WorkflowRunController(
                             @Suppress("UnsafeCallOnNullableType")
                             context.userProfile!!.id,
                             Instant.now(),
-                            workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                            workflowRun.reports.map {
                                 WorkflowRunReport(
                                         workflowRun.key,
-                                        reportKey,
-                                        report.name,
-                                        report.params
+                                        it.key,
+                                        it.executionOrder,
+                                        it.name,
+                                        it.params ?: mapOf()
                                 )
                             },
                             workflowRunRequest.instances ?: emptyMap(),
@@ -170,13 +177,14 @@ class WorkflowRunController(
 
         return WorkflowRunStatus(
                 workflowRunStatusResponse.status,
-                workflowRunStatusResponse.reports.map { report ->
+                runWorkflow.reports.sortedBy { it.executionOrder }.map { report ->
+                    @Suppress("UnsafeCallOnNullableType")
+                    val status = workflowRunStatusResponse.reports.find { it.key == report.key }!!
                     WorkflowRunStatus.WorkflowRunReportStatus(
-                            @Suppress("UnsafeCallOnNullableType")
-                            runWorkflow.reports.find { it.key == report.key }!!.report,
+                            report.report,
                             report.key,
-                            report.status,
-                            report.version
+                            status.status,
+                            status.version
                     )
                 })
     }

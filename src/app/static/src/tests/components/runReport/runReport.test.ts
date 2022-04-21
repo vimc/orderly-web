@@ -1,35 +1,35 @@
 import Vue from "vue";
-import {mount, shallowMount} from "@vue/test-utils";
+import { mount, shallowMount } from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
 import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
-import {mockAxios} from "../../mockAxios";
+import { mockAxios } from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import changeLog from "../../../js/components/runReport/changeLog.vue";
 import VueSelect from "vue-select";
-import {GitState} from "../../../js/store/git/git";
+import { GitState } from "../../../js/store/git/git";
 import Vuex from "vuex";
-import {mockGitState, mockRunReportRootState} from "../../mocks";
+import { mockGitState, mockRunReportRootState } from "../../mocks";
 
 describe("runReport", () => {
     const mockParams = [
-        {name: "global", value: "test"},
-        {name: "minimal", value: "random_39id"}
+        { name: "global", value: "test" },
+        { name: "minimal", value: "random_39id" }
     ]
 
     const props = {
         initialReportName: ""
     };
 
-    const minimal = {name: "minimal", date: new Date().toISOString()};
-    const global = {name: "global", date: null};
+    const minimal = { name: "minimal", date: new Date().toISOString() };
+    const global = { name: "global", date: null };
 
     const gitState: GitState = mockGitState({
         metadata: {
             git_supported: true,
             instances_supported: false,
-            instances: {"source": []},
+            instances: { "source": [] },
             changelog_types: ["internal", "public"]
         },
         branches: ["master", "dev"]
@@ -75,7 +75,6 @@ describe("runReport", () => {
     it("renders gitUpdateReports component", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-
         expect(gitUpdateReports.props("reportMetadata")).toEqual(gitState.metadata);
         expect(gitUpdateReports.props("initialBranches")).toBe(gitState.branches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
@@ -100,7 +99,7 @@ describe("runReport", () => {
     it("updates reports when event emitted from gitUpdateReports", async () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        const newReports = [{name: "report3", date: new Date().toISOString()}];
+        const newReports = [{ name: "report3", date: new Date().toISOString() }];
         gitUpdateReports.vm.$emit("reportsUpdate", newReports);
         await Vue.nextTick();
         expect(wrapper.vm.$data["reports"]).toBe(newReports);
@@ -140,7 +139,7 @@ describe("runReport", () => {
         expect(wrapper.findComponent(ReportList).props("selectedReport")).toBe(minimal);
     });
 
-    it("shows instances if instances supported", async() => {
+    it("shows instances if instances supported", async () => {
         const wrapper = mount(RunReport, {
             store: createStore({
                 metadata: {
@@ -194,8 +193,8 @@ describe("runReport", () => {
 
     it("it sets parameters correctly when input change if report is selected and param has data", () => {
         const expectedParams = [
-            {name: "global", value: "Set new value"},
-            {name: "minimal", value: "Set new value 2"}
+            { name: "global", value: "Set new value" },
+            { name: "minimal", value: "Set new value 2" }
         ];
 
         const wrapper = mount(RunReport, {
@@ -203,7 +202,7 @@ describe("runReport", () => {
             data() {
                 return {
                     parameterValues: mockParams,
-                    selectedReport: {name: "minimal"}
+                    selectedReport: { name: "minimal" }
                 }
             }
         });
@@ -236,11 +235,11 @@ describe("runReport", () => {
     });
 
     it("parameters endpoint can get data successfully", (done) => {
-        const mockAxiosParam = [{name: "minimal", value: "random_39id"}];
+        const mockAxiosParam = [{ name: "minimal", value: "random_39id" }];
         const url = "http://app/report/minimal/config/parameters/?commit=abcdef";
 
         mockAxios.onGet(url)
-            .reply(200, {"data": mockAxiosParam});
+            .reply(200, { "data": mockAxiosParam });
 
         const wrapper = getWrapper();
         wrapper.setData({
@@ -302,7 +301,7 @@ describe("runReport", () => {
     it("renders run button group if there is a selected report", async () => {
         const wrapper = getWrapper();
         await Vue.nextTick();
-        wrapper.setData({selectedReport: minimal});
+        wrapper.setData({ selectedReport: minimal });
         await Vue.nextTick();
         const runGroup = wrapper.find("#run-form-group");
         expect(runGroup.exists()).toBe(true);
@@ -320,11 +319,11 @@ describe("runReport", () => {
     it("clicking run button sends run request and displays status on success", async (done) => {
         const param_url = "http://app/report/test-report/config/parameters/?commit=test-commit"
         mockAxios.onGet(param_url)
-            .reply(200, {"data": []});
+            .reply(200, { "data": [] });
 
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url)
-            .reply(200, {data: {key: "test-key"}});
+            .reply(200, { data: { key: "test-key" } });
 
         const wrapper = mount(RunReport, {
             store: createStore({
@@ -340,27 +339,27 @@ describe("runReport", () => {
             }),
             data() {
                 return {
-                    selectedReport: {name: "report"},
-                    parameterValues: [{name: "minimal", value: "oldValue"}, {name: "global", value: "oldValue"}]
+                    selectedReport: { name: "report" },
+                    parameterValues: [{ name: "minimal", value: "oldValue" }, { name: "global", value: "oldValue" }]
                 }
             }
         });
 
         expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
+        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({ "annexe": "a1", "source": "uat" })
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
-                selectedReport: {name: "test-report"},
+                selectedReport: { name: "test-report" },
                 selectedCommitId: "test-commit",
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
             await Vue.nextTick()
-            wrapper.findComponent(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
+            wrapper.findComponent(Instances).setData({ selectedInstances: { source: "science", annexe: "a1" } })
             expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
+            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({ "annexe": "a1", "source": "science" })
             wrapper.setData({
-                parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
+                parameterValues: [{ name: "minimal", value: "test" }, { name: "global", value: "random_39id" }],
             })
             await Vue.nextTick()
             wrapper.find("#run-form-group button").trigger("click");
@@ -399,11 +398,11 @@ describe("runReport", () => {
     it("clicking run button sends changelog with request if set", async (done) => {
         const param_url = "http://app/report/test-report/parameters/?commit=test-commit"
         mockAxios.onGet(param_url)
-            .reply(200, {"data": []});
+            .reply(200, { "data": [] });
 
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url)
-            .reply(200, {data: {key: "test-key"}});
+            .reply(200, { data: { key: "test-key" } });
 
         const wrapper = mount(RunReport, {
             store: createStore({
@@ -417,14 +416,14 @@ describe("runReport", () => {
             }),
             data() {
                 return {
-                    selectedReport: {name: "report"},
+                    selectedReport: { name: "report" },
                     parameterValues: []
                 }
             }
         });
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
-                selectedReport: {name: "test-report"}
+                selectedReport: { name: "test-report" }
             });
             await Vue.nextTick();
 
@@ -442,7 +441,7 @@ describe("runReport", () => {
                     {
                         instances: {},
                         params: {},
-                        changelog: {message: "test changelog", type: "internal"},
+                        changelog: { message: "test changelog", type: "internal" },
                         gitBranch: "",
                         gitCommit: ""
                     }
@@ -488,7 +487,7 @@ describe("runReport", () => {
     it("clicking 'View log' emits 'changeTab'", async (done) => {
         const url = 'http://app/report/test-report/actions/status/test-key/';
         mockAxios.onGet(url)
-            .reply(200, {data: {status: "test-status"}});
+            .reply(200, { data: { status: "test-status" } });
         const wrapper = getWrapper();
 
         setTimeout(async () => { //give the wrapper time to fetch reports
@@ -518,13 +517,13 @@ describe("runReport", () => {
 
     it("changing selectedReport resets runningStatus and enables run", async () => {
         const wrapper = getWrapper();
-        await wrapper.setData({selectedReport: minimal});
+        await wrapper.setData({ selectedReport: minimal });
 
-        await wrapper.setData({runningStatus: "test-status", disableRun: true});
+        await wrapper.setData({ runningStatus: "test-status", disableRun: true });
         expect(wrapper.vm.$data.runningStatus).toBe("test-status");
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
 
-        await wrapper.setData({selectedReport: global});
+        await wrapper.setData({ selectedReport: global });
         expect(wrapper.vm.$data.runningStatus).toBe("");
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
@@ -543,19 +542,19 @@ describe("runReport", () => {
             })
         });
         await Vue.nextTick();
-        wrapper.setData({selectedReport: {name: "test-report"}});
+        wrapper.setData({ selectedReport: { name: "test-report" } });
         await Vue.nextTick();
-        wrapper.setData({runningStatus: "test-status", disableRun: true});
+        wrapper.setData({ runningStatus: "test-status", disableRun: true });
         await Vue.nextTick();
         expect(wrapper.vm.$data.runningStatus).toBe("test-status");
-        expect(wrapper.vm.$data.selectedInstances).toStrictEqual({source: "prod"});
+        expect(wrapper.vm.$data.selectedInstances).toStrictEqual({ source: "prod" });
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
 
         const select = wrapper.find("#source");
         select.setValue("uat");
         await Vue.nextTick();
 
-        expect(wrapper.vm.$data.selectedInstances).toStrictEqual({source: "uat"});
+        expect(wrapper.vm.$data.selectedInstances).toStrictEqual({ source: "uat" });
         expect(wrapper.vm.$data.runningStatus).toBe("");
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
@@ -565,7 +564,7 @@ describe("runReport", () => {
             store: createStore(),
             data() {
                 return {
-                    selectedReport: {name: "report"}
+                    selectedReport: { name: "report" }
                 }
             }
         });
@@ -612,7 +611,7 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.changelog.message).toBe("New message")
 
         const changelogMessage = wrapper.findComponent(changeLog).find("#changelog-message")
-        const changelogType= wrapper.findComponent(changeLog).find("#changelog-type")
+        const changelogType = wrapper.findComponent(changeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)
@@ -622,15 +621,15 @@ describe("runReport", () => {
 
     it("it does not disable runButton or display error msg when parameters pass validation", async () => {
         const localParam = [
-            {name: "global", value: "Set new value"},
-            {name: "max", value: "James bond"},
+            { name: "global", value: "Set new value" },
+            { name: "max", value: "James bond" },
         ]
         const wrapper = mount(RunReport, {
             store: createStore(),
             data() {
                 return {
                     parameterValues: localParam,
-                    selectedReport: {name: "reports"}
+                    selectedReport: { name: "reports" }
                 }
             }
         });
@@ -641,14 +640,14 @@ describe("runReport", () => {
 
     it("can run validation when component is loaded and disables runButton when parameters fail validation", async () => {
         const localParam = [
-            {name: "global", value: "Set new value"},
-            {name: "minimal", value: ""}
+            { name: "global", value: "Set new value" },
+            { name: "minimal", value: "" }
         ]
         const wrapper = mount(RunReport, {
             store: createStore(),
             data() {
                 return {
-                    selectedReport: {name: "reports"},
+                    selectedReport: { name: "reports" },
                     parameterValues: localParam
                 }
             }

@@ -20,6 +20,8 @@
     import {EmptyObject, GitCommit, RunReportMetadataDependency} from "../../../utils/types";
     import {mapActionByName} from "../../utils";
     import {GitAction} from "../../../store/git/actions";
+    import {GitState} from "../../../store/git/git";
+    import {namespace} from "../../../store/runReport/store";
 
     interface Computed {
         metadata: RunReportMetadataDependency
@@ -36,8 +38,8 @@
         name: "GitSelections",
         computed: {
             ...mapState({
-                metadata: (state: RunReportRootState) => state.git.metadata,
-                gitBranches: (state: RunReportRootState) => state.git.branches,
+                metadata: (state: GitState) => state.metadata,
+                gitBranches: (state: GitState) => state.branches,
                 selectedBranch: (state: RunReportRootState) => state.git.selectedBranch,
                 gitCommits: (state: RunReportRootState) => state.git.commits,
                 selectedCommit: (state: RunReportRootState) => state.git.selectedCommit
