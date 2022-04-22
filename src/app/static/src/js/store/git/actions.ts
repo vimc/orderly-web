@@ -6,7 +6,8 @@ import {RunnerRootState} from "../../utils/types";
 
 export enum GitAction {
     FetchMetadata = "FetchMetadata",
-    SelectBranch = "SelectBranch"
+    SelectBranch = "SelectBranch",
+    SelectCommit = "SelectCommit"
 }
 
 type GitActionHandler<T> = (store: ActionContext<GitState, RunnerRootState>, payload: T) => void
@@ -28,12 +29,10 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
                 console.log('data', data.data)
                 context.commit(GitMutation.SetCommits, data.data);
             })
-    }
+    },
 
-    // async [GitAction.FetchCommits](context) {
-    //     await api.get(`/git/branch/${context.state.selectedBranch}/commits/`)
-    //         .then(({data}) => {
-    //             context.commit(GitMutation.SetCommits, data.data)
-    //         })
-    // },
+    async [GitAction.SelectCommit](context, selectedCommit: string) {
+        context.commit(GitMutation.SelectCommit, selectedCommit)
+        // console.log('action', selectedBranch)
+    }
 }

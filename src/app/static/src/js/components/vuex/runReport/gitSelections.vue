@@ -13,7 +13,7 @@
         <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
             <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
             <div class="col-sm-6">
-                <select id="git-commit" v-model="selectedCommitId" class="form-control" @change="changedCommit">
+                <select id="git-commit" v-model="selectedCommitId" class="form-control">
                     <option v-for="commit in gitCommits" :key="commit.id" :value="commit.id">
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
@@ -48,8 +48,8 @@
 
     interface Methods {
         selectBranch: (branch: string) => void
+        selectCommit: (branch: string) => void
         preSelectBranch: () => void
-        changedCommit: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, EmptyObject>({
@@ -74,6 +74,7 @@
         },
         methods: {
             selectBranch: mapActionByName("git", GitAction.SelectBranch),
+            selectCommit: mapActionByName("git", GitAction.SelectCommit),
             preSelectBranch() {
                 const selectedBranch = this.selectedBranch
                 if (selectedBranch && this.gitBranches.some(branch => branch === selectedBranch)) {
@@ -82,9 +83,6 @@
                     this.newBranch = this.gitBranches[0]
                 }
             },
-            changedCommit(){
-                console.log("changed commit")
-            }
         },
         watch: {
             newBranch(){
@@ -103,7 +101,9 @@
             },
             selectedCommitId(){
                 console.log('selectedCommitId', this.selectedCommitId)
-
+                if (this.selectedCommitId !== this.selectedCommit){
+                    this.selectCommit(this.selectedCommitId)
+                }
             }
         },
         mounted(){

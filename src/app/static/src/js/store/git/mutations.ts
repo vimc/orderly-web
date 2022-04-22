@@ -23,5 +23,6 @@ export const mutations: MutationTree<GitState> = {
     },
     [GitMutation.SelectCommit](state: GitState, payload: string) {
         state.selectedCommit = payload;
+        console.log('selected commit mutation', state.selectedCommit)
     }
 }
