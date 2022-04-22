@@ -11,17 +11,17 @@ import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 
 class GithubAuthenticationTests : CustomConfigTests()
 {
-    val JSONValidator = JSONValidator()
-    // this is a PAT for a test user who only has access to a test org with no repos
-    // reversed so GitHub doesn't spot it and invalidate it
-    val testUserPAT = "fcef1c6821f7561259ce45d4840965642607e5a4".reversed()
+    private val JSONValidator = JSONValidator()
+
+    // Token with read:org and user:email scope, for a test user who only has access to a test org with no
+    // repos. Token reversed so GitHub doesn't spot it and invalidate it
+    private val testUserPAT = "dyw4x210375dauDALEtMVdvjypgs8RuGcY8H_phg".reversed()
 
     @Test
     fun `authentication fails without Auth header`()
     {
         startApp("auth.provider=github")
         val result = HttpClient.post(url)
-
         assertAuthFailure(result)
     }
 
@@ -30,7 +30,6 @@ class GithubAuthenticationTests : CustomConfigTests()
     {
         startApp("auth.provider=github")
         val result = HttpClient.post(url, auth = TestTokenHeader("token", "bearer"))
-
         assertAuthFailure(result)
     }
 
@@ -39,7 +38,6 @@ class GithubAuthenticationTests : CustomConfigTests()
     {
         startApp("auth.provider=github")
         val result = HttpClient.post(url, auth = TestTokenHeader("badtoken"))
-
         assertAuthFailure(result)
     }
 
@@ -49,8 +47,20 @@ class GithubAuthenticationTests : CustomConfigTests()
         startApp("auth.provider=github")
 
         val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
-
         assertAuthSuccess(result)
+    }
+
+    @Test
+    fun `authentication fails if token has no scope`()
+    {
+        startApp("auth.provider=github")
+
+        // this is a PAT for a test user who only has access to a test org with no repos
+        // reversed so GitHub doesn't spot it and invalidate it.
+        // This token has no scope
+        val tokenWithNoScope = "499kk1TncVsOOyxrskhEdc5zADJHVe88nsDw_phg".reversed()
+        val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithNoScope))
+        assertAuthFailure(result)
     }
 
     @Test
@@ -58,24 +68,24 @@ class GithubAuthenticationTests : CustomConfigTests()
     {
         startApp("auth.provider=github")
         // this is a PAT for a test user who only has access to a test org with no repos
-        // reversed so GitHub doesn't spot it and invalidate it
-        val tokenWithoutEmailReadingScope = "e0182507b0c6ad077a3036fd181a6260c0376e1c".reversed()
-
+        // reversed so GitHub doesn't spot it and invalidate it.
+        // This token has read:org scope only
+        val tokenWithoutEmailReadingScope = "xMKLL3L5fMjEJWHB3Clf4ufpn6iNBIrrgkoi_phg".reversed()
         val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithoutEmailReadingScope))
 
         assertAuthFailure(result)
     }
 
     @Test
-    fun `authentication fails if token does not have user reading scope`()
+    fun `authentication fails if token does not have org reading scope`()
     {
         startApp("auth.provider=github")
+
         // this is a PAT for a test user who only has access to a test org with no repos
         // reversed so GitHub doesn't spot it and invalidate it
-        val tokenWithoutUserReadingScope = "285d9b1b6620ab4dfd6c403b29451d52aa38a158".reversed()
-
-        val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithoutUserReadingScope))
-
+        // This token has user:email scope only
+        val tokenWithoutOrgReadingScope = "Lyjuf0dwzjk293PSW01wz1M4ggqWs68Yv7Nl_phg".reversed()
+        val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithoutOrgReadingScope))
         assertAuthFailure(result)
     }
 
@@ -102,7 +112,6 @@ class GithubAuthenticationTests : CustomConfigTests()
     {
         startApp("auth.provider=github\nauth.github_team=vimc-auth-team2")
         val result = HttpClient.post(url, auth = TestTokenHeader(testUserPAT))
-
         assertAuthFailure(result)
     }
 

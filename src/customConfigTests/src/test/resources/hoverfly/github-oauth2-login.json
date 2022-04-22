@@ -33,7 +33,7 @@
           } ],
           "scope" : [ {
             "matcher" : "exact",
-            "value" : "read:user read:org user:email"
+            "value" : "read:org user:email"
           } ]
         },
         "body" : [ {
@@ -684,11 +684,15 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "image/webp,image/apng,image/*,*/*;q=0.8"
+            "value" : "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
           } ],
           "Accept-Encoding" : [ {
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
+          } ],
+          "Accept-Language" : [ {
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Connection" : [ {
             "matcher" : "exact",
@@ -1327,7 +1331,7 @@
         "query" : { },
         "body" : [ {
           "matcher" : "exact",
-          "value" :  "code=6d69f505eea9242229b0\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient\u0026scope=read%3Auser%20read%3Aorg%20user%3Aemail\u0026grant_type=authorization_code"
+          "value" :  "code=6d69f505eea9242229b0\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient\u0026scope=read%3Aorg%20user%3Aemail\u0026grant_type=authorization_code"
         } ],
         "headers" : {
           "Accept" : [ {
@@ -1344,7 +1348,7 @@
           } ],
           "Content-Length" : [ {
             "matcher" : "exact",
-            "value" : "189"
+            "value" : "175"
           } ],
           "Content-Type" : [ {
             "matcher" : "exact",
@@ -1409,7 +1413,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "application/vnd.github.beta+json"
+            "value" : "application/vnd.github.v3+json"
           } ],
           "Authorization" : [ {
             "matcher" : "exact",
@@ -1463,7 +1467,7 @@
       "request" : {
         "path" : [ {
           "matcher" : "exact",
-          "value" : "/user/orgs"
+          "value" : "/orgs/vimc-auth-test"
         } ],
         "method" : [ {
           "matcher" : "exact",
@@ -1477,16 +1481,7 @@
           "matcher" : "exact",
           "value" : "https"
         } ],
-        "query" : {
-          "page" : [ {
-            "matcher" : "exact",
-            "value" : "1"
-          } ],
-          "per_page" : [ {
-            "matcher" : "exact",
-            "value" : "100"
-          } ]
-        },
+        "query" : {},
         "body" : [ {
           "matcher" : "exact",
           "value" : ""
@@ -1494,7 +1489,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "application/vnd.github.beta+json"
+            "value" : "application/vnd.github.v3+json"
           } ],
           "Authorization" : [ {
             "matcher" : "exact",
@@ -1512,7 +1507,7 @@
       },
       "response" : {
         "status" : 200,
-        "body" : "[{\"login\":\"vimc-auth-test\",\"id\":48723703,\"node_id\":\"MDEyOk9yZ2FuaXphdGlvbjQ4NzIzNzAz\",\"url\":\"https://api.github.com/orgs/vimc-auth-test\",\"repos_url\":\"https://api.github.com/orgs/vimc-auth-test/repos\",\"events_url\":\"https://api.github.com/orgs/vimc-auth-test/events\",\"hooks_url\":\"https://api.github.com/orgs/vimc-auth-test/hooks\",\"issues_url\":\"https://api.github.com/orgs/vimc-auth-test/issues\",\"members_url\":\"https://api.github.com/orgs/vimc-auth-test/members{/member}\",\"public_members_url\":\"https://api.github.com/orgs/vimc-auth-test/public_members{/member}\",\"avatar_url\":\"https://avatars0.githubusercontent.com/u/48723703?v=4\",\"description\":null}]",
+        "body" : "{\"login\":\"vimc-auth-test\",\"id\":48723703,\"node_id\":\"MDEyOk9yZ2FuaXphdGlvbjQ4NzIzNzAz\",\"url\":\"https://api.github.com/orgs/vimc-auth-test\",\"repos_url\":\"https://api.github.com/orgs/vimc-auth-test/repos\",\"events_url\":\"https://api.github.com/orgs/vimc-auth-test/events\",\"hooks_url\":\"https://api.github.com/orgs/vimc-auth-test/hooks\",\"issues_url\":\"https://api.github.com/orgs/vimc-auth-test/issues\",\"members_url\":\"https://api.github.com/orgs/vimc-auth-test/members{/member}\",\"public_members_url\":\"https://api.github.com/orgs/vimc-auth-test/public_members{/member}\",\"avatar_url\":\"https://avatars0.githubusercontent.com/u/48723703?v=4\",\"description\":null}",
         "encodedBody" : false,
         "templated" : false,
         "headers" : {
@@ -1543,7 +1538,157 @@
           "X-Xss-Protection" : [ "1; mode=block" ]
         }
       }
-    }, {
+    },{
+      "request" : {
+        "path" : [ {
+          "matcher" : "exact",
+          "value" : "/orgs/vimc"
+        } ],
+        "method" : [ {
+          "matcher" : "exact",
+          "value" : "GET"
+        } ],
+        "destination" : [ {
+          "matcher" : "exact",
+          "value" : "api.github.com"
+        } ],
+        "scheme" : [ {
+          "matcher" : "exact",
+          "value" : "https"
+        } ],
+        "query" : {},
+        "body" : [ {
+          "matcher" : "exact",
+          "value" : ""
+        } ],
+        "headers" : {
+          "Accept" : [ {
+            "matcher" : "exact",
+            "value" : "application/vnd.github.v3+json"
+          } ],
+          "Authorization" : [ {
+            "matcher" : "exact",
+            "value" : "token notarealtoken"
+          } ],
+          "Connection" : [ {
+            "matcher" : "exact",
+            "value" : "keep-alive"
+          } ],
+          "User-Agent" : [ {
+            "matcher" : "regex",
+            "value" : ".*"
+          } ]
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : "{\"login\":\"vimc\",\"id\":48723704,\"node_id\":\"MDEyOk9yZ2FuaXphdGlvbjQ4NzIzNzAz\",\"url\":\"https://api.github.com/orgs/vimc\",\"repos_url\":\"https://api.github.com/orgs/vimc/repos\",\"events_url\":\"https://api.github.com/orgs/vimc\",\"hooks_url\":\"https://api.github.com/orgs/vimc/hooks\",\"issues_url\":\"https://api.github.com/orgs/vimc/issues\",\"members_url\":\"https://api.github.com/orgs/vimc/members{/member}\",\"public_members_url\":\"https://api.github.com/orgs/vimc/public_members{/member}\",\"avatar_url\":\"https://avatars0.githubusercontent.com/u/48723703?v=4\",\"description\":null}",
+        "encodedBody" : false,
+        "templated" : false,
+        "headers" : {
+          "Access-Control-Allow-Origin" : [ "*" ],
+          "Access-Control-Expose-Headers" : [ "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type" ],
+          "Cache-Control" : [ "private, max-age=60, s-maxage=60" ],
+          "Content-Security-Policy" : [ "default-src 'none'" ],
+          "Content-Type" : [ "application/json; charset=utf-8" ],
+          "Date" : [ "Wed, 29 May 2019 15:52:41 GMT" ],
+          "Etag" : [ "W/\"8656aad51e29841ecda1111b2a982978\"" ],
+          "Hoverfly" : [ "Was-Here" ],
+          "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
+          "Server" : [ "GitHub.com" ],
+          "Status" : [ "200 OK" ],
+          "Strict-Transport-Security" : [ "max-age=31536000; includeSubdomains; preload" ],
+          "Transfer-Encoding" : [ "chunked" ],
+          "Vary" : [ "Accept, Authorization, Cookie, X-GitHub-OTP" ],
+          "X-Accepted-Oauth-Scopes" : [ "admin:org, read:org, repo, user, write:org" ],
+          "X-Content-Type-Options" : [ "nosniff" ],
+          "X-Frame-Options" : [ "deny" ],
+          "X-Github-Media-Type" : [ "github.beta; format=json" ],
+          "X-Github-Request-Id" : [ "C1CE:7278:572D:AD7C:5CEEAAC9" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
+          "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
+          "X-Ratelimit-Limit" : [ "5000" ],
+          "X-Ratelimit-Remaining" : [ "4994" ],
+          "X-Ratelimit-Reset" : [ "1559148693" ],
+          "X-Xss-Protection" : [ "1; mode=block" ]
+        }
+      }
+    },{
+      "request" : {
+        "path" : [ {
+          "matcher" : "exact",
+          "value" : "/orgs/vimc-auth-test/members/notarealuser"
+        } ],
+        "method" : [ {
+          "matcher" : "exact",
+          "value" : "GET"
+        } ],
+        "destination" : [ {
+          "matcher" : "exact",
+          "value" : "api.github.com"
+        } ],
+        "scheme" : [ {
+          "matcher" : "exact",
+          "value" : "https"
+        } ],
+        "query" : {},
+        "body" : [ {
+          "matcher" : "exact",
+          "value" : ""
+        } ],
+        "headers" : {
+          "Accept" : [ {
+            "matcher" : "exact",
+            "value" : "application/vnd.github.v3+json"
+          } ],
+          "Authorization" : [ {
+            "matcher" : "exact",
+            "value" : "token notarealtoken"
+          } ],
+          "Connection" : [ {
+            "matcher" : "exact",
+            "value" : "keep-alive"
+          } ],
+          "User-Agent" : [ {
+            "matcher" : "regex",
+            "value" : ".*"
+          } ]
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : "",
+        "encodedBody" : false,
+        "templated" : false,
+        "headers" : {
+          "Access-Control-Allow-Origin" : [ "*" ],
+          "Access-Control-Expose-Headers" : [ "ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type" ],
+          "Cache-Control" : [ "private, max-age=60, s-maxage=60" ],
+          "Content-Security-Policy" : [ "default-src 'none'" ],
+          "Content-Type" : [ "application/json; charset=utf-8" ],
+          "Date" : [ "Wed, 29 May 2019 15:52:41 GMT" ],
+          "Etag" : [ "W/\"8656aad51e29841ecda1111b2a982978\"" ],
+          "Hoverfly" : [ "Was-Here" ],
+          "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
+          "Server" : [ "GitHub.com" ],
+          "Status" : [ "200 OK" ],
+          "Strict-Transport-Security" : [ "max-age=31536000; includeSubdomains; preload" ],
+          "Transfer-Encoding" : [ "chunked" ],
+          "Vary" : [ "Accept, Authorization, Cookie, X-GitHub-OTP" ],
+          "X-Accepted-Oauth-Scopes" : [ "admin:org, read:org, repo, user, write:org" ],
+          "X-Content-Type-Options" : [ "nosniff" ],
+          "X-Frame-Options" : [ "deny" ],
+          "X-Github-Media-Type" : [ "github.beta; format=json" ],
+          "X-Github-Request-Id" : [ "C1CE:7278:572D:AD7C:5CEEAAC9" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
+          "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
+          "X-Ratelimit-Limit" : [ "5000" ],
+          "X-Ratelimit-Remaining" : [ "4994" ],
+          "X-Ratelimit-Reset" : [ "1559148693" ],
+          "X-Xss-Protection" : [ "1; mode=block" ]
+        }
+      }
+    },{
       "request" : {
         "path" : [ {
           "matcher" : "exact",
@@ -1637,20 +1782,7 @@
           "matcher" : "exact",
           "value" : "https"
         } ],
-        "query" : {
-          "page": [
-            {
-              "matcher": "exact",
-              "value": "1"
-            }
-          ],
-          "per_page": [
-            {
-              "matcher": "exact",
-              "value": "100"
-            }
-          ]
-        },
+        "query" : {},
         "body" : [ {
           "matcher" : "exact",
           "value" : ""
@@ -1658,7 +1790,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "application/vnd.github.beta+json"
+            "value" : "application/vnd.github.v3+json"
           } ],
           "Authorization" : [ {
             "matcher" : "exact",
@@ -1712,7 +1844,7 @@
       "request" : {
         "path" : [ {
           "matcher" : "exact",
-          "value" : "/teams/4660231/members"
+          "value" : "/organizations/48723703/team/4660231/memberships/notarealuser"
         } ],
         "method" : [ {
           "matcher" : "exact",
@@ -1726,20 +1858,7 @@
           "matcher" : "exact",
           "value" : "https"
         } ],
-        "query" : {
-          "page": [
-            {
-              "matcher": "exact",
-              "value": "1"
-            }
-          ],
-          "per_page": [
-            {
-              "matcher": "exact",
-              "value": "100"
-            }
-          ]
-        },
+        "query" : {},
         "body" : [ {
           "matcher" : "exact",
           "value" : ""
@@ -1747,7 +1866,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "application/vnd.github.beta+json"
+            "value" : "application/vnd.github.v3+json"
           } ],
           "Authorization" : [ {
             "matcher" : "exact",
@@ -1765,7 +1884,7 @@
       },
       "response" : {
         "status" : 200,
-        "body" : "[{\"login\": \"notarealuser\", \"id\": 1, \"node_id\": \"MDQ6VXNlcjE=\", \"avatar_url\": \"https://github.com/images/error/notarealuser.gif\", \"gravatar_id\": \"\", \"url\": \"https://api.github.com/users/notarealuser\", \"html_url\": \"https://github.com/notarealuser\", \"followers_url\": \"https://api.github.com/users/notarealuser/followers\", \"following_url\": \"https://api.github.com/users/notarealuser/following{/other_user}\", \"gists_url\": \"https://api.github.com/users/notarealuser/gists{/gist_id}\", \"starred_url\": \"https://api.github.com/users/notarealuser/starred{/owner}{/repo}\", \"subscriptions_url\": \"https://api.github.com/users/notarealuser/subscriptions\", \"organizations_url\": \"https://api.github.com/users/notarealuser/orgs\", \"repos_url\": \"https://api.github.com/users/notarealuser/repos\", \"events_url\": \"https://api.github.com/users/notarealuser/events{/privacy}\", \"received_events_url\": \"https://api.github.com/users/notarealuser/received_events\", \"type\": \"User\", \"site_admin\": false}]",
+        "body" : "{\"url\": \"https://api.github.com/teams/4660231/memberships/notarealuser\",\"role\": \"maintainer\",\n  \"state\": \"active\"}",
         "encodedBody" : false,
         "templated" : false,
         "headers" : {
@@ -1801,7 +1920,7 @@
       "request" : {
         "path" : [ {
           "matcher" : "exact",
-          "value" : "/teams/4660232/members"
+          "value" : "/organizations/48723703/team/4660232/memberships/notarealuser"
         } ],
         "method" : [ {
           "matcher" : "exact",
@@ -1815,20 +1934,7 @@
           "matcher" : "exact",
           "value" : "https"
         } ],
-        "query" : {
-          "page": [
-            {
-              "matcher": "exact",
-              "value": "1"
-            }
-          ],
-          "per_page": [
-            {
-              "matcher": "exact",
-              "value": "100"
-            }
-          ]
-        },
+        "query" : {},
         "body" : [ {
           "matcher" : "exact",
           "value" : ""
@@ -1853,8 +1959,8 @@
         }
       },
       "response" : {
-        "status" : 200,
-        "body" : "[{\"login\": \"anotheruser\", \"id\": 1, \"node_id\": \"MDQ6VXNlcjE=\", \"avatar_url\": \"https://github.com/images/error/anotheruser.gif\", \"gravatar_id\": \"\", \"url\": \"https://api.github.com/users/anotheruser\", \"html_url\": \"https://github.com/anotheruser\", \"followers_url\": \"https://api.github.com/users/anotheruser/followers\", \"following_url\": \"https://api.github.com/users/anotheruser/following{/other_user}\", \"gists_url\": \"https://api.github.com/users/anotheruser/gists{/gist_id}\", \"starred_url\": \"https://api.github.com/users/anotheruser/starred{/owner}{/repo}\", \"subscriptions_url\": \"https://api.github.com/users/anotheruser/subscriptions\", \"organizations_url\": \"https://api.github.com/users/anotheruser/orgs\", \"repos_url\": \"https://api.github.com/users/anotheruser/repos\", \"events_url\": \"https://api.github.com/users/anotheruser/events{/privacy}\", \"received_events_url\": \"https://api.github.com/users/anotheruser/received_events\", \"type\": \"User\", \"site_admin\": false}]",
+        "status" : 404,
+        "body" : "",
         "encodedBody" : false,
         "templated" : false,
         "headers" : {
