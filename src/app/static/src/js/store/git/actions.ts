@@ -29,4 +29,11 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
                 context.commit(GitMutation.SetCommits, data.data);
             })
     }
+
+    // async [GitAction.FetchCommits](context) {
+    //     await api.get(`/git/branch/${context.state.selectedBranch}/commits/`)
+    //         .then(({data}) => {
+    //             context.commit(GitMutation.SetCommits, data.data)
+    //         })
+    // },
 }

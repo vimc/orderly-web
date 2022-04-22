@@ -10,6 +10,16 @@
                 </select>
             </div>
         </div>
+        <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
+            <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
+            <div class="col-sm-6">
+                <select id="git-commit" v-model="selectedCommitId" class="form-control" @change="changedCommit">
+                    <option v-for="commit in gitCommits" :key="commit.id" :value="commit.id">
+                        {{ commit.id }} ({{ commit.date_time }})
+                    </option>
+                </select>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -25,6 +35,7 @@
 
     interface Data {
         newBranch: string
+        selectedCommitId: string
     }
 
     interface Computed {
@@ -32,18 +43,21 @@
         gitBranches: string[]
         gitCommits: GitCommit[]
         selectedCommit: string
+        showCommits: boolean
     }
 
     interface Methods {
         selectBranch: (branch: string) => void
         preSelectBranch: () => void
+        changedCommit: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, EmptyObject>({
         name: "GitSelections",
         data(){
             return {
-                newBranch: ""
+                newBranch: "",
+                selectedCommitId: ""
             }
         },
         computed: {
@@ -53,7 +67,10 @@
                 selectedBranch: (state: RunReportRootState) => state.git.selectedBranch,
                 gitCommits: (state: RunReportRootState) => state.git.commits,
                 selectedCommit: (state: RunReportRootState) => state.git.selectedCommit
-            })
+            }),
+            showCommits() {
+                return !!this.gitCommits?.length;
+            }
         },
         methods: {
             selectBranch: mapActionByName("git", GitAction.SelectBranch),
@@ -65,6 +82,9 @@
                     this.newBranch = this.gitBranches[0]
                 }
             },
+            changedCommit(){
+                console.log("changed commit")
+            }
         },
         watch: {
             newBranch(){
@@ -76,6 +96,14 @@
             },
             gitBranches(){
                 this.preSelectBranch()
+            },
+            gitCommits(){
+                console.log('gitCommits', this.gitCommits)
+
+            },
+            selectedCommitId(){
+                console.log('selectedCommitId', this.selectedCommitId)
+
             }
         },
         mounted(){
