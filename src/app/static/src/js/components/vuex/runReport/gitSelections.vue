@@ -3,7 +3,7 @@
         <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
-                <select id="git-branch" v-model="selectedBranch" class="form-control">
+                <select id="git-branch" v-model="newBranch" class="form-control">
                     <option v-for="branch in gitBranches" :key="branch" :value="branch">
                         {{ branch }}
                     </option>
@@ -23,6 +23,10 @@
     import {GitState} from "../../../store/git/git";
     import {namespace} from "../../../store/runReport/store";
 
+    interface Data {
+        newBranch: string
+    }
+
     interface Computed {
         metadata: RunReportMetadataDependency
         gitBranches: string[]
@@ -34,12 +38,17 @@
         selectBranch: (branch: string) => void
     }
 
-    export default Vue.extend<EmptyObject, Methods, Computed, EmptyObject>({
+    export default Vue.extend<Data, Methods, Computed, EmptyObject>({
         name: "GitSelections",
+        data(){
+            return {
+                newBranch: ""
+            }
+        },
         computed: {
             ...mapState({
-                metadata: (state: GitState) => state.metadata,
-                gitBranches: (state: GitState) => state.branches,
+                metadata: (state: RunReportRootState) => state.git.metadata,
+                gitBranches: (state: RunReportRootState) => state.git.branches,
                 selectedBranch: (state: RunReportRootState) => state.git.selectedBranch,
                 gitCommits: (state: RunReportRootState) => state.git.commits,
                 selectedCommit: (state: RunReportRootState) => state.git.selectedCommit
@@ -47,6 +56,12 @@
         },
         methods: {
             selectBranch: mapActionByName("git", GitAction.SelectBranch)
+        },
+        watch: {
+            newBranch(){
+                console.log('newBranch', this.newBranch)
+                this.selectBranch(this.newBranch)
+            }
         }
     });
 </script>
