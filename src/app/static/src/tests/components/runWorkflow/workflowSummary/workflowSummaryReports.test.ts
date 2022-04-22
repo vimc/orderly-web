@@ -26,6 +26,35 @@ describe(`workflowSummaryReports`, () => {
         ]
     }
 
+    const workflowSummary2: WorkflowSummaryResponse = {
+        ref: "commit123",
+        missing_dependencies: {
+            no_dependency: [],
+            use_dependency: ["other"],
+            use_dependency2: []
+        },
+        reports: [
+            {
+                name: "no_dependency",
+                depends_on: null,
+                param_list: [],
+                default_param_list: [],
+            },
+            {
+                name: "use_dependency",
+                depends_on: null,
+                param_list: [],
+                default_param_list: [],
+            },
+            {
+                name: "use_dependency2",
+                depends_on: ["use_dependency"],
+                param_list: [],
+                default_param_list: []
+            },
+        ]
+    }
+
     const mockTooltip = jest.fn();
 
     const getWrapper = (summary: Partial<WorkflowSummaryResponse> = {}) => {
@@ -143,6 +172,29 @@ describe(`workflowSummaryReports`, () => {
 
         expect(wrapper.find("#default-params-2 b-link-stub.show-defaults").exists()).toBe(false);
 
+    });
+
+    it(`it can render depends on dependencies and missing dependencies`, () => {
+        const wrapper = getWrapper(workflowSummary2);
+
+        const reports = wrapper.findAll(".single-workflow-summary-area");
+        expect(reports.length).toBe(3);
+
+        const dependencies = wrapper.findAll(".dependencies");
+        expect(dependencies.length).toBe(2);
+        expect(reports.at(0).findAll(".dependencies").length).toEqual(0);
+
+        const dependsOn1 = reports.at(1).find(".dependsOn");
+        expect(dependsOn1.exists()).toBe(false);
+        const missingDependency1 = reports.at(1).find(".missingDependency");
+        expect(missingDependency1.find("span").text()).toEqual("Missing dependency");
+        expect(missingDependency1.find("p").text()).toEqual("other");
+
+        const dependsOn2 = reports.at(2).find(".dependsOn");
+        expect(dependsOn2.find("span").text()).toEqual("Depends on");
+        expect(dependsOn2.find("p").text()).toEqual("use_dependency");
+        const missingDependency2 = reports.at(2).find(".missingDependency");
+        expect(missingDependency2.exists()).toBe(false);
     });
 
 });

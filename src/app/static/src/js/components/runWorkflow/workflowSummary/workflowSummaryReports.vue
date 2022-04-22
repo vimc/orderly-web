@@ -48,8 +48,20 @@
                                 </div>
                             </div>
                             <span class="d-inline-block"></span>
-                            <!--Dependencies boxes should go here, you might want to consider using slots or
-                             perhaps add html here directly instead of creating another component -->
+                            <div v-if="report.depends_on || hasMissingDependencies(report)" class="col-12 col-md-6 col-lg-4">
+                                <div class="single-workflow-summary-content dependencies">
+                                    <div class="workflow-summary-text">
+                                        <div v-if="report.depends_on" class="dependsOn">
+                                            <span class="text-muted m-0">Depends on</span>
+                                            <p v-for="dependency in report.depends_on" :key="dependency">{{ dependency }}</p>
+                                        </div>
+                                        <div v-if="hasMissingDependencies(report)" class="missingDependency">
+                                            <span class="text-danger m-0">Missing dependency</span>
+                                            <p v-for="missingDependency in workflowSummary.missing_dependencies[report.name]" :key="missingDependency">{{ missingDependency }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -74,6 +86,7 @@
 
     interface Methods {
         hasParams: (report: WorkflowReportWithDependencies) => boolean
+        hasMissingDependencies: (report: WorkflowReportWithDependencies) => boolean
         reportInfo: (reportName: string) => string
     }
 
@@ -105,6 +118,9 @@
             hasParams(report) {
                 return (report.param_list && report.param_list.length > 0) ||
                     (report.default_param_list && report.default_param_list.length > 0)
+            },
+            hasMissingDependencies(report) {
+                return report.name && this.workflowSummary?.missing_dependencies && this.workflowSummary.missing_dependencies[report.name]?.length
             }
         }
     });
