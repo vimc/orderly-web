@@ -36,6 +36,7 @@
 
     interface Methods {
         selectBranch: (branch: string) => void
+        preSelectBranch: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, EmptyObject>({
@@ -55,13 +56,30 @@
             })
         },
         methods: {
-            selectBranch: mapActionByName("git", GitAction.SelectBranch)
+            selectBranch: mapActionByName("git", GitAction.SelectBranch),
+            preSelectBranch() {
+                const selectedBranch = this.selectedBranch
+                if (selectedBranch && this.gitBranches.some(branch => branch === selectedBranch)) {
+                    this.newBranch = selectedBranch;
+                } else if (this.gitBranches.length) {
+                    this.newBranch = this.gitBranches[0]
+                }
+            },
         },
         watch: {
             newBranch(){
                 console.log('newBranch', this.newBranch)
-                this.selectBranch(this.newBranch)
+                console.log('metadata', this.metadata)
+                if (this.newBranch !== this.selectedBranch){
+                    this.selectBranch(this.newBranch)
+                }
+            },
+            gitBranches(){
+                this.preSelectBranch()
             }
+        },
+        mounted(){
+            this.preSelectBranch()
         }
     });
 </script>
