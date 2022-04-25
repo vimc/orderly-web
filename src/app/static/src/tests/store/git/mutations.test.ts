@@ -1,13 +1,13 @@
-import {mockGitState} from "../../mocks";
+import {mockGitState, mockCommit} from "../../mocks";
 import {GitMutation, mutations} from "../../../js/store/git/mutations";
 
 describe("Git mutations", () => {
+    const state = mockGitState({
+        branches: [],
+        metadata: null
+    });
 
     it("sets metadata", () => {
-        const state = mockGitState({
-            branches: [],
-            metadata: null
-        });
         mutations[GitMutation.SetMetadata](
             state,
             {
@@ -17,7 +17,7 @@ describe("Git mutations", () => {
                     instances: {"inst": ["1", "2"]},
                     changelog_types: ["public"]
                 },
-                branches: ["dev", "main"]
+                git_branches: ["dev", "main"]
             })
         expect(state.branches).toEqual(["dev", "main"]);
         expect(state.metadata).toEqual({
@@ -26,5 +26,23 @@ describe("Git mutations", () => {
             instances: {"inst": ["1", "2"]},
             changelog_types: ["public"]
         });
+    })
+
+    it("sets selectedBranch", () => {
+        mutations[GitMutation.SelectBranch](state, "test")
+        expect(state.selectedBranch).toEqual("test");
+    })
+
+    it("sets commits", () => {
+        const commits = [
+            mockCommit()
+        ]
+        mutations[GitMutation.SetCommits](state, commits)
+        expect(state.commits).toEqual(commits);
+    })
+
+    it("sets selectedCommit", () => {
+        mutations[GitMutation.SelectCommit](state, "test")
+        expect(state.selectedCommit).toEqual("test");
     })
 });
