@@ -39,6 +39,9 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
 export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState => {
     return {
         branches: ["master", "dev"],
+        commits: [],
+        selectedBranch: "",
+        selectedCommit: "",
         ...props,
         metadata: props.metadata !== null ? {
             instances_supported: false,
@@ -47,7 +50,7 @@ export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState =
             changelog_types: ["published", "internal"],
             ...props.metadata
         } : null
-    }
+    } as GitState // Would be better to alter the recusive partial type above rather than type casting
 }
 
 export const mockRunReportRootState = (props: RecursivePartial<RunReportRootState> = {}): RunReportRootState => {
