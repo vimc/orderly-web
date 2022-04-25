@@ -23,16 +23,13 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
 
     async [GitAction.SelectBranch](context, selectedBranch: string) {
         context.commit(GitMutation.SelectBranch, selectedBranch)
-        console.log('action', selectedBranch)
         await api.get(`/git/branch/${selectedBranch}/commits/`)
-            .then(({data}) => {
-                console.log('data', data.data)
+            .then(({ data }) => {
                 context.commit(GitMutation.SetCommits, data.data);
             })
     },
 
     async [GitAction.SelectCommit](context, selectedCommit: string) {
         context.commit(GitMutation.SelectCommit, selectedCommit)
-        // console.log('action', selectedBranch)
     }
 }

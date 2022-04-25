@@ -85,7 +85,6 @@
                 }
             },
             preSelectCommit() {
-                console.log('selectedCommitId and commits', `here (${this.selectedCommitId})`, this.gitCommits)
                 const selectedCommitId = this.selectedCommitId
                 if (selectedCommitId && this.gitCommits.some(commit => commit.id === selectedCommitId)) {
                     this.newSelectedCommitId = selectedCommitId;
@@ -96,24 +95,16 @@
         },
         watch: {
             newSelectedBranch(){
-                console.log('newSelectedBranch', this.newSelectedBranch)
-                console.log('metadata', this.metadata)
-                // if (this.newSelectedBranch !== this.selectedBranch){
-                    this.selectBranch(this.newSelectedBranch)
-                // }
+                this.selectBranch(this.newSelectedBranch)
+            },
+            newSelectedCommitId(){
+                this.selectCommit(this.newSelectedCommitId)
             },
             gitBranches(){
                 this.preSelectBranch()
             },
             gitCommits(){
-                console.log("should fire")
                 this.preSelectCommit()
-            },
-            newSelectedCommitId(){
-                console.log('newSelectedCommitId', this.newSelectedCommitId)
-                // if (this.newSelectedCommitId !== this.selectedCommit){
-                    this.selectCommit(this.newSelectedCommitId)
-                // }
             }
         },
         mounted(){
