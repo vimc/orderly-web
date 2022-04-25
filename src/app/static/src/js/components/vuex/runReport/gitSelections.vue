@@ -3,7 +3,7 @@
         <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
-                <select id="git-branch" v-model="newBranch" class="form-control">
+                <select id="git-branch" v-model="newSelectedBranch" class="form-control">
                     <option v-for="branch in gitBranches" :key="branch" :value="branch">
                         {{ branch }}
                     </option>
@@ -13,7 +13,7 @@
         <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
             <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
             <div class="col-sm-6">
-                <select id="git-commit" v-model="selectedCommitId" class="form-control">
+                <select id="git-commit" v-model="newSelectedCommitId" class="form-control">
                     <option v-for="commit in gitCommits" :key="commit.id" :value="commit.id">
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
@@ -34,15 +34,15 @@
     import {namespace} from "../../../store/runReport/store";
 
     interface Data {
-        newBranch: string
-        selectedCommitId: string
+        newSelectedBranch: string
+        newSelectedCommitId: string
     }
 
     interface Computed {
         metadata: RunReportMetadataDependency
         gitBranches: string[]
         gitCommits: GitCommit[]
-        selectedCommit: string
+        selectedCommitId: string
         showCommits: boolean
     }
 
@@ -50,14 +50,15 @@
         selectBranch: (branch: string) => void
         selectCommit: (branch: string) => void
         preSelectBranch: () => void
+        preSelectCommit: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, EmptyObject>({
         name: "GitSelections",
         data(){
             return {
-                newBranch: "",
-                selectedCommitId: ""
+                newSelectedBranch: "",
+                newSelectedCommitId: ""
             }
         },
         computed: {
@@ -66,7 +67,7 @@
                 gitBranches: (state: RunReportRootState) => state.git.branches,
                 selectedBranch: (state: RunReportRootState) => state.git.selectedBranch,
                 gitCommits: (state: RunReportRootState) => state.git.commits,
-                selectedCommit: (state: RunReportRootState) => state.git.selectedCommit
+                selectedCommitId: (state: RunReportRootState) => state.git.selectedCommit
             }),
             showCommits() {
                 return !!this.gitCommits?.length;
@@ -78,32 +79,41 @@
             preSelectBranch() {
                 const selectedBranch = this.selectedBranch
                 if (selectedBranch && this.gitBranches.some(branch => branch === selectedBranch)) {
-                    this.newBranch = selectedBranch;
+                    this.newSelectedBranch = selectedBranch;
                 } else if (this.gitBranches.length) {
-                    this.newBranch = this.gitBranches[0]
+                    this.newSelectedBranch = this.gitBranches[0]
+                }
+            },
+            preSelectCommit() {
+                console.log('selectedCommitId and commits', `here (${this.selectedCommitId})`, this.gitCommits)
+                const selectedCommitId = this.selectedCommitId
+                if (selectedCommitId && this.gitCommits.some(commit => commit.id === selectedCommitId)) {
+                    this.newSelectedCommitId = selectedCommitId;
+                } else if (this.gitCommits.length && this.gitCommits[0]?.id) {
+                    this.newSelectedCommitId = this.gitCommits[0].id
                 }
             },
         },
         watch: {
-            newBranch(){
-                console.log('newBranch', this.newBranch)
+            newSelectedBranch(){
+                console.log('newSelectedBranch', this.newSelectedBranch)
                 console.log('metadata', this.metadata)
-                if (this.newBranch !== this.selectedBranch){
-                    this.selectBranch(this.newBranch)
-                }
+                // if (this.newSelectedBranch !== this.selectedBranch){
+                    this.selectBranch(this.newSelectedBranch)
+                // }
             },
             gitBranches(){
                 this.preSelectBranch()
             },
             gitCommits(){
-                console.log('gitCommits', this.gitCommits)
-
+                console.log("should fire")
+                this.preSelectCommit()
             },
-            selectedCommitId(){
-                console.log('selectedCommitId', this.selectedCommitId)
-                if (this.selectedCommitId !== this.selectedCommit){
-                    this.selectCommit(this.selectedCommitId)
-                }
+            newSelectedCommitId(){
+                console.log('newSelectedCommitId', this.newSelectedCommitId)
+                // if (this.newSelectedCommitId !== this.selectedCommit){
+                    this.selectCommit(this.newSelectedCommitId)
+                // }
             }
         },
         mounted(){
