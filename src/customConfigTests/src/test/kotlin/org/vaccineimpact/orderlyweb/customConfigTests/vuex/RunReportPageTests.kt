@@ -34,11 +34,25 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can view run tab`()
+    fun `can view run tab, branches, and commits`()
     {
         val tab = driver.findElement(By.id("run-tab"))
 
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run a report")
+        val selectBranch = Select(tab.findElement(By.tagName("select")))
+        assertThat(selectBranch.firstSelectedOption.text).isEqualTo("master")
+
+        val gitBranch = Select(driver.findElement(By.id("git-branch")))
+        assertThat(gitBranch.options.size).isEqualTo(2)
+        assertThat(gitBranch.options.map { it.text })
+                .containsExactly("master", "other")
+                
+        val selectCommit = Select(tab.findElements(By.tagName("select"))[1])
+        assertThat(selectCommit.firstSelectedOption.text).isEqualTo("d820814 (2022-04-26 14:30:51)")
+
+        val commitsSelect = Select(driver.findElement(By.id("git-commit")))
+        assertThat(commitsSelect.options.size).isEqualTo(2)
+        assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
     }
 
     @Test
@@ -51,13 +65,71 @@ class RunReportPageTests : SeleniumTest()
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
     }
 
+    // @Test
+    // fun `can view git branches`()
+    // {
+    //     val gitBranch = Select(driver.findElement(By.id("git-branch")))
+    //     assertThat(gitBranch.options.size).isEqualTo(2)
+    //     assertThat(gitBranch.options.map { it.text })
+    //             .containsExactly("master", "other")
+    // }
+
+    // @Test
+    // fun `can view git commits`()
+    // {
+    //     val tab = driver.findElement(By.id("run-tab"))
+    //     val select = Select(tab.findElements(By.tagName("select"))[1])
+    //     assertThat(select.firstSelectedOption.text).isEqualTo("d820814 (2022-04-26 14:30:51)")
+
+    //     val commitsSelect = Select(driver.findElement(By.id("git-commit")))
+    //     assertThat(commitsSelect.options.size).isEqualTo(2)
+    //     assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
+    // }
+
     @Test
-    fun `can view git branches`()
+    fun `can change git branch to non-master and see different git commits`()
     {
-        val gitBranch = Select(driver.findElement(By.id("git-branch")))
-        assertThat(gitBranch.options.size).isEqualTo(2)
-        assertThat(gitBranch.options.map { it.text })
-                .containsExactly("master", "other")
+        val gitBranch = driver.findElement(By.id("git-branch"))
+        val gitCommit = driver.findElement(By.id("git-commit"))
+        val oldCommit = gitCommit.getAttribute("value")
+
+        Select(gitBranch).selectByIndex(1)
+        wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(gitCommit, "value", oldCommit)))
+        assertThat(gitBranch.getAttribute("value")).isEqualTo("other")
+        val commitValue = gitCommit.getAttribute("value")
+        assertThat(commitValue).isNotBlank()
+
+        // can switch to logs tab and back and retain non-master branch
+        driver.findElement(By.id("logs-link")).click()
+        val logsTab = driver.findElement(By.id("logs-tab"))
+        wait.until(ExpectedConditions.attributeToBe(logsTab, "display", "block"))
+
+        driver.findElement(By.id("run-link")).click()
+        val runTab = driver.findElement(By.id("run-tab"))
+        wait.until(ExpectedConditions.attributeToBe(runTab, "display", "block"))
+
+        val gitBranch2 = driver.findElement(By.id("git-branch"))
+        assertThat(gitBranch2.getAttribute("value")).isEqualTo("other")
+    }
+
+    @Test
+    fun `retains selected commit when navigating back from other tab`()
+    {
+        val gitCommit = driver.findElement(By.id("git-commit"))
+
+        Select(gitCommit).selectByIndex(1)
+        assertThat(gitCommit.getAttribute("value")).isEqualTo("c26f7c4")
+
+        driver.findElement(By.id("logs-link")).click()
+        val logsTab = driver.findElement(By.id("logs-tab"))
+        wait.until(ExpectedConditions.attributeToBe(logsTab, "display", "block"))
+
+        driver.findElement(By.id("run-link")).click()
+        val runTab = driver.findElement(By.id("run-tab"))
+        wait.until(ExpectedConditions.attributeToBe(runTab, "display", "block"))
+
+        val gitCommit2 = driver.findElement(By.id("git-commit"))
+        assertThat(gitCommit2.getAttribute("value")).isEqualTo("c26f7c4")
     }
 
 }
