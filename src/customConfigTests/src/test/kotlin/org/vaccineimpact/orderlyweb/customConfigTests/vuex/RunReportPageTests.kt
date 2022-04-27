@@ -46,9 +46,6 @@ class RunReportPageTests : SeleniumTest()
         assertThat(gitBranch.options.size).isEqualTo(2)
         assertThat(gitBranch.options.map { it.text })
                 .containsExactly("master", "other")
-                
-        val selectCommit = Select(tab.findElements(By.tagName("select"))[1])
-        assertThat(selectCommit.firstSelectedOption.text).contains(Regex("[0-9a-f]{7}")
 
         val commitsSelect = Select(driver.findElement(By.id("git-commit")))
         assertThat(commitsSelect.options.size).isEqualTo(2)
