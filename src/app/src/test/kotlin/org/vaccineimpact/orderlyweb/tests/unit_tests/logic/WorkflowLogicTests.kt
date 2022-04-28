@@ -18,7 +18,7 @@ class WorkflowLogicTests
     private val mockParams = listOf(Parameter("disease", "defaultDisuses"), Parameter("year", "2020"))
     private val commitOnlyQs = mapOf("commit" to testCommit)
     private val mockTestOrderlyAPI = mock<OrderlyServerAPI> {
-        on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
+        on { getRunnableReportNames(eq(mapOf("show_all" to "true", "branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
                 "test1", "test2", "test3")
         on { getReportParameters(eq("test1"), eq(commitOnlyQs)) } doReturn mockParams
         on { getReportParameters(eq("test2"), eq(commitOnlyQs)) } doReturn mockParams
@@ -54,7 +54,7 @@ class WorkflowLogicTests
             test2
         """.trimIndent().reader()
         val mockOrderlyAPI = mock<OrderlyServerAPI> {
-            on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
+            on { getRunnableReportNames(eq(mapOf("show_all" to "true", "branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
                     "test1", "test2", "test3")
             on { getReportParameters(any(), eq(mapOf("commit" to testCommit))) } doReturn listOf<Parameter>()
         }
@@ -74,7 +74,7 @@ class WorkflowLogicTests
             test1
         """.trimIndent().reader()
         val mockOrderlyAPI = mock<OrderlyServerAPI> {
-            on { getRunnableReportNames(eq(mapOf())) } doReturn listOf("test1")
+            on { getRunnableReportNames(eq(mapOf("show_all" to "true"))) } doReturn listOf("test1")
             on { getReportParameters(eq("test1"), eq(mapOf())) } doReturn listOf<Parameter>()
         }
         val result = sut(mockOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, null, null)
@@ -82,7 +82,7 @@ class WorkflowLogicTests
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf<String, String>())
 
-        verify(mockOrderlyAPI).getRunnableReportNames(eq(mapOf()))
+        verify(mockOrderlyAPI).getRunnableReportNames(eq(mapOf("show_all" to "true")))
         verify(mockOrderlyAPI).getReportParameters(eq("test1"), eq(mapOf()))
     }
 
@@ -158,7 +158,7 @@ class WorkflowLogicTests
     {
         val csvReader = """
             report,disease,year,age
-            SingleDefaultParam,HepB,2020,5 
+            SingleDefaultParam,HepB,2020,5
             SingleDefaultParam,,,
             SingleNoDefaultParam,,,
             TwoParamsOneDefault,,2021,
@@ -168,7 +168,7 @@ class WorkflowLogicTests
         """.trimIndent().reader()
 
         val mockOrderlyAPI = mock<OrderlyServerAPI> {
-            on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
+            on { getRunnableReportNames(eq(mapOf("show_all" to "true", "branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
                     "SingleDefaultParam", "SingleNoDefaultParam", "TwoParamsOneDefault", "TwoParamsNoDefault",
                     "ParamNotInFile"
             )
