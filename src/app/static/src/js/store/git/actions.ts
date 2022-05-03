@@ -18,6 +18,18 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
         await api.get('/report/run-metadata')
             .then(({data}) => {
                 context.commit(GitMutation.SetMetadata, data.data)
+                const {branches} = context.state
+                let {selectedBranch} = context.state
+                if (branches.length && !branches.some(branch => branch === selectedBranch)) {
+                    selectedBranch = branches[0]
+                }
+                if (!branches.length) {
+                    selectedBranch = ""
+                }
+                console.log("selected branch action", selectedBranch, context.state.selectedBranch)
+                if (selectedBranch !== context.state.selectedBranch) {
+                    context.dispatch('SelectBranch', selectedBranch)
+                }
             })
     },
 

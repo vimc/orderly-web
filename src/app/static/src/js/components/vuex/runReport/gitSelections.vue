@@ -67,7 +67,7 @@
         selectBranch: (branch: string) => void
         selectCommit: (branch: string) => void
         preSelectBranch: () => void
-        preSelectCommit: () => void
+        // preSelectCommit: () => void
     }
 
     export default Vue.extend<EmptyObject, Methods, Computed, EmptyObject>({
@@ -117,36 +117,36 @@
                     this.selectBranch("")
                 }
             },
-            preSelectCommit() {
-                // const selectedCommitId = this.selectedCommitId
-                // if (selectedCommitId && this.gitCommits.some(commit => commit.id === selectedCommitId)) {
-                //     this.newSelectedCommitId = selectedCommitId;
-                // } else if (this.gitCommits.length && this.gitCommits[0]?.id) {
-                //     this.newSelectedCommitId = this.gitCommits[0].id
-                //     this.selectCommit(this.newSelectedCommitId)
-                // }
-                if (this.gitCommits.length && !this.gitCommits.some(commit => commit.id === this.selectedCommitId)) {
-                    this.selectCommit(this.gitCommits[0].id)
-                }
-                if (!this.gitCommits.length){
-                    this.selectCommit("")
-                }
-            },
-        },
-        watch: {
-            // newSelectedBranch(){
-            //     this.selectBranch(this.newSelectedBranch)
+            // preSelectCommit() {
+            //     // const selectedCommitId = this.selectedCommitId
+            //     // if (selectedCommitId && this.gitCommits.some(commit => commit.id === selectedCommitId)) {
+            //     //     this.newSelectedCommitId = selectedCommitId;
+            //     // } else if (this.gitCommits.length && this.gitCommits[0]?.id) {
+            //     //     this.newSelectedCommitId = this.gitCommits[0].id
+            //     //     this.selectCommit(this.newSelectedCommitId)
+            //     // }
+            //     if (this.gitCommits.length && !this.gitCommits.some(commit => commit.id === this.selectedCommitId)) {
+            //         this.selectCommit(this.gitCommits[0].id)
+            //     }
+            //     if (!this.gitCommits.length){
+            //         this.selectCommit("")
+            //     }
             // },
-            // newSelectedCommitId(){
-            //     this.selectCommit(this.newSelectedCommitId)
-            // },
-            gitBranches(){
-                this.preSelectBranch()
-            },
-            gitCommits(){
-                this.preSelectCommit()
-            }
         },
+        // watch: {
+        //     // newSelectedBranch(){
+        //     //     this.selectBranch(this.newSelectedBranch)
+        //     // },
+        //     // newSelectedCommitId(){
+        //     //     this.selectCommit(this.newSelectedCommitId)
+        //     // },
+        //     gitBranches(){
+        //         this.preSelectBranch()
+        //     },
+        //     gitCommits(){
+        //         this.preSelectCommit()
+        //     }
+        // },
         mounted(){
             if (this.selectedBranch){
                 this.preSelectBranch()
