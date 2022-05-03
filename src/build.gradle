@@ -156,4 +156,6 @@ subprojects {
             println(file("build/classes/test/config.properties").text)
         }
     }
+
+    jar.dependsOn 'copyConfigToResources'
 }
