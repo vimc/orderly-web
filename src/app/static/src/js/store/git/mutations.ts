@@ -26,6 +26,7 @@ export const mutations: MutationTree<GitState> = {
     [GitMutation.SetCommits](state: GitState, payload: GitCommit[]) {
         state.commits = payload;
         if (state.commits.length && !state.commits.some(commit => commit.id === state.selectedCommit)) {
+            console.log("should not fire", state.commits, state.selectedCommit, "after")
             state.selectedCommit = state.commits[0].id
         }
         if (!state.commits.length) {

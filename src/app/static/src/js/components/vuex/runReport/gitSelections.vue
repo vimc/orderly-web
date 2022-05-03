@@ -13,7 +13,7 @@
                         {{ branch }}
                     </option>
                 </select> -->
-                <select id="git-branch" v-model="selectedBranch" class="form-control" @change="selectBranch($event.target.value)">
+                <select id="git-branch" :value="selectedBranch" class="form-control" @change="selectBranch($event.target.value)">
                     <option v-for="branch in gitBranches" :key="branch" :value="branch">
                         {{ branch }}
                     </option>
@@ -28,7 +28,7 @@
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
                 </select> -->
-                <select id="git-commit" v-model="selectedCommitId" @change="selectCommit($event.target.value)"  class="form-control">
+                <select id="git-commit" :value="selectedCommitId" @change="selectCommit($event.target.value)"  class="form-control">
                     <option v-for="commit in gitCommits" :key="commit.id" :value="commit.id">
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
@@ -45,8 +45,8 @@
     import {EmptyObject, GitCommit, RunReportMetadataDependency} from "../../../utils/types";
     import {mapActionByName, mapMutationByName} from "../../utils";
     import {GitAction} from "../../../store/git/actions";
-    import {GitState} from "../../../store/git/git";
-    import {namespace} from "../../../store/runReport/store";
+    // import {GitState} from "../../../store/git/git";
+    // import {namespace} from "../../../store/runReport/store";
     import { GitMutation } from "../../../store/git/mutations";
 
     // interface Data {
@@ -66,7 +66,7 @@
     interface Methods {
         selectBranch: (branch: string) => void
         selectCommit: (branch: string) => void
-        preSelectBranch: () => void
+        // preSelectBranch: () => void
         // preSelectCommit: () => void
     }
 
@@ -94,29 +94,29 @@
             selectBranch: mapActionByName("git", GitAction.SelectBranch),
             // selectCommit: mapActionByName("git", GitAction.SelectCommit),
             selectCommit: mapMutationByName("git", GitMutation.SelectCommit),
-            preSelectBranch() {
-                // const selectedBranch = this.selectedBranch
-                // if (selectedBranch && this.gitBranches.some(branch => branch === selectedBranch)) {
-                //     this.newSelectedBranch = selectedBranch;
-                // } else if (this.gitBranches.length) {
-                //     this.newSelectedBranch = this.gitBranches[0]
-                // }
-                // if (this.selectedBranch && this.gitBranches.some(branch => branch === this.selectedBranch)) {
-                //     this.newSelectedBranch = this.selectedBranch;
-                //     this.preSelectCommit()
-                // } else if (this.gitBranches.length) {
-                //     this.newSelectedBranch = this.gitBranches[0]
-                //     this.selectBranch(this.newSelectedBranch)
-                // }
-                if (this.gitBranches.length && !this.gitBranches.some(branch => branch === this.selectedBranch)) {
-                    // const selectedBranchExists = this.gitBranches.some(branch => branch === this.selectedBranch)
-                    // this.selectBranch(selectedBranchExists ? this.selectedBranch : this.gitBranches[0])
-                    this.selectBranch(this.gitBranches[0])
-                }
-                if (!this.gitBranches.length){
-                    this.selectBranch("")
-                }
-            },
+            // preSelectBranch() {
+            //     // const selectedBranch = this.selectedBranch
+            //     // if (selectedBranch && this.gitBranches.some(branch => branch === selectedBranch)) {
+            //     //     this.newSelectedBranch = selectedBranch;
+            //     // } else if (this.gitBranches.length) {
+            //     //     this.newSelectedBranch = this.gitBranches[0]
+            //     // }
+            //     // if (this.selectedBranch && this.gitBranches.some(branch => branch === this.selectedBranch)) {
+            //     //     this.newSelectedBranch = this.selectedBranch;
+            //     //     this.preSelectCommit()
+            //     // } else if (this.gitBranches.length) {
+            //     //     this.newSelectedBranch = this.gitBranches[0]
+            //     //     this.selectBranch(this.newSelectedBranch)
+            //     // }
+            //     if (this.gitBranches.length && !this.gitBranches.some(branch => branch === this.selectedBranch)) {
+            //         // const selectedBranchExists = this.gitBranches.some(branch => branch === this.selectedBranch)
+            //         // this.selectBranch(selectedBranchExists ? this.selectedBranch : this.gitBranches[0])
+            //         this.selectBranch(this.gitBranches[0])
+            //     }
+            //     if (!this.gitBranches.length){
+            //         this.selectBranch("")
+            //     }
+            // },
             // preSelectCommit() {
             //     // const selectedCommitId = this.selectedCommitId
             //     // if (selectedCommitId && this.gitCommits.some(commit => commit.id === selectedCommitId)) {
@@ -147,10 +147,10 @@
         //         this.preSelectCommit()
         //     }
         // },
-        mounted(){
-            if (this.selectedBranch){
-                this.preSelectBranch()
-            }
-        }
+        // mounted(){
+        //     if (this.selectedBranch){
+        //         this.preSelectBranch()
+        //     }
+        // }
     });
 </script>
