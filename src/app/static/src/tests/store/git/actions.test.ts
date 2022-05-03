@@ -65,12 +65,4 @@ describe("Git actions", () => {
         expect(commit.mock.calls[1][0]).toBe(GitMutation.SetCommits);
         expect(commit.mock.calls[1][1]).toBe("TEST")
     })
-
-    // it("selects commit", async () => {
-    //     const commit = jest.fn();
-    //     await actions[GitAction.SelectCommit](mockActionContext({commit}), "testcommit")
-    //     expect(commit.mock.calls.length).toBe(1);
-    //     expect(commit.mock.calls[0][0]).toBe(GitMutation.SelectCommit);
-    //     expect(commit.mock.calls[0][1]).toBe("testcommit")
-    // })
 });
