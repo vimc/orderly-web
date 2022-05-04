@@ -95,7 +95,7 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
         errorTemplate: (row: Int, col: Int?, msg: String) -> String
     ): List<String>
     {
-        val reportsQsParams: MutableMap<String, String> = mutableMapOf()
+        val reportsQsParams: MutableMap<String, String> = mutableMapOf("show_all" to "true")
         val parametersQsParams: MutableMap<String, String> = mutableMapOf()
         if (commit != null)
         {

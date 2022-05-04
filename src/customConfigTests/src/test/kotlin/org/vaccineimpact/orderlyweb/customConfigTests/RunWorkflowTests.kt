@@ -543,4 +543,32 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
 
+    @Test
+    fun `can display workflow summary with depends on and missing dependencies`()
+    {
+        createWorkflow()
+        changeToOtherBranch()
+        addReport("use_dependency")
+        addReport("use_dependency_2")
+        addReport("global")
+
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("dependencies")))
+        val dependencies = driver.findElements(By.className("dependencies"))
+        assertThat(dependencies.count()).isEqualTo(2)
+        val reports = driver.findElements(By.className("single-workflow-summary-area"))
+        assertThat(reports.count()).isEqualTo(3)
+        assertThat(reports[0].findElement(By.cssSelector(".missingDependency span")).text).isEqualTo("Missing dependency")
+        assertThat(reports[0].findElement(By.cssSelector(".missingDependency p")).text).isEqualTo("other")
+        assertThat(reports[0].findElements(By.cssSelector(".dependsOn")).count()).isEqualTo(0)
+        assertThat(reports[1].findElement(By.cssSelector(".dependsOn span")).text).isEqualTo("Depends on")
+        assertThat(reports[1].findElement(By.cssSelector(".dependsOn p")).text).isEqualTo("use_dependency")
+        assertThat(reports[1].findElements(By.cssSelector(".missingDependency")).count()).isEqualTo(0)
+        assertThat(reports[2].findElements(By.cssSelector(".dependsOn")).count()).isEqualTo(0)
+        assertThat(reports[2].findElements(By.cssSelector(".missingDependency")).count()).isEqualTo(0)
+    }
+
 }

@@ -919,6 +919,7 @@
     <ID>UnsafeCallOnNullableType:DocumentController.kt$DocumentController$context.splat()!!</ID>
     <ID>UnsafeCallOnNullableType:ErrorHandler.kt$ErrorHandler$error.cause!!</ID>
     <ID>UnsafeCallOnNullableType:GithubApiClientAuthHelper.kt$GithubApiClientAuthHelper$user!!</ID>
+    <ID>UnsafeCallOnNullableType:GithubApiClientAuthHelper.kt$GithubApiClientAuthHelper$github!!</ID>
     <ID>UnsafeCallOnNullableType:OkHttpMontaguAPIClient.kt$OkHttpMontaguAPIClient$response.body!!</ID>
     <ID>UnsafeCallOnNullableType:OnetimeTokenController.kt$OnetimeTokenController$profile!!</ID>
     <ID>UnsafeCallOnNullableType:OrderlyServerAPI.kt$OrderlyServer$response.body!!</ID>

@@ -81,7 +81,7 @@ class ReportTests : IntegrationTest()
         val permissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
         val allowedChecker = APIPermissionChecker(url, permissions, ContentTypes.json, HttpMethod.delete)
         response = allowedChecker.requestWithPermissions(permissions)
-        assertThat(response.statusCode).isEqualTo(400)
+        assertThat(response.statusCode).isEqualTo(200)
     }
 
     @Test

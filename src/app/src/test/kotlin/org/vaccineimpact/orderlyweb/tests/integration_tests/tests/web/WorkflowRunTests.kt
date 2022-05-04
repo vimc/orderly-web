@@ -293,7 +293,7 @@ class WorkflowRunTests : IntegrationTest()
         --XXXX
         Content-Disposition: form-data; name="file"; filename="test.csv"
         Content-Type: text/csv
-        
+
         report
         global
         minimal
@@ -333,10 +333,11 @@ class WorkflowRunTests : IntegrationTest()
         --XXXX
         Content-Disposition: form-data; name="file"; filename="test.csv"
         Content-Type: text/csv
-        
+
         report,nmin
         other,1
         other,2
+        minimal,
         --XXXX--
         """.trimIndent()
         val response = webRequestHelper.requestWithSessionCookie(
@@ -351,7 +352,7 @@ class WorkflowRunTests : IntegrationTest()
         assertJsonContentType(response)
 
         val reports = JSONValidator.getData(response.text) as ArrayNode
-        assertThat(reports.count()).isEqualTo(2)
+        assertThat(reports.count()).isEqualTo(3)
         val report1 = reports[0]
         assertThat(report1["name"].asText()).isEqualTo("other")
         assertThat(report1["params"]["nmin"].asText()).isEqualTo("1")
@@ -359,6 +360,10 @@ class WorkflowRunTests : IntegrationTest()
         val report2 = reports[1]
         assertThat(report2["name"].asText()).isEqualTo("other")
         assertThat(report2["params"]["nmin"].asText()).isEqualTo("2")
+
+        val report3 = reports[2]
+        assertThat(report3["name"].asText()).isEqualTo("minimal")
+        assertThat(report3["params"].isEmpty(null)).isTrue()
     }
 
     @Test
@@ -369,7 +374,7 @@ class WorkflowRunTests : IntegrationTest()
         --XXXX
         Content-Disposition: form-data; name="file"; filename="test.csv"
         Content-Type: text/csv
-        
+
         BADHEADER,disease,year
         test1,HepB,2020
         --XXXX--
@@ -397,7 +402,7 @@ class WorkflowRunTests : IntegrationTest()
         --XXXX
         Content-Disposition: form-data; name="file"; filename="test.csv"
         Content-Type: text/csv
-        
+
         report,nmin
         other,1
         other,
@@ -482,7 +487,7 @@ class WorkflowRunTests : IntegrationTest()
                 ContentTypes.json,
                 HttpMethod.post,
                 """{
-                "ref": "$ref", 
+                "ref": "$ref",
                 "reports": [
                 {"name": "global", "params": {"nmin": "20"}},
                 {"name": "global", "params": {"nmin": "10"}}

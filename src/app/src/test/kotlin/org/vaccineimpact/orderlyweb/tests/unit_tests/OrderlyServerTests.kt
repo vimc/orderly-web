@@ -418,7 +418,7 @@ class OrderlyServerTests
         val mockResponse = """{"data": [
                 {"name": "param1", "value": "1"},
                 {"name": "param2", "value": "2"}
-            ], 
+            ],
             "errors": null, "status": "success"}""".trimMargin()
 
         val mockQueryParams = mapOf("commit" to "testCommit")
