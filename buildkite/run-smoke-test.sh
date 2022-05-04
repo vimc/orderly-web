@@ -34,3 +34,6 @@ sleep 3
 response=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8888/api/v1)
 
 if [[ $response -ne 200 ]]; then exit 1; fi;
+
+# Also smoke test the cli
+$here/../scripts/test-cli.sh
