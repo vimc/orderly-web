@@ -63,7 +63,6 @@
     }
 
     interface Methods {
-        hasParams: (report: WorkflowReportWithDependencies) => boolean
         hasMissingDependencies: (report: WorkflowReportWithDependencies) => boolean
         reportInfo: (reportName: string) => string
     }
@@ -89,10 +88,6 @@
             reportInfo(reportName) {
                 const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
                 return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
-            },
-            hasParams(report) {
-                return (report.param_list && report.param_list.length > 0) ||
-                    (report.default_param_list && report.default_param_list.length > 0)
             },
             hasMissingDependencies(report) {
                 return report.name && this.workflowSummary?.missing_dependencies && this.workflowSummary.missing_dependencies[report.name]?.length
