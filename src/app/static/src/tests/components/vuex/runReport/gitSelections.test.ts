@@ -90,6 +90,30 @@ describe("GitSelections", () => {
         expect(wrapper.find("#git-commit-form-group").exists()).toBe(false);
     });
 
+
+
+    it("dropdown selection reflects git branch and commit selection in store", () => {
+
+        const wrapper = shallowMount(GitSelections, {
+            store: createStore({
+                branches: ["master", "dev"],
+                commits,
+                selectedBranch: "dev",
+                selectedCommit: "commit2"
+            })
+        })
+
+        const branchOptions = wrapper.findAll("#git-branch-form-group select option");
+        expect((branchOptions.at(0).element as HTMLOptionElement).selected).toBe(false);
+        expect(branchOptions.at(1).attributes().value).toBe("dev");
+        expect((branchOptions.at(1).element as HTMLOptionElement).selected).toBe(true);
+
+        const commitOptions = wrapper.findAll("#git-commit-form-group select option");
+        expect((commitOptions.at(0).element as HTMLOptionElement).selected).toBe(false);
+        expect(commitOptions.at(1).attributes().value).toBe("commit2");
+        expect((commitOptions.at(1).element as HTMLOptionElement).selected).toBe(true);
+    });
+
     it("selecting a git branch triggers select branch action", () => {
         const selectBranchMock = jest.fn();
 
