@@ -52,7 +52,7 @@ export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState =
         selectedBranch: "",
         selectedCommit: "",
         ...props,
-        commits: props.commits !== null ? props.commits.map((c) => mockCommit(c)) : [],
+        commits: props?.commits && props.commits !== null ? props.commits.map((c) => mockCommit(c)) : [],
         metadata: props.metadata !== null ? {
             instances_supported: false,
             git_supported: true,
