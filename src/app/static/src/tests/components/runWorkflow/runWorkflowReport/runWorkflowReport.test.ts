@@ -20,7 +20,10 @@ export const gitState: GitState = {
         instances: {"source": []},
         changelog_types: ["published", "internal"]
     },
-    branches: ["master", "dev"]
+    branches: ["master", "dev"],
+    commits: [],
+    selectedBranch: "",
+    selectedCommit: "",
 };
 
 const createStore = (state: Partial<GitState> = gitState) => {

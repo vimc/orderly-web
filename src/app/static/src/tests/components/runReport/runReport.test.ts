@@ -25,7 +25,7 @@ describe("runReport", () => {
     const minimal = {name: "minimal", date: new Date().toISOString()};
     const global = {name: "global", date: null};
 
-    const gitState: GitState = {
+    const gitState: GitState = mockGitState({
         metadata: {
             git_supported: true,
             instances_supported: false,
@@ -33,7 +33,7 @@ describe("runReport", () => {
             changelog_types: ["internal", "public"]
         },
         branches: ["master", "dev"]
-    }
+    })
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
@@ -139,7 +139,7 @@ describe("runReport", () => {
         expect(wrapper.findComponent(ReportList).props("selectedReport")).toBe(minimal);
     });
 
-    it("shows instances if instances supported", async() => {
+    it("shows instances if instances supported", async () => {
         const wrapper = mount(RunReport, {
             store: createStore({
                 metadata: {
@@ -611,7 +611,7 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.changelog.message).toBe("New message")
 
         const changelogMessage = wrapper.findComponent(changeLog).find("#changelog-message")
-        const changelogType= wrapper.findComponent(changeLog).find("#changelog-type")
+        const changelogType = wrapper.findComponent(changeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)

@@ -15,6 +15,9 @@ describe(`runWorkflowRun`, () => {
     const source = ["prod", "uat"]
     const gitState: GitState = {
         branches: [],
+        commits: [],
+        selectedBranch: "",
+        selectedCommit: "",
         metadata: {
             changelog_types: changelogTypes,
             git_supported: true,

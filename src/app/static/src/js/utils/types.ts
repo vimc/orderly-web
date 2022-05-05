@@ -155,4 +155,10 @@ export interface RunnerRootState {
     git: GitState
 }
 
+export interface GitCommit {
+    id: string,
+    date_time: string,
+    age:number
+}
+
 export type EmptyObject = Record<string, never>
