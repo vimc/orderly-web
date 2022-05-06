@@ -31,7 +31,7 @@ describe(`runWorkflow`, () => {
         git_commit: "commit"
     });
 
-    const gitState: GitState = {
+    const gitState: GitState = mockGitState({
         branches: ["master", "dev"],
         metadata: {
             changelog_types: ["public", "internal"],
@@ -42,7 +42,7 @@ describe(`runWorkflow`, () => {
                 annex: ["one"]
             }
         }
-    }
+    })
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({

@@ -1,4 +1,4 @@
-import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
+import {RunReportMetadata, RunWorkflowMetadata, GitCommit} from "../js/utils/types";
 import {GitState} from "../js/store/git/git";
 import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
@@ -36,10 +36,23 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
     }
 };
 
+export const mockCommit = (props: Partial<GitCommit> = {}): GitCommit => {
+    const date = new Date()
+    return {
+        id: "id",
+        date_time: date.toTimeString(),
+        age: 10,
+        ...props
+    }
+};
+
 export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState => {
     return {
         branches: ["master", "dev"],
+        selectedBranch: "",
+        selectedCommit: "",
         ...props,
+        commits: props?.commits && props.commits !== null ? props.commits.map((c) => mockCommit(c)) : [],
         metadata: props.metadata !== null ? {
             instances_supported: false,
             git_supported: true,
