@@ -60,7 +60,7 @@
     import Vue from "vue";
     import vSelect from "vue-select";
     import {api} from "../../utils/api";
-    import {workflowRunDetailsToMetadata, formatDate, interpretStatus} from "../../utils/helpers.ts";
+    import {workflowRunDetailsToMetadata, formatDate, interpretReportStatus} from "../../utils/helpers.ts";
     import ErrorInfo from "../errorInfo.vue";
     import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
     import {
@@ -143,7 +143,7 @@
                 }
             },
             workflowRunStatus(newWorkflowRunStatus) {
-                const interpretStatusState = interpretStatus(newWorkflowRunStatus.status)
+                const interpretStatusState = interpretReportStatus(newWorkflowRunStatus.status)
                 if (interpretStatusState === "Failed" || interpretStatusState === "Complete") {
                     this.stopPolling();
                 }

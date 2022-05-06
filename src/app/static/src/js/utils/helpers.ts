@@ -47,7 +47,7 @@ export function formatDate(date) {
     return longTimestamp(new Date(date));
 }
 
-export const runninReportStates = {
+export const runningReportStates = {
     failStates: ["error", "orphan", "impossible", "missing", "interrupted"],
     notStartedStates: ["queued", "deferred", "impossible", "missing"],
     nonFailStateMessages: {
@@ -57,8 +57,8 @@ export const runninReportStates = {
     }
 }
 
-export function interpretStatus(status) {
-    const { nonFailStateMessages, failStates } = runninReportStates
+export function interpretReportStatus(status) {
+    const {nonFailStateMessages, failStates} = runningReportStates
     if (Object.keys(nonFailStateMessages).includes(status)) {
         return nonFailStateMessages[status]
     } else if (

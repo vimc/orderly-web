@@ -28,7 +28,7 @@
                                          :report-index="index"></run-workflow-parameters>
             </td>
             <td :class="statusColour(report.status)" class="p-2">
-                {{ interpretStatus(report.status) }}
+                {{ interpretReportStatus(report.status) }}
             </td>
             <td v-if="report.date" class="p-2">
                 {{ formatDate(report.date) }}
@@ -50,7 +50,7 @@
     import runWorkflowParameters from "./runWorkflowParameters.vue"
     import {WorkflowRunStatus, WorkflowSummaryResponse} from "../../utils/types";
     import {buildFullUrl} from "../../utils/api";
-    import {formatDate, runninReportStates, interpretStatus, hasParams} from "../../utils/helpers.ts";
+    import {formatDate, runningReportStates, interpretReportStatus, hasParams} from "../../utils/helpers.ts";
 
     interface Props {
         workflowRunStatus: WorkflowRunStatus
@@ -61,7 +61,7 @@
         reportVersionHref: (name: string, version: string) => string;
         statusColour: (status: string) => string;
         viewLogLinkVisible: (status: string) => boolean;
-        interpretStatus: (status: string) => string;
+        interpretReportStatus: (status: string) => string;
         formatDate: (date: string) => string;
     }
 
@@ -98,17 +98,17 @@
             statusColour(status) {
                 if (["queued", "running"].includes(status)) {
                     return "text-secondary";
-                } else if (runninReportStates.failStates.includes(status)) {
+                } else if (runningReportStates.failStates.includes(status)) {
                     return "text-danger";
                 } else {
                     return "";
                 }
             },
             viewLogLinkVisible(status) {
-                return !runninReportStates.notStartedStates.includes(status);
+                return !runningReportStates.notStartedStates.includes(status);
             },
-            interpretStatus(status) {
-                return interpretStatus(status)
+            interpretReportStatus(status) {
+                return interpretReportStatus(status)
             },
             formatDate(date) {
                 return formatDate(date)
