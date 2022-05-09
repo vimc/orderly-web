@@ -36,4 +36,4 @@ response=$(curl --write-out %{http_code} --silent --output /dev/null http://loca
 if [[ $response -ne 200 ]]; then exit 1; fi;
 
 # Also smoke test the cli
-$here/../scripts/test-cli.sh
+$here/../scripts/test-cli.sh add-users test@test.com
