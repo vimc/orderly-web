@@ -86,6 +86,12 @@ class RunReportPageTests : SeleniumTest()
 
         val gitBranch2 = driver.findElement(By.id("git-branch"))
         assertThat(gitBranch2.getAttribute("value")).isEqualTo("other")
+
+        // clicking Refresh Git button resets git branch back to master
+        driver.findElement(By.id("git-refresh-btn")).click()
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#git-branch"), "master"))
+        val gitBranch3 = driver.findElement(By.id("git-branch"))
+        assertThat(gitBranch3.getAttribute("value")).isEqualTo("master")
     }
 
 }

@@ -54,7 +54,6 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
                 const gitBranches = data.data.map(branch => branch.name);
                 context.commit(GitMutation.SetFetchedGit, gitBranches)
                 context.dispatch('ManageUpdatedBranches')
-                // if the selected branch is still among the new fetched branches, do we still need to request the commits again?
             })
     },
 }
