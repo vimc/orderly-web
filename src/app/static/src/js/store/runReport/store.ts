@@ -3,6 +3,7 @@ import Vuex, {StoreOptions} from "vuex";
 import {git} from "../git/git";
 import {RunnerRootState} from "../../utils/types";
 import {mutations} from "./mutations";
+import {reports} from "../reports/reports";
 
 export type RunReportTabName = "RunReport" | "ReportLogs"
 
@@ -11,7 +12,8 @@ export interface RunReportRootState extends RunnerRootState {
 }
 
 export const namespace = {
-    git: "git"
+    git: "git",
+    reports: "reports"
 }
 
 export const storeOptions: StoreOptions<RunReportRootState> = {
@@ -19,7 +21,8 @@ export const storeOptions: StoreOptions<RunReportRootState> = {
         selectedTab: "RunReport"
     } as RunReportRootState,
     modules: {
-        [namespace.git]: git
+        [namespace.git]: git,
+        [namespace.reports]: reports,
     },
     mutations
 };

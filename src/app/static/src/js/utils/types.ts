@@ -1,4 +1,6 @@
 import {GitState} from "../store/git/git";
+import {ReportsState} from "../store/reports/reports";
+import {Payload} from "vuex";
 
 export interface Parameter {
     name: string,
@@ -152,7 +154,8 @@ export interface WorkflowSummaryResponse {
 }
 
 export interface RunnerRootState {
-    git: GitState
+    git: GitState,
+    reports: ReportsState
 }
 
 export interface GitCommit {
@@ -162,3 +165,11 @@ export interface GitCommit {
 }
 
 export type EmptyObject = Record<string, never>
+
+export type Dict<V> = { [k: string]: V }
+
+export type ComputedWithType<T> = () => T;
+
+export interface PayloadWithType<T> extends Payload {
+    payload: T
+}

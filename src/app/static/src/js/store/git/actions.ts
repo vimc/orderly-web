@@ -3,6 +3,7 @@ import {GitState} from "./git";
 import {api} from "../../utils/api";
 import {GitMutation} from "./mutations";
 import {RunnerRootState} from "../../utils/types";
+import {ReportsAction} from "../reports/actions";
 
 export enum GitAction {
     FetchMetadata = "FetchMetadata",
@@ -32,11 +33,17 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
     },
 
     async [GitAction.SelectBranch](context, selectedBranch: string) {
-        context.commit(GitMutation.SelectBranch, selectedBranch)
+        const {rootState, commit, dispatch} = context
+
+        commit(GitMutation.SelectBranch, selectedBranch)
         if (selectedBranch) {
             await api.get(`/git/branch/${selectedBranch}/commits/`)
-                .then(({ data }) => {
-                    context.commit(GitMutation.SetCommits, data.data);
+                .then(({data}) => {
+                    commit(GitMutation.SetCommits, data.data);
+
+                    if (rootState.git.selectedCommit) {
+                        dispatch(`reports/${ReportsAction.AvailableReports}`, false, {root: true})
+                    }
                 })
         }
     },
