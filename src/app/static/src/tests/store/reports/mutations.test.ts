@@ -9,6 +9,7 @@ describe("reports mutations", () => {
     it("can set reports", () => {
         mutations[ReportsMutation.FetchReports](state, {payload: [report]})
         expect(state.reports).toStrictEqual([report])
+        expect(state.selectedReport).toEqual(report)
     })
 
     it("can sort reports", () => {
@@ -24,6 +25,8 @@ describe("reports mutations", () => {
             {name: "ballReport", date: "2021-04-21T09:04:00.000Z"},
             {name: "report", date: "2021-04-21T09:02:00.000Z"}
         ])
+
+        expect(state.selectedReport).toEqual({name: "appleReport", date: "2021-04-21T09:10:00.000Z"})
     })
 
     it("can set selectedReport", () => {

@@ -4,6 +4,7 @@ import {api} from "../../utils/api";
 import {GitMutation} from "./mutations";
 import {RunnerRootState} from "../../utils/types";
 import {ReportsAction} from "../reports/actions";
+import {ReportsMutation} from "../reports/mutations";
 
 export enum GitAction {
     FetchMetadata = "FetchMetadata",

@@ -30,9 +30,8 @@ describe("vuex reportList action", () => {
         expect(mockAxios.history.get.length).toBe(1)
         expect(mockAxios.history.get[0].url).toBe( "http://app/reports/runnable/?branch=master&commit=c3768eb")
 
-        expect(commit.mock.calls.length).toBe(2)
-        expect(commit.mock.calls[0]).toEqual([{type: ReportsMutation.SelectReport, payload: null}])
-        expect(commit.mock.calls[1]).toEqual([{type: ReportsMutation.FetchReports, payload: report2}])
+        expect(commit.mock.calls.length).toBe(1)
+        expect(commit.mock.calls[0]).toEqual([{type: ReportsMutation.FetchReports, payload: report2}])
     })
 
     it("does commit error when fetching reports", async() => {
@@ -53,8 +52,7 @@ describe("vuex reportList action", () => {
         await actions.GetReports(mockActionContext({commit, rootState}), false)
         expect(mockAxios.history.get.length).toBe(1)
 
-        expect(commit.mock.calls.length).toBe(2)
-        expect(commit.mock.calls[0]).toEqual([{type: ReportsMutation.SelectReport, payload: null}])
-        expect(commit.mock.calls[1]).toEqual([{type: ReportsMutation.FetchReportsError, payload: "Test Error"}])
+        expect(commit.mock.calls.length).toBe(1)
+        expect(commit.mock.calls[0]).toEqual([{type: ReportsMutation.FetchReportsError, payload: "Test Error"}])
     })
 })

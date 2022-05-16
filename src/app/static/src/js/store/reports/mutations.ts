@@ -13,13 +13,17 @@ export const mutations: MutationTree<ReportsState> = {
 
     [ReportsMutation.FetchReports](state: ReportsState, action: PayloadWithType<ReportWithDate[]>) {
         state.reports = [...action.payload].sort(reportComparator)
+
+        if (state.reports) {
+            state.selectedReport = state.reports[0]
+        }
     },
 
     [ReportsMutation.FetchReportsError](state: ReportsState, action: PayloadWithType<Error>) {
         state.reportsError = action.payload
     },
 
-    [ReportsMutation.SelectReport](state: ReportsState, payload: ReportWithDate | null) {
+    [ReportsMutation.SelectReport](state: ReportsState, payload: ReportWithDate) {
         state.selectedReport = payload
     }
 }

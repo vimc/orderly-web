@@ -13,9 +13,7 @@ type ReportsActionHandler<T> = (store: ActionContext<ReportsState, RunnerRootSta
 export const actions: ActionTree<ReportsState, RunnerRootState> & Record<ReportsAction, ReportsActionHandler<any>> = {
 
     async [ReportsAction.GetReports](context, showAllReports: boolean) {
-        const {rootState, commit} = context
-
-        commit({type: "SelectReport", payload: null})
+        const {rootState} = context
 
         const showAllParam = showAllReports
             ? "&show_all=true"
@@ -23,7 +21,7 @@ export const actions: ActionTree<ReportsState, RunnerRootState> & Record<Reports
 
         const query = rootState.git.metadata.git_supported
             ? `?branch=${rootState.git.selectedBranch}&commit=${rootState.git.selectedCommit}${showAllParam}`
-            : '';
+            : "";
 
         await api<ReportsMutation, ReportsMutation>(context)
             .withSuccess(ReportsMutation.FetchReports)
