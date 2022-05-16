@@ -16,9 +16,7 @@ export const mutations: MutationTree<ReportsState> = {
     },
 
     [ReportsMutation.FetchReportsError](state: ReportsState, action: PayloadWithType<Error>) {
-        console.log(action.payload)
         state.reportsError = action.payload
-        console.log(state.reportsError)
     },
 
     [ReportsMutation.SelectReport](state: ReportsState, payload: ReportWithDate | null) {
