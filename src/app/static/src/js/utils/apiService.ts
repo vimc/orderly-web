@@ -13,7 +13,7 @@ export interface API<S, T> {
     ignoreSuccess: () => API<S, T>
     ignoreError: () => API<S, T>
 
-    postAndReturn<E>(url: string, data: any, config: {}): Promise<void | ResponseWithType<E>>
+    postAndReturn<E>(url: string, data: any, config: Record<string, unknown>): Promise<void | ResponseWithType<E>>
 
     get<E>(url: string, config : {}): Promise<void | ResponseWithType<E>>
 
