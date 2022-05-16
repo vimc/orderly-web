@@ -5,17 +5,17 @@ import {api} from "../../utils/apiService";
 import {ReportsMutation} from "./mutations";
 
 export enum ReportsAction {
-    AvailableReports = "AvailableReports"
+    GetReports = "GetReports"
 }
 
 type ReportsActionHandler<T> = (store: ActionContext<ReportsState, RunnerRootState>, payload: T) => void
 
 export const actions: ActionTree<ReportsState, RunnerRootState> & Record<ReportsAction, ReportsActionHandler<any>> = {
 
-    async [ReportsAction.AvailableReports](context, showAllReports: boolean) {
+    async [ReportsAction.GetReports](context, showAllReports: boolean) {
         const {rootState, commit} = context
 
-        commit(ReportsMutation.SelectReport, null)
+        commit({type: "SelectReport", payload: null})
 
         const showAllParam = showAllReports
             ? "&show_all=true"
@@ -26,8 +26,8 @@ export const actions: ActionTree<ReportsState, RunnerRootState> & Record<Reports
             : '';
 
         await api<ReportsMutation, ReportsMutation>(context)
-            .withSuccess(ReportsMutation.AvailableReport)
-            .withError(ReportsMutation.AvailableReportError)
+            .withSuccess(ReportsMutation.FetchReports)
+            .withError(ReportsMutation.FetchReportsError)
             .get(`/reports/runnable/${query}`)
     }
 }

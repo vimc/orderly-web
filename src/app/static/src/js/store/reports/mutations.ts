@@ -1,21 +1,22 @@
 import {MutationTree} from "vuex";
 import {ReportsState} from "./reports";
 import {PayloadWithType, ReportWithDate} from "../../utils/types";
+import {reportComparator} from "../../utils/helpers";
 
 export enum ReportsMutation {
-    AvailableReport = "SelectedReport",
-    AvailableReportError = "ReportError",
+    FetchReports = "FetchReports",
+    FetchReportsError = "FetchReportsError",
     SelectReport = "SelectReport"
 }
 
 export const mutations: MutationTree<ReportsState> = {
 
-    [ReportsMutation.AvailableReport](state: ReportsState, action: PayloadWithType<ReportWithDate[]>) {
-        state.availableReports = [...action.payload].sort((a, b) => a.name.localeCompare(b.name))
+    [ReportsMutation.FetchReports](state: ReportsState, action: PayloadWithType<ReportWithDate[]>) {
+        state.reports = [...action.payload].sort(reportComparator)
     },
 
-    [ReportsMutation.AvailableReportError](state: ReportsState, action: PayloadWithType<string>) {
-        state.availableReportsError = action.payload
+    [ReportsMutation.FetchReportsError](state: ReportsState, action: PayloadWithType<string>) {
+        state.reportsError = action.payload
     },
 
     [ReportsMutation.SelectReport](state: ReportsState, payload: ReportWithDate | null) {

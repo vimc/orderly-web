@@ -42,7 +42,7 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
                     commit(GitMutation.SetCommits, data.data);
 
                     if (rootState.git.selectedCommit) {
-                        dispatch(`reports/${ReportsAction.AvailableReports}`, false, {root: true})
+                        dispatch(`reports/${ReportsAction.GetReports}`, false, {root: true})
                     }
                 })
         }

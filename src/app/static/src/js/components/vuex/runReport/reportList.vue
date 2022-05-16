@@ -40,7 +40,7 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
     computed: {
         ...mapState({
             selectedReport: (state: RunnerRootState) => state.reports.selectedReport,
-            reports: (state: RunnerRootState) => state.reports.availableReports
+            reports: (state: RunnerRootState) => state.reports.reports
         })
     },
     methods: {

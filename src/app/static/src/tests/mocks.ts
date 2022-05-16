@@ -2,6 +2,7 @@ import {RunReportMetadata, RunWorkflowMetadata, GitCommit} from "../js/utils/typ
 import {GitState} from "../js/store/git/git";
 import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
+import {ReportsState} from "../js/store/reports/reports";
 
 export type RecursivePartial<T> = {
     [P in keyof T]?:
@@ -46,7 +47,7 @@ export const mockCommit = (props: Partial<GitCommit> = {}): GitCommit => {
     }
 };
 
-export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState => {
+export const mockGitState = (props: RecursivePartial<GitState> = {} ): GitState => {
     return {
         branches: ["master", "dev"],
         selectedBranch: "",
@@ -67,7 +68,8 @@ export const mockRunReportRootState = (props: RecursivePartial<RunReportRootStat
     return {
         selectedTab: "RunReport",
         ...props,
-        git: mockGitState(props.git)
+        git: mockGitState(props.git),
+        reports: mockReportsState()
     }
 }
 
@@ -80,5 +82,26 @@ export const mockActionContext = <S, R>(context: Partial<ActionContext<S, R>> = 
         getters: {},
         rootGetters: {},
         ...context
+    }
+}
+
+export const mockReportsState = (props: Partial<ReportsState> = {}): ReportsState => {
+    return {
+        selectedReport: {
+            name: "report",
+            date: null
+        },
+        reportsError: "",
+        reports: [{name: "report", date: null}],
+        ...props
+    }
+};
+
+export const mockSuccess = (data: any) => {
+    console.log(data)
+    return {
+        data,
+        status: "success",
+        errors: []
     }
 }

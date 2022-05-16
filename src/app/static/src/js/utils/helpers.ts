@@ -43,4 +43,8 @@ export function workflowRunDetailsToMetadata(details: WorkflowRun): RunWorkflowM
     }
 }
 
+export const reportComparator = (a, b) => {
+    return a.name.localeCompare(b.name)
+}
+
 

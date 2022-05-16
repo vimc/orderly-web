@@ -4,15 +4,15 @@ import {actions} from "./actions";
 import {mutations} from "./mutations";
 
 export interface ReportsState {
-    availableReports: ReportWithDate[],
-    availableReportsError: string
+    reports: ReportWithDate[],
+    reportsError: string
     selectedReport: ReportWithDate | null
 }
 
 export const initialReportState = (): ReportsState => {
     return {
-        availableReports: [],
-        availableReportsError: "",
+        reports: [],
+        reportsError: "",
         selectedReport: null
     }
 }

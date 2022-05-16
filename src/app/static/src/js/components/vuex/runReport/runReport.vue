@@ -32,7 +32,7 @@
         },
         computed: {
             showReports: mapStateProp<ReportsState, number>("reports", (state: ReportsState) => {
-                return state.availableReports.length
+                return state.reports.length
             })
         }
     })
