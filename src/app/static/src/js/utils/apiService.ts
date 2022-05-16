@@ -15,7 +15,7 @@ export interface API<S, T> {
 
     postAndReturn<E>(url: string, data: any, config: Record<string, unknown>): Promise<void | ResponseWithType<E>>
 
-    get<E>(url: string, config : {}): Promise<void | ResponseWithType<E>>
+    get<E>(url: string, config : Record<string, unknown>): Promise<void | ResponseWithType<E>>
 
     delete(url: string): Promise<void | true>
 }
