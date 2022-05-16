@@ -1,18 +1,18 @@
-import {ReportWithDate, RunnerRootState} from "../../utils/types";
+import {ReportWithDate, RunnerRootState, Error} from "../../utils/types";
 import {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 
 export interface ReportsState {
     reports: ReportWithDate[],
-    reportsError: string
+    reportsError: Error | null,
     selectedReport: ReportWithDate | null
 }
 
 export const initialReportState = (): ReportsState => {
     return {
         reports: [],
-        reportsError: "",
+        reportsError: null,
         selectedReport: null
     }
 }

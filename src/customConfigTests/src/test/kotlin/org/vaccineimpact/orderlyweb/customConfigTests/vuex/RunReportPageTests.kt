@@ -86,6 +86,29 @@ class RunReportPageTests : SeleniumTest()
 
         val gitBranch2 = driver.findElement(By.id("git-branch"))
         assertThat(gitBranch2.getAttribute("value")).isEqualTo("other")
+
+        assertThat(reportIsAvailable("minimal")).isFalse()
+        assertThat(reportIsAvailable("global")).isFalse()
+        assertThat(reportIsAvailable("other")).isTrue()
+        assertThat(reportIsAvailable("view")).isTrue()
     }
 
+    private fun reportIsAvailable(reportName: String): Boolean
+    {
+        val typeahead = driver.findElement(By.id("report"))
+        val input = typeahead.findElement(By.tagName("input"))
+        input.clear()
+        input.sendKeys(reportName)
+
+        val listItem = typeahead.findElements(By.tagName("li"))[0]
+        val foundReportName = if (listItem.getAttribute("role") == "option")
+        {
+            listItem.findElements(By.tagName("span"))[0].getAttribute("innerHTML")
+        }
+        else
+        {
+            null
+        }
+        return foundReportName == reportName
+    }
 }

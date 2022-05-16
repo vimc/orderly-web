@@ -8,10 +8,10 @@ export interface ResponseWithType<E> {
 }
 
 export interface API<S, T> {
-    withSuccess: (type: S) => API<S, T>
     withError: (type: T) => API<S, T>
-    ignoreSuccess: (type: S) => API<S, T>
-    ignoreError: (type: S) => API<S, T>
+    withSuccess: (type: S) => API<S, T>
+    ignoreSuccess: () => API<S, T>
+    ignoreError: () => API<S, T>
 
     postAndReturn<E>(url: string, data: any, config: {}): Promise<void | ResponseWithType<E>>
 
@@ -46,9 +46,10 @@ export class ApiService<S extends string, T extends string> implements API<S, T>
         return this;
     }
 
-    withError = (type) => {
-        this._onError = (error) => {
-            this._commit({type: type, payload: error});
+    withError = (type: T) => {
+        this._onError = (error: Response) => {
+            const toCommit = {type: type, payload: error}
+            this._commit(toCommit);
         }
         return this;
     }
@@ -70,7 +71,7 @@ export class ApiService<S extends string, T extends string> implements API<S, T>
         }
 
         const failure = e.response && e.response.data;
-        this._commit(failure)
+        this._onError(failure);
     };
 
     private handleAxiosResponse(promise: Promise<AxiosResponse>) {

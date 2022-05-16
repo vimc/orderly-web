@@ -2,6 +2,7 @@ import {mockActionContext, mockGitState, mockRunReportRootState} from "../../moc
 import {mockAxios} from "../../mockAxios";
 import {actions, GitAction} from "../../../js/store/git/actions";
 import {GitMutation} from "../../../js/store/git/mutations";
+import {ReportsMutation} from "../../../js/store/reports/mutations";
 
 describe("Git actions", () => {
     beforeEach(() => {
@@ -66,5 +67,7 @@ describe("Git actions", () => {
         expect(commit.mock.calls[0][1]).toBe("testbranch")
         expect(commit.mock.calls[1][0]).toBe(GitMutation.SetCommits);
         expect(commit.mock.calls[1][1]).toBe("TEST")
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("reports/GetReports")
     })
 });

@@ -34,4 +34,27 @@ describe("vuex reportList action", () => {
         expect(commit.mock.calls[0]).toEqual([{type: ReportsMutation.SelectReport, payload: null}])
         expect(commit.mock.calls[1]).toEqual([{type: ReportsMutation.FetchReports, payload: report2}])
     })
+
+    it("does commit error when fetching reports", async() => {
+        mockAxios.onGet("http://app/reports/runnable/?branch=master&commit=c3768eb")
+            .reply(500, "Test Error");
+
+        const rootState = mockRunReportRootState(
+            {
+                git: mockGitState({
+                    selectedCommit: "c3768eb",
+                    selectedBranch: "master",
+                    metadata: {git_supported: true}
+                })
+            })
+
+        const commit = jest.fn()
+
+        await actions.GetReports(mockActionContext({commit, rootState}), false)
+        expect(mockAxios.history.get.length).toBe(1)
+
+        expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0]).toEqual([{type: ReportsMutation.SelectReport, payload: null}])
+        expect(commit.mock.calls[1]).toEqual([{type: ReportsMutation.FetchReportsError, payload: "Test Error"}])
+    })
 })

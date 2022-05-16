@@ -91,17 +91,25 @@ export const mockReportsState = (props: Partial<ReportsState> = {}): ReportsStat
             name: "report",
             date: null
         },
-        reportsError: "",
+        reportsError: null,
         reports: [{name: "report", date: null}],
         ...props
     }
 };
 
 export const mockSuccess = (data: any) => {
-    console.log(data)
     return {
         data,
         status: "success",
         errors: []
     }
 }
+
+export const mockFailure = (errorMsg: any) => {
+    return {
+        data: {},
+        status: "failure",
+        errors: errorMsg
+    }
+}
+
