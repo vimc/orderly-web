@@ -7,15 +7,19 @@ apply plugin: 'application'
 mainClassName = "org.vaccineimpact.orderlyweb.userCLI.AppKt"
 
 dependencies {
-    compile project(":app")
-    compile "com.offbytwo:docopt:0.6.0.20150202"
+    implementation project(":app")
 
-    testCompile "org.assertj:assertj-core:3.6.2"
-    testCompile "org.mockito:mockito-core:2.+"
-    testCompile "com.nhaarman:mockito-kotlin:1.3.0"
+    implementation "com.offbytwo:docopt:0.6.0.20150202"
+    implementation "org.jooq:jooq:3.13.5"
+    implementation "org.jooq:jooq-meta:3.13.5"
 
-    testCompile project(":databaseInterface")
-    testCompile project(":testHelpers")
+    testImplementation "org.assertj:assertj-core:3.6.2"
+    testImplementation "org.mockito:mockito-core:2.+"
+    testImplementation "com.nhaarman:mockito-kotlin:1.3.0"
+    testImplementation "junit:junit:4.12"
+
+    testImplementation project(":databaseInterface")
+    testImplementation project(":testHelpers")
 }
 
 def cli_docker_version = 'UNKNOWN'

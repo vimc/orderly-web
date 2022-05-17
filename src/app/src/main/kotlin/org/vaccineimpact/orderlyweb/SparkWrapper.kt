@@ -64,7 +64,7 @@ class MethodMatchingFilter(val method: HttpMethod,
 
     override fun handle(request: Request?, response: Response?)
     {
-        if (request?.requestMethod()?.toLowerCase() == method.toString().toLowerCase()) {
+        if (request?.requestMethod()?.lowercase() == method.toString().lowercase()) {
             return filter.handle(request, response)
         }
     }

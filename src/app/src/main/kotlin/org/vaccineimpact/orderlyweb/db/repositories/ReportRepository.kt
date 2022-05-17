@@ -115,7 +115,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .fetch()
 
             return versions.groupBy { r -> r["name"] }.map {
-                it.value.maxBy { r -> r["latestVersion"] as String }
+                it.value.maxByOrNull { r -> r["latestVersion"] as String }
             }.sortedBy { r -> r!![ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }
                     .map { r -> r!!.into(Report::class.java) }
         }

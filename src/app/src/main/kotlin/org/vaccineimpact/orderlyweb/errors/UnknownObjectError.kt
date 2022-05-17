@@ -13,7 +13,7 @@ class UnknownObjectError(id: Any, typeName: Any) : OrderlyWebError(404, listOf(
     {
         fun mangleTypeName(typeName: Any) = typeName
                 .toString()
-                .replace(Regex("[A-Z]"), { "-" + it.value.toLowerCase() })
+                .replace(Regex("[A-Z]"), { "-" + it.value.lowercase() })
                 .trim('-')
     }
 }

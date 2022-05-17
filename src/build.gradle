@@ -2,7 +2,7 @@ group 'org.vaccineimpact'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.4.0'
+    ext.kotlin_version = '1.6.10'
     ext.detekt_version = '1.15.0'
 
     repositories {
@@ -84,7 +84,7 @@ subprojects {
     tasks.detekt.jvmTarget = "1.8"
 
     dependencies {
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
     }
 

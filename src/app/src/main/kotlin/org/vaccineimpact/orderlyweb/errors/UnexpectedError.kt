@@ -16,6 +16,6 @@ class UnexpectedError : OrderlyWebError(500, listOf(ErrorInfo(
 
 private fun newCode(): String
 {
-    fun r(count: Int) = RandomStringUtils.randomAlphabetic(count).toLowerCase()
+    fun r(count: Int) = RandomStringUtils.randomAlphabetic(count).lowercase()
     return "u${r(2)}-${r(3)}-${r(3)}"
 }
