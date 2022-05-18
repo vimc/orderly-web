@@ -6,7 +6,6 @@ import {RunnerRootState} from "../../utils/types";
 
 export enum GitAction {
     FetchMetadata = "FetchMetadata",
-    ManageUpdatedBranches = "ManageUpdatedBranches",
     SelectBranch = "SelectBranch",
     RefreshGit = "RefreshGit"
 }
@@ -19,22 +18,11 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
         await api.get('/report/run-metadata')
             .then(({data}) => {
                 context.commit(GitMutation.SetMetadata, data.data)
-                context.dispatch('ManageUpdatedBranches')
+                const selectedBranch = determineSelectedBranch(context)
+                if (selectedBranch != null) {
+                    context.dispatch('SelectBranch', selectedBranch)
+                }
             })
-    },
-
-    [GitAction.ManageUpdatedBranches](context) {
-        const {branches} = context.state
-        let {selectedBranch} = context.state
-        if (branches.length && !branches.some(branch => branch === selectedBranch)) {
-            selectedBranch = branches[0]
-        }
-        if (!branches.length) {
-            selectedBranch = ""
-        }
-        if (selectedBranch !== context.state.selectedBranch) {
-            context.dispatch('SelectBranch', selectedBranch)
-        }
     },
 
     async [GitAction.SelectBranch](context, selectedBranch: string) {
@@ -53,7 +41,23 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
             .then(({data}) => {
                 const gitBranches = data.data.map(branch => branch.name);
                 context.commit(GitMutation.SetFetchedGit, gitBranches)
-                context.dispatch('ManageUpdatedBranches')
+                const selectedBranch = determineSelectedBranch(context)
+                if (selectedBranch != null) {
+                    context.dispatch('SelectBranch', selectedBranch)
+                }
             })
     },
+}
+
+function determineSelectedBranch(context: ActionContext<GitState, RunnerRootState>): string | null {
+    const {branches} = context.state
+    let {selectedBranch} = context.state
+    if (branches.length && !branches.some(branch => branch === selectedBranch)) {
+        selectedBranch = branches[0]
+    }
+    if (!branches.length) {
+        selectedBranch = ""
+    }
+
+    return selectedBranch !== context.state.selectedBranch ? selectedBranch : null
 }
