@@ -20,7 +20,7 @@ export interface Report {
     id: string
 }
 
-export interface ReportLog{
+export interface ReportLog {
     email: string,
     date: string,
     report: string,
