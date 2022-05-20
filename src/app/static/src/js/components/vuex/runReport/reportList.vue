@@ -8,7 +8,7 @@
             <template #option="{ name, date }">
                 <div>
                     <span>{{ name }}</span>
-                    <span class="text-muted pl-3">Last run: {{ formatDate(date) }}</span>
+                    <span class="text-muted pl-3">Last run: {{ getFormattedDate(date) }}</span>
                 </div>
             </template>
         </v-select>
@@ -19,7 +19,7 @@
 <script lang="ts">
     import Vue from "vue";
     import vSelect from "vue-select";
-    import {longTimestamp} from "../../../utils/helpers";
+    import {formatDate} from "../../../utils/helpers";
     import {ReportWithDate, RunnerRootState, Error} from "../../../utils/types";
     import {mapState} from "vuex";
     import {mapMutationByName} from "../../utils";
@@ -33,7 +33,7 @@
     }
 
     interface Methods {
-        formatDate: (date: Date) => string
+        getFormattedDate: (date: Date) => string
         selectReport: (value: ReportWithDate) => void
     }
 
@@ -51,9 +51,9 @@
             })
         },
         methods: {
-            formatDate(date) {
+            getFormattedDate(date) {
                 return date
-                    ? longTimestamp(new Date(date))
+                    ? formatDate(date)
                     : 'never';
             },
             selectReport: mapMutationByName("reports", ReportsMutation.SelectReport)

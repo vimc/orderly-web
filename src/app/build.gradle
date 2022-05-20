@@ -1,25 +1,23 @@
 buildscript {
     repositories {
         mavenCentral()
-        // This is needed for gradle-docker
-        jcenter()
-    }
-    dependencies {
-        classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
 }
 
-def api_docker_version = 'UNKNOWN'
-if (hasProperty('docker_version')) {
-    api_docker_version = docker_version
+plugins {
+    id 'com.palantir.docker' version '0.33.0'
 }
-def api_docker_name = 'orderly-web'
+
+def app_docker_version = 'UNKNOWN'
+if (hasProperty('docker_version')) {
+    app_docker_version = docker_version
+}
+def app_docker_name = 'orderly-web'
 if (hasProperty('docker_name')) {
-    api_docker_name = docker_name
+    app_docker_name = docker_name
 }
 
 apply plugin: 'application'
-apply plugin: 'docker'
 
 mainClassName = "org.vaccineimpact.orderlyweb.app_start.SparkAppKt"
 
@@ -76,13 +74,9 @@ dependencies {
 }
 
 docker {
-    baseImage = "orderly-web-dist-base"
-}
-
-distDocker {
-    dependsOn = [build]
-    tag = api_docker_name
-    tagVersion = api_docker_version
+    name "${app_docker_name}:${app_docker_version}"
+    file('Dockerfile')
+    files tasks.distTar.outputs, "app.jar"
 }
 
 // creates folder at app/demo with up to date orderly test data
@@ -133,7 +127,15 @@ task copySpec(type: Copy) {
     into 'build/classes/test/spec'
     outputs.upToDateWhen { false }
 }
+
+compileTestKotlin.dependsOn 'copyConfigToResources'
+
 test.dependsOn 'copySpec'
+test.dependsOn 'copyConfigToResources'
+test.dependsOn 'copyTestConfigToResources'
+test.dependsOn 'copyTestDataToResources'
+
+jar.dependsOn 'copyConfigToResources'
 
 task compileFrontEnd() {
     doLast {

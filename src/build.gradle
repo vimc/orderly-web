@@ -100,10 +100,10 @@ subprojects {
         }
 
         afterEvaluate {
-            classDirectories = files(classDirectories.files.collect {
+            classDirectories.setFrom(files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: '**/SparkWrapper.kt')
-            })
-        }    
+            }))
+        }
     }
 
     task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
@@ -156,4 +156,6 @@ subprojects {
             println(file("build/classes/test/config.properties").text)
         }
     }
+
+    jar.dependsOn 'copyConfigToResources'
 }
