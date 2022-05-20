@@ -1,6 +1,7 @@
 import {GitState} from "../store/git/git";
 import {ReportsState} from "../store/reports/reports";
 import {Payload} from "vuex";
+import {ErrorsState} from "../store/errors/errors";
 
 export interface Parameter {
     name: string,
@@ -53,7 +54,7 @@ export interface WorkflowReportWithParams {
     params?: Record<string, string>
 }
 
-export interface Error {
+export interface Errors {
     response?: {
         data?: {
             errors?: any[]
@@ -134,11 +135,6 @@ export interface ChildCustomStyle {
     control: string
 }
 
-export interface Error {
-    code: string;
-    message: string | null;
-}
-
 export interface WorkflowReportWithDependencies {
     name: string,
     instance?: string
@@ -155,7 +151,8 @@ export interface WorkflowSummaryResponse {
 
 export interface RunnerRootState {
     git: GitState,
-    reports: ReportsState
+    reports: ReportsState,
+    errors: ErrorsState
 }
 
 export interface GitCommit {
@@ -172,4 +169,17 @@ export type ComputedWithType<T> = () => T;
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
+}
+
+export interface Error {
+    code: string;
+    message: string | null;
+}
+
+export interface Response {
+    status: "success" | "failure";
+    data: {
+        [k: string]: any;
+    } | null;
+    errors: Error[];
 }

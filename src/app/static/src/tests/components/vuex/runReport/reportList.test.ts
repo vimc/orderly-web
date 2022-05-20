@@ -1,10 +1,11 @@
-import {mount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import VueSelect from "vue-select";
 import Vue from "vue";
 import ReportList from "../../../../js/components/vuex/runReport/reportList.vue";
 import Vuex from "vuex";
 import {mockReportsState} from "../../../mocks";
 import {ReportsState} from "../../../../js/store/reports/reports";
+import ErrorAlert from "../../../../js/components/ErrorAlert.vue";
 
 const report1 = {name: "report1", date: null};
 const report2 = {name: "report2", date: new Date(2021, 3, 21, 9, 10).toISOString()};
@@ -58,6 +59,22 @@ describe("vuex reportList", () => {
         expect(reportSuggestions.length).toBe(1);
         expect(reportSuggestions.at(0).text()).toBe("report1 Last run: never");
         expect(mockSelectReportMutation.mock.calls.length).toBe(2)
+    });
+
+    it("renders error Alert correctly", async () => {
+        const error = {
+            code: "ERROR",
+            message: "ERROR MSG"
+        }
+
+        const store = createStore({reportsError: error})
+
+        const wrapper = shallowMount(ReportList, {store});
+
+        const errorAlert = wrapper.findComponent(ErrorAlert)
+
+        expect(errorAlert.exists()).toBeTruthy()
+        expect(errorAlert.props("error")).toEqual(error)
     });
 
 });

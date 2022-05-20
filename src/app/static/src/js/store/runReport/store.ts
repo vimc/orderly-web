@@ -4,6 +4,7 @@ import {git} from "../git/git";
 import {RunnerRootState} from "../../utils/types";
 import {mutations} from "./mutations";
 import {reports} from "../reports/reports";
+import {errors} from "../errors/errors";
 
 export type RunReportTabName = "RunReport" | "ReportLogs"
 
@@ -13,7 +14,8 @@ export interface RunReportRootState extends RunnerRootState {
 
 export const namespace = {
     git: "git",
-    reports: "reports"
+    reports: "reports",
+    errors: "errors"
 }
 
 export const storeOptions: StoreOptions<RunReportRootState> = {
@@ -23,6 +25,7 @@ export const storeOptions: StoreOptions<RunReportRootState> = {
     modules: {
         [namespace.git]: git,
         [namespace.reports]: reports,
+        [namespace.errors]: errors
     },
     mutations
 };

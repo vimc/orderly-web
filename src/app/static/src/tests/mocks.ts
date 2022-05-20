@@ -3,6 +3,7 @@ import {GitState} from "../js/store/git/git";
 import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
 import {ReportsState} from "../js/store/reports/reports";
+import {ErrorsState} from "../js/store/errors/errors";
 
 export type RecursivePartial<T> = {
     [P in keyof T]?:
@@ -69,7 +70,8 @@ export const mockRunReportRootState = (props: RecursivePartial<RunReportRootStat
         selectedTab: "RunReport",
         ...props,
         git: mockGitState(props.git),
-        reports: mockReportsState()
+        reports: mockReportsState(),
+        errors: mockErrorState()
     }
 }
 
@@ -97,6 +99,13 @@ export const mockReportsState = (props: Partial<ReportsState> = {}): ReportsStat
     }
 };
 
+export const mockErrorState = (props: Partial<ErrorsState> = {}): ErrorsState => {
+    return {
+        errors: [],
+        ...props
+    }
+};
+
 export const mockSuccess = (data: any) => {
     return {
         data,
@@ -109,7 +118,7 @@ export const mockFailure = (errorMsg: any) => {
     return {
         data: {},
         status: "failure",
-        errors: errorMsg
+        errors: [{code: "ERROR", message: errorMsg}]
     }
 }
 

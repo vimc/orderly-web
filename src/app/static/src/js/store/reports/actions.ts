@@ -24,8 +24,8 @@ export const actions: ActionTree<ReportsState, RunnerRootState> & Record<Reports
             : "";
 
         await api<ReportsMutation, ReportsMutation>(context)
-            .withSuccess(ReportsMutation.FetchReports)
-            .withError(ReportsMutation.FetchReportsError)
+            .withSuccess(ReportsMutation.SetReports)
+            .withError(ReportsMutation.SetReportsError)
             .get(`/reports/runnable/${query}`)
     }
 }

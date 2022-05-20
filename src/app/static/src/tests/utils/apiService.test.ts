@@ -21,7 +21,7 @@ describe("ApiService", () => {
     it("commits error with the specified type", async () => {
 
         mockAxios.onGet(`/http://app/reports`)
-            .reply(500, mockFailure("some error"));
+            .reply(500, mockFailure( "some error"));
 
         let committedType: any = false;
         let committedPayload: any = false;
@@ -35,9 +35,22 @@ describe("ApiService", () => {
             .withError("TEST_TYPE")
             .get("/reports");
 
-
         expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload["errors"]).toBe("some error");
+        expect(committedPayload["message"]).toBe("some error");
+    });
+
+    it("throws could not parse error if API response errors are empty", async () => {
+        mockAxios.onGet(`/http://app/reports`)
+            .reply(500, {data: {}, status: "failure", errors: []});
+
+        await expectCouldNotParseAPIResponseError();
+    });
+
+    it("throws parse error if API response errors are missing", async () => {
+        mockAxios.onGet(`/http://app/reports`)
+            .reply(500, {data: {}, status: "failure"});
+
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("commits the success response with the specified type", async () => {
@@ -140,3 +153,19 @@ describe("ApiService", () => {
     });
 
 });
+
+async function expectCouldNotParseAPIResponseError() {
+    const commit = jest.fn();
+    await api({commit, rootState} as any)
+        .get("/reports");
+
+    expect(commit.mock.calls.length).toBe(1);
+    expect(commit.mock.calls[0][0]).toStrictEqual({
+        type: `errors/ErrorAdded`,
+        payload: {
+            code: "MALFORMED_RESPONSE",
+            message: "Could not parse API response. Please contact support."
+        }
+    });
+    expect(commit.mock.calls[0][1]).toStrictEqual({root: true});
+}

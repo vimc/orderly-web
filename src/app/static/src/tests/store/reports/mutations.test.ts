@@ -7,7 +7,7 @@ describe("reports mutations", () => {
     const report = {name: "report", date: null}
 
     it("can set reports", () => {
-        mutations[ReportsMutation.FetchReports](state, {payload: [report]})
+        mutations[ReportsMutation.SetReports](state, {payload: [report]})
         expect(state.reports).toStrictEqual([report])
         expect(state.selectedReport).toEqual(report)
     })
@@ -18,7 +18,7 @@ describe("reports mutations", () => {
             {name: "appleReport", date: new Date(2021, 3, 21, 9, 10).toISOString()},
             {name: "report", date: new Date(2021, 3, 21, 9, 2).toISOString()},
         ];
-        mutations[ReportsMutation.FetchReports](state, {payload: reportList})
+        mutations[ReportsMutation.SetReports](state, {payload: reportList})
 
         expect(state.reports).toEqual([
             {name: "appleReport", date: "2021-04-21T09:10:00.000Z"},
@@ -35,7 +35,7 @@ describe("reports mutations", () => {
     })
 
     it("can set report error", () => {
-        mutations[ReportsMutation.FetchReportsError](state, {payload: "Error"})
+        mutations[ReportsMutation.SetReportsError](state, {payload: "Error"})
         expect(state.reportsError).toBe("Error")
     })
 })

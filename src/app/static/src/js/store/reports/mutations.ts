@@ -4,22 +4,22 @@ import {PayloadWithType, ReportWithDate, Error} from "../../utils/types";
 import {reportComparator} from "../../utils/helpers";
 
 export enum ReportsMutation {
-    FetchReports = "FetchReports",
-    FetchReportsError = "FetchReportsError",
+    SetReports = "SetReports",
+    SetReportsError = "SetReportsError",
     SelectReport = "SelectReport"
 }
 
 export const mutations: MutationTree<ReportsState> = {
 
-    [ReportsMutation.FetchReports](state: ReportsState, action: PayloadWithType<ReportWithDate[]>) {
+    [ReportsMutation.SetReports](state: ReportsState, action: PayloadWithType<ReportWithDate[]>) {
         state.reports = [...action.payload].sort(reportComparator)
 
-        if (state.reports) {
+        if (state.reports.length) {
             state.selectedReport = state.reports[0]
         }
     },
 
-    [ReportsMutation.FetchReportsError](state: ReportsState, action: PayloadWithType<Error>) {
+    [ReportsMutation.SetReportsError](state: ReportsState, action: PayloadWithType<Error>) {
         state.reportsError = action.payload
     },
 
