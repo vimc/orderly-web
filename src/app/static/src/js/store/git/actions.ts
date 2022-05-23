@@ -43,9 +43,8 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
     },
 }
 
-function determineSelectedBranch(context: ActionContext<GitState, RunnerRootState>) {
-    const {branches} = context.state
-    let {selectedBranch} = context.state
+async function determineSelectedBranch(context: ActionContext<GitState, RunnerRootState>) {
+    let {selectedBranch, branches} = context.state
     if (branches.length && !branches.some(branch => branch === selectedBranch)) {
         selectedBranch = branches[0]
     }
@@ -53,6 +52,6 @@ function determineSelectedBranch(context: ActionContext<GitState, RunnerRootStat
         selectedBranch = ""
     }
     if (selectedBranch !== context.state.selectedBranch) {
-        context.dispatch('SelectBranch', selectedBranch)
+        await context.dispatch('SelectBranch', selectedBranch)
     }
 }
