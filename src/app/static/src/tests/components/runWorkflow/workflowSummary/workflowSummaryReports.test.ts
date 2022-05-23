@@ -1,6 +1,7 @@
-import {shallowMount} from "@vue/test-utils";
-import {WorkflowSummaryResponse} from "../../../../js/utils/types";
+import { shallowMount } from "@vue/test-utils";
+import { WorkflowSummaryResponse } from "../../../../js/utils/types";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
+import runWorkflowParameters from "../../../../js/components/runWorkflow/runWorkflowParameters.vue";
 
 describe(`workflowSummaryReports`, () => {
 
@@ -10,17 +11,17 @@ describe(`workflowSummaryReports`, () => {
         reports: [
             {
                 name: "testReport",
-                param_list: [{name: "disease", value: "Measles"}],
-                default_param_list: [{name: "nmin", value: "123"}],
+                param_list: [{ name: "disease", value: "Measles" }],
+                default_param_list: [{ name: "nmin", value: "123" }],
             },
             {
                 name: "testReport2",
                 param_list: [],
-                default_param_list: [{name: "nmin2", value: "234"}, {name: "disease", value: "HepC"}]
+                default_param_list: [{ name: "nmin2", value: "234" }, { name: "disease", value: "HepC" }]
             },
             {
                 name: "testReport2",
-                param_list: [{name: "nmin2", value: "345"}, {name: "disease", value: "Malaria"}],
+                param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
                 default_param_list: []
             }
         ]
@@ -64,17 +65,17 @@ describe(`workflowSummaryReports`, () => {
                     workflowSummary: summary,
                     gitCommit: "commit123"
                 },
-                directives: {"tooltip": mockTooltip}
+                directives: { "tooltip": mockTooltip }
             })
     }
 
     it(`it can render tooltip text for reports that run single and multiple times`, () => {
         const sameReports = [
-            {name: "testReport", param_list: [], default_param_list: []},
-            {name: "testReport", param_list: [], default_param_list: []},
-            {name: "testReport2", param_list: [], default_param_list: []}
+            { name: "testReport", param_list: [], default_param_list: [] },
+            { name: "testReport", param_list: [], default_param_list: [] },
+            { name: "testReport2", param_list: [], default_param_list: [] }
         ];
-        const wrapper = getWrapper({reports: sameReports});
+        const wrapper = getWrapper({ reports: sameReports });
 
         expect(wrapper.find("#workflow-summary").exists()).toBe(true)
         const reports = wrapper.findAll("#report-name-icon")
@@ -111,67 +112,20 @@ describe(`workflowSummaryReports`, () => {
 
     });
 
-    it(`it can render placeholder text when no parameters to display`, () => {
-        const wrapper = getWrapper({reports: [{name: "newReport", param_list: []}]});
-        const params = wrapper.findAll(".non-default-param")
-        expect(params.length).toBe(0)
-        expect(wrapper.find(".report-params p").text()).toBe("There are no parameters")
-    });
-
-    it(`it can render non-default parameters`, () => {
+    it(`it can render parameter components`, () => {
         const wrapper = getWrapper(workflowSummary);
 
         const parametersHeading = wrapper.find(".report-params span");
         expect(parametersHeading.text()).toBe("Parameters");
 
-        const reportRows = wrapper.findAll(".report-params");
-
-        //report 1
-        let params = reportRows.at(0).findAll(".non-default-param");
-        expect(params.length).toBe(1);
-        expect(params.at(0).text()).toBe("disease: Measles");
-
-        //report 2
-        params = reportRows.at(1).findAll(".non-default-param");
-        expect(params.length).toBe(0);
-
-        //report 3
-        params = reportRows.at(2).findAll(".non-default-param");
-        expect(params.length).toBe(2);
-        expect(params.at(0).text()).toBe("nmin2: 345");
-        expect(params.at(1).text()).toBe("disease: Malaria");
-
-    });
-
-    it(`it can render default parameters`, () => {
-        const wrapper = getWrapper(workflowSummary);
-
-        //report 1
-        const defaultParams1 = wrapper.findAll("#default-params-0 p");
-        expect(defaultParams1.length).toBe(1);
-        expect(defaultParams1.at(0).text()).toEqual("nmin: 123");
-
-        //report 2
-        const defaultParams2 = wrapper.findAll("#default-params-1 p");
-        expect(defaultParams2.at(0).text()).toEqual("nmin2: 234");
-        expect(defaultParams2.at(1).text()).toEqual("disease: HepC");
-
-        //report 3 - no defaults
-        const defaultParams3 = wrapper.find("default-params-2");
-        expect(defaultParams3.exists()).toBe(false);
-    });
-
-    it("shows expand default parameters link only for reports with default parameters", () => {
-        const wrapper = getWrapper(workflowSummary);
-
-        expect(wrapper.find("#default-params-0 b-link-stub.show-defaults .when-closed").text()).toBe("Show");
-        expect(wrapper.find("#default-params-0 b-link-stub.show-defaults .when-open").text()).toBe("Hide");
-
-        expect(wrapper.find("#default-params-1 b-link-stub.show-defaults .when-closed").text()).toBe("Show");
-        expect(wrapper.find("#default-params-1 b-link-stub.show-defaults .when-open").text()).toBe("Hide");
-
-        expect(wrapper.find("#default-params-2 b-link-stub.show-defaults").exists()).toBe(false);
-
+        const reportRows = wrapper.findAllComponents(runWorkflowParameters);
+        expect(reportRows.length).toBe(3);
+        expect(reportRows.at(0).props("reportIndex")).toBe(0);
+        expect(reportRows.at(0).props("report")).toBe(workflowSummary.reports[0]);
+        expect(reportRows.at(1).props("reportIndex")).toBe(1);
+        expect(reportRows.at(1).props("report")).toBe(workflowSummary.reports[1]);
+        expect(reportRows.at(2).props("reportIndex")).toBe(2);
+        expect(reportRows.at(2).props("report")).toBe(workflowSummary.reports[2]);
     });
 
     it(`it can render depends on dependencies and missing dependencies`, () => {
