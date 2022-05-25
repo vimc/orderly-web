@@ -54,4 +54,7 @@ test {
         // by assigning only 'failed' and 'standard_error' events
         events "failed", "standard_error"
     }
+    afterTest {  desc ,  result  ->
+        project(':app').resetGitDemo()
+    }
 }

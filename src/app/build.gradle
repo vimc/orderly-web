@@ -145,6 +145,14 @@ task compileFrontEnd() {
     }
 }
 
+ext.resetGitDemo = {
+    exec {
+        commandLine "rm", "$projectDir/git/*", "-rf"
+        commandLine "rm", "$projectDir/git/.git", "-rf"
+        commandLine "tar", "xf", "$projectDir/git.tar.gz"
+    }
+}
+
 processResources.dependsOn 'compileFrontEnd'
 
 copyConfig.finalizedBy 'showConfig'

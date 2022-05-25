@@ -31,3 +31,5 @@ $here/../scripts/montagu-cli.sh add "Test User" test.user \
     test.user@example.com password \
 
 $here/../scripts/montagu-cli.sh addRole test.user user
+
+tar czf $here/../src/app/git.tar.gz -C $here/../src/app git
