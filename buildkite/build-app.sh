@@ -25,6 +25,7 @@ $here/make-db.sh
 git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
 
 # Run all dependencies
+export MONTAGU_ORDERLY_PATH_PARENT=$PWD
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
