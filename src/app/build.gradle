@@ -128,6 +128,15 @@ task copySpec(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
+task archiveGitDemo() {
+    doLast {
+        exec {
+            commandLine "tar", "czf", "$projectDir/git.tar.gz", "-C", "$projectDir", "git"
+        }
+    }
+
+}
+
 compileTestKotlin.dependsOn 'copyConfigToResources'
 
 test.dependsOn 'copySpec'

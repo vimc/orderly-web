@@ -47,6 +47,7 @@ copyDemo.dependsOn 'copyGitDemo'
 
 test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'
+test.dependsOn ':app:archiveGitDemo'
 
 test {
     testLogging {

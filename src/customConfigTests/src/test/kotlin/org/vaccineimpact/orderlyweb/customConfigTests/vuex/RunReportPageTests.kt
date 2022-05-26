@@ -48,7 +48,7 @@ class RunReportPageTests : SeleniumTest()
                 .containsExactly("master", "other")
 
         val commitsSelect = Select(driver.findElement(By.id("git-commit")))
-        assertThat(commitsSelect.options.size).isEqualTo(2)
+        assertThat(commitsSelect.options.size).isEqualTo(1)
         assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
     }
 

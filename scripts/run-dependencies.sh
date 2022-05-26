@@ -4,10 +4,6 @@ here=$(dirname $0)
 echo "using orderly path:"
 echo $MONTAGU_ORDERLY_PATH
 
-if [ -z $MONTAGU_ORDERLY_PATH_PARENT ]; then
-    MONTAGU_ORDERLY_PATH_PARENT=$here/../src/app
-fi
-
 config_path=$(realpath $here/../config)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
@@ -35,5 +31,3 @@ $here/../scripts/montagu-cli.sh add "Test User" test.user \
     test.user@example.com password \
 
 $here/../scripts/montagu-cli.sh addRole test.user user
-
-tar czf $MONTAGU_ORDERLY_PATH_PARENT/git.tar.gz -C $MONTAGU_ORDERLY_PATH_PARENT git

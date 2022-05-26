@@ -25,7 +25,6 @@ $here/make-db.sh
 git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
 
 # Run all dependencies
-export MONTAGU_ORDERLY_PATH_PARENT=$PWD
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
@@ -41,7 +40,6 @@ trap cleanup EXIT
 docker run --rm \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
-    -v $PWD/git.tar.gz:/api/src/app/git.tar.gz \
     -v $PWD/reports:/api/src/app/build/reports \
     -v $PWD/coverage:/api/src/app/coverage \
     -v /var/run/docker.sock:/var/run/docker.sock \
