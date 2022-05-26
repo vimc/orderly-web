@@ -41,6 +41,7 @@ trap cleanup EXIT
 docker run --rm \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
+    -v $PWD/git.tar.gz:/api/src/app/git.tar.gz \
     -v $PWD/reports:/api/src/app/build/reports \
     -v $PWD/coverage:/api/src/app/coverage \
     -v /var/run/docker.sock:/var/run/docker.sock \
