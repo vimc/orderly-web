@@ -9,6 +9,7 @@ export interface GitState {
     selectedBranch: string
     commits: GitCommit[]
     selectedCommit: string
+    gitRefreshing: boolean
 }
 
 export const initialGitState = (): GitState => {
@@ -17,7 +18,8 @@ export const initialGitState = (): GitState => {
         branches: [],
         selectedBranch: "",
         commits: [],
-        selectedCommit: ""
+        selectedCommit: "",
+        gitRefreshing: false
     }
 };
 

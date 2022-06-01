@@ -8,7 +8,8 @@ describe("Git mutations", () => {
 
     const state = mockGitState({
         branches: [],
-        metadata: null
+        metadata: null,
+        gitRefreshing: false
     });
 
     it("sets metadata", () => {
@@ -73,5 +74,28 @@ describe("Git mutations", () => {
     it("sets selectedCommit", () => {
         mutations[GitMutation.SelectCommit](state, "test")
         expect(state.selectedCommit).toEqual("test");
+    })
+
+    it("sets fetched git, setting branches as payload and wiping other state properties", () => {
+        const branches = ["first", "second"]
+        const state2 = mockGitState({
+            branches: ["first"],
+            selectedBranch: "first",
+            commits: [
+                mockCommit({id: "first"}),
+            ],
+            gitRefreshing: true
+        })
+        mutations[GitMutation.SetFetchedGit](state2, branches)
+        expect(state2.branches).toEqual(branches);
+        expect(state2.selectedBranch).toEqual("");
+        expect(state2.commits).toEqual([]);
+        expect(state2.selectedCommit).toEqual("");
+        expect(state2.gitRefreshing).toEqual(false);
+    })
+
+    it("sets gitRefreshing", () => {
+        mutations[GitMutation.SetGitRefreshing](state)
+        expect(state.gitRefreshing).toEqual(true);
     })
 });
