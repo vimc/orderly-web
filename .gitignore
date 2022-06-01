@@ -40,3 +40,4 @@ src/customConfigTests/templates
 src/customConfigTests/static
 src/app/static/coverage
 **/*/coverage
+src/app/git.tar.gz
