@@ -1,19 +1,19 @@
 import {shallowMount} from "@vue/test-utils";
-import ErrorAlert from "../../js/components/ErrorAlert.vue"
+import StoreErrorInfo from "../../js/components/storeErrorInfo.vue"
 
 const errorMessage =  {code: "Error", message: "Error Alert"}
 
 function getWrapper(error = errorMessage) {
-    return shallowMount(ErrorAlert, {
+    return shallowMount(StoreErrorInfo, {
         propsData: {
             error: error
         }
     });
 }
 
-describe("vuex errorAlert", () => {
+describe("vuex StoreErrorInfo", () => {
 
-    it("renders error Alert correctly", async () => {
+    it("renders error correctly", async () => {
         const wrapper = getWrapper()
 
         expect(wrapper.find(".error-message").text()).toBe("Error Alert");

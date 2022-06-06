@@ -1,18 +1,20 @@
 <template>
     <div>
-        <v-select :options="reports"
-                  :value="selectedReport"
-                  label="name"
-                  placeholder="Choose a report"
-                  @input="selectReport">
-            <template #option="{ name, date }">
-                <div>
-                    <span>{{ name }}</span>
-                    <span class="text-muted pl-3">Last run: {{ getFormattedDate(date) }}</span>
-                </div>
-            </template>
-        </v-select>
-        <error-alert v-if="reportsError" :error="reportsError"></error-alert>
+        <div v-if="showReports">
+            <v-select :options="reports"
+                      :value="selectedReport"
+                      label="name"
+                      placeholder="Choose a report"
+                      @input="selectReport">
+                <template #option="{ name, date }">
+                    <div>
+                        <span>{{ name }}</span>
+                        <span class="text-muted pl-3">Last run: {{ getFormattedDate(date) }}</span>
+                    </div>
+                </template>
+            </v-select>
+        </div>
+        <store-error-info :error="reportsError"></store-error-info>
     </div>
 </template>
 
@@ -24,12 +26,13 @@
     import {mapState} from "vuex";
     import {mapMutationByName} from "../../utils";
     import {ReportsMutation} from "../../../store/reports/mutations";
-    import ErrorAlert from "../../ErrorAlert.vue";
+    import storeErrorInfo from "../../storeErrorInfo.vue";
 
     interface Computed {
         selectedReport: ReportWithDate,
         reports: ReportWithDate[],
-        reportsError: Error
+        reportsError: Error,
+        showReports: number
     }
 
     interface Methods {
@@ -41,13 +44,14 @@
         name: "ReportList",
         components: {
             vSelect,
-            ErrorAlert
+            storeErrorInfo
         },
         computed: {
             ...mapState({
                 selectedReport: (state: RunnerRootState) => state.reports.selectedReport,
                 reports: (state: RunnerRootState) => state.reports.reports,
-                reportsError: (state: RunnerRootState) => state.reports.reportsError
+                reportsError: (state: RunnerRootState) => state.reports.reportsError,
+                showReports: (state: RunnerRootState) => state.reports.reports.length
             })
         },
         methods: {

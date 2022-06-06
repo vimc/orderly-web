@@ -5,7 +5,7 @@ import ReportList from "../../../../js/components/vuex/runReport/reportList.vue"
 import Vuex from "vuex";
 import {mockReportsState} from "../../../mocks";
 import {ReportsState} from "../../../../js/store/reports/reports";
-import ErrorAlert from "../../../../js/components/ErrorAlert.vue";
+import StoreErrorInfo from "../../../../js/components/storeErrorInfo.vue";
 
 const report1 = {name: "report1", date: null};
 const report2 = {name: "report2", date: new Date(2021, 3, 21, 9, 10).toISOString()};
@@ -71,7 +71,7 @@ describe("vuex reportList", () => {
 
         const wrapper = shallowMount(ReportList, {store});
 
-        const errorAlert = wrapper.findComponent(ErrorAlert)
+        const errorAlert = wrapper.findComponent(StoreErrorInfo)
 
         expect(errorAlert.exists()).toBeTruthy()
         expect(errorAlert.props("error")).toEqual(error)

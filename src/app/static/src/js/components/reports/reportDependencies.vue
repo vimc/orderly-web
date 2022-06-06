@@ -15,14 +15,14 @@
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import {ReportDependencies, ReportDependency, Errors, Report} from "../../utils/types";
+    import {ReportDependencies, ReportDependency, ErrorResponse, Report} from "../../utils/types";
     import Vue from "vue";
     import ReportDependencyList from "./reportDependencyList.vue";
     import ErrorInfo from "../errorInfo.vue";
 
     interface Data {
         dependencies: ReportDependencies | null,
-        error: Errors | null,
+        error: ErrorResponse | null,
         defaultMessage: string | null
     }
 

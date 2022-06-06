@@ -54,7 +54,7 @@ export interface WorkflowReportWithParams {
     params?: Record<string, string>
 }
 
-export interface Errors {
+export interface ErrorResponse {
     response?: {
         data?: {
             errors?: any[]

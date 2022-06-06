@@ -137,7 +137,7 @@
     import Vue from "vue";
     import {BAlert} from "bootstrap-vue/esm/components/alert";
     import {
-        Errors,
+        ErrorResponse,
         Parameter,
         ReportWithDate, RunnerRootState,
         RunReportMetadataDependency,
@@ -189,7 +189,7 @@
         reports: ReportWithDate[],
         selectedReport: ReportWithDate,
         error: string,
-        validationErrors: Errors[],
+        validationErrors: ErrorResponse[],
         defaultMessage: string,
         workflowRemovals: string[] | null,
         reportsValid: boolean[],
