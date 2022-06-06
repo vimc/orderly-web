@@ -128,6 +128,15 @@ task copySpec(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
+task archiveGitDemo() {
+    doLast {
+        exec {
+            commandLine "tar", "czf", "$projectDir/git.tar.gz", "-C", "$projectDir", "git"
+        }
+    }
+
+}
+
 compileTestKotlin.dependsOn 'copyConfigToResources'
 
 test.dependsOn 'copySpec'
@@ -142,6 +151,14 @@ task compileFrontEnd() {
         exec {
             commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
         }
+    }
+}
+
+ext.resetGitDemo = {
+    exec {
+        commandLine "rm", "$projectDir/git/*", "-rf"
+        commandLine "rm", "$projectDir/git/.git", "-rf"
+        commandLine "tar", "xf", "$projectDir/git.tar.gz"
     }
 }
 

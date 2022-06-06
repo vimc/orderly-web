@@ -48,7 +48,7 @@ class RunReportPageTests : SeleniumTest()
                 .containsExactly("master", "other")
 
         val commitsSelect = Select(driver.findElement(By.id("git-commit")))
-        assertThat(commitsSelect.options.size).isEqualTo(2)
+        assertThat(commitsSelect.options.size).isEqualTo(1)
         assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
     }
 
@@ -91,6 +91,12 @@ class RunReportPageTests : SeleniumTest()
         assertThat(reportIsAvailable("global")).isFalse()
         assertThat(reportIsAvailable("other")).isTrue()
         assertThat(reportIsAvailable("view")).isTrue()
+
+        // clicking Refresh Git button resets git branch back to master
+        driver.findElement(By.id("git-refresh-btn")).click()
+        wait.until(ExpectedConditions.attributeToBe(By.cssSelector("#git-branch"), "value", "master"))
+        val gitBranch3 = driver.findElement(By.id("git-branch"))
+        assertThat(gitBranch3.getAttribute("value")).isEqualTo("master")
     }
 
     private fun reportIsAvailable(reportName: String): Boolean

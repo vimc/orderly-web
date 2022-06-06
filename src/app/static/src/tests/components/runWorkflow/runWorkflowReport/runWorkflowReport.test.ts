@@ -24,6 +24,7 @@ export const gitState: GitState = {
     commits: [],
     selectedBranch: "",
     selectedCommit: "",
+    gitRefreshing: false
 };
 
 const createStore = (state: Partial<GitState> = gitState) => {

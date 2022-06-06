@@ -18,6 +18,7 @@ describe(`runWorkflowRun`, () => {
         commits: [],
         selectedBranch: "",
         selectedCommit: "",
+        gitRefreshing: false,
         metadata: {
             changelog_types: changelogTypes,
             git_supported: true,
