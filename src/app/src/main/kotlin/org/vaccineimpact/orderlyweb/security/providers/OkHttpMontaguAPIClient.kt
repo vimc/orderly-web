@@ -119,10 +119,7 @@ class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(app
             override fun getAcceptedIssuers() = arrayOf<X509Certificate>()
         })
 
-        val allHostnameVerifier = object : HostnameVerifier{
-            override fun verify(var1: String, var2: SSLSession): Boolean
-            { return true }
-        }
+        val allHostnameVerifier = HostnameVerifier { _, _ -> true }
 
         // Install the all-trusting trust manager
         val sslContext = SSLContext.getInstance("SSL")
@@ -137,7 +134,7 @@ class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(app
     }
 }
 
-class RemoteHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
+class RemoteHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig)
 {
     override fun getHttpClient(): OkHttpClient
     {

@@ -4,6 +4,12 @@ comments:
 complexity:
   active: false
 
+potential-bugs:
+  HasPlatformType:
+    active: false
+  UnsafeCallOnNullableType:
+    active: false
+
 formatting:
   Indentation:
     active: false
@@ -24,4 +30,12 @@ style:
   MandatoryBracesLoops:
     active: true
   WildcardImport:
+    active: false
+  UseOrEmpty:
+    active: false
+  UnnecessaryAbstractClass:
+    active: false
+
+naming:
+  NoNameShadowing:
     active: false

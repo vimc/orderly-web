@@ -23,7 +23,18 @@
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.userCLI.AddMembers.kt:19</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:47</ID>
     <ID>SpacingAroundComma:org.vaccineimpact.orderlyweb.userCLI.App.kt:45</ID>
+    <ID>SwallowedException:AddUserGroup.kt$e: DuplicateKeyError</ID>
     <ID>TooGenericExceptionCaught:App.kt$e: Exception</ID>
     <ID>TopLevelPropertyNaming:App.kt$const val doc = """ OrderlyWeb User CLI Usage: app add-users &lt;email&gt;... app add-groups &lt;name&gt;... app add-members &lt;group&gt; &lt;email&gt;... app grant &lt;group&gt; &lt;permission&gt;... """</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.GrantPermission.kt:12</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.GrantPermission.kt:13</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:31</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddPermissionTests.kt:32</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserGroupTests.kt:21</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserGroupTests.kt:23</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserGroupTests.kt:34</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserGroupTests.kt:36</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserTests.kt:29</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.userCLI.tests.AddUserTests.kt:30</ID>
   </CurrentIssues>
 </SmellBaseline>
