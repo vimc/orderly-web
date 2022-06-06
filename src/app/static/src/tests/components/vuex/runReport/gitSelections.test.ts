@@ -10,6 +10,7 @@ describe("GitSelections", () => {
     const mockActions = {
         FetchMetadata: jest.fn(),
         SelectBranch: jest.fn(),
+        RefreshGit: jest.fn(),
     };
 
     const createStore = (gitState: RecursivePartial<GitState>, actions = mockActions, mutations = {}) => {
@@ -154,5 +155,41 @@ describe("GitSelections", () => {
         wrapper.findAll("#git-commit option").at(1).setSelected();
         expect(selectCommitMock.mock.calls.length).toBe(1);
         expect(selectCommitMock.mock.calls[0][1]).toBe("commit2");
+    });
+
+    it("clicking refresh git button triggers refresh git action", async () => {
+        const refreshGitMock = jest.fn();
+
+        const wrapper = shallowMount(GitSelections, {
+            store: createStore({
+                metadata: {
+                    git_supported: true
+                },
+                branches: ["master", "dev"]
+            },
+                {
+                    ...mockActions,
+                    RefreshGit: refreshGitMock
+                })
+        })
+        const refreshGitBtn = wrapper.find("#git-refresh-btn")
+        expect(refreshGitBtn.text()).toBe("Refresh git");
+        await refreshGitBtn.trigger("click");
+        expect(refreshGitMock.mock.calls.length).toBe(1);
+    });
+
+    it("refresh git button is disabled if gitRefreshing in state", () => {
+        const wrapper = shallowMount(GitSelections, {
+            store: createStore({
+                metadata: {
+                    git_supported: true
+                },
+                branches: ["master", "dev"],
+                gitRefreshing: true
+            })
+        })
+        const refreshGitBtn = wrapper.find("#git-refresh-btn")
+        expect(refreshGitBtn.text()).toBe("Fetching...");
+        expect(refreshGitBtn.attributes("disabled")).toBe("disabled");
     });
 })

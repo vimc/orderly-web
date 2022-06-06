@@ -7,6 +7,7 @@ import {RunnerRootState} from "../../utils/types";
 export enum GitAction {
     FetchMetadata = "FetchMetadata",
     SelectBranch = "SelectBranch",
+    RefreshGit = "RefreshGit"
 }
 
 type GitActionHandler<T> = (store: ActionContext<GitState, RunnerRootState>, payload: T) => void
@@ -17,17 +18,7 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
         await api.get('/report/run-metadata')
             .then(({data}) => {
                 context.commit(GitMutation.SetMetadata, data.data)
-                const {branches} = context.state
-                let {selectedBranch} = context.state
-                if (branches.length && !branches.some(branch => branch === selectedBranch)) {
-                    selectedBranch = branches[0]
-                }
-                if (!branches.length) {
-                    selectedBranch = ""
-                }
-                if (selectedBranch !== context.state.selectedBranch) {
-                    context.dispatch('SelectBranch', selectedBranch)
-                }
+                determineSelectedBranch(context)
             })
     },
 
@@ -40,4 +31,28 @@ export const actions: ActionTree<GitState, RunnerRootState> & Record<GitAction, 
                 })
         }
     },
+
+    async [GitAction.RefreshGit](context) {
+        context.commit(GitMutation.SetGitRefreshing)
+        await api.get('/git/fetch/')
+            .then(({data}) => {
+                const gitBranches = data.data.map(branch => branch.name);
+                context.commit(GitMutation.SetFetchedGit, gitBranches)
+                determineSelectedBranch(context)
+            })
+    },
+}
+
+async function determineSelectedBranch(context: ActionContext<GitState, RunnerRootState>) {
+    const {branches} = context.state
+    let {selectedBranch} = context.state
+    if (branches.length && !branches.some(branch => branch === selectedBranch)) {
+        selectedBranch = branches[0]
+    }
+    if (!branches.length) {
+        selectedBranch = ""
+    }
+    if (selectedBranch !== context.state.selectedBranch) {
+        await context.dispatch('SelectBranch', selectedBranch)
+    }
 }
