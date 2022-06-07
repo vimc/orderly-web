@@ -1,7 +1,8 @@
-import {mockActionContext, mockGitState} from "../../mocks";
+import {mockActionContext, mockGitState, mockRunReportRootState} from "../../mocks";
 import {mockAxios} from "../../mockAxios";
 import {actions, GitAction} from "../../../js/store/git/actions";
 import {GitMutation} from "../../../js/store/git/mutations";
+import {ReportsMutation} from "../../../js/store/reports/mutations";
 
 describe("Git actions", () => {
     beforeEach(() => {
@@ -58,12 +59,16 @@ describe("Git actions", () => {
         mockAxios.onGet("http://app/git/branch/testbranch/commits/")
             .reply(200, {"data": "TEST"});
         const commit = jest.fn();
-        await actions[GitAction.SelectBranch](mockActionContext({commit}), "testbranch")
+        const dispatch = jest.fn();
+        const rootState = mockRunReportRootState({git: {selectedCommit: "commit"}})
+        await actions[GitAction.SelectBranch](mockActionContext({commit, dispatch, rootState}), "testbranch")
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe(GitMutation.SelectBranch);
         expect(commit.mock.calls[0][1]).toBe("testbranch")
         expect(commit.mock.calls[1][0]).toBe(GitMutation.SetCommits);
         expect(commit.mock.calls[1][1]).toBe("TEST")
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("reports/GetReports")
     })
 
     it("SelectBranch action selects branch to empty and does not set commits if branch is not selected", async () => {

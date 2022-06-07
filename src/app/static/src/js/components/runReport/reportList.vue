@@ -16,7 +16,7 @@
 <script lang="ts">
     import Vue from "vue";
     import vSelect from "vue-select";
-    import {longTimestamp} from "../../utils/helpers.ts";
+    import {longTimestamp} from "../../utils/helpers";
     import {ReportWithDate} from "../../utils/types";
 
     interface Props {
