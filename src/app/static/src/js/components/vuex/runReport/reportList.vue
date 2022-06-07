@@ -1,18 +1,21 @@
 <template>
     <div>
-        <div v-if="showReports">
-            <v-select :options="reports"
-                      :value="selectedReport"
-                      label="name"
-                      placeholder="Choose a report"
-                      @input="selectReport">
-                <template #option="{ name, date }">
-                    <div>
-                        <span>{{ name }}</span>
-                        <span class="text-muted pl-3">Last run: {{ getFormattedDate(date) }}</span>
-                    </div>
-                </template>
-            </v-select>
+        <div v-if="showReports" id="report-form-group" class="form-group row">
+            <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
+            <div class="col-sm-6">
+                <v-select id="report" :options="reports"
+                          :value="selectedReport"
+                          label="name"
+                          placeholder="Choose a report"
+                          @input="selectReport">
+                    <template #option="{ name, date }">
+                        <div>
+                            <span>{{ name }}</span>
+                            <span class="text-muted pl-3">Last run: {{ getFormattedDate(date) }}</span>
+                        </div>
+                    </template>
+                </v-select>
+            </div>
         </div>
         <store-error-info :error="reportsError"></store-error-info>
     </div>

@@ -3,12 +3,7 @@
         <h2>Run a report</h2>
         <form class="mt-3">
             <git-selections/>
-            <div id="report-form-group" class="form-group row">
-                <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
-                <div class="col-sm-6">
-                    <report-list id="report"/>
-                </div>
-            </div>
+            <report-list/>
         </form>
     </div>
 </template>
