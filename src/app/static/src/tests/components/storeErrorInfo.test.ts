@@ -17,7 +17,7 @@ describe("vuex StoreErrorInfo", () => {
         const wrapper = getWrapper()
 
         expect(wrapper.find(".error-message").text()).toBe("Error Alert");
-        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"])
+        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "small", "text-danger"])
     });
 
     it("renders code value if message is not given", async () => {
@@ -25,7 +25,7 @@ describe("vuex StoreErrorInfo", () => {
         const wrapper = getWrapper(errorMsg)
 
         expect(wrapper.find(".error-message").text()).toBe("Error");
-        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"])
+        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "small", "text-danger"])
     });
 
 });
