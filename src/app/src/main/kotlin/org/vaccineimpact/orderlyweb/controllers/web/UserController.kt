@@ -43,13 +43,13 @@ class UserController(context: ActionContext,
                 it.members.contains(user)
             }
             UserViewModel.build(user, authRepo.getDirectPermissionsForUser(user.email), rolesForUser)
-        }.sortedBy { it.displayName.toLowerCase() }
+        }.sortedBy { it.displayName.lowercase() }
     }
 
     private fun List<User>.mapToUserViewModels(): List<UserViewModel>
     {
         return this.map { UserViewModel.build(it) }
-                .sortedBy { it.displayName.toLowerCase() }
+                .sortedBy { it.displayName.lowercase() }
     }
 
     fun getUserEmails(): List<String>

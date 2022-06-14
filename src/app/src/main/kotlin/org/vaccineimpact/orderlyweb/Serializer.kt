@@ -44,7 +44,7 @@ open class Serializer
         {
             if (char.isUpperCase())
             {
-                builder.append("_" + char.toLowerCase())
+                builder.append("_" + char.lowercase())
             }
             else
             {
@@ -55,6 +55,6 @@ open class Serializer
     }
 
 
-    fun serializeEnum(value: Any) = value.toString().toLowerCase().replace('_', '-')
+    fun serializeEnum(value: Any) = value.toString().lowercase().replace('_', '-')
 
 }

@@ -106,7 +106,7 @@ class Response(private val okHttpResponse: okhttp3.Response)
 {
     val content: ByteArray by lazy(okHttpResponse.body!!::bytes)
     val headers: Map<String, String>
-        get() = okHttpResponse.headers.toMap().mapKeys { it.key.toLowerCase() }
+        get() = okHttpResponse.headers.toMap().mapKeys { it.key.lowercase() }
     val statusCode: Int
         get() = okHttpResponse.code
     val text: String by lazy(okHttpResponse.body!!::string)

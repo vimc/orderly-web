@@ -9,11 +9,11 @@ import org.pac4j.core.matching.Matcher
  */
 open class SkipMethodsMatcher(methodsToSkip: List<HttpConstants.HTTP_METHOD>) : Matcher
 {
-    val methodsToSkip = methodsToSkip.map { it.name.toLowerCase() }
+    val methodsToSkip = methodsToSkip.map { it.name.lowercase() }
 
     override fun matches(context: WebContext): Boolean
     {
-        val requestMethod = context.requestMethod.toLowerCase()
+        val requestMethod = context.requestMethod.lowercase()
         return !methodsToSkip.contains(requestMethod)
     }
 }

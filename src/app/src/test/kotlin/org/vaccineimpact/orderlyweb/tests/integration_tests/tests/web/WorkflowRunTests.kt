@@ -115,7 +115,7 @@ class WorkflowRunTests : IntegrationTest()
         repo.addWorkflowRun(WorkflowRun(name, key, email, date, runWorkflowReport, emptyMap()))
 
         val response = webRequestHelper.requestWithSessionCookie(
-                "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
+                "/workflows?email=$email&namePrefix=${name.split(" ").first().lowercase()}",
                 sessionCookie,
                 ContentTypes.json
         )

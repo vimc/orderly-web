@@ -130,7 +130,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     .and(
                             if (namePrefix != null)
                             {
-                                lower(ORDERLYWEB_WORKFLOW_RUN.NAME).startsWith(namePrefix.toLowerCase())
+                                lower(ORDERLYWEB_WORKFLOW_RUN.NAME).startsWith(namePrefix.lowercase())
                             }
                             else
                             {
