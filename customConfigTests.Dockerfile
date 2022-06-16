@@ -36,7 +36,8 @@ RUN apt-get update && apt-get install -yq \
                 libxtst6 \
                 ca-certificates \
                 fonts-liberation \
-                libappindicator1 \
+                libgbm1 \
+                #libappindicator1 \
                 libnss3 \
                 lsb-release \
                 xdg-utils \

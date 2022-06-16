@@ -22,7 +22,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val workflowRun = WorkflowRun(
                 "Interim report",
@@ -207,7 +207,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -239,7 +239,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -311,7 +311,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         insertUser("user@email.com", "user.name")
         insertUser("user2@email.com", "user2.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -355,7 +355,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         insertUser("user@email.com", "user.name")
         insertUser("user2@email.com", "user2.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -398,7 +398,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -441,7 +441,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -484,7 +484,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
 
@@ -525,7 +525,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
 
