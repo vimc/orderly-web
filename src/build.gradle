@@ -51,7 +51,7 @@ def loadProperties() {
                     "but no corresponding properties file exists at $userPropertiesFile.absolutePath")
         }
     }
-    properties["project_dir"] = new File(properties["project_dir"]).getAbsolutePath()
+    properties["project_dir"] = file(properties["project_dir"]).getAbsolutePath()
     return properties
 }
 
@@ -84,7 +84,18 @@ subprojects {
         baseline = file("$rootDir/config/detekt/baseline.yml")
     }
 
-    tasks.detekt.jvmTarget = "1.8"
+    tasks.detekt.jvmTarget = "11"
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
+    }
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
+    }
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
