@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.db
 
 class InMemoryTokenStore : OnetimeTokenStore
 {
-    private var tokens = mutableSetOf<String>()
+    private val tokens = mutableSetOf<String>()
 
     override fun setup()
     {

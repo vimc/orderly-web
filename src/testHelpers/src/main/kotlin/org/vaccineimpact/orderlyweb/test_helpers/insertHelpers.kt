@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.test_helpers
 
 import com.google.gson.Gson
+import org.jooq.impl.DSL
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL
@@ -72,7 +73,7 @@ fun insertCustomFields(customFields: Array<String> = arrayOf("author", "requeste
 
 private fun getNewCustomFieldId(ctx: JooqContext): Int
 {
-    val maxFieldId = ctx.dsl.select(Tables.REPORT_VERSION_CUSTOM_FIELDS.ID.max())
+    val maxFieldId = ctx.dsl.select(DSL.max(Tables.REPORT_VERSION_CUSTOM_FIELDS.ID))
             .from(Tables.REPORT_VERSION_CUSTOM_FIELDS)
             .fetchAny()[0] as Int?
     return (maxFieldId ?: 0) + 1
@@ -80,7 +81,7 @@ private fun getNewCustomFieldId(ctx: JooqContext): Int
 
 private fun getNewParameterId(ctx: JooqContext): Int
 {
-    val maxFieldId = ctx.dsl.select(Tables.PARAMETERS.ID.max())
+    val maxFieldId = ctx.dsl.select(DSL.max(Tables.PARAMETERS.ID))
             .from(Tables.PARAMETERS)
             .fetchAny()[0] as Int?
     return (maxFieldId ?: 0) + 1
@@ -88,7 +89,7 @@ private fun getNewParameterId(ctx: JooqContext): Int
 
 private fun getNewReportVersionTagId(ctx: JooqContext): Int
 {
-    val maxFieldId = ctx.dsl.select(Tables.REPORT_VERSION_TAG.ID.max())
+    val maxFieldId = ctx.dsl.select(DSL.max(Tables.REPORT_VERSION_TAG.ID))
             .from(Tables.REPORT_VERSION_TAG)
             .fetchAny()[0] as Int?
     return (maxFieldId ?: 0) + 1
@@ -96,7 +97,7 @@ private fun getNewReportVersionTagId(ctx: JooqContext): Int
 
 private fun getNewWorkflowRunId(ctx: JooqContext): Int
 {
-    val maxFieldId = ctx.dsl.select(Tables.ORDERLYWEB_WORKFLOW_RUN.ID.max())
+    val maxFieldId = ctx.dsl.select(DSL.max(Tables.ORDERLYWEB_WORKFLOW_RUN.ID))
         .from(Tables.ORDERLYWEB_WORKFLOW_RUN)
         .fetchAny()[0] as Int?
     return (maxFieldId ?: 0) + 1
@@ -104,7 +105,7 @@ private fun getNewWorkflowRunId(ctx: JooqContext): Int
 
 private fun getNewWorkflowRunReportId(ctx: JooqContext): Int
 {
-    val maxFieldId = ctx.dsl.select(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.ID.max())
+    val maxFieldId = ctx.dsl.select(DSL.max(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.ID))
         .from(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS)
         .fetchAny()[0] as Int?
     return (maxFieldId ?: 0) + 1

@@ -1,5 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
+import runWorkflowTable from '../../../js/components/runWorkflow/runWorkflowTable.vue'
 import WorkflowReportLogDialog from "../../../js/components/runWorkflow/workflowReportLogDialog.vue";
 import {mockAxios} from "../../mockAxios";
 import errorInfo from "../../../js/components/errorInfo.vue";
@@ -26,33 +27,96 @@ const workflowStatus1 = {
       "status": "running",
       "reports": [
         {
-          "key": "preterrestrial_andeancockoftherock",
-          "name": "report one a",
-          "status": "error",
-          "date": "2021-06-16T09:51:16Z"
+            "key": "preterrestrial_andeancockoftherock",
+              "name": "report1",
+            "status": "error",
+            "date": "2021-06-16T09:51:16Z"
         },
         {
-          "key": "hygienic_mammoth",
-          "name": "report two a",
-          "status": "success",
-          "version": "20210510-100458-8f1a9624",
-          "date": "2021-06-16T09:51:16Z"
+            "key": "hygienic_mammoth",
+            "name": "report2",
+            "status": "success",
+            "version": "20210510-100458-8f1a9624",
+            "date": "2021-06-16T09:51:16Z"
         },
         {
-          "key": "blue_bird",
-          "name": "report three a",
-          "status": "running",
-          "date": null
+            "key": "blue_bird",
+            "name": "report3",
+            "status": "running",
+            "date": null
         },
         {
             "key": "non_hygienic_mammoth",
-            "name": "report four a",
+            "name": "report4",
             "status": "impossible",
             "date": "2021-06-16T09:51:16Z"
           },
       ]
     }
-  }
+}
+
+const workflowDetails = {
+    name: "Test Workflow",
+    key: "curious_mongoose",
+    email: "test.user@example.com",
+    date: "2021-08-01",
+    instances: { source: "UAT" },
+    git_branch: "master",
+    git_commit: null,
+    reports: [
+        {
+            workflow_key: "curious_mongoose",
+            key: "preterrestrial_andeancockoftherock",
+            report: "report1",
+            params: { p1: "v1" }
+        },
+        {
+            workflow_key: "curious_mongoose",
+            key: "hygienic_mammoth",
+            report: "report2",
+            params: {}
+        },
+        {
+            workflow_key: "curious_mongoose",
+            key: "non_hygienic_mammoth",
+            report: "report4",
+            params: {}
+        },
+        {
+            workflow_key: "curious_mongoose",
+            key: "blue_bird",
+            report: "report3",
+            params: {}
+        }
+    ]
+};
+
+const workflowSummary = {
+    ref: "commit123",
+    missing_dependencies: {},
+    reports: [
+        {
+            name: "report one a",
+            param_list: [{ name: "disease", value: "Measles" }],
+            default_param_list: [{ name: "nmin", value: "123" }],
+        },
+        {
+            name: "report one b",
+            param_list: [],
+            default_param_list: [{ name: "nmin2", value: "234" }, { name: "disease", value: "HepC" }]
+        },
+        {
+            name: "report one c",
+            param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
+            default_param_list: []
+        },
+        {
+            name: "report one d",
+            param_list: [{ name: "nmin2", value: "345" }, { name: "disease", value: "Malaria" }],
+            default_param_list: []
+        }
+    ]
+}
 
 describe(`runWorkflowProgress`, () => {
     beforeEach(() => {
@@ -131,6 +195,8 @@ describe(`runWorkflowProgress`, () => {
         mockAxios.reset();
         mockAxios.onGet('http://app/workflows/key1/status')
             .reply(500, "TEST ERROR");
+        mockAxios.onGet('http://app/workflows/key1/')
+            .reply(200, "TEST SUCCESS");
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
 
@@ -143,148 +209,6 @@ describe(`runWorkflowProgress`, () => {
         })
     })
 
-    it(`it can render reports table`, (done) => {
-        const wrapper = getWrapper()
-        wrapper.setData({selectedWorkflowKey: "key1"})
-
-        setTimeout(() => {
-            expect(wrapper.find("table").exists()).toBe(true)
-            expect(wrapper.findAll("tr").length).toBe(4)
-            const reportLinks = wrapper.findAll("td > a.report-version-link")
-            expect(reportLinks.length).toBe(1)
-
-            const completedReportLink = reportLinks.at(0)
-            expect(completedReportLink.text()).toBe("report two a")
-            expect(completedReportLink.attributes("href")).toBe("http://app/report/report two a/20210510-100458-8f1a9624/")
-
-            const errorStatus = wrapper.findAll("tr > td:nth-child(2)").at(0)
-            expect(errorStatus.text()).toBe("Failed")
-            expect(errorStatus.classes()).toContain("text-danger")
-
-            const successStatus = wrapper.findAll("tr > td:nth-child(2)").at(1)
-            expect(successStatus.text()).toBe("Complete")
-
-            const runningStatus = wrapper.findAll("tr > td:nth-child(2)").at(2)
-            expect(runningStatus.text()).toBe("Running")
-            expect(runningStatus.classes()).toContain("text-secondary")
-
-            const dependencyErrorStatus = wrapper.findAll("tr > td:nth-child(2)").at(3)
-            expect(dependencyErrorStatus.text()).toBe("Dependency failed")
-            expect(dependencyErrorStatus.classes()).toContain("text-danger")
-
-            const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
-            expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
-
-            const logCell = wrapper.findAll("tr > td:nth-child(4)").at(0);
-            const link = logCell.find("a.report-log-link");
-            expect(link.text()).toBe("View log");
-            expect(link.attributes("href")).toBe("#");
-
-            done();
-        })
-    });
-
-    it(`renders View Log links only for started reports`, (done) => {
-        const allStatusWorkflow = {
-            "status": "success",
-            "errors": null,
-            "data": {
-                "status": "running",
-                "reports": [
-                    {
-                        "key": "happy_tiger",
-                        "name": "report1",
-                        "status": "queued",
-                        "date": null
-                    },
-                    {
-                        "key": "sad_marmot",
-                        "name": "report2",
-                        "status": "deferred",
-                        "date": null
-                    },
-                    {
-                        "key": "pensive_goldfinch",
-                        "name": "report3",
-                        "status": "impossible",
-                        "date": null
-                    },
-                    {
-                        "key": "sarcastic_beetle",
-                        "name": "report4",
-                        "status": "missing",
-                        "date": null
-                    },
-                    {
-                        "key": "charismatic_baboon",
-                        "name": "report5",
-                        "status": "success",
-                        "version": "20210510-100458-8f1a9624",
-                        "date": "2021-06-16T09:51:16Z"
-                    },
-                    {
-                        "key": "compassionate_piranha",
-                        "name": "report6",
-                        "status": "error",
-                        "date": "2021-06-16T09:51:16Z"
-                    },
-                    {
-                        "key": "stubborn_zebra",
-                        "name": "report7",
-                        "status": "running",
-                        "date": "2021-06-16T09:51:16Z"
-                    },
-                    {
-                        "key": "grumpy_centipede",
-                        "name": "report8",
-                        "status": "interrupted",
-                        "date": "2021-06-16T09:51:16Z"
-                    },
-                    {
-                        "key": "philosophical_mussel",
-                        "name": "report9",
-                        "status": "orphan",
-                        "date": "2021-06-16T09:51:16Z"
-                    },
-                ]
-            }
-        };
-        mockAxios.onGet('http://app/workflows/key1/status')
-            .reply(200, allStatusWorkflow);
-        const wrapper = getWrapper();
-        wrapper.setData({selectedWorkflowKey: "key1"});
-
-        setTimeout(() => {
-            const reportRows = wrapper.findAll("table tr");
-            expect(reportRows.length).toBe(9);
-
-            const statusSelector = "td:nth-child(2)";
-            const viewLogSelector = "a.report-log-link";
-
-            expect(reportRows.at(0).find(statusSelector).text()).toBe("Queued");
-            expect(reportRows.at(0).find(viewLogSelector).exists()).toBe(false);
-            expect(reportRows.at(1).find(statusSelector).text()).toBe("Waiting for dependency");
-            expect(reportRows.at(1).find(viewLogSelector).exists()).toBe(false);
-            expect(reportRows.at(2).find(statusSelector).text()).toBe("Dependency failed");
-            expect(reportRows.at(2).find(viewLogSelector).exists()).toBe(false);
-            expect(reportRows.at(3).find(statusSelector).text()).toBe("Failed"); // missing
-            expect(reportRows.at(3).find(viewLogSelector).exists()).toBe(false);
-
-            expect(reportRows.at(4).find(statusSelector).text()).toBe("Complete");
-            expect(reportRows.at(4).find(viewLogSelector).text()).toBe("View log");
-            expect(reportRows.at(5).find(statusSelector).text()).toBe("Failed"); // error
-            expect(reportRows.at(5).find(viewLogSelector).text()).toBe("View log");
-            expect(reportRows.at(6).find(statusSelector).text()).toBe("Running");
-            expect(reportRows.at(6).find(viewLogSelector).text()).toBe("View log");
-            expect(reportRows.at(7).find(statusSelector).text()).toBe("Failed"); // interrupted
-            expect(reportRows.at(7).find(viewLogSelector).text()).toBe("View log");
-            expect(reportRows.at(8).find(statusSelector).text()).toBe("Failed"); // orphan
-            expect(reportRows.at(8).find(viewLogSelector).text()).toBe("View log");
-
-            done();
-        });
-    });
-
     it("renders report log dialog", async () => {
         const wrapper = getWrapper();
         await wrapper.setData({selectedWorkflowKey: "key1"});
@@ -293,18 +217,48 @@ describe(`runWorkflowProgress`, () => {
         expect(dialog.props("workflowKey")).toBe("key1");
     });
 
-    it(`sets report log dialog report key on click View log link`, (done) => {
+    it(`renders table using workflowRunStatus and workflowSummary props`, (done) => {
+        mockAxios.onGet("http://app/workflows/key1/")
+            .reply(200, { data: workflowDetails });
+        mockAxios.onPost('http://app/workflows/summary/')
+            .reply(200, { data: workflowSummary });
+        const wrapper = getWrapper()
+        wrapper.setData({ selectedWorkflowKey: "key1" })
+        setTimeout(async () => {
+            const runWorkflowTableComponent = wrapper.findComponent(runWorkflowTable);
+            expect(runWorkflowTableComponent.props("workflowRunStatus")).toStrictEqual(workflowStatus1.data);
+            expect(runWorkflowTableComponent.props("workflowSummary")).toStrictEqual(workflowSummary);
+            done();
+        })
+    });
+
+    it(`renders get workflow summary status error`, (done) => {
+        mockAxios.onGet("http://app/workflows/key1/")
+            .reply(200, { data: workflowDetails });
+        mockAxios.onPost('http://app/workflows/summary/')
+            .reply(500, "TEST ERROR");
+        const wrapper = getWrapper()
+        wrapper.setData({ selectedWorkflowKey: "key1" })
+        setTimeout(async () => {
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the  workflow summary")
+            expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
+            expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
+            done();
+        })
+    });
+
+    it(`sets report log dialog report key when show-report-log is emitted from the table`, (done) => {
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
 
         setTimeout(async () => {
-            const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
-            await link.trigger("click");
-
-            const dialog = wrapper.findComponent(WorkflowReportLogDialog);
-            expect(dialog.props("reportKey")).toBe("preterrestrial_andeancockoftherock");
-
-            done();
+            const runWorkflowTableComponent = wrapper.findComponent(runWorkflowTable);
+            runWorkflowTableComponent.vm.$emit("show-report-log", "preterrestrial_andeancockoftherock");
+            setTimeout(async () => {
+                const dialog = wrapper.findComponent(WorkflowReportLogDialog);
+                expect(dialog.props("reportKey")).toBe("preterrestrial_andeancockoftherock");
+                done();
+            })
         })
     });
 
@@ -313,8 +267,8 @@ describe(`runWorkflowProgress`, () => {
         wrapper.setData({selectedWorkflowKey: "key1"})
 
         setTimeout(async () => {
-            const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
-            await link.trigger("click");
+            const runWorkflowTableComponent = wrapper.findComponent(runWorkflowTable);
+            runWorkflowTableComponent.vm.$emit("show-report-log", "preterrestrial_andeancockoftherock");
 
             const dialog = wrapper.findComponent(WorkflowReportLogDialog);
             await dialog.vm.$emit("close");
@@ -326,29 +280,8 @@ describe(`runWorkflowProgress`, () => {
     });
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
-        const workflowDetails = {
-            name: "Test Workflow",
-            key: "curious_mongoose",
-            email: "test.user@example.com",
-            date: "2021-08-01",
-            instances: {source: "UAT"},
-            git_branch: "master",
-            git_commit: null,
-            reports: [
-                {
-                    workflow_key: "curious_mongoose",
-                    key: "terrified_ocelot",
-                    report: "report1",
-                    params: {p1: "v1" }
-                },
-                {
-                    workflow_key: "curious_mongoose",
-                    key: "weird_anteater",
-                    report: "report2",
-                    params: {}
-                }
-            ]
-        };
+        mockAxios.onGet('http://app/workflows/test-key/status')
+            .reply(200, workflowStatus1);
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(200, {data: workflowDetails});
 
@@ -374,6 +307,14 @@ describe(`runWorkflowProgress`, () => {
                     {
                         name: "report2",
                         params: {}
+                    },
+                    {
+                        name: "report3",
+                        params: {}
+                    },
+                    {
+                        name: "report4",
+                        params: {}
                     }
                 ]
             };
@@ -385,6 +326,8 @@ describe(`runWorkflowProgress`, () => {
     });
 
     it(`sets error when fail to fetch workflow details`, (done) => {
+        mockAxios.onGet('http://app/workflows/test-key/status')
+            .reply(200, workflowStatus1);
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper()

@@ -30,5 +30,4 @@ class DocumentPageTests : SeleniumTest()
         Assertions.assertThat(driver.findElement(By.cssSelector(".folder-name")).text).isEqualTo("/name")
         Assertions.assertThat(driver.findElements(By.cssSelector(".octicon-file")).count()).isEqualTo(1)
     }
-
 }

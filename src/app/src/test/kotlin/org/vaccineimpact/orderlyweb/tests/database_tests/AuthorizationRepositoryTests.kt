@@ -131,7 +131,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     {
         val groupName = "Funders"
 
-        var rolePermissionIds: List<Int> = listOf()
+        var rolePermissionIds: List<Int>
         JooqContext().use {
             insertUserGroup(groupName)
             insertReport("fakereport", "v1")

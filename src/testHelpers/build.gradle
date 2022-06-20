@@ -1,12 +1,13 @@
 dependencies {
-    compile "junit:junit:4.12"
-    compile "org.jooq:jooq:3.9.1"
-    compile "org.jooq:jooq-meta:3.9.1"
-    compile "org.json:json:20201115"
-    compile "com.squareup.okhttp3:okhttp:4.8.1"
-    compile "com.squareup.okhttp3:okhttp-urlconnection:4.8.1"
-    compile "org.assertj:assertj-core:3.6.2"
-    compile "com.github.fge:json-schema-validator:2.2.6"
+    implementation "junit:junit:4.12"
+    implementation "org.jooq:jooq:3.13.5"
+    implementation "org.jooq:jooq-meta:3.13.5"
+    implementation "org.json:json:20201115"
+    implementation "com.squareup.okhttp3:okhttp:4.8.1"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:4.8.1"
+    implementation "org.assertj:assertj-core:3.6.2"
+    implementation "com.github.fge:json-schema-validator:2.2.6"
+    implementation "com.google.code.gson:gson:2.2.4"
 
-    compile project(":databaseInterface")
+    implementation project(":databaseInterface")
 }

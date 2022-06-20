@@ -293,7 +293,7 @@ class RunWorkflowTests : SeleniumTest()
         val table = driver.findElement(By.id("workflow-table"))
         assertThat(table.text).contains("Reports")
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
-        assertThat(rows.count()).isEqualTo(2)
+        assertThat(rows.count()).isEqualTo(3)
         val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
         val minimalRowStatus = minimalRow.findElement(By.cssSelector("td:nth-child(2)"))
         assertThat(minimalRowStatus.text).isIn(listOf("Queued", "Running"))
@@ -409,9 +409,9 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(params.count()).isEqualTo(1)
         assertThat(params[0].text).contains("nmin: 1")
 
-        val noParams = driver.findElements(By.cssSelector(".noParams"))
+        val noParams = driver.findElements(By.cssSelector(".no-params"))
         assertThat(noParams.count()).isEqualTo(1)
-        assertThat(noParams[0].text).isEqualTo("There are no parameters")
+        assertThat(noParams[0].text).isEqualTo("No parameters")
 
         assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
 
@@ -433,13 +433,19 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can display workflow summary with default params`()
+    fun `can display workflow summary and progress with default params, non-default params, and no params`()
     {
         createWorkflow()
         changeToOtherBranch()
         addReport("default-param")
+        addReport("global")
+        addReport("other")
 
-        val nextButton = driver.findElement(By.id("next-workflow"))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-report-2 #param-control-0")))
+        driver.findElement(By.cssSelector("#workflow-report-2 #param-control-0")).sendKeys("1")
+
+        var nextButton = driver.findElement(By.id("next-workflow"))
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-2 .text-danger"), ""))
         assertThat(nextButton.isEnabled).isTrue()
         nextButton.click()
 
@@ -450,14 +456,17 @@ class RunWorkflowTests : SeleniumTest()
         val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val params = driver.findElements(By.className("non-default-param"))
-        assertThat(params).isEmpty()
+        val params = driver.findElements(By.className("report-params"))
+        assertThat(params.count()).isEqualTo(3)
 
-        val defaultParams = driver.findElement(By.id("default-params-0"))
-        val collapsedParams = defaultParams.findElement(By.id("collapseSummary-0"))
+        var nonDefaultParams = params[0].findElements(By.className("non-default-param"))
+        assertThat(nonDefaultParams).isEmpty()
+
+        var defaultParams = params[0].findElement(By.id("default-params-0"))
+        var collapsedParams = defaultParams.findElement(By.id("collapseSummary-0"))
         assertThat(collapsedParams.isDisplayed).isFalse()
 
-        val showDefault = defaultParams.findElement(By.cssSelector("a"))
+        var showDefault = defaultParams.findElement(By.cssSelector("a"))
         assertThat(showDefault.text).isEqualTo("Show defaults...")
         showDefault.click()
 
@@ -470,6 +479,96 @@ class RunWorkflowTests : SeleniumTest()
         showDefault.click()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Show defaults...")
+
+        nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        // should now be on run page
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
+        val submitButton = driver.findElement(By.id("next-workflow"))
+        assertThat(submitButton.isEnabled).isFalse()
+        driver.findElement(By.id("run-workflow-name")).sendKeys("My workflow")
+        driver.findElement(By.id("changelogMessage")).sendKeys("changes")
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton))
+        submitButton.click()
+
+        // should now be on progress page
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
+        val progressLink = driver.findElement(By.cssSelector("#view-progress-link a"))
+        progressLink.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val selectedWorkflow = driver.findElement(By.cssSelector(".vs__selected"))
+        assertThat(selectedWorkflow.text).contains("My workflow")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("table-params-header")))
+        val tableHeader = driver.findElement(By.id("table-params-header"))
+        assertThat(tableHeader.text).isEqualTo("Parameters")
+        val tableParams = driver.findElements(By.className("tableParams"))
+        assertThat(tableParams.count()).isEqualTo(3)
+
+        // the table rows can appear in any order so we have to be general with our queries
+
+        nonDefaultParams = driver.findElements(By.className("non-default-param"))
+        assertThat(nonDefaultParams.count()).isEqualTo(1)
+        assertThat(nonDefaultParams[0].text).isEqualTo("nmin: 1")
+
+
+        val noParams = driver.findElements(By.className("no-params"))
+        assertThat(noParams.count()).isEqualTo(1)
+        assertThat(noParams[0].text).isEqualTo("No parameters")
+
+        val noNonDefaultParams = driver.findElements(By.className("no-non-default-params"))
+        assertThat(noNonDefaultParams.count()).isEqualTo(1)
+        assertThat(noNonDefaultParams[0].text).isEqualTo("No non-default parameters")
+
+        val defaultParamsCount = driver.findElements(By.className("default-params"))
+        assertThat(defaultParamsCount.count()).isEqualTo(1)
+        defaultParams = driver.findElement(By.className("default-params"))
+        collapsedParams = defaultParams.findElement(By.className("collapseSummary"))
+        assertThat(collapsedParams.isDisplayed).isFalse()
+
+        showDefault = defaultParams.findElement(By.cssSelector("a"))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
+        showDefault.click()
+
+        wait.until(ExpectedConditions.visibilityOf(collapsedParams))
+        assertThat(showDefault.text).isEqualTo("Hide defaults...")
+
+        assertThat(defaultParams.findElements(By.className("default-params-collapse"))[0].getAttribute("innerHTML")).isEqualTo("disease: HepB")
+        assertThat(defaultParams.findElements(By.className("default-params-collapse"))[1].getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
+
+        showDefault.click()
+        wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
+    }
+
+    @Test
+    fun `can display workflow summary with depends on and missing dependencies`()
+    {
+        createWorkflow()
+        changeToOtherBranch()
+        addReport("use_dependency")
+        addReport("use_dependency_2")
+        addReport("global")
+
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("dependencies")))
+        val dependencies = driver.findElements(By.className("dependencies"))
+        assertThat(dependencies.count()).isEqualTo(2)
+        val reports = driver.findElements(By.className("single-workflow-summary-area"))
+        assertThat(reports.count()).isEqualTo(3)
+        assertThat(reports[0].findElement(By.cssSelector(".missingDependency span")).text).isEqualTo("Missing dependency")
+        assertThat(reports[0].findElement(By.cssSelector(".missingDependency p")).text).isEqualTo("other")
+        assertThat(reports[0].findElements(By.cssSelector(".dependsOn")).count()).isEqualTo(0)
+        assertThat(reports[1].findElement(By.cssSelector(".dependsOn span")).text).isEqualTo("Depends on")
+        assertThat(reports[1].findElement(By.cssSelector(".dependsOn p")).text).isEqualTo("use_dependency")
+        assertThat(reports[1].findElements(By.cssSelector(".missingDependency")).count()).isEqualTo(0)
+        assertThat(reports[2].findElements(By.cssSelector(".dependsOn")).count()).isEqualTo(0)
+        assertThat(reports[2].findElements(By.cssSelector(".missingDependency")).count()).isEqualTo(0)
     }
 
 }

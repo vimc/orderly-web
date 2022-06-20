@@ -22,34 +22,26 @@
                                 <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
-                                        <div v-if="hasParams(report)">
-                                            <p v-for="param in report.param_list"
-                                               :key="param.name"
-                                               class="non-default-param">{{ param.name }}: {{ param.value }}</p>
-                                            <div v-if="report.default_param_list.length > 0"
-                                                 :id="`default-params-${index}`">
-                                                <b-link v-b-toggle="`collapseSummary-${index}`"
-                                                        href="#"
-                                                        class="show-defaults pt-2 d-inline-block small">
-                                                    <span class="when-closed">Show</span>
-                                                    <span class="when-open">Hide</span> defaults...
-                                                </b-link>
-                                                <b-collapse :id="`collapseSummary-${index}`">
-                                                    <p v-for="(param, paramIndex) in report.default_param_list"
-                                                       :id="`default-params-collapse-${index}-${paramIndex}`"
-                                                       :key="paramIndex">{{ param.name }}: {{ param.value }}</p>
-                                                </b-collapse>
-                                            </div>
-                                        </div>
-                                        <div v-else class="noParams">
-                                            <p>There are no parameters</p>
-                                        </div>
+                                        <run-workflow-parameters :report="report"
+                                                                 :report-index="index"></run-workflow-parameters>
                                     </div>
                                 </div>
                             </div>
                             <span class="d-inline-block"></span>
-                            <!--Dependencies boxes should go here, you might want to consider using slots or
-                             perhaps add html here directly instead of creating another component -->
+                            <div v-if="report.depends_on || hasMissingDependencies(report)" class="col-12 col-md-6 col-lg-4">
+                                <div class="single-workflow-summary-content dependencies">
+                                    <div class="workflow-summary-text">
+                                        <div v-if="report.depends_on" class="dependsOn">
+                                            <span class="text-muted m-0">Depends on</span>
+                                            <p v-for="dependency in report.depends_on" :key="dependency">{{ dependency }}</p>
+                                        </div>
+                                        <div v-if="hasMissingDependencies(report)" class="missingDependency">
+                                            <span class="text-danger m-0">Missing dependency</span>
+                                            <p v-for="missingDependency in workflowSummary.missing_dependencies[report.name]" :key="missingDependency">{{ missingDependency }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -61,11 +53,9 @@
 <script lang="ts">
     import Vue from "vue";
     import {InfoIcon} from "vue-feather-icons";
-    import {BLink} from "bootstrap-vue/esm/components/link";
-    import {BCollapse} from "bootstrap-vue/esm/components/collapse";
-    import {VBToggle} from 'bootstrap-vue/esm/directives/toggle';
     import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../../utils/types";
     import {VTooltip} from "v-tooltip";
+    import runWorkflowParameters from "./../runWorkflowParameters.vue"
 
     interface Props {
         workflowSummary: WorkflowSummaryResponse
@@ -73,18 +63,15 @@
     }
 
     interface Methods {
-        hasParams: (report: WorkflowReportWithDependencies) => boolean
+        hasMissingDependencies: (report: WorkflowReportWithDependencies) => boolean
         reportInfo: (reportName: string) => string
     }
-
-    Vue.directive("b-toggle", VBToggle);
 
     export default Vue.extend<unknown, Methods, unknown, Props>({
         name: "WorkflowSummaryReports",
         components: {
-            BCollapse,
-            BLink,
-            InfoIcon
+            InfoIcon,
+            runWorkflowParameters
         },
         directives: {tooltip: VTooltip},
         props: {
@@ -102,9 +89,8 @@
                 const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
                 return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
             },
-            hasParams(report) {
-                return (report.param_list && report.param_list.length > 0) ||
-                    (report.default_param_list && report.default_param_list.length > 0)
+            hasMissingDependencies(report) {
+                return report.name && this.workflowSummary?.missing_dependencies && this.workflowSummary.missing_dependencies[report.name]?.length
             }
         }
     });

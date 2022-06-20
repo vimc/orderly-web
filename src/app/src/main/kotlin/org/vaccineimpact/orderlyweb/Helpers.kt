@@ -58,14 +58,14 @@ fun isImage(fileName: String): Boolean
 
 fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
 {
-    val ext = fileName.toLowerCase().split(".").last()
+    val ext = fileName.lowercase().split(".").last()
     return extensions.contains(ext)
 }
 
 fun guessFileType(filename: String): String
 {
     val ext = File(filename).extension
-    return when (ext.toLowerCase())
+    return when (ext.lowercase())
     {
         "bmp" -> "image/bmp"
         "csv" -> "text/csv"

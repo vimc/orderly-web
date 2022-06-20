@@ -10,7 +10,7 @@ enum class FilePurpose
     GLOBAL;
 
     override fun toString(): String {
-        return this.name.toLowerCase()
+        return this.name.lowercase()
     }
 }
 
@@ -23,6 +23,6 @@ enum class ArtefactFormat
     INTERACTIVEHTML;
 
     override fun toString(): String {
-        return this.name.toLowerCase()
+        return this.name.lowercase()
     }
 }

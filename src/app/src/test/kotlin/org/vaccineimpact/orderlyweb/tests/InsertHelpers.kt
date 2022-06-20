@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests
 
+import org.jooq.impl.DSL
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -54,14 +55,14 @@ fun insertArtefact(reportVersionId: String,
 
     JooqContext().use { it ->
 
-        val lastId = it.dsl.select(REPORT_VERSION_ARTEFACT.ID.max())
+        val lastId = it.dsl.select(DSL.max(REPORT_VERSION_ARTEFACT.ID))
                 .from(REPORT_VERSION_ARTEFACT)
                 .fetchAnyInto(Int::class.java)
                 ?: 0
 
         it.dsl.insertInto(REPORT_VERSION_ARTEFACT)
                 .set(REPORT_VERSION_ARTEFACT.DESCRIPTION, description)
-                .set(REPORT_VERSION_ARTEFACT.FORMAT, format.toString().toLowerCase())
+                .set(REPORT_VERSION_ARTEFACT.FORMAT, format.toString().lowercase())
                 .set(REPORT_VERSION_ARTEFACT.REPORT_VERSION, reportVersionId)
                 .set(REPORT_VERSION_ARTEFACT.ORDER, lastId + 1)
                 .set(REPORT_VERSION_ARTEFACT.ID, lastId + 1)
@@ -176,7 +177,7 @@ fun giveUserGroupPermission(groupName: String,
 {
     JooqContext().use {
 
-        val lastId = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID.max())
+        val lastId = it.dsl.select(DSL.max(ORDERLYWEB_USER_GROUP_PERMISSION.ID))
                 .from(ORDERLYWEB_USER_GROUP_PERMISSION)
                 .singleOrNull()?.into(Int::class.java) ?: 0
 

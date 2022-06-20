@@ -1,7 +1,9 @@
-import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
+import {RunReportMetadata, RunWorkflowMetadata, GitCommit} from "../js/utils/types";
 import {GitState} from "../js/store/git/git";
 import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
+import {ReportsState} from "../js/store/reports/reports";
+import {ErrorsState} from "../js/store/errors/errors";
 
 export type RecursivePartial<T> = {
     [P in keyof T]?:
@@ -36,10 +38,24 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
     }
 };
 
-export const mockGitState = (props: RecursivePartial<GitState> = {}): GitState => {
+export const mockCommit = (props: Partial<GitCommit> = {}): GitCommit => {
+    const date = new Date()
+    return {
+        id: "id",
+        date_time: date.toTimeString(),
+        age: 10,
+        ...props
+    }
+};
+
+export const mockGitState = (props: RecursivePartial<GitState> = {} ): GitState => {
     return {
         branches: ["master", "dev"],
+        selectedBranch: "",
+        selectedCommit: "",
+        gitRefreshing: false,
         ...props,
+        commits: props?.commits && props.commits !== null ? props.commits.map((c) => mockCommit(c)) : [],
         metadata: props.metadata !== null ? {
             instances_supported: false,
             git_supported: true,
@@ -54,7 +70,9 @@ export const mockRunReportRootState = (props: RecursivePartial<RunReportRootStat
     return {
         selectedTab: "RunReport",
         ...props,
-        git: mockGitState(props.git)
+        git: mockGitState(props.git),
+        reports: mockReportsState(),
+        errors: mockErrorState()
     }
 }
 
@@ -69,3 +87,39 @@ export const mockActionContext = <S, R>(context: Partial<ActionContext<S, R>> = 
         ...context
     }
 }
+
+export const mockReportsState = (props: Partial<ReportsState> = {}): ReportsState => {
+    return {
+        selectedReport: {
+            name: "report",
+            date: null
+        },
+        reportsError: null,
+        reports: [{name: "report", date: null}],
+        ...props
+    }
+};
+
+export const mockErrorState = (props: Partial<ErrorsState> = {}): ErrorsState => {
+    return {
+        errors: [],
+        ...props
+    }
+};
+
+export const mockSuccess = (data: any) => {
+    return {
+        data,
+        status: "success",
+        errors: []
+    }
+}
+
+export const mockFailure = (errorMsg: any) => {
+    return {
+        data: {},
+        status: "failure",
+        errors: [{code: "ERROR", message: errorMsg}]
+    }
+}
+

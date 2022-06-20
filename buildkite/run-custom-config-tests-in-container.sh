@@ -26,6 +26,7 @@ function cleanup() {
 }
 trap cleanup EXIT
 docker run --rm \
+    -v $PWD/git:/api/src/app/git \
     -v $PWD/git:/api/src/customConfigTests/git \
     --network=host \
     orderly-web-custom-config-tests

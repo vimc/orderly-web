@@ -1,13 +1,9 @@
-group 'org.vaccineimpact'
-version '1.0-SNAPSHOT'
-
 buildscript {
-    ext.kotlin_version = '1.4.0'
-    ext.detekt_version = '1.15.0'
+    ext.kotlin_version = '1.6.0'
+    ext.detekt_version = '1.21.0-RC1'
 
     repositories {
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
@@ -15,6 +11,13 @@ buildscript {
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"
     }
 }
+
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
+}
+
+group 'org.vaccineimpact'
+version '1.0-SNAPSHOT'
 
 task run(dependsOn: ':app:run')
 task generateDatabaseInterface(dependsOn: ':generateDatabaseInterface:run')
@@ -65,13 +68,13 @@ task runLocalTests(dependsOn: [":app:generateTestData", ":app:test"]) {
 }
 
 subprojects {
-    apply plugin: 'kotlin'
+
+    apply plugin: "org.jetbrains.kotlin.jvm"
     apply plugin: 'jacoco'
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
     repositories {
         mavenCentral()
-        jcenter()
         maven { url 'https://jitpack.io' }
     }
 
@@ -84,12 +87,12 @@ subprojects {
     tasks.detekt.jvmTarget = "1.8"
 
     dependencies {
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
     }
 
     jacoco {
-        toolVersion = "0.8.3"
+        toolVersion = "0.8.7"
         reportsDir = file("$projectDir/coverage")
     }
 
@@ -100,10 +103,10 @@ subprojects {
         }
 
         afterEvaluate {
-            classDirectories = files(classDirectories.files.collect {
+            classDirectories.setFrom(files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: '**/SparkWrapper.kt')
-            })
-        }    
+            }))
+        }
     }
 
     task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
@@ -156,4 +159,6 @@ subprojects {
             println(file("build/classes/test/config.properties").text)
         }
     }
+
+    jar.dependsOn 'copyConfigToResources'
 }

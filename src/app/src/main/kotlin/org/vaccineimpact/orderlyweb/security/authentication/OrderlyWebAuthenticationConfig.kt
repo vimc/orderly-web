@@ -45,7 +45,7 @@ class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
     {
         val configuredValue = appConfig["auth.provider"]
 
-        return when (configuredValue.toLowerCase())
+        return when (configuredValue.lowercase())
         {
             "github" -> AuthenticationProvider.GitHub
             "montagu" -> AuthenticationProvider.Montagu
