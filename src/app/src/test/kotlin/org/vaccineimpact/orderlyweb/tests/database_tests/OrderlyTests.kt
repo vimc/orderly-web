@@ -70,7 +70,6 @@ class OrderlyTests : CleanDatabaseTests()
         // although fetching reports from the repo is mocked we need to insert this
         // record so that we can insert files/data/artefacts/parameters which are
         // still fetched directly from the db
-        insertReport("test", "v1")
 
         insertFileInput("v1", "file.csv", FilePurpose.RESOURCE, 2345)
         insertFileInput("v1", "graph.png", FilePurpose.RESOURCE, 3456)

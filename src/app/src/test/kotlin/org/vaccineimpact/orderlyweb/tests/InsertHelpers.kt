@@ -291,3 +291,50 @@ fun deleteArchiveFolder(reportName: String, reportVersion: String, config: Confi
         }
     }
 }
+
+fun insertReportVersionPackage(
+    reportVersion: String,
+    packageName: String = "rmarkDown",
+    packageVersion: String= "1.2")
+{
+    JooqContext().use {
+        val lastId = it.dsl.select(DSL.max(REPORT_VERSION_PACKAGE.ID))
+            .from(REPORT_VERSION_PACKAGE)
+            .fetchAnyInto(Int::class.java)
+            ?: 0
+
+        it.dsl.insertInto(REPORT_VERSION_PACKAGE)
+            .set(REPORT_VERSION_PACKAGE.ID, lastId+1)
+            .set(REPORT_VERSION_PACKAGE.REPORT_VERSION, reportVersion)
+            .set(REPORT_VERSION_PACKAGE.PACKAGE_VERSION, packageVersion)
+            .set(REPORT_VERSION_PACKAGE.PACKAGE_NAME, packageName)
+            .execute()
+    }
+
+}
+
+fun insertDepends(
+    reportVersion: String,
+    use: Int,
+    asData: String = "incoming.csv",
+    isPinned: Boolean = false,
+    isLatest: Boolean = true
+)
+{
+    JooqContext().use {
+        val lastId = it.dsl.select(DSL.max(DEPENDS.ID))
+            .from(DEPENDS)
+            .fetchAnyInto(Int::class.java)
+            ?: 0
+
+        it.dsl.insertInto(DEPENDS)
+            .set(DEPENDS.ID, lastId + 1)
+            .set(DEPENDS.REPORT_VERSION, reportVersion)
+            .set(DEPENDS.USE, use)
+            .set(DEPENDS.AS, asData)
+            .set(DEPENDS.IS_PINNED, isPinned)
+            .set(DEPENDS.IS_LATEST, isLatest)
+            .execute()
+    }
+
+}

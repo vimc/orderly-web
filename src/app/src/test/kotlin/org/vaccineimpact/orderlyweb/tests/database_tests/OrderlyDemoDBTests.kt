@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import org.junit.Test
-import org.junit.Ignore
 import org.assertj.core.api.Assertions.assertThat
+import org.jooq.impl.DSL
+import org.junit.*
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ARTEFACT_FORMAT
@@ -21,8 +21,10 @@ import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_DATA
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_PACKAGE
+import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
-
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.*
 
 class OrderlyDemoDBTests : DatabaseTests()
 {
@@ -51,6 +53,24 @@ class OrderlyDemoDBTests : DatabaseTests()
     @Test
     fun `has expected changelog`()
     {
+        insertReport("test", "version1")
+        insertChangelog(
+            InsertableChangelog(
+                "zz_id1",
+                "version1",
+                "public",
+                "Do you see any Teletubbies in here?",
+                true,
+                1),
+            InsertableChangelog(
+                "id2",
+                "version1",
+                "internal",
+                "did something awful",
+                false,
+                2)
+        )
+
         JooqContext().use {
             val result = it.dsl.selectFrom(CHANGELOG)
                     .orderBy(CHANGELOG.VALUE.asc())
@@ -103,9 +123,20 @@ class OrderlyDemoDBTests : DatabaseTests()
     @Test
     fun `has populated depends table`()
     {
+        insertReport("test", "testVersion2")
+        insertArtefact("testVersion2", files = listOf(FileInfo("fakeartefact.csv", 1)))
+        JooqContext().use {
+            val fileArtefactID = it.dsl.select(DSL.max(FILE_ARTEFACT.ID))
+                .from(FILE_ARTEFACT)
+                .fetchAnyInto(Int::class.java)
+                ?: 0
+
+            insertDepends("testVersion2", fileArtefactID)
+        }
+
         JooqContext().use {
             val result = it.dsl.selectFrom(DEPENDS)
-                    .fetch()
+                .fetch()
 
             assertThat(result.count()).isGreaterThan(0)
 
@@ -118,7 +149,6 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.isPinned).isNotNull()
                 assertThat(r.isLatest).isNotNull()
             }
-
         }
     }
 
@@ -250,13 +280,7 @@ class OrderlyDemoDBTests : DatabaseTests()
                     .fetch()
 
             val names = result.map({it.name})
-            assertThat(names.contains("changelog")).isTrue()
-            assertThat(names.contains("connection")).isTrue()
-            assertThat(names.contains("html")).isTrue()
-            assertThat(names.contains("interactive")).isTrue()
-            assertThat(names.contains("minimal")).isTrue()
-            assertThat(names.contains("other")).isTrue()
-
+            assertThat(names.contains("minimal")).isTrue
         }
     }
 
@@ -343,6 +367,10 @@ class OrderlyDemoDBTests : DatabaseTests()
     @Test
     fun `has populated report version package`()
     {
+        insertReport("test", "testVersion1")
+
+        insertReportVersionPackage("testVersion1")
+
         JooqContext().use {
             val result = it.dsl.selectFrom(REPORT_VERSION_PACKAGE)
                     .fetch()
@@ -352,13 +380,10 @@ class OrderlyDemoDBTests : DatabaseTests()
             for (r in result)
             {
                 assertThat(r.id).isGreaterThan(0)
-                assertThat(r.reportVersion).isNotBlank()
-                assertThat(r.packageName).isNotBlank()
-                assertThat(r.packageVersion).isNotBlank()
+                assertThat(r.reportVersion).isNotBlank
+                assertThat(r.packageName).isNotBlank
+                assertThat(r.packageVersion).isNotBlank
             }
-
         }
     }
-
-
 }
