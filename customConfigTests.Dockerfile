@@ -37,7 +37,6 @@ RUN apt-get update && apt-get install -yq \
                 ca-certificates \
                 fonts-liberation \
                 libgbm1 \
-                #libappindicator1 \
                 libnss3 \
                 lsb-release \
                 xdg-utils \
