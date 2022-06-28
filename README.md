@@ -1,6 +1,6 @@
 # OrderlyWeb
 
-[![Build status](https://badge.buildkite.com/54990e80cd2495e45bbe78d46afaee17147451bd4d620aacbf.svg)](https://buildkite.com/mrc-ide/orderly-web)
+[![Build status](https://badge.buildkite.com/54990e80cd2495e45bbe78d46afaee17147451bd4d620aacbf.svg?branch=main)](https://buildkite.com/mrc-ide/orderly-web)
 [![codecov.io](https://codecov.io/github/vimc/orderly-web/coverage.svg?branch=master)](https://codecov.io/github/vimc/orderly-web?branch=master)
 
 See [spec.md](/docs/spec/spec.md) for the full API specification.
