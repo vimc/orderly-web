@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
-    private val now = Instant.now()
+    private val now = Instant.ofEpochMilli(1655378424228)
 
     private fun addTestReportRun(sut: OrderlyWebReportRunRepository)
     {

@@ -100,7 +100,7 @@ class WorkflowRunTests : IntegrationTest()
         val name = "Interim report"
         val key = "adventurous_aardvark"
         val email = "test.user@example.com"
-        val date = Instant.now()
+        val date = Instant.ofEpochMilli(1655378424228)
         val runWorkflowReport = listOf(
                 WorkflowRunReport(
                         "adventurous_aardvark",

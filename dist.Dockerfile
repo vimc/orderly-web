@@ -1,4 +1,4 @@
-FROM openjdk:8u121
+FROM openjdk:11
 
 RUN mkdir /static/public -p
 

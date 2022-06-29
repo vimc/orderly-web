@@ -1,11 +1,30 @@
-FROM vimc/node-docker:master
+FROM openjdk:11
 
-# Install OpenJDK
-RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/stretch-backports.list
 RUN apt-get update
-RUN apt-get install -t stretch-backports -y \
-    openjdk-8-jdk
-RUN rm /etc/apt/sources.list.d/stretch-backports.list
+RUN apt-get install -y build-essential
+
+# Install docker
+RUN apt-get update
+RUN apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        software-properties-common \
+        dirmngr \
+        apt-transport-https \
+        lsb-release \
+        gnupg \
+        ca-certificates
+
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+      $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN apt-get update
+RUN apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN apt-get -y install nodejs
 
 # Setup gradle
 COPY src/gradlew /api/src/

@@ -334,7 +334,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `can get latest dates for selected reports`()
     {
-        val now = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
 
         insertReport("test1", "v1", date = Timestamp.from(now.minusSeconds(60)))
         insertReport("test1", "v2", date = Timestamp.from(now))
