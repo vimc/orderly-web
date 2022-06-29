@@ -16,13 +16,14 @@ import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
 
 class WorkflowRunRepositoryTests : CleanDatabaseTests()
-{
+{   
+    
+    private val now = Instant.ofEpochMilli(1655378424228)
+
     @Test
     fun `can add workflow run`()
     {
         insertUser("user@email.com", "user.name")
-
-        val now = Instant.ofEpochMilli(1655378424228)
 
         val workflowRun = WorkflowRun(
                 "Interim report",
@@ -207,8 +208,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.ofEpochMilli(1655378424228)
-
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
                 WorkflowRun(
@@ -238,8 +237,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     fun `can get all workflow runs`()
     {
         insertUser("user@email.com", "user.name")
-
-        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -311,8 +308,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         insertUser("user@email.com", "user.name")
         insertUser("user2@email.com", "user2.name")
 
-        val now = Instant.ofEpochMilli(1655378424228)
-
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
                 WorkflowRun(
@@ -355,8 +350,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         insertUser("user@email.com", "user.name")
         insertUser("user2@email.com", "user2.name")
 
-        val now = Instant.ofEpochMilli(1655378424228)
-
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
                 WorkflowRun(
@@ -397,8 +390,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     fun `can get all workflow runs using non-empty name prefix`()
     {
         insertUser("user@email.com", "user.name")
-
-        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
@@ -441,8 +432,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.ofEpochMilli(1655378424228)
-
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
                 WorkflowRun(
@@ -484,8 +473,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.ofEpochMilli(1655378424228)
-
         val sut = OrderlyWebWorkflowRunRepository()
 
         val workflowRun = WorkflowRun(
@@ -524,8 +511,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     fun `does not get workflow details if key is invalid`()
     {
         insertUser("user@email.com", "user.name")
-
-        val now = Instant.ofEpochMilli(1655378424228)
 
         val sut = OrderlyWebWorkflowRunRepository()
 
