@@ -1,7 +1,13 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
+import com.github.scribejava.core.extractors.TokenExtractor
 import org.pac4j.core.context.HttpConstants
-import org.pac4j.sparkjava.DefaultHttpActionAdapter
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.exception.CredentialsException
+import org.pac4j.core.exception.http.HttpAction
+import org.pac4j.core.http.adapter.HttpActionAdapter
+import org.pac4j.jee.context.session.JEESessionStore
+import org.pac4j.sparkjava.SparkHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.Serializer
@@ -14,17 +20,21 @@ import org.vaccineimpact.orderlyweb.models.ResultStatus
 import org.vaccineimpact.orderlyweb.security.authorization.mismatchedURL
 import org.vaccineimpact.orderlyweb.security.authorization.missingPermissions
 
-class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
+class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient>) : SparkHttpActionAdapter()
 {
-    private fun unauthorizedResponse(e: ExpiredToken?): String
+    private fun unauthorizedResponse(e: Exception?): String
     {
+        val problems = if (e is ExpiredToken)
+        {
+            e.problems
+        } else clients.map {
+            it.errorInfo
+        }
+
         return Serializer.instance.toJson(Result(
                 ResultStatus.FAILURE,
                 null,
-                e?.problems ?: clients.map {
-                    it.errorInfo
-                }
-        ))
+                problems))
     }
 
     private fun forbiddenResponse(authenticationErrors: List<ErrorInfo>): String = Serializer.instance.toJson(Result(
@@ -34,17 +44,17 @@ class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient
     ))
 
 
-    override fun adapt(code: Int, context: SparkWebContext): Any? = when (code)
+    override fun adapt(action: HttpAction, context: WebContext): Any? = when (action.code)
     {
         HttpConstants.UNAUTHORIZED ->
         {
-            val e = context.sessionStore.get(context, "token_exception")
-            addDefaultResponseHeaders(context.response)
-            spark.Spark.halt(code, unauthorizedResponse(e as ExpiredToken?))
+            val e = JEESessionStore.INSTANCE.get(context, "token_exception")
+            addDefaultResponseHeaders((context as SparkWebContext).sparkResponse.raw())
+            spark.Spark.halt(action.code, unauthorizedResponse((if (e.isPresent) e.get() else null) as Exception?))
         }
         HttpConstants.FORBIDDEN ->
         {
-            addDefaultResponseHeaders(context.response)
+            addDefaultResponseHeaders((context as SparkWebContext).sparkResponse.raw())
 
             val profile = DirectActionContext(context).userProfile!!
 
@@ -63,8 +73,8 @@ class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient
                 authenticationErrors.addAll(MissingRequiredPermissionError(missingPermissions).problems)
             }
 
-            spark.Spark.halt(code, forbiddenResponse(authenticationErrors))
+            spark.Spark.halt(action.code, forbiddenResponse(authenticationErrors))
         }
-        else -> super.adapt(code, context)
+        else -> super.adapt(action, context)
     }
 }

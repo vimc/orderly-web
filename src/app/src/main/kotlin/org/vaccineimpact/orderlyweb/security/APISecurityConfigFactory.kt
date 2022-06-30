@@ -43,7 +43,7 @@ class APISecurityClientsConfigFactory(
     override fun build(vararg parameters: Any?): Config
     {
         @Suppress("UNCHECKED_CAST")
-        return Config(allClients as List<Client<Credentials, CommonProfile>>).apply {
+        return Config(allClients as List<Client>).apply {
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
             httpActionAdapter = APIActionAdaptor(allClients)
 
@@ -53,7 +53,7 @@ class APISecurityClientsConfigFactory(
             }
             else
             {
-                setAuthorizer(IsAuthenticatedAuthorizer<CommonProfile>())
+                setAuthorizer(IsAuthenticatedAuthorizer())
             }
         }
     }

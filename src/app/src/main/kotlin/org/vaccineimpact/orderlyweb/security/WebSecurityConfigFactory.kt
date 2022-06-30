@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 
 class WebSecurityConfigFactory(
-        private val client: IndirectClient<out Credentials, out CommonProfile>,
+        private val client: IndirectClient,
         private val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
@@ -28,7 +28,7 @@ class WebSecurityConfigFactory(
             }
             else
             {
-                setAuthorizer(IsAuthenticatedAuthorizer<CommonProfile>())
+                setAuthorizer(IsAuthenticatedAuthorizer())
             }
         }
     }

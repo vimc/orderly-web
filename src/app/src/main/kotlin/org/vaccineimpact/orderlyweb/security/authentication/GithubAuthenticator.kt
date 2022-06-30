@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.security.authentication
 
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
+import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
@@ -16,16 +18,16 @@ import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
 class GithubAuthenticator(private val userRepository: UserRepository,
                           private val appConfig: Config = AppConfig(),
                           private val githubAuthHelper: GithubAuthHelper = GithubApiClientAuthHelper(appConfig)
-                          ) : Authenticator<TokenCredentials>
+                          ) : Authenticator
 {
-    override fun validate(credentials: TokenCredentials?, context: WebContext)
+    override fun validate(credentials: Credentials?, context: WebContext?, sessionStore: SessionStore?)
     {
         if (credentials == null)
         {
             throw CredentialsException("No credentials supplied")
         }
 
-        val token = credentials.token
+        val token = (credentials as TokenCredentials).token
 
         githubAuthHelper.authenticate(token)
         githubAuthHelper.checkGitHubOrgAndTeamMembership()

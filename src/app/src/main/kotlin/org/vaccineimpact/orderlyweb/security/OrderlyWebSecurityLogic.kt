@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.core.config.Config
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.engine.DefaultSecurityLogic
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter
 import org.pac4j.core.http.adapter.HttpActionAdapter
@@ -10,26 +12,27 @@ import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthentica
 
 class OrderlyWebSecurityLogic(private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig(),
                               private val guestUserManager: GuestUserManager = OrderlyWebGuestUserManager())
-    : DefaultSecurityLogic<Any?, SparkWebContext>()
+    : DefaultSecurityLogic()
 {
-    override fun perform(context: SparkWebContext?,
-                         config: Config?,
-                         securityGrantedAccessAdapter: SecurityGrantedAccessAdapter<Any?, SparkWebContext?>?,
-                         httpActionAdapter: HttpActionAdapter<Any?, SparkWebContext?>?,
-                         clients: String?,
-                         authorizers: String?,
-                         matchers: String?,
-                         inputMultiProfile: Boolean?,
-                         vararg parameters: Any?): Any?
+    override fun perform(context: WebContext, sessionStore: SessionStore,
+                         config: Config?, securityGrantedAccessAdapter: SecurityGrantedAccessAdapter?,
+                         httpActionAdapter: HttpActionAdapter?, clients: String?, authorizers: String?,
+                         matchers: String?, vararg parameters: Any?): Any?
     {
-        guestUserManager.updateProfile(authenticationConfig.allowGuestUser, context, config, clients)
+        guestUserManager.updateProfile(authenticationConfig.allowGuestUser,
+                context as SparkWebContext,
+                sessionStore,
+                config,
+                clients)
 
         return super.perform(context,
+                sessionStore,
                 config,
                 securityGrantedAccessAdapter,
                 httpActionAdapter,
                 clients, authorizers,
-                matchers, inputMultiProfile, *parameters)
+                matchers,
+                *parameters)
     }
 
 }

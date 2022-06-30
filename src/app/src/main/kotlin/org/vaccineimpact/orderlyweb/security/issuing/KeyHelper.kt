@@ -10,7 +10,7 @@ object KeyHelper
     fun generateKeyPair(): KeyPair
     {
         val generator = KeyPairGenerator.getInstance("RSA").apply {
-            initialize(1024)
+            initialize(2048)
         }
         return generator.generateKeyPair()
     }

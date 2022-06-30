@@ -27,7 +27,7 @@ class GithubDirectClientTests
         assertThat(authenticator is GithubAuthenticator).isTrue()
 
         val ags = sut.authorizationGenerators
-        Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
+        Assertions.assertThat((ags as List<AuthorizationGenerator>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
     }

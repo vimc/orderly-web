@@ -33,12 +33,12 @@ class GithubOAuthProfileCreatorTests
         on { execute(any()) } doReturn mockResponse
     }
 
-    private val mockProfileDefinition = mock<OAuthProfileDefinition<GitHubProfile, OAuth2AccessToken, OAuth20Configuration>>() {
-        on {extractUserProfile(any())} doReturn mock<GitHubProfile>()
+    private val mockProfileDefinition = mock<OAuthProfileDefinition>() {
+        on { extractUserProfile(any()) } doReturn mock<GitHubProfile>()
     }
 
     private val mockConfiguration = mock<OAuth20Configuration> {
-        on { buildService(any(), any(), eq(null) )} doReturn mockService
+        on { buildService(any(), any()) } doReturn mockService
         on { getProfileDefinition() } doReturn mockProfileDefinition
     }
 
@@ -52,7 +52,7 @@ class GithubOAuthProfileCreatorTests
     }
 
     private val mockCredentials = mock<OAuth20Credentials> {
-       on { accessToken } doReturn mockAccessToken
+        on { accessToken } doReturn mockAccessToken
     }
 
     private val mockUserRepo = mock<UserRepository> {
@@ -64,7 +64,7 @@ class GithubOAuthProfileCreatorTests
     {
         val sut = GithubOAuthProfileCreator(mockConfiguration, mock(), mockUserRepo, mock(), mockGithubAuthHelper)
 
-        sut.create(mockCredentials, mock()) //This calls the overridden retrieveUserProfileFromToken method
+        sut.create(mockCredentials, mock(), mock()) //This calls the overridden retrieveUserProfileFromToken method
 
         verify(mockGithubAuthHelper).authenticate("1234567")
         verify(mockGithubAuthHelper).getUser()

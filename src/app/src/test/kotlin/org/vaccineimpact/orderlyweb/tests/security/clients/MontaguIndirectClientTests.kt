@@ -26,14 +26,14 @@ class MontaguIndirectClientTests
         assertThat(extractor is CookieExtractor).isTrue()
         assertThat(extractor.toString()).contains("cookieName: montagu_jwt_token")
 
-        val redirectActionBuilder = sut.redirectActionBuilder
+        val redirectActionBuilder = sut.redirectionActionBuilder
         assertThat(redirectActionBuilder is MontaguIndirectClientRedirectActionBuilder).isTrue()
 
         val authenticator = sut.authenticator
         assertThat(authenticator is MontaguAuthenticator).isTrue()
 
         val ags = sut.authorizationGenerators
-        Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
+        Assertions.assertThat((ags as List<AuthorizationGenerator>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("/login")

@@ -39,8 +39,8 @@ class DirectActionContextTests
         )
     }
 
-    val mockProfileManager = mock<ProfileManager<CommonProfile>> {
-        on { it.getAll(true) } doReturn listOf(mockUserProfile)
+    val mockProfileManager = mock<ProfileManager> {
+        on { it.profiles } doReturn listOf(mockUserProfile)
     }
 
     val mockPostRequest = mock<Request> {

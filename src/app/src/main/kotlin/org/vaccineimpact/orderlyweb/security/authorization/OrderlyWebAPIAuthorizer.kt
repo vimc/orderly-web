@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb.security.authorization
 
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 
@@ -12,7 +14,7 @@ open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequiremen
 {
     private val logger = LoggerFactory.getLogger(OrderlyWebAuthorizer::class.java)
 
-    override fun isProfileAuthorized(context: WebContext, profile: CommonProfile): Boolean
+    override fun isProfileAuthorized(context: WebContext, sessionStore: SessionStore, profile: UserProfile): Boolean
     {
         val claimedUrl = profile.getAttribute("url")
         var requestedUrl = context.path
@@ -29,12 +31,12 @@ open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequiremen
 
         if (claimedUrl == "*" || requestedUrl == claimedUrl)
         {
-            return super.isProfileAuthorized(context, profile)
+            return super.isProfileAuthorized(context, sessionStore, profile)
         }
         else
         {
             logger.warn("This token is issued for $claimedUrl but the current request is for $requestedUrl")
-            profile.mismatchedURL = "This token is issued for $claimedUrl but the current request is for $requestedUrl"
+            (profile as CommonProfile).mismatchedURL = "This token is issued for $claimedUrl but the current request is for $requestedUrl"
             return false
         }
 

@@ -2,8 +2,10 @@ package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.core.client.finder.DefaultSecurityClientFinder
 import org.pac4j.core.config.Config
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
+import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
@@ -15,7 +17,8 @@ import java.util.*
 interface GuestUserManager
 {
     fun updateProfile(allowGuestUser: Boolean,
-                      context: SparkWebContext?,
+                      context: SparkWebContext,
+                      sessionStore: SessionStore,
                       config: Config?,
                       clients: String?)
 
@@ -30,13 +33,14 @@ class OrderlyWebGuestUserManager(
 
     private val clientFinder = DefaultSecurityClientFinder()
     override fun updateProfile(allowGuestUser: Boolean,
-                               context: SparkWebContext?,
+                               context: SparkWebContext,
+                               sessionStore: SessionStore,
                                config: Config?,
                                clients: String?)
     {
         val client = clientFinder.find(config?.clients, context, clients).first()
-        val manager = ProfileManager<CommonProfile>(context)
-        val currentProfile = manager.get(true)
+        val manager = ProfileManager(context, sessionStore)
+        val currentProfile = manager.getProfile(CommonProfile::class.java)
 
         if (currentProfile.isPresent && currentProfile.get().id != GUEST_USER)
         {
@@ -50,12 +54,12 @@ class OrderlyWebGuestUserManager(
         }
         else
         {
-           manager.remove(true)
+           manager.removeProfiles()
         }
     }
 
     private fun addOrUpdateGuestProfile(currentProfile: Optional<CommonProfile>,
-                                       profileManager: ProfileManager<CommonProfile>)
+                                       profileManager: ProfileManager)
     {
         val permissions = PermissionSet(authRepo.getPermissionsForGroup(GUEST_USER))
 

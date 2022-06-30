@@ -6,6 +6,7 @@ import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.context.Cookie
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.exception.http.FoundAction
 import org.vaccineimpact.orderlyweb.security.clients.MontaguLogoutActionBuilder
 
 class MontaguLogoutActionBuilderTests
@@ -18,9 +19,10 @@ class MontaguLogoutActionBuilderTests
         }
 
         val sut = MontaguLogoutActionBuilder()
-        val result = sut.getLogoutAction(mockContext, mock(), "/")
+        val result = sut.getLogoutAction(mockContext, mock(), mock(), "/")
 
-        assertThat(result.location).isEqualTo("http://localhost:8888")
+        assertThat((result.get() as FoundAction).location)
+                .isEqualTo("http://localhost:8888")
     }
 
 }

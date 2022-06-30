@@ -30,8 +30,8 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             on { getPermissionsForUser("user@email.com") } doReturn fakePermissions
         }
 
-        val sut = OrderlyAuthorizationGenerator<CommonProfile>(mockRepo)
-        val result = sut.generate(mock(), CommonProfile().apply { id = "user@email.com" })
-        assertThat(result.orderlyWebPermissions).hasSameElementsAs(fakePermissions)
+        val sut = OrderlyAuthorizationGenerator(mockRepo)
+        val result = sut.generate(mock(), mock(), CommonProfile().apply { id = "user@email.com" })
+        assertThat((result.get() as CommonProfile).orderlyWebPermissions).hasSameElementsAs(fakePermissions)
     }
 }

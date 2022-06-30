@@ -40,7 +40,7 @@ class OrderlyWebBearerTokenAuthenticatorTests
 
         val sut = OrderlyWebBearerTokenAuthenticator(helper.verifier.signatureConfiguration, "differentissuer")
 
-        assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -57,7 +57,7 @@ class OrderlyWebBearerTokenAuthenticatorTests
 
         val sut = OrderlyWebBearerTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName)
 
-        sut.validate(credentials, fakeContext)
+        sut.validate(credentials, fakeContext, mock())
 
         assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
     }

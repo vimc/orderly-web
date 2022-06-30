@@ -12,12 +12,12 @@ import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.providers.RemoteHttpMontaguApiClient
 
-class MontaguDirectClient : DirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
+class MontaguDirectClient : DirectClient(), OrderlyWebTokenCredentialClient
 {
     override val errorInfo = ErrorInfo("montagu-token-invalid",
             "Montagu token not supplied in Authorization header, or Montagu token was invalid")
 
-    override fun clientInit()
+    override fun internalInit(forceReinit: Boolean)
     {
         defaultCredentialsExtractor(HeaderExtractor(
                 HttpConstants.AUTHORIZATION_HEADER,

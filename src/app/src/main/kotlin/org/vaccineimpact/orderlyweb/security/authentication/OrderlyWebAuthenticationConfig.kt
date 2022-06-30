@@ -15,7 +15,7 @@ interface AuthenticationConfig
     val allowGuestUser: Boolean
     val canAllowGuestUser: Boolean
     fun getConfiguredProvider(): AuthenticationProvider
-    fun getAuthenticationIndirectClient(): IndirectClient<out Credentials, out CommonProfile>
+    fun getAuthenticationIndirectClient(): IndirectClient
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
 }
 
@@ -64,7 +64,7 @@ class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
         return appConfig["auth.github_secret"]
     }
 
-    override fun getAuthenticationIndirectClient(): IndirectClient<out Credentials, out CommonProfile>
+    override fun getAuthenticationIndirectClient(): IndirectClient
     {
         return when (getConfiguredProvider())
         {

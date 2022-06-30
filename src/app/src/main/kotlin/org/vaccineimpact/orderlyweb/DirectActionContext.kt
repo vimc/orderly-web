@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
+import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -20,11 +21,12 @@ import spark.Response
 import java.io.BufferedReader
 import java.io.Reader
 import javax.servlet.MultipartConfigElement
+import kotlin.reflect.KProperty
 
 open class DirectActionContext(
     private val context: SparkWebContext,
     private val appConfig: Config = AppConfig(),
-    private val profileManager: ProfileManager<CommonProfile>? = null
+    private val profileManager: ProfileManager? = null
 ) : ActionContext
 {
     private val request
@@ -52,8 +54,9 @@ open class DirectActionContext(
     }
 
     override val userProfile: CommonProfile? by lazy {
-        val manager = profileManager ?: ProfileManager<CommonProfile>(context)
-        manager.getAll(true).singleOrNull()
+
+        val manager = profileManager ?: ProfileManager(context, JEESessionStore.INSTANCE)
+        manager.profiles.singleOrNull() as CommonProfile?
     }
 
     override val permissions by lazy {
