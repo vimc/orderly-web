@@ -14,11 +14,11 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
 
-
-class GithubAuthenticator(private val userRepository: UserRepository,
-                          private val appConfig: Config = AppConfig(),
-                          private val githubAuthHelper: GithubAuthHelper = GithubApiClientAuthHelper(appConfig)
-                          ) : Authenticator
+class GithubAuthenticator(
+        private val userRepository: UserRepository,
+        private val appConfig: Config = AppConfig(),
+        private val githubAuthHelper: GithubAuthHelper = GithubApiClientAuthHelper(appConfig)
+) : Authenticator
 {
     override fun validate(credentials: Credentials?, context: WebContext?, sessionStore: SessionStore?)
     {
@@ -42,5 +42,4 @@ class GithubAuthenticator(private val userRepository: UserRepository,
             this.setId(email)
         }
     }
-
 }

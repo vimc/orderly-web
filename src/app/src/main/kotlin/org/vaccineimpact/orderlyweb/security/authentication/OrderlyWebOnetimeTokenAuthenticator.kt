@@ -15,8 +15,10 @@ class OrderlyWebOnetimeTokenAuthenticator(
         private val tokenStore: OnetimeTokenStore
 ) : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
-    override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT,
-                                  context: WebContext, sessionStore: SessionStore)
+    override fun createJwtProfile(
+            credentials: TokenCredentials, jwt: JWT,
+            context: WebContext, sessionStore: SessionStore
+    )
     {
         super.createJwtProfile(credentials, jwt, context, sessionStore)
 
@@ -46,5 +48,4 @@ class OrderlyWebOnetimeTokenAuthenticator(
 
         credentials.userProfile?.id = claims.getClaim("id").toString()
     }
-
 }

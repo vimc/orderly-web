@@ -12,9 +12,10 @@ import org.pac4j.core.redirect.RedirectionActionBuilder
 import org.pac4j.core.util.HttpActionHelper
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
-class OrderlyWebIndirectClient() : IndirectClient() {
-    
-    init {
+class OrderlyWebIndirectClient() : IndirectClient()
+{
+    init
+    {
         setCallbackUrl("/login")
     }
 
@@ -24,15 +25,16 @@ class OrderlyWebIndirectClient() : IndirectClient() {
         defaultRedirectionActionBuilder(OrderlyWebIndirectClientRedirectActionBuilder())
         defaultAuthenticator(NeverInvokedAuthenticator())
     }
-
 }
 
-class OrderlyWebIndirectClientRedirectActionBuilder: RedirectionActionBuilder
+class OrderlyWebIndirectClientRedirectActionBuilder : RedirectionActionBuilder
 {
-    override fun getRedirectionAction(context: WebContext, sessionStore: SessionStore) : java.util.Optional<RedirectionAction>
+    override fun getRedirectionAction(
+            context: WebContext, sessionStore: SessionStore
+    ): java.util.Optional<RedirectionAction>
     {
-        //Attach the originally requested url to the redirect url as a query string parameter, so we can redirect
-        //there once authenticated via the 'landing page'
+        // Attach the originally requested url to the redirect url as a query string parameter, so we can redirect
+        // there once authenticated via the 'landing page'
         val requestedUrl = context.fullRequestURL
         val encodedUrl = URLEncoder.encode(requestedUrl, "utf-8")
         val url = AppConfig()["app.url"] + "/weblogin?requestedUrl=" + encodedUrl
@@ -40,10 +42,11 @@ class OrderlyWebIndirectClientRedirectActionBuilder: RedirectionActionBuilder
     }
 }
 
-//The OrderlyIndirectClient is only used to forward the user on to the appropriate auth provider via the landing page.
-//We need to provide a CredentialsExtractor object to keep pac4j happy, but it should never actually be invoked.
+// The OrderlyIndirectClient is only used to forward the user on to the appropriate auth provider via the landing page.
+// We need to provide a CredentialsExtractor object to keep pac4j happy, but it should never actually be invoked.
 // Similarly for NeverInvokedAuthenticator
-class NeverInvokedCredentialsExtractor: CredentialsExtractor {
+class NeverInvokedCredentialsExtractor : CredentialsExtractor
+{
 
     override fun extract(context: WebContext, sessionStore: SessionStore): java.util.Optional<Credentials>
     {
@@ -51,10 +54,11 @@ class NeverInvokedCredentialsExtractor: CredentialsExtractor {
     }
 }
 
-class NeverInvokedAuthenticator: Authenticator {
+class NeverInvokedAuthenticator : Authenticator
+{
 
-    override fun validate(credentials: Credentials, context: WebContext, sessionStore: SessionStore) {
+    override fun validate(credentials: Credentials, context: WebContext, sessionStore: SessionStore)
+    {
         throw UnsupportedOperationException("NeverInvokedAuthenticator should not be invoked.")
     }
 }
-

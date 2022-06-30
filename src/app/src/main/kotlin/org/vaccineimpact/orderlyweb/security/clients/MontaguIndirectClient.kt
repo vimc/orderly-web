@@ -51,12 +51,13 @@ class MontaguIndirectClient : IndirectClient(), OrderlyWebTokenCredentialClient
             "montagu-cookie-bearer-token-invalid",
             "Montagu bearer token not supplied in cookie '$cookie', or bearer token was invalid"
     )
-
 }
 
-class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: MontaguAPIClient,
-                                                 private val cookieExtractor: CookieExtractor,
-                                                 private val appConfig: AppConfig = AppConfig()) : RedirectionActionBuilder
+class MontaguIndirectClientRedirectActionBuilder(
+        private val montaguAPIClient: MontaguAPIClient,
+        private val cookieExtractor: CookieExtractor,
+        private val appConfig: AppConfig = AppConfig()
+) : RedirectionActionBuilder
 {
     override fun getRedirectionAction(context: WebContext, sessionStore: SessionStore): Optional<RedirectionAction>
     {
@@ -64,9 +65,11 @@ class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: M
 
         val redirectUrl = try
         {
-            val token = (cookieExtractor
-                    .extract(context, sessionStore)
-                    .get() as TokenCredentials)
+            val token = (
+                    cookieExtractor
+                            .extract(context, sessionStore)
+                            .get() as TokenCredentials
+                    )
                     .token
 
             montaguAPIClient.getUserDetails(token)
@@ -86,9 +89,12 @@ class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: M
 
 class MontaguLogoutActionBuilder : LogoutActionBuilder
 {
-    override fun getLogoutAction(context: WebContext, sessionStore: SessionStore,
-                                 currentProfile: UserProfile,
-                                 targetUrl: String): Optional<RedirectionAction>
+    override fun getLogoutAction(
+            context: WebContext,
+            sessionStore: SessionStore,
+            currentProfile: UserProfile,
+            targetUrl: String?
+    ): Optional<RedirectionAction>
     {
         return Optional.of(HttpActionHelper.buildRedirectUrlAction(context, AppConfig()["app.url"]))
     }

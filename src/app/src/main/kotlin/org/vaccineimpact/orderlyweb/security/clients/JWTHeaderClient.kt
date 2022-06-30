@@ -5,7 +5,6 @@ import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.http.client.direct.HeaderClient
-import org.vaccineimpact.orderlyweb.errors.ExpiredToken
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.RSATokenVerifier
@@ -16,10 +15,13 @@ import java.util.*
 class JWTHeaderClient(helper: RSATokenVerifier) : OrderlyWebTokenCredentialClient, HeaderClient(
         "Authorization",
         "Bearer ",
-        OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer))
+        OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer)
+)
 {
-    override val errorInfo = ErrorInfo("bearer-token-invalid",
-            "Bearer token not supplied in Authorization header, or bearer token was invalid")
+    override val errorInfo = ErrorInfo(
+            "bearer-token-invalid",
+            "Bearer token not supplied in Authorization header, or bearer token was invalid"
+    )
 
     override fun internalInit(forceReinit: Boolean)
     {

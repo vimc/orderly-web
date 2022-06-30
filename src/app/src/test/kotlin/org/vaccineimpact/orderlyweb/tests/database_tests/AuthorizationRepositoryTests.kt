@@ -63,10 +63,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.review", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "r1")),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "r2"))))
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.review", Scope.Global()).toString(),
+                        ReifiedPermission("reports.read", Scope.Global()).toString(),
+                        ReifiedPermission("reports.read", Scope.Specific("report", "r1")).toString(),
+                        ReifiedPermission("reports.read", Scope.Specific("report", "r2")).toString()))
     }
 
     @Test
@@ -218,9 +218,9 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")),
-                        ReifiedPermission("reports.read", Scope.Specific("version", "v1"))))
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()).toString(),
+                        ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")).toString(),
+                        ReifiedPermission("reports.read", Scope.Specific("version", "v1")).toString()))
     }
 
     @Test
@@ -239,7 +239,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global())))
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()).toString()))
     }
 
     @Test
@@ -311,8 +311,8 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Specific("version", "v2"))))
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()).toString(),
+                        ReifiedPermission("reports.read", Scope.Specific("version", "v2")).toString()))
     }
 
     @Test
@@ -334,7 +334,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global())))
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()).toString()))
     }
 
     @Test

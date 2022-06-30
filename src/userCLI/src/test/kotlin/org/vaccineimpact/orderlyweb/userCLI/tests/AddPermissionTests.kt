@@ -28,8 +28,9 @@ class AddPermissionTests : CleanDatabaseTests()
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
 
         assertThat(permissions).hasSameElementsAs(
-                listOf(ReifiedPermission("reports.read", Scope.Global()),
-                        ReifiedPermission("reports.review", Scope.Specific("report", "testreport"))))
+                listOf(ReifiedPermission("reports.read", Scope.Global()).toString(),
+                        ReifiedPermission("reports.review", Scope.Specific("report", "testreport")).toString()))
+
     }
 
     @Test

@@ -12,12 +12,13 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
 
-
-class GithubOAuthAuthenticator(config: OAuth20Configuration,
-                               client: IndirectClient,
-                               private val appConfig: Config = AppConfig(),
-                               private val githubAuthHelper: GithubAuthHelper = GithubApiClientAuthHelper(appConfig))
-    : OAuth20Authenticator(config, client) {
+class GithubOAuthAuthenticator(
+        config: OAuth20Configuration,
+        client: IndirectClient,
+        private val appConfig: Config = AppConfig(),
+        private val githubAuthHelper: GithubAuthHelper = GithubApiClientAuthHelper(appConfig)
+) : OAuth20Authenticator(config, client)
+{
 
     override fun validate(credentials: Credentials, context: WebContext, sessionStore: SessionStore)
     {
@@ -25,10 +26,8 @@ class GithubOAuthAuthenticator(config: OAuth20Configuration,
 
         val token = (credentials as OAuth20Credentials).accessToken.accessToken
 
-        //Check github user is member of org/team allowed to access OrderlyWeb
+        // Check github user is member of org/team allowed to access OrderlyWeb
         githubAuthHelper.authenticate(token)
         githubAuthHelper.checkGitHubOrgAndTeamMembership()
-
     }
-
 }

@@ -1,9 +1,6 @@
 package org.vaccineimpact.orderlyweb.security.authentication
 
 import org.pac4j.core.client.IndirectClient
-import org.pac4j.core.credentials.Credentials
-import org.pac4j.core.profile.CommonProfile
-import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlySettingsRepository
@@ -19,8 +16,10 @@ interface AuthenticationConfig
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
 }
 
-class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
-                                     val settingsRepo: SettingsRepository = OrderlySettingsRepository()) : AuthenticationConfig
+class OrderlyWebAuthenticationConfig(
+        val appConfig: Config = AppConfig(),
+        val settingsRepo: SettingsRepository = OrderlySettingsRepository()
+) : AuthenticationConfig
 {
     override val allowGuestUser: Boolean
         get()
@@ -81,7 +80,6 @@ class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
             AuthenticationProvider.Montagu -> MontaguDirectClient()
         }
     }
-
 }
 
 enum class AuthenticationProvider
@@ -90,4 +88,6 @@ enum class AuthenticationProvider
     GitHub
 }
 
-class UnknownAuthenticationProvider(val provider: String) : Exception("Application is configured to use unknown authentication provider '$provider'")
+class UnknownAuthenticationProvider(
+        val provider: String
+) : Exception("Application is configured to use unknown authentication provider '$provider'")

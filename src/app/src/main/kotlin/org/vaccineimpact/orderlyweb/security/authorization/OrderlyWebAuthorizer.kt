@@ -9,16 +9,19 @@ import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 
-open class OrderlyWebAuthorizer(requiredPermissions: Set<PermissionRequirement>)
-    : AbstractRequireAllAuthorizer<PermissionRequirement>()
+open class OrderlyWebAuthorizer(
+        requiredPermissions: Set<PermissionRequirement>
+) : AbstractRequireAllAuthorizer<PermissionRequirement>()
 {
     init
     {
         elements = requiredPermissions
     }
 
-    override fun check(context: WebContext, sessionStore: SessionStore,
-                       profile: UserProfile, element: PermissionRequirement): Boolean
+    override fun check(
+            context: WebContext, sessionStore: SessionStore,
+            profile: UserProfile, element: PermissionRequirement
+    ): Boolean
     {
         val profilePermissions = (profile as CommonProfile).orderlyWebPermissions
         val reifiedRequirement = element.reify(DirectActionContext(context as SparkWebContext))
@@ -30,5 +33,4 @@ open class OrderlyWebAuthorizer(requiredPermissions: Set<PermissionRequirement>)
         }
         return hasPermission
     }
-
 }

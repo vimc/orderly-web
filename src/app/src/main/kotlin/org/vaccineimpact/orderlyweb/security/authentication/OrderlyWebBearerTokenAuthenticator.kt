@@ -8,12 +8,15 @@ import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.vaccineimpact.orderlyweb.errors.ExpiredToken
 
-open class OrderlyWebBearerTokenAuthenticator(signatureConfiguration: SignatureConfiguration, expectedIssuer: String)
-    : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
+open class OrderlyWebBearerTokenAuthenticator(
+        signatureConfiguration: SignatureConfiguration, expectedIssuer: String
+) : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
-    override fun createJwtProfile(credentials: TokenCredentials,
-                                  jwt: JWT, context: WebContext,
-                                  sessionStore: SessionStore)
+    override fun createJwtProfile(
+            credentials: TokenCredentials,
+            jwt: JWT, context: WebContext,
+            sessionStore: SessionStore
+    )
     {
         super.createJwtProfile(credentials, jwt, context, sessionStore)
 

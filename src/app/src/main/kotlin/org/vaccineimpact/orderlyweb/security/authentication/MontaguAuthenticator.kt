@@ -13,8 +13,9 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
 
-class MontaguAuthenticator(private val userRepository: UserRepository,
-                           private val montaguClient: MontaguAPIClient
+class MontaguAuthenticator(
+        private val userRepository: UserRepository,
+        private val montaguClient: MontaguAPIClient
 ) : Authenticator
 {
     override fun validate(credentials: Credentials?, context: WebContext, sessionStore: SessionStore)
@@ -52,5 +53,4 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
         userRepository.addUser(user.email, user.username, user.name ?: "", UserSource.Montagu)
         return user.email
     }
-
 }

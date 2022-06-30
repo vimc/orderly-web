@@ -4,8 +4,6 @@ import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer
 import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
-import org.pac4j.core.credentials.Credentials
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
@@ -25,10 +23,9 @@ interface APISecurityConfigFactory : ConfigFactory
     fun externalAuthentication(): APISecurityConfigFactory
 }
 
-
 class APISecurityClientsConfigFactory(
-        private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig())
-    : APISecurityConfigFactory
+        private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
+) : APISecurityConfigFactory
 {
     companion object
     {
@@ -81,6 +78,4 @@ class APISecurityClientsConfigFactory(
         allClients.add(authenticationConfig.getAuthenticationDirectClient())
         return this
     }
-
 }
-

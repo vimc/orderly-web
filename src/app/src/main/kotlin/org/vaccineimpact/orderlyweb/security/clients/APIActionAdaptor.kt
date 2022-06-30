@@ -1,11 +1,8 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
-import com.github.scribejava.core.extractors.TokenExtractor
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.context.WebContext
-import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.exception.http.HttpAction
-import org.pac4j.core.http.adapter.HttpActionAdapter
 import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sparkjava.SparkHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
@@ -27,22 +24,30 @@ class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient
         val problems = if (e is ExpiredToken)
         {
             e.problems
-        } else clients.map {
-            it.errorInfo
+        }
+        else
+        {
+            clients.map {
+                it.errorInfo
+            }
         }
 
-        return Serializer.instance.toJson(Result(
-                ResultStatus.FAILURE,
-                null,
-                problems))
+        return Serializer.instance.toJson(
+                Result(
+                        ResultStatus.FAILURE,
+                        null,
+                        problems
+                )
+        )
     }
 
-    private fun forbiddenResponse(authenticationErrors: List<ErrorInfo>): String = Serializer.instance.toJson(Result(
-            ResultStatus.FAILURE,
-            null,
-            authenticationErrors
-    ))
-
+    private fun forbiddenResponse(authenticationErrors: List<ErrorInfo>): String = Serializer.instance.toJson(
+            Result(
+                    ResultStatus.FAILURE,
+                    null,
+                    authenticationErrors
+            )
+    )
 
     override fun adapt(action: HttpAction, context: WebContext): Any? = when (action.code)
     {

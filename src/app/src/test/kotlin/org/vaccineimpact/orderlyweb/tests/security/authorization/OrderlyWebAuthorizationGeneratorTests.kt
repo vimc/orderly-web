@@ -24,14 +24,15 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             insertUser("user@email.com", "user.name")
         }
 
-        val fakePermissions = PermissionSet(listOf(ReifiedPermission("reports.read", Scope.Global())))
+        val fakePermissions = listOf(ReifiedPermission("reports.read", Scope.Global()))
 
         val mockRepo = mock<AuthorizationRepository> {
-            on { getPermissionsForUser("user@email.com") } doReturn fakePermissions
+            on { getPermissionsForUser("user@email.com") } doReturn fakePermissions.map { it.toString() }
         }
 
         val sut = OrderlyAuthorizationGenerator(mockRepo)
         val result = sut.generate(mock(), mock(), CommonProfile().apply { id = "user@email.com" })
-        assertThat((result.get() as CommonProfile).orderlyWebPermissions).hasSameElementsAs(fakePermissions)
+        assertThat((result.get() as CommonProfile).orderlyWebPermissions)
+                .hasSameElementsAs(PermissionSet(fakePermissions))
     }
 }
