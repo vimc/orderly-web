@@ -31,6 +31,8 @@ class JWTHeaderClient(helper: RSATokenVerifier) : OrderlyWebTokenCredentialClien
 
     override fun retrieveCredentials(context: WebContext, sessionStore: SessionStore): Optional<Credentials>
     {
+        // this logic is lifted from the pac4j base DirectClient, with the addition of line 53
+        // which we need so that we can return the specific CredentialException message to the user
         return try
         {
             val optCredentials = credentialsExtractor.extract(context, sessionStore)
