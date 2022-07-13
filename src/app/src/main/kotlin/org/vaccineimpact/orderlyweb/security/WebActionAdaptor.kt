@@ -1,14 +1,15 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.core.context.HttpConstants
-import org.pac4j.sparkjava.DefaultHttpActionAdapter
-import org.pac4j.sparkjava.SparkWebContext
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.exception.http.HttpAction
+import org.pac4j.sparkjava.SparkHttpActionAdapter
 import org.vaccineimpact.orderlyweb.errors.FailedLoginError
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 
-class WebActionAdaptor : DefaultHttpActionAdapter()
+class WebActionAdaptor : SparkHttpActionAdapter()
 {
-    override fun adapt(code: Int, context: SparkWebContext): Any? = when (code)
+    override fun adapt(action: HttpAction, context: WebContext): Any? = when (action.code)
     {
         // these errors will be handled by the global error handler
         HttpConstants.UNAUTHORIZED ->
@@ -19,6 +20,6 @@ class WebActionAdaptor : DefaultHttpActionAdapter()
         {
             throw RouteNotFound()
         }
-        else -> super.adapt(code, context)
+        else -> super.adapt(action, context)
     }
 }

@@ -29,7 +29,7 @@ class GithubIndirectClientTests
 
         val ags = sut.authorizationGenerators
         @Suppress("UNCHECKED_CAST")
-        Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
+        Assertions.assertThat((ags as List<AuthorizationGenerator>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("http://localhost:8888/login")

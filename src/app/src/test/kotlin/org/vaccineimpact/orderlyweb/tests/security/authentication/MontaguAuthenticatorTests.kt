@@ -29,7 +29,7 @@ class MontaguAuthenticatorTests
     {
         val sut = MontaguAuthenticator(mock(), mock())
 
-        Assertions.assertThatThrownBy { sut.validate(null, mock()) }
+        Assertions.assertThatThrownBy { sut.validate(null, mock(), mock()) }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("No credentials supplied")
     }
@@ -39,7 +39,7 @@ class MontaguAuthenticatorTests
     {
         val sut = MontaguAuthenticator(mock(), mock())
 
-        Assertions.assertThatThrownBy { sut.validate(TokenCredentials(""), mock()) }
+        Assertions.assertThatThrownBy { sut.validate(TokenCredentials(""), mock(), mock()) }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("Token cannot be blank")
     }
@@ -50,7 +50,7 @@ class MontaguAuthenticatorTests
         val sut = MontaguAuthenticator(mock(), mockMontaguAPIClient)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         Assertions.assertThat(credentials.userProfile.id).isEqualTo("user@example.com")
     }
@@ -61,7 +61,7 @@ class MontaguAuthenticatorTests
         val sut = MontaguAuthenticator(mockUserRepo, mockMontaguAPIClient)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         verify(mockUserRepo).addUser("user@example.com", "test.user", "Test User",
                 UserSource.Montagu)
@@ -76,7 +76,7 @@ class MontaguAuthenticatorTests
         val sut = MontaguAuthenticator(mockUserRepo, mockMontaguAPIClient)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         verify(mockUserRepo).addUser("user@example.com", "test.user", "",
                 UserSource.Montagu)
@@ -91,7 +91,7 @@ class MontaguAuthenticatorTests
         val sut = MontaguAuthenticator(mockUserRepo, mockMontaguAPIClient)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
     }

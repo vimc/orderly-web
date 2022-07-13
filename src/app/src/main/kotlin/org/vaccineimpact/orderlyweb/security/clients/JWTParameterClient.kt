@@ -19,10 +19,10 @@ class JWTParameterClient(helper: RSATokenVerifier, tokenStore: OnetimeTokenStore
         this.isSupportGetRequest = true
     }
 
-    override fun clientInit()
+    override fun internalInit(forceReinit: Boolean)
     {
         setAuthorizationGenerator(OrderlyAuthorizationGenerator())
-        super.clientInit()
+        super.internalInit(forceReinit)
     }
 
     override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")

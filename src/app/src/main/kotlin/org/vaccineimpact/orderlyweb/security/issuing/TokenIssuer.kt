@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.security.issuing
 
-import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
 import java.security.KeyPair
@@ -17,7 +16,7 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
 
     val tokenLifeSpan = Duration.ofMinutes(AppConfig()["token_expiry.minutes"].toLong())
 
-    val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
+    val generator = JwtGenerator(signatureConfiguration)
     private val random = SecureRandom()
 
     open fun generateOnetimeActionToken(emailAddress: String, url: String): String

@@ -24,13 +24,15 @@ interface AuthorizationRepository
     fun ensureGroupDoesNotHaveMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
-    fun getPermissionsForUser(email: String): PermissionSet
+    fun getPermissionsForUser(email: String): List<String>
     fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
     fun getDirectPermissionsForUser(email: String): PermissionSet
     fun getPermissionNames(): List<String>
 }
 
-class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMapper = PermissionMapper()) : AuthorizationRepository
+class OrderlyAuthorizationRepository(
+        private val permissionMapper: PermissionMapper = PermissionMapper()
+) : AuthorizationRepository
 {
     override fun getPermissionNames(): List<String>
     {
@@ -47,8 +49,12 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
         JooqContext().use {
 
             if (it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
-                            .where(Tables.ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
-                            .singleOrNull() != null)
+                            .where(
+                                    Tables.ORDERLYWEB_USER_GROUP.ID
+                                            .eq(userGroup)
+                            )
+                            .singleOrNull() != null
+            )
             {
                 throw DuplicateKeyError(mapOf("user-group" to userGroup))
             }
@@ -63,7 +69,7 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
     override fun deleteUserGroup(userGroup: String)
     {
         JooqContext().use {
-            it.dsl.transaction{ _ ->
+            it.dsl.transaction { _ ->
 
                 val userGroupPermissionIds =
                         it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
@@ -110,8 +116,10 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                     .singleOrNull() ?: throw UnknownObjectError(email, User::class)
 
             val membership = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
-                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
-                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email))).singleOrNull()
+                    .where(
+                            ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
+                                    .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email))
+                    ).singleOrNull()
 
             if (membership == null)
             {
@@ -128,20 +136,21 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
     {
         JooqContext().use {
             it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_USER)
-                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
-                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email)))
+                    .where(
+                            ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
+                                    .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email))
+                    )
                     .execute()
         }
     }
 
-    override fun getPermissionsForUser(email: String): PermissionSet
+    override fun getPermissionsForUser(email: String): List<String>
     {
         JooqContext().use {
-            val perms = getAllPermissionsForUserQuery(it, email)
+            return getAllPermissionsForUserQuery(it, email)
                     .fetch()
                     .map(permissionMapper::mapPermission)
-
-            return PermissionSet(perms)
+                    .map { it.toString() }
         }
     }
 
@@ -177,8 +186,10 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
             {
                 val id = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
                         .from(ORDERLYWEB_USER_GROUP_PERMISSION)
-                        .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permission.name)
-                                .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(userGroup)))
+                        .where(
+                                ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permission.name)
+                                        .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(userGroup))
+                        )
                         .fetchOneInto(Int::class.java)
 
                 when (permission.scope)
@@ -190,14 +201,16 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                     is Scope.Specific ->
                         when
                         {
-                            permission.scope.databaseScopePrefix == "report" -> it.dsl.newRecord(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION).apply {
-                                this.id = id
-                                this.report = permission.scope.databaseScopeId
-                            }.insert()
-                            permission.scope.databaseScopePrefix == "version" -> it.dsl.newRecord(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION).apply {
-                                this.id = id
-                                this.version = permission.scope.databaseScopeId
-                            }.insert()
+                            permission.scope.databaseScopePrefix == "report" ->
+                                it.dsl.newRecord(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION).apply {
+                                    this.id = id
+                                    this.report = permission.scope.databaseScopeId
+                                }.insert()
+                            permission.scope.databaseScopePrefix == "version" ->
+                                it.dsl.newRecord(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION).apply {
+                                    this.id = id
+                                    this.version = permission.scope.databaseScopeId
+                                }.insert()
                             else -> throw UnknownObjectError(permission.scope.databaseScopePrefix, "permission-scope")
                         }
                 }
@@ -213,7 +226,8 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
 
             val allPermissionRecordsForGroup = getAllPermissionRecordsForGroup(it, userGroup)
             val permissionRecordToDelete = allPermissionRecordsForGroup.firstOrNull {
-                permissionMapper.mapPermission(it) == permission }
+                permissionMapper.mapPermission(it) == permission
+            }
             if (permissionRecordToDelete != null)
             {
                 val idToDelete = permissionRecordToDelete[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID]
@@ -229,19 +243,32 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                         {
                             permission.scope.databaseScopePrefix == "report" ->
                                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
-                                        .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.eq(idToDelete))
-                                        .and(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT.eq(permission.scope.databaseScopeId))
+                                        .where(
+                                                ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID
+                                                        .eq(idToDelete)
+                                        )
+                                        .and(
+                                                ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT
+                                                        .eq(permission.scope.databaseScopeId)
+                                        )
                                         .execute()
                             permission.scope.databaseScopePrefix == "version" ->
                                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
-                                        .where(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID.eq(idToDelete))
-                                        .and(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION.eq(permission.scope.databaseScopeId))
+                                        .where(
+                                                ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID
+                                                        .eq(idToDelete)
+                                        )
+                                        .and(
+                                                ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION
+                                                        .eq(permission.scope.databaseScopeId)
+                                        )
                                         .execute()
                             else -> throw UnknownObjectError(permission.scope.databaseScopePrefix, "permission-scope")
                         }
                 }
 
-                //check if the abstract permission should be deleted too - was there only one of these permissions for the user group?
+                // check if the abstract permission should be deleted too
+                // was there only one of these permissions for the user group?
                 val thisPermCount = allPermissionRecordsForGroup.count {
                     it[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION] == permission.name
                 }
@@ -253,7 +280,6 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                             .execute()
                 }
             }
-
         }
     }
 
@@ -280,10 +306,12 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
 
     private fun getAllPermissionRecordsForGroup(db: JooqContext, userGroup: String): List<Record>
     {
-        return db.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID,
+        return db.dsl.select(
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID,
                 ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
                 ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
-                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID
+        )
                 .from(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
                 .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(userGroup))
                 .fetch()
@@ -295,19 +323,21 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                 .map(permissionMapper::mapPermission)
     }
 
-    private fun getAllPermissionsForUserQuery(db: JooqContext, email: String): SelectConditionStep<Record3<String, Any, String>>
+    private fun getAllPermissionsForUserQuery(
+            db: JooqContext,
+            email: String
+    ): SelectConditionStep<Record3<String, Any, String>>
     {
-        return db.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+        return db.dsl.select(
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
                 ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
-                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
-                .fromJoinPath(ORDERLYWEB_USER_GROUP,
-                        ORDERLYWEB_USER_GROUP_USER,
-                        ORDERLYWEB_USER)
-
-                .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID
+        ).fromJoinPath(
+                ORDERLYWEB_USER_GROUP,
+                ORDERLYWEB_USER_GROUP_USER,
+                ORDERLYWEB_USER
+        ).join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
                 .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
                 .where(ORDERLYWEB_USER.EMAIL.eq(email))
     }
-
-
 }

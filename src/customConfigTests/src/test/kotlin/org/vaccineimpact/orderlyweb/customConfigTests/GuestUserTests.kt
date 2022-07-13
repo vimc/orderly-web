@@ -45,7 +45,7 @@ class GuestUserTests: SeleniumTest() {
     }
 
     @Test
-    fun `guest user permisisons are updated immediately`() {
+    fun `guest user permissions are updated immediately`() {
 
         startApp("auth.provider=github")
         driver.get(RequestHelper.webBaseUrl)

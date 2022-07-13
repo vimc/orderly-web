@@ -13,6 +13,6 @@ class NeverInvokedAuthenticatorTests
     {
         val sut = NeverInvokedAuthenticator()
 
-        Assertions.assertThatThrownBy { sut.validate(mock(), mock()) }.isInstanceOf(UnsupportedOperationException::class.java)
+        Assertions.assertThatThrownBy { sut.validate(mock(), mock(), mock()) }.isInstanceOf(UnsupportedOperationException::class.java)
     }
 }

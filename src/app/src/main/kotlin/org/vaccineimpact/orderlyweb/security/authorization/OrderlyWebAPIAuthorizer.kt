@@ -1,18 +1,21 @@
 package org.vaccineimpact.orderlyweb.security.authorization
 
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 
 // The API Authorizer has to do additional checks that the claimed url matches the requested url, which are not
 // required for Web endpoints
-open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequirement>)
-    : OrderlyWebAuthorizer(requiredPermissions)
+open class OrderlyWebAPIAuthorizer(
+        requiredPermissions: Set<PermissionRequirement>
+) : OrderlyWebAuthorizer(requiredPermissions)
 {
     private val logger = LoggerFactory.getLogger(OrderlyWebAuthorizer::class.java)
 
-    override fun isProfileAuthorized(context: WebContext, profile: CommonProfile): Boolean
+    override fun isProfileAuthorized(context: WebContext, sessionStore: SessionStore, profile: UserProfile): Boolean
     {
         val claimedUrl = profile.getAttribute("url")
         var requestedUrl = context.path
@@ -21,22 +24,21 @@ open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequiremen
 
         if (queryParameters.any())
         {
-            requestedUrl = requestedUrl + "?" + queryParameters
-                    .map { "${it.key}=${context.getRequestParameter(it.key)}" }
+            requestedUrl = "$requestedUrl?" + queryParameters
+                    .map { "${it.key}=${context.getRequestParameter(it.key).get()}" }
                     .joinToString("&")
-
         }
 
-        if (claimedUrl == "*" || requestedUrl == claimedUrl)
+        return if (claimedUrl == "*" || requestedUrl == claimedUrl)
         {
-            return super.isProfileAuthorized(context, profile)
+            super.isProfileAuthorized(context, sessionStore, profile)
         }
         else
         {
-            logger.warn("This token is issued for $claimedUrl but the current request is for $requestedUrl")
-            profile.mismatchedURL = "This token is issued for $claimedUrl but the current request is for $requestedUrl"
-            return false
+            val msg = "This token is issued for $claimedUrl but the current request is for $requestedUrl"
+            logger.warn(msg)
+            (profile as CommonProfile).mismatchedURL = msg
+            false
         }
-
     }
 }

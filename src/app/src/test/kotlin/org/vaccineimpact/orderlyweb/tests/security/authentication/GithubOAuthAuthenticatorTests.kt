@@ -19,13 +19,12 @@ class GithubOAuthAuthenticatorTests
         on { accessToken } doReturn "1234567"
     }
 
-
     private val mockService = mock<OAuth20Service> {
-        on { getAccessToken(any()) } doReturn mockAccessToken
+        on { getAccessToken(any<String>()) } doReturn mockAccessToken
     }
 
     private val mockConfiguration = mock<OAuth20Configuration> {
-        on { buildService(any(), any(), eq(null) )} doReturn mockService
+        on { buildService(any(), any())} doReturn mockService
     }
 
 
@@ -38,7 +37,7 @@ class GithubOAuthAuthenticatorTests
     {
         val sut = GithubOAuthAuthenticator(mockConfiguration, mock(), mock(), mockGithubAuthHelper)
 
-        sut.validate(mockCredentials, mock())
+        sut.validate(mockCredentials, mock(), mock())
 
         verify(mockGithubAuthHelper).authenticate("1234567")
         verify(mockGithubAuthHelper).checkGitHubOrgAndTeamMembership()

@@ -18,7 +18,7 @@ class WebSecurityConfigFactoryTests
     @Test
     fun `builds expected config`()
     {
-        val mockClient = mock<IndirectClient<Credentials, CommonProfile>>()
+        val mockClient = mock<IndirectClient>()
 
         val requiredPermission = PermissionRequirement.parse("*/testperm")
 

@@ -54,7 +54,7 @@ class WebEndpointTests
     fun `adds security filter if secure, external auth`()
     {
         val mockSpark = mock<SparkWrapper>()
-        val mockAuthorizer = mock<Authorizer<CommonProfile>>()
+        val mockAuthorizer = mock<Authorizer>()
         val mockConfig = mock<Config> {
             on { authorizers } doReturn mapOf("dummyAuthorizer" to mockAuthorizer)
         }
