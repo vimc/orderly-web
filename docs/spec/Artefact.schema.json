@@ -4,7 +4,7 @@
   "properties": {
     "format": { "type": "string"},
     "description": {"type": "string"},
-    "files": {"type": "array", "items": {"type": "string"}}
+    "files": {"type": "array", "items": {"$ref": "FileInfo.schema.json"}}
   },
   "additionalProperties": false
 }

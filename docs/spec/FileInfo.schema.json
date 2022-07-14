@@ -1,10 +1,9 @@
 {
-  "id": "DataInfo",
+  "id": "FileInfo",
   "type": "object",
   "properties": {
     "name": { "type": "string"},
-    "csv_size": {"type": "number"},
-    "rds_size": {"type": "number"}
+    "size": {"type": "number"}
   },
   "additionalProperties": false
 }
