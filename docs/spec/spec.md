@@ -168,30 +168,41 @@ Schema: [`VersionDetails.schema.json`](VersionDetails.schema.json)
 
 ```json
 {
-    "id": "20161006-142357-e80edf58",
-    "name": "minimal",
-    "displayname": null,
-    "description": null,
-    "artefacts": [
-      {        
-          "format": "staticgraph",
-          "description": "A graph of things",
-          "files": [
-            "mygraph.png"
-          ]        
-      }
-    ],
-    "resources": ["source/inputdata.csv"],
-    "date": "2016-10-06 14:23:57.0",   
-    "data_hashes": {
-      "dat": "386f507375907a60176b717016f0a648"
-    },
-    "parameter_values": {"param1": "paramValue1", "param2": "paramValue2"},
-    "instances": {"source": "science"},
-    "published": false,
-    "requester": "Funder McFunderface",
-    "author": "Researcher McResearcherface"
-  }
+  "id": "20161006-142357-e80edf58",
+  "name": "minimal",
+  "displayname": null,
+  "description": null,
+  "artefacts": [
+    {
+      "format": "staticgraph",
+      "description": "A graph of things",
+      "files": [
+        "mygraph.png"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "source/inputdata.csv",
+      "size": 20
+    }
+  ],
+  "date": "2016-10-06 14:23:57.0",
+  "data_info": {
+    "name": "extract",
+    "csvSize": 751,
+    "rdsSize": 559
+  },
+  "parameter_values": {
+    "param1": "paramValue1",
+    "param2": "paramValue2"
+  },
+  "instances": {
+    "source": "science"
+  },
+  "requester": "Funder McFunderface",
+  "author": "Researcher McResearcherface"
+}
 ```
 
 ## POST /reports/:name/run/
