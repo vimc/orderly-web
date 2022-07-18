@@ -188,8 +188,8 @@ Schema: [`VersionDetails.schema.json`](VersionDetails.schema.json)
   "date": "2016-10-06 14:23:57.0",
   "data_info": {
     "name": "extract",
-    "csvSize": 751,
-    "rdsSize": 559
+    "csv_size": 751,
+    "rds_size": 559
   },
   "parameter_values": {
     "param1": "paramValue1",
