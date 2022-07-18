@@ -176,7 +176,7 @@ Schema: [`VersionDetails.schema.json`](VersionDetails.schema.json)
     {
       "format": "staticgraph",
       "description": "A graph of things",
-      "files": [{name: "minimal", file:  "mygraph.png"]
+      "files": [{name: "mygraph.png", size: 123}]
     }
   ],
   "resources": [
