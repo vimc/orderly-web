@@ -68,10 +68,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 
     private fun checkAuthenticated()
     {
-        if (user == null)
-        {
-            throw IllegalStateException("User has not been authenticated")
-        }
+        check(user != null) { "User has not been authenticated" }
     }
 
     private fun connectToClient(token: String)

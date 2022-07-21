@@ -1,3 +1,5 @@
 package org.vaccineimpact.orderlyweb.errors
 
-class FailedLoginError: OrderlyWebError(401, listOf())
+import org.eclipse.jetty.http.HttpStatus
+
+class FailedLoginError: OrderlyWebError(HttpStatus.UNAUTHORIZED_401, listOf())
