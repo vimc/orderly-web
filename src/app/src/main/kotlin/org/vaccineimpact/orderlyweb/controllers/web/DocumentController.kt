@@ -116,7 +116,8 @@ class DocumentController(context: ActionContext,
             }
             else
             {
-                docsRepo.add(child.pathFragment!!, child.name, child.displayName, child.isFile, child.external, dir.pathFragment)
+                docsRepo.add(child.pathFragment!!, child.name, child.displayName, child.isFile, child.external,
+                        dir.pathFragment)
             }
 
             if (!child.isFile)

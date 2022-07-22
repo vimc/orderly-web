@@ -50,7 +50,9 @@ class ArtefactController(context: ActionContext,
         val absoluteFilePath = "${this.config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
+        {
             throw OrderlyFileNotFoundError(artefactname)
+        }
 
         val response = context.getSparkResponse().raw()
 

@@ -8,7 +8,8 @@ import org.vaccineimpact.orderlyweb.security.authentication.RSATokenVerifier
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
-class JWTParameterClient(helper: RSATokenVerifier, tokenStore: OnetimeTokenStore) : OrderlyWebTokenCredentialClient, ParameterClient(
+class JWTParameterClient(helper: RSATokenVerifier, tokenStore: OnetimeTokenStore) :
+        OrderlyWebTokenCredentialClient, ParameterClient(
         "access_token",
         OrderlyWebOnetimeTokenAuthenticator(helper.signatureConfiguration,
                 helper.expectedIssuer,
@@ -25,5 +26,6 @@ class JWTParameterClient(helper: RSATokenVerifier, tokenStore: OnetimeTokenStore
         super.internalInit(forceReinit)
     }
 
-    override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
+    override val errorInfo = ErrorInfo("onetime-token-invalid",
+            "Onetime token not supplied, or onetime token was invalid")
 }

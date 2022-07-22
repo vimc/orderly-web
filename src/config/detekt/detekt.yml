@@ -35,6 +35,8 @@ style:
     active: false
   UnnecessaryAbstractClass:
     active: false
+  FunctionOnlyReturningConstant:
+    active: false
 
 naming:
   NoNameShadowing:

@@ -50,7 +50,9 @@ class DataController(context: ActionContext,
         var type = context.queryParams("type")
 
         if (type.isNullOrEmpty())
+        {
             type = "csv"
+        }
 
         val hash = orderly.getDatum(name, version, id)
 

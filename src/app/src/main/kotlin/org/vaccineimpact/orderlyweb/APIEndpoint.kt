@@ -61,7 +61,6 @@ data class APIEndpoint(
                 SkipOptionsMatcher.name
         ))
     }
-
 }
 
 fun APIEndpoint.allowParameterAuthentication(): APIEndpoint

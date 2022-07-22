@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
 import com.google.gson.reflect.TypeToken
+import org.ocpsoft.prettytime.PrettyTime
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import spark.Filter
@@ -14,7 +15,6 @@ import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.servlet.http.HttpServletResponse
-import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
@@ -43,7 +43,8 @@ class DefaultHeadersFilter(val contentType: String) : Filter
 
 fun parseRouteParamToFilepath(routeParam: String): String
 {
-    return URLDecoder.decode(routeParam.replace(":", "/"), "UTF-8") //route param may include URL encoding
+    // route param may include URL encoding
+    return URLDecoder.decode(routeParam.replace(":", "/"), "UTF-8")
 }
 
 fun encodeFilename(filename: String): String
@@ -87,16 +88,18 @@ fun canRenderInBrowser(fileName: String): Boolean
     return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm", "bmp"))
 }
 
-//Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
-//Improved version of the same method in commons.io FileUtils, supporting greater precision
-//and rounding up as well as down
+// Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
+// Improved version of the same method in commons.io FileUtils, supporting greater precision
+// and rounding up as well as down
 private enum class SizeSuffix
 {
     bytes, KB, MB, GB, TB, PB, EB, ZB, YB
 }
+
+const val KILO_DIVISOR_VAL = 1024L
 fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
 {
-    val KILO_DIVISOR = BigDecimal(1024L)
+    val KILO_DIVISOR = BigDecimal(KILO_DIVISOR_VAL)
 
     var displaySize: String
     var bdSize = BigDecimal(size)
@@ -129,7 +132,9 @@ fun Controller.downloadFile(files: FileSystem,
                             contentType: String): Boolean
 {
     if (!files.fileExists(absoluteFilePath))
+    {
         throw OrderlyFileNotFoundError(filename)
+    }
 
     val response = context.getSparkResponse().raw()
 
@@ -141,6 +146,7 @@ fun Controller.downloadFile(files: FileSystem,
     return true
 }
 
+@Suppress("MagicNumber")
 fun getDateStringFromVersionId(id: String): LocalDateTime
 {
     val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")

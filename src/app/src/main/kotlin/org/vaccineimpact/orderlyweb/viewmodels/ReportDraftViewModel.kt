@@ -47,7 +47,8 @@ data class ReportWithDraftsViewModel(val displayName: String, val previouslyPubl
     {
         fun build(report: ReportWithPublishStatus, versions: List<ReportVersionWithChangelogsParams>): ReportWithDraftsViewModel
         {
-            return ReportWithDraftsViewModel(report.displayName ?: report.name,
+            return ReportWithDraftsViewModel(
+                    report.displayName ?: report.name,
                     report.hasBeenPublished,
                     versions.groupBy { v -> v.date.truncatedTo(ChronoUnit.DAYS) }
                             .toSortedMap(reverseOrder())

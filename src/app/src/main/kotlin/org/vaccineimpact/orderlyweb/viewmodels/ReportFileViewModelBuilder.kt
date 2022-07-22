@@ -11,7 +11,7 @@ class ReportFileViewModelBuilder(private val reportName: String,
 {
     private var inline: Boolean = false
 
-    val baseUrl = "${appConfig["app.url"]}/report/${reportName}/version/${reportVersion}/"
+    val baseUrl = "${appConfig["app.url"]}/report/$reportName/version/$reportVersion/"
 
     fun buildArtefactFileViewModel(file: FileInfo): DownloadableFileViewModel
     {

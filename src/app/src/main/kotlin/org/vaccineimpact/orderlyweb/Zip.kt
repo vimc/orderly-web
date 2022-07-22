@@ -18,6 +18,8 @@ interface ZipClient
     fun unzip(sourceFile: File, targetDirectory: File)
 }
 
+const val BUFFER_SIZE = 8000
+const val BUFFER_ARRAY_SIZE = 1024
 class Zip : ZipClient
 {
     val logger = LoggerFactory.getLogger(Zip::class.java)
@@ -25,8 +27,7 @@ class Zip : ZipClient
     override fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>, gzip: Boolean)
     {
         val source = File(sourceAbsolutePath)
-        val bufferSize = 8000
-        val stream = if (gzip) GZIPOutputStream(output, bufferSize) else output
+        val stream = if (gzip) GZIPOutputStream(output, BUFFER_SIZE) else output
 
         ZipOutputStream(stream).use {
 
@@ -72,7 +73,7 @@ class Zip : ZipClient
     private fun writeZipEntry(zipOutputStream: ZipOutputStream, absoluteFilePath: String)
     {
 
-        val buffer = ByteArray(1024)
+        val buffer = ByteArray(BUFFER_ARRAY_SIZE)
 
         BufferedInputStream(FileInputStream(absoluteFilePath)).use {
 

@@ -61,7 +61,8 @@ data class ReportVersionPageViewModel(
 
             val displayName = report.displayName ?: report.name
 
-            val breadcrumb = Breadcrumb("${report.name} (${report.id})", "${AppConfig()["app.url"]}/report/${report.name}/${report.id}/")
+            val breadcrumb = Breadcrumb("${report.name} (${report.id})",
+                    "${AppConfig()["app.url"]}/report/${report.name}/${report.id}/")
 
             val changelogViewModel = changelog.sortedByDescending { it.reportVersion }
                     .groupBy { it.reportVersion }.map {
@@ -104,7 +105,8 @@ data class ReportVersionPageViewModel(
         private fun getFocalArtefactUrl(builder: ReportFileViewModelBuilder, artefacts: List<Artefact>): String?
         {
             //reproducing existing reportle behaviour - show the first artefact inline if it is possible
-            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() && canRenderInBrowser(artefacts[0].files[0].name))
+            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() &&
+                    canRenderInBrowser(artefacts[0].files[0].name))
             {
                 artefacts[0].files[0]
             }
@@ -161,7 +163,8 @@ data class ReportVersionPageViewModel(
             }
         }
 
-        private fun buildVersionPickerViewModel(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
+        private fun buildVersionPickerViewModel(reportName: String, currentVersion: String, id: String):
+                VersionPickerViewModel
         {
             val date = getDateStringFromVersionId(id)
             return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", getFriendlyDateTime(date),

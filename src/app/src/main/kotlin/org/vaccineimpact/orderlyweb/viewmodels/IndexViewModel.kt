@@ -137,7 +137,8 @@ data class ReportRowViewModel(val ttKey: Int,
                     tags)
         }
 
-        fun buildVersion(version: ReportVersionWithDescCustomFieldsLatestParamsTags, key: Int, parent: ReportRowViewModel): ReportRowViewModel
+        fun buildVersion(version: ReportVersionWithDescCustomFieldsLatestParamsTags, key: Int,
+                         parent: ReportRowViewModel): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
             val parameterValues = if (version.parameterValues.keys.count() > 0)

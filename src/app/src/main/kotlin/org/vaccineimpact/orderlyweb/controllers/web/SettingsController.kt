@@ -9,7 +9,8 @@ import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthentica
 
 class SettingsController(context: ActionContext,
                          private val repo: SettingsRepository,
-                         private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()) : Controller(context)
+                         private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig())
+    : Controller(context)
 {
     constructor(context: ActionContext) : this(context,
             OrderlySettingsRepository())

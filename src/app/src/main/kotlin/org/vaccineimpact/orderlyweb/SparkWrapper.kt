@@ -4,7 +4,8 @@ import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import spark.*
 import spark.route.HttpMethod
 
-//Make classes which use the static methods of Spark unit testable by providing a wrapper interface for them to use instead
+// Make classes which use the static methods of Spark unit testable by providing a wrapper interface for them to use
+// instead
 interface SparkWrapper
 {
     fun before(path: String, acceptType: String, method: HttpMethod, filter: Filter)
@@ -32,7 +33,8 @@ class SparkServiceWrapper : SparkWrapper
         Spark.after(path, acceptType, *filters)
     }
 
-    override fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route, transformer: ResponseTransformer?)
+    override fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
+                     transformer: ResponseTransformer?)
     {
         when (transformer)
         {

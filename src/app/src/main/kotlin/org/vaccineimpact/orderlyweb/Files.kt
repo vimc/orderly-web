@@ -20,13 +20,15 @@ interface FileSystem
     fun saveArchiveFromUrl(url: URL, targetAbsolutePath: String)
 }
 
+
+const val bufferSize = 8000
+const val bufferArraySize = 1024
 class Files(val zip: ZipClient = Zip()) : FileSystem
 {
 
     override fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
     {
-        val buffer = ByteArray(1024)
-        val bufferSize = 8000
+        val buffer = ByteArray(bufferArraySize)
 
         BufferedInputStream(FileInputStream(absoluteFilePath)).use { inputStream ->
 

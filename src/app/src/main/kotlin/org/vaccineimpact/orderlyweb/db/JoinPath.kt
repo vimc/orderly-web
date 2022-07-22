@@ -68,8 +68,7 @@ class JoinPathStep(
 fun <T : Record> SelectJoinStep<T>.joinPath(
         vararg tables: TableImpl<*>,
         joinType: JoinType = JoinType.JOIN
-)
-        : SelectJoinStep<T>
+): SelectJoinStep<T>
 {
     return JoinPath(tables.toList(), joinType).doJoin(this)
 }
@@ -77,8 +76,7 @@ fun <T : Record> SelectJoinStep<T>.joinPath(
 fun <T : Record> SelectFromStep<T>.fromJoinPath(
         vararg tables: TableImpl<*>,
         joinType: JoinType = JoinType.JOIN
-)
-        : SelectJoinStep<T>
+): SelectJoinStep<T>
 {
     val query = this.from(tables.first())
     return JoinPath(tables.toList(), joinType).doJoin(query)

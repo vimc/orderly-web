@@ -62,7 +62,9 @@ class ErrorHandler(templateEngine: TemplateEngine,
 
     fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
-        logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
+        val uri = req.uri()
+        val errName = error::class.simpleName
+        logger.warn("For request ${uri}, a ${errName} occurred with the following problems: ${error.problems}")
 
         if (req.pathInfo().startsWith(Router.apiUrlBase) || req.headers("Accept").contains("application/json"))
         {

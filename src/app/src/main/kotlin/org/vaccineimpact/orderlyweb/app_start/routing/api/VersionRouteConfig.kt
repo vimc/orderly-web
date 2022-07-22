@@ -42,7 +42,8 @@ object VersionRouteConfig : RouteConfig
                     .transform()
                     .secure(reviewReports),
 
-            APIEndpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
+            APIEndpoint("/reports/:name/versions/:version/changelog/", versionController,
+                    "getChangelogByNameAndVersion")
                     .json()
                     .transform()
                     .secure(readReports)

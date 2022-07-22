@@ -6,7 +6,7 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.slf4j.LoggerFactory
+import org.eclipse.jetty.http.HttpStatus
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -31,7 +31,6 @@ interface MontaguAPIClient
     {
         override fun toString(): String = message
     }
-
 }
 
 abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
@@ -42,10 +41,13 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         fun create(appConfig: Config = AppConfig()): OkHttpMontaguAPIClient
         {
             return if (appConfig.getBool("allow.localhost"))
+            {
                 LocalOkHttpMontaguApiClient(appConfig)
+            }
             else
+            {
                 RemoteHttpMontaguApiClient(appConfig)
-
+            }
         }
     }
 
@@ -58,9 +60,11 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
                 .use { response ->
                     val result = parseResult(response.body!!.string())
 
-                    if (response.code != 200)
+                    if (response.code != HttpStatus.OK_200)
                     {
-                        throw MontaguAPIException("Response had errors ${result.errors.joinToString(",") { it.toString() }}", response.code)
+                        throw MontaguAPIException(
+                                "Response had errors ${result.errors.joinToString(",") { it.toString() }}",
+                                response.code)
                     }
 
                     return result.data as MontaguAPIClient.UserDetails
@@ -80,7 +84,8 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         }
         catch (e: JsonSyntaxException)
         {
-            throw MontaguAPIException("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e", 500)
+            throw MontaguAPIException("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e",
+                    HttpStatus.INTERNAL_SERVER_ERROR_500)
         }
 
     }

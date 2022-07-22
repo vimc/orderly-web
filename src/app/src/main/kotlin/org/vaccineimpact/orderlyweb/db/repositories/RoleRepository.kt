@@ -14,12 +14,13 @@ interface RoleRepository
     fun getAllRoles(): List<Role>
 
     companion object {
-        const val ADMIN_ROLE = "Admin";
+        const val ADMIN_ROLE = "Admin"
     }
 }
 
 class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
-                            private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : RoleRepository
+                            private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) :
+        RoleRepository
 {
     override fun getAllRoleNames(): List<String>
     {

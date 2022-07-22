@@ -53,7 +53,7 @@ class RoleController(context: ActionContext,
         val roleId = roleId()
         if (roleId == RoleRepository.ADMIN_ROLE)
         {
-            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.");
+            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.")
         }
 
         val roleNames = getAllRoleNames()
@@ -120,7 +120,7 @@ class RoleController(context: ActionContext,
 
     private fun roleId(): String = context.params(":role-id")
 
-    private fun List<Role>.toSortedViewModels() : List<RoleViewModel>
+    private fun List<Role>.toSortedViewModels(): List<RoleViewModel>
     {
         return this.map { RoleViewModel.build(it) }
                 .sortedBy{ it.name }

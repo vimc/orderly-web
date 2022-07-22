@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.security.providers
 
+import org.eclipse.jetty.http.HttpStatus
 import org.kohsuke.github.*
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.util.CommonHelper
@@ -18,8 +19,10 @@ interface GithubAuthHelper
     fun getUser(): GHUser
 }
 
-class GithubApiClientAuthHelper(private val appConfig: Config,
-                                private val githubBuilder: GitHubBuilder = GitHubBuilder()) : GithubAuthHelper
+class GithubApiClientAuthHelper(
+        private val appConfig: Config,
+        private val githubBuilder: GitHubBuilder = GitHubBuilder()
+) : GithubAuthHelper
 {
     private var github: GitHub? = null
     private var user: GHUser? = null
@@ -68,7 +71,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 
     private fun checkAuthenticated()
     {
-        check(user != null) { "User has not been authenticated" }
+        checkNotNull(user) { "User has not been authenticated" }
     }
 
     private fun connectToClient(token: String)
@@ -89,7 +92,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         }
         catch(e: HttpException)
         {
-           if (e.responseCode == 401)
+           if (e.responseCode == HttpStatus.UNAUTHORIZED_401)
            {
                throw CredentialsException(e.message ?: "")
            }
@@ -105,7 +108,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         }
         catch(e: HttpException)
         {
-            if (e.responseCode == 401)
+            if (e.responseCode == HttpStatus.UNAUTHORIZED_401)
             {
                 throw CredentialsException(e.message ?: "")
             }

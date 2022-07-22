@@ -39,7 +39,9 @@ class ResourceController(context: ActionContext,
         val absoluteFilePath = "${this.config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
+        {
             throw OrderlyFileNotFoundError(resourcename)
+        }
 
         context.addResponseHeader("Content-Disposition", "attachment; filename=\"$filename\"")
         context.addDefaultResponseHeaders(ContentTypes.binarydata)
