@@ -20,7 +20,8 @@ sealed class Scope(val value: String)
             // Global scope is larger than any specific scope
             is Global -> false
 
-            // Different specific scopes are not ordered relative to each other, so only return true if they are indentical
+            // Different specific scopes are not ordered relative to each other,
+            // so only return true if they are indentical
             is Specific -> equals(other)
         }
 

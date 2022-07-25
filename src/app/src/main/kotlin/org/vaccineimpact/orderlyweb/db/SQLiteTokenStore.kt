@@ -9,9 +9,12 @@ import java.sql.SQLException
 
 class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenStore
 {
-    val tableName = "ONETIME_TOKEN"
-    val ONETIME_TOKEN = table(name(tableName))
-    val TOKEN = field(name("$tableName.TOKEN"))
+    companion object {
+        const val TABLE_NAME = "ONETIME_TOKEN"
+    }
+
+    val oneTimeToken = table(name(TABLE_NAME))
+    val token = field(name("$TABLE_NAME.TOKEN"))
 
     private val logger = LoggerFactory.getLogger(SQLiteTokenStore::class.java)
 
@@ -52,8 +55,8 @@ class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenS
     private fun createTable()
     {
         getJooqContext().use {
-            it.dsl.createTable(tableName)
-                    .column("$tableName.TOKEN", SQLDataType.VARCHAR)
+            it.dsl.createTable(TABLE_NAME)
+                    .column("$TABLE_NAME.TOKEN", SQLDataType.VARCHAR)
                     .execute()
         }
     }
@@ -61,8 +64,8 @@ class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenS
     override fun storeToken(token: String)
     {
         getJooqContext().use {
-            it.dsl.insertInto(ONETIME_TOKEN)
-                    .set(TOKEN, token)
+            it.dsl.insertInto(oneTimeToken)
+                    .set(this.token, token)
                     .execute()
         }
     }
@@ -70,8 +73,8 @@ class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenS
     override fun validateOneTimeToken(token: String): Boolean
     {
         getJooqContext().use {
-            val deletedCount = it.dsl.deleteFrom(ONETIME_TOKEN)
-                    .where(TOKEN.eq(token))
+            val deletedCount = it.dsl.deleteFrom(oneTimeToken)
+                    .where(this.token.eq(token))
                     .execute()
 
             return deletedCount == 1

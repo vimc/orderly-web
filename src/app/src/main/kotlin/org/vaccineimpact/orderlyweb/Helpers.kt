@@ -93,29 +93,28 @@ fun canRenderInBrowser(fileName: String): Boolean
 // and rounding up as well as down
 private enum class SizeSuffix
 {
-    bytes, KB, MB, GB, TB, PB, EB, ZB, YB
+    Bytes, Kb, Mb, Gb, Tb, Pb, Eb, Zb, Yb
 }
 
-const val KILO_DIVISOR_VAL = 1024L
+const val KILO_DIVISOR = 1024L
 fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
 {
-    val KILO_DIVISOR = BigDecimal(KILO_DIVISOR_VAL)
+    val kiloDivisor = BigDecimal(KILO_DIVISOR)
 
     var displaySize: String
     var bdSize = BigDecimal(size)
-    var selectedSuffix = SizeSuffix.bytes
+    var selectedSuffix = SizeSuffix.Bytes
     for (sizeSuffix in SizeSuffix.values())
     {
-        if (sizeSuffix.equals(SizeSuffix.bytes))
+        if (!sizeSuffix.equals(SizeSuffix.Bytes))
         {
-            continue
+            if (bdSize.setScale(0, RoundingMode.HALF_UP).toString().length <= maxChars)
+            {
+                break
+            }
+            selectedSuffix = sizeSuffix
+            bdSize = bdSize.divide(kiloDivisor)
         }
-        if (bdSize.setScale(0, RoundingMode.HALF_UP).toString().length <= maxChars)
-        {
-            break
-        }
-        selectedSuffix = sizeSuffix
-        bdSize = bdSize.divide(KILO_DIVISOR)
     }
     displaySize = bdSize.setScale(0, RoundingMode.HALF_UP).toString()
     if (displaySize.length < maxChars - 1)

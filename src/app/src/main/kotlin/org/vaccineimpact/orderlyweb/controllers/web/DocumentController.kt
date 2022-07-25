@@ -74,7 +74,7 @@ class DocumentController(context: ActionContext,
             url = url.split("?")[0]
             url = "$url?dl=1"
         }
-        val URL = try
+        val urlObj = try
         {
             URL(url)
         }
@@ -84,7 +84,7 @@ class DocumentController(context: ActionContext,
         }
         try
         {
-            files.saveArchiveFromUrl(URL, documentsRoot)
+            files.saveArchiveFromUrl(urlObj, documentsRoot)
         }
         catch (e: ZipException)
         {

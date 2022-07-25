@@ -18,10 +18,13 @@ interface ZipClient
     fun unzip(sourceFile: File, targetDirectory: File)
 }
 
-const val BUFFER_SIZE = 8000
-const val BUFFER_ARRAY_SIZE = 1024
 class Zip : ZipClient
 {
+    companion object {
+        const val BUFFER_SIZE = 8000
+        const val BUFFER_ARRAY_SIZE = 1024
+    }
+
     val logger = LoggerFactory.getLogger(Zip::class.java)
 
     override fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>, gzip: Boolean)

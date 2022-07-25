@@ -35,13 +35,13 @@ fun buildFreemarkerConfig(templateDirectory: File): Configuration
     return freeMarkerConfig
 }
 
-const val WAIT_TIME_MS = 2000L
-const val PORT_ATTEMPTS = 5
 class OrderlyWeb
 {
     companion object
     {
         val urls: MutableList<String> = mutableListOf()
+        const val WAIT_TIME_MS = 2000L
+        const val PORT_ATTEMPTS = 5
     }
 
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)

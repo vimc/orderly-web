@@ -19,7 +19,8 @@ data class ReportDraftViewModel(val id: String,
         {
             val changelogs = version.changelogs.map { ChangelogItemViewModel.build(it) }
             val parameterValues = version.parameterValues.entries.joinToString(",") { "${it.key}=${it.value}" }
-            return ReportDraftViewModel(version.id, "${AppConfig()["app.url"]}/report/${version.name}/${version.id}", changelogs, parameterValues)
+            return ReportDraftViewModel(version.id,
+                    "${AppConfig()["app.url"]}/report/${version.name}/${version.id}", changelogs, parameterValues)
         }
     }
 }
@@ -41,11 +42,14 @@ data class DateGroup(val date: String, val drafts: List<ReportDraftViewModel>)
     }
 }
 
-data class ReportWithDraftsViewModel(val displayName: String, val previouslyPublished: Boolean, val dateGroups: List<DateGroup>)
+data class ReportWithDraftsViewModel(val displayName: String,
+                                     val previouslyPublished: Boolean,
+                                     val dateGroups: List<DateGroup>)
 {
     companion object
     {
-        fun build(report: ReportWithPublishStatus, versions: List<ReportVersionWithChangelogsParams>): ReportWithDraftsViewModel
+        fun build(report: ReportWithPublishStatus, versions: List<ReportVersionWithChangelogsParams>):
+                ReportWithDraftsViewModel
         {
             return ReportWithDraftsViewModel(
                     report.displayName ?: report.name,

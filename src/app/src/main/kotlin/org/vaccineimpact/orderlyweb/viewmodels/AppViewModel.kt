@@ -18,7 +18,12 @@ data class DefaultViewModel(override val loggedIn: Boolean,
                             override val breadcrumbs: List<Breadcrumb>,
                             private val appConfig: Config = AppConfig()) : AppViewModel
 {
-    constructor(userProfile: CommonProfile?, isReviewer: Boolean, isAdmin: Boolean, isGuest: Boolean, breadcrumbs: List<Breadcrumb>, appConfig: Config) :
+    constructor(userProfile: CommonProfile?,
+                isReviewer: Boolean,
+                isAdmin: Boolean,
+                isGuest: Boolean,
+                breadcrumbs: List<Breadcrumb>,
+                appConfig: Config) :
             this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
 
     constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()):

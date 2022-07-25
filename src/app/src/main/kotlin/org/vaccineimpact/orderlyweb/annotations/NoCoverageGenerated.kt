@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb
+package org.vaccineimpact.orderlyweb.annotations
 
 @Retention(AnnotationRetention.BINARY)
 annotation class NoCoverageGenerated

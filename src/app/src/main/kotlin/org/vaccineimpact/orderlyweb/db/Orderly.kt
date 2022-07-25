@@ -9,11 +9,13 @@ import org.vaccineimpact.orderlyweb.models.*
 class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
               val reportReadingScopes: List<String> = listOf(),
-              val reportRepository: ReportRepository = OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
+              val reportRepository: ReportRepository =
+                      OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
               val artefactRepository: ArtefactRepository = OrderlyArtefactRepository(),
               val tagRepository: TagRepository = OrderlyWebTagRepository()) : OrderlyClient
 {
-    constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+    constructor(context: ActionContext)
+            : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
 
     override fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
@@ -21,7 +23,8 @@ class Orderly(val isReviewer: Boolean,
         return mapToReportVersions(basicVersions)
     }
 
-    override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionWithArtefactsDataDescParamsResources
+    override fun getDetailsByNameAndVersion(name: String, version: String):
+            ReportVersionWithArtefactsDataDescParamsResources
     {
         val basicReportVersion = reportRepository.getReportVersion(name, version)
         val artefacts = artefactRepository.getArtefacts(name, version)
@@ -114,7 +117,8 @@ class Orderly(val isReviewer: Boolean,
         return reportRepository.getDatedChangelogForReport(basicVersion.name, basicVersion.date)
     }
 
-    private fun mapToReportVersions(basicVersions: List<ReportVersionWithDescLatest>): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
+    private fun mapToReportVersions(basicVersions: List<ReportVersionWithDescLatest>):
+            List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
         val versionIds = basicVersions.map { it.id }
         val allCustomFields = reportRepository.getAllCustomFields()

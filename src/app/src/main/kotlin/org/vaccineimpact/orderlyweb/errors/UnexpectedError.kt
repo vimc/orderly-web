@@ -15,11 +15,11 @@ class UnexpectedError : OrderlyWebError(HttpStatus.INTERNAL_SERVER_ERROR_500, li
         "An unexpected error occurred. Please contact support at $supportAddress and quote this code: ${newCode()}"
 )))
 
-const val randomCharFirstLength = 2
-const val randomCharLength = 3
+const val RANDOM_CHAR_FIRST_LENGTH = 2
+const val RANDOM_CHAR_LENGTH = 3
 
 private fun newCode(): String
 {
     fun r(count: Int) = RandomStringUtils.randomAlphabetic(count).lowercase()
-    return "u${r(randomCharFirstLength)}-${r(randomCharLength)}-${r(randomCharLength)}"
+    return "u${r(RANDOM_CHAR_FIRST_LENGTH)}-${r(RANDOM_CHAR_LENGTH)}-${r(RANDOM_CHAR_LENGTH)}"
 }
