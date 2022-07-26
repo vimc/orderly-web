@@ -16,7 +16,7 @@ class GitController(context: ActionContext,
     fun getCommits() : String
     {
         val branch = context.params(":branch")
-        val response = orderlyServerAPI.get("/git/commits?branch=${branch}", context)
+        val response = orderlyServerAPI.get("/git/commits?branch=$branch", context)
         return passThroughResponse(response)
     }
 

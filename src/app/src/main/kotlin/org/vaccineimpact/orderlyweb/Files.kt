@@ -52,7 +52,6 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
         return File(absoluteFilePath).exists()
     }
 
-
     override fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     {
         val source = File(sourceAbsolutePath)
@@ -77,7 +76,8 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
 
         FileUtils.copyURLToFile(
                 url,
-                tmpFile)
+                tmpFile
+        )
 
         val tmpDir = java.nio.file.Files.createTempDirectory("documents").toFile()
 
@@ -100,12 +100,14 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
         }
         else
         {
-            DocumentDetails(file.name,
-                    file.name,
-                    file.absolutePath,
-                    file.absolutePath.removePrefix(documentsRoot),
-                    file.isFile,
-                    false)
+            DocumentDetails(
+                file.name,
+                file.name,
+                file.absolutePath,
+                file.absolutePath.removePrefix(documentsRoot),
+                file.isFile,
+                false
+            )
         }
     }
 
@@ -133,9 +135,11 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
     }
 }
 
-class DocumentDetails(val name: String,
-                      val displayName: String,
-                      val absolutePath: String,
-                      val pathFragment: String?,
-                      val isFile: Boolean,
-                      val external: Boolean)
+class DocumentDetails(
+    val name: String,
+    val displayName: String,
+    val absolutePath: String,
+    val pathFragment: String?,
+    val isFile: Boolean,
+    val external: Boolean
+)

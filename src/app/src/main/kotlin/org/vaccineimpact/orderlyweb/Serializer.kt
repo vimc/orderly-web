@@ -54,7 +54,5 @@ open class Serializer
         return builder.toString().trim('_')
     }
 
-
     fun serializeEnum(value: Any) = value.toString().lowercase().replace('_', '-')
-
 }

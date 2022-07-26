@@ -20,12 +20,13 @@ class ArtefactController(context: ActionContext,
 
     : Controller(context)
 {
-    constructor(context: ActionContext) :
-            this(context,
-                    OrderlyReportRepository(context),
-                    OrderlyArtefactRepository(),
-                    Files(),
-                    AppConfig())
+    constructor(context: ActionContext) : this(
+            context,
+            OrderlyReportRepository(context),
+            OrderlyArtefactRepository(),
+            Files(),
+            AppConfig()
+    )
 
     fun getMetaData(): Map<String, String>
     {

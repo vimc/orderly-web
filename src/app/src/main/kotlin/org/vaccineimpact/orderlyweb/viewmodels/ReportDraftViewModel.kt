@@ -8,10 +8,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-data class ReportDraftViewModel(val id: String,
-                                val url: String,
-                                val changelog: List<ChangelogItemViewModel>,
-                                val parameterValues: String?)
+data class ReportDraftViewModel(
+        val id: String,
+        val url: String,
+        val changelog: List<ChangelogItemViewModel>,
+        val parameterValues: String?
+)
 {
     companion object
     {
@@ -24,7 +26,6 @@ data class ReportDraftViewModel(val id: String,
         }
     }
 }
-
 
 data class DateGroup(val date: String, val drafts: List<ReportDraftViewModel>)
 {

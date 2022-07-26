@@ -10,20 +10,23 @@ import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthentica
 
 data class Breadcrumb(val name: String, val url: String?)
 
-data class DefaultViewModel(override val loggedIn: Boolean,
-                            override val user: String?,
-                            override val isReviewer: Boolean,
-                            override val isAdmin: Boolean,
-                            override val isGuest: Boolean,
-                            override val breadcrumbs: List<Breadcrumb>,
-                            private val appConfig: Config = AppConfig()) : AppViewModel
+data class DefaultViewModel(
+        override val loggedIn: Boolean,
+        override val user: String?,
+        override val isReviewer: Boolean,
+        override val isAdmin: Boolean,
+        override val isGuest: Boolean,
+        override val breadcrumbs: List<Breadcrumb>,
+        private val appConfig: Config = AppConfig()
+) : AppViewModel
 {
-    constructor(userProfile: CommonProfile?,
-                isReviewer: Boolean,
-                isAdmin: Boolean,
-                isGuest: Boolean,
-                breadcrumbs: List<Breadcrumb>,
-                appConfig: Config) :
+    constructor(
+            userProfile: CommonProfile?,
+            isReviewer: Boolean,
+            isAdmin: Boolean,
+            isGuest: Boolean,
+            breadcrumbs: List<Breadcrumb>,
+            appConfig: Config) :
             this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
 
     constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()):
@@ -70,4 +73,3 @@ interface AppViewModel
 
     val fineGrainedAuth: Boolean
 }
-

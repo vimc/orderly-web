@@ -14,9 +14,7 @@ import java.io.IOException
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
-
-interface MontaguAPIClient
-{
+interface MontaguAPIClient {
     @Throws(MontaguAPIException::class)
     fun getUserDetails(token: String): UserDetails
 
@@ -27,25 +25,18 @@ interface MontaguAPIClient
     // change could diverge, so defining Montagu specific models here
     data class Result(val status: String, val data: Any?, val errors: List<ErrorInfo>)
 
-    data class ErrorInfo(val code: String, val message: String)
-    {
+    data class ErrorInfo(val code: String, val message: String) {
         override fun toString(): String = message
     }
 }
 
-abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
-{
+abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient {
 
-    companion object
-    {
-        fun create(appConfig: Config = AppConfig()): OkHttpMontaguAPIClient
-        {
-            return if (appConfig.getBool("allow.localhost"))
-            {
+    companion object {
+        fun create(appConfig: Config = AppConfig()): OkHttpMontaguAPIClient {
+            return if (appConfig.getBool("allow.localhost")) {
                 LocalOkHttpMontaguApiClient(appConfig)
-            }
-            else
-            {
+            } else {
                 RemoteHttpMontaguApiClient(appConfig)
             }
         }
@@ -54,8 +45,7 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
     private val urlBase = appConfig["montagu.api_url"]
     private val serializer = Serializer.instance.gson
 
-    override fun getUserDetails(token: String): MontaguAPIClient.UserDetails
-    {
+    override fun getUserDetails(token: String): MontaguAPIClient.UserDetails {
         getHttpResponse("$urlBase/user/", mapOf("Authorization" to "Bearer $token"))
                 .use { response ->
                     val result = parseResult(response.body!!.string())
@@ -64,38 +54,34 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
                     {
                         throw MontaguAPIException(
                                 "Response had errors ${result.errors.joinToString(",") { it.toString() }}",
-                                response.code)
+                                response.code
+                        )
                     }
 
                     return result.data as MontaguAPIClient.UserDetails
                 }
     }
 
-    private fun parseResult(jsonAsString: String): MontaguAPIClient.Result
-    {
-        return try
-        {
+    private fun parseResult(jsonAsString: String): MontaguAPIClient.Result {
+        return try {
             val result = serializer.fromJson<MontaguAPIClient.Result>(jsonAsString)
             if (result.data.toString().isNotEmpty())
             {
                 result.copy(data = serializer.fromJson<MontaguAPIClient.UserDetails>(serializer.toJson(result.data)))
-            }
-            else result
+            } else result
+        } catch (e: JsonSyntaxException) {
+            throw MontaguAPIException(
+                    "Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e",
+                    HttpStatus.INTERNAL_SERVER_ERROR_500
+            )
         }
-        catch (e: JsonSyntaxException)
-        {
-            throw MontaguAPIException("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e",
-                    HttpStatus.INTERNAL_SERVER_ERROR_500)
-        }
-
     }
 
-    private fun getHttpResponse(url: String, headers: Map<String, String>): Response
-    {
+    private fun getHttpResponse(url: String, headers: Map<String, String>): Response {
         val client = getHttpClient()
 
         val headersBuilder = Headers.Builder()
-        headers.forEach { k, v ->  headersBuilder.add(k, v)}
+        headers.forEach { k, v -> headersBuilder.add(k, v) }
 
         val request = Request.Builder()
                 .url(url)
@@ -108,11 +94,9 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
     protected abstract fun getHttpClient(): OkHttpClient
 }
 
-class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
-{
-    override fun getHttpClient(): OkHttpClient
-    {
-        //Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
+class LocalOkHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig) {
+    override fun getHttpClient(): OkHttpClient {
+        // Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
         // Create a trust manager that does not validate certificate chains
         val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
             override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
@@ -139,10 +123,8 @@ class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(app
     }
 }
 
-class RemoteHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig)
-{
-    override fun getHttpClient(): OkHttpClient
-    {
+class RemoteHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig) {
+    override fun getHttpClient(): OkHttpClient {
         return OkHttpClient()
     }
 }

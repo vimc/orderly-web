@@ -40,8 +40,10 @@ class ActionResolver(private val templateEngine: TemplateEngine)
         }
         catch (e: InvocationTargetException)
         {
-            logger.warn("Exception was thrown whilst using reflection to invoke " +
-                    "$controllerType.$actionName, see below for details")
+            logger.warn(
+                    "Exception was thrown whilst using reflection to invoke " +
+                    "$controllerType.$actionName, see below for details"
+            )
             throw e.targetException
         }
     }
@@ -54,9 +56,11 @@ class ActionResolver(private val templateEngine: TemplateEngine)
         }
         catch (e: NoSuchMethodException)
         {
-            throw NoSuchMethodException("There is a problem with $controllerType. " +
-                    "All controllers must have a constructor with a single parameter of " +
-                    "type ActionContext")
+            throw NoSuchMethodException(
+                    "There is a problem with $controllerType. " +
+                            "All controllers must have a constructor with a single parameter of " +
+                            "type ActionContext"
+            )
         }
         return constructor.newInstance(context) as Controller
     }

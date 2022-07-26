@@ -9,21 +9,22 @@ object WebDocumentRouteConfig : RouteConfig
     private val readDocuments = setOf("*/documents.read")
     private val manageDocuments = setOf("*/documents.manage")
     override val endpoints: List<EndpointDefinition> = listOf(
-            WebEndpoint("/project-docs/*",
-                    DocumentController::class, "getDocument", contentType = ContentTypes.binarydata)
-                    .secure(readDocuments),
-            WebEndpoint("/project-docs/",
-                    DocumentController::class, "getIndex")
-                    .secure(readDocuments),
-            WebEndpoint("/documents/",
-                    DocumentController::class, "getAll")
-                    .secure(readDocuments)
-                    .transform()
-                    .json(),
+            WebEndpoint(
+                    "/project-docs/*",
+                    DocumentController::class,
+                    "getDocument",
+                    contentType = ContentTypes.binarydata
+            )
+            .secure(readDocuments),
+            WebEndpoint("/project-docs/", DocumentController::class, "getIndex")
+            .secure(readDocuments),
+            WebEndpoint("/documents/", DocumentController::class, "getAll")
+            .secure(readDocuments)
+            .transform()
+            .json(),
             WebEndpoint("/documents/refresh/", DocumentController::class, "refreshDocuments")
-                    .post()
-                    .json()
-                    .secure(manageDocuments)
+            .post()
+            .json()
+            .secure(manageDocuments)
     )
-
 }

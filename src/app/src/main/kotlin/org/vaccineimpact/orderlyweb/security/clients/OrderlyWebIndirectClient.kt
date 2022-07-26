@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
-import java.net.URLEncoder
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
@@ -11,28 +10,24 @@ import org.pac4j.core.exception.http.RedirectionAction
 import org.pac4j.core.redirect.RedirectionActionBuilder
 import org.pac4j.core.util.HttpActionHelper
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import java.net.URLEncoder
 
-class OrderlyWebIndirectClient() : IndirectClient()
-{
-    init
-    {
+class OrderlyWebIndirectClient() : IndirectClient() {
+    init {
         setCallbackUrl("/login")
     }
 
-    override fun internalInit(forceReinit: Boolean)
-    {
+    override fun internalInit(forceReinit: Boolean) {
         defaultCredentialsExtractor(NeverInvokedCredentialsExtractor())
         defaultRedirectionActionBuilder(OrderlyWebIndirectClientRedirectActionBuilder())
         defaultAuthenticator(NeverInvokedAuthenticator())
     }
 }
 
-class OrderlyWebIndirectClientRedirectActionBuilder : RedirectionActionBuilder
-{
+class OrderlyWebIndirectClientRedirectActionBuilder : RedirectionActionBuilder {
     override fun getRedirectionAction(
-            context: WebContext, sessionStore: SessionStore
-    ): java.util.Optional<RedirectionAction>
-    {
+        context: WebContext, sessionStore: SessionStore
+    ): java.util.Optional<RedirectionAction> {
         // Attach the originally requested url to the redirect url as a query string parameter, so we can redirect
         // there once authenticated via the 'landing page'
         val requestedUrl = context.fullRequestURL
@@ -45,20 +40,16 @@ class OrderlyWebIndirectClientRedirectActionBuilder : RedirectionActionBuilder
 // The OrderlyIndirectClient is only used to forward the user on to the appropriate auth provider via the landing page.
 // We need to provide a CredentialsExtractor object to keep pac4j happy, but it should never actually be invoked.
 // Similarly for NeverInvokedAuthenticator
-class NeverInvokedCredentialsExtractor : CredentialsExtractor
-{
+class NeverInvokedCredentialsExtractor : CredentialsExtractor {
 
-    override fun extract(context: WebContext, sessionStore: SessionStore): java.util.Optional<Credentials>
-    {
+    override fun extract(context: WebContext, sessionStore: SessionStore): java.util.Optional<Credentials> {
         throw UnsupportedOperationException("NeverInvokedCredentialsExtractor should not be invoked.")
     }
 }
 
-class NeverInvokedAuthenticator : Authenticator
-{
+class NeverInvokedAuthenticator : Authenticator {
 
-    override fun validate(credentials: Credentials, context: WebContext, sessionStore: SessionStore)
-    {
+    override fun validate(credentials: Credentials, context: WebContext, sessionStore: SessionStore) {
         throw UnsupportedOperationException("NeverInvokedAuthenticator should not be invoked.")
     }
 }

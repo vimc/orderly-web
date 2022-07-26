@@ -6,7 +6,10 @@ abstract class OrderlyWebError(
 ) : Exception(formatProblemsIntoMessage(problems))
 {
     open fun asResult() = org.vaccineimpact.orderlyweb.models.Result(
-            org.vaccineimpact.orderlyweb.models.ResultStatus.FAILURE, null, problems)
+            org.vaccineimpact.orderlyweb.models.ResultStatus.FAILURE,
+            null,
+            problems
+    )
 
     companion object
     {

@@ -10,7 +10,7 @@ interface TokenVerifier
     val signatureConfiguration: AbstractSignatureConfiguration
 }
 
-class RSATokenVerifier(keyPair: KeyPair, override val expectedIssuer: String): TokenVerifier
+class RSATokenVerifier(keyPair: KeyPair, override val expectedIssuer: String) : TokenVerifier
 {
     override val signatureConfiguration = RSASignatureConfiguration(keyPair)
 }

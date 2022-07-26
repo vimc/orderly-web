@@ -52,6 +52,5 @@ data class UserViewModel(val email: String, val username: String, val displayNam
         {
             return !(value.isEmpty() || value == "unknown")
         }
-
     }
 }

@@ -8,10 +8,11 @@ import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 
-class UserController(context: ActionContext,
-                     private val tokenHelper: WebTokenHelper,
-                     private val userRepo: UserRepository)
-    : Controller(context)
+class UserController(
+         context: ActionContext,
+         private val tokenHelper: WebTokenHelper,
+         private val userRepo: UserRepository
+) : Controller(context)
 {
     constructor(context: ActionContext) : this(context, WebTokenHelper.instance, OrderlyUserRepository())
 
@@ -25,8 +26,12 @@ class UserController(context: ActionContext,
     fun addUser(): String
     {
         val source = UserSource.valueOf(context.postData("source"))
-        userRepo.addUser(context.postData("email"), context.postData("username"),
-                            context.postData("displayName"), source)
+        userRepo.addUser(
+                context.postData("email"),
+                context.postData("username"),
+                context.postData("displayName"),
+                source
+        )
         return okayResponse()
     }
 }
