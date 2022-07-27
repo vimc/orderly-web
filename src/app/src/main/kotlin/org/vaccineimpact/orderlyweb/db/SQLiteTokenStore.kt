@@ -44,7 +44,6 @@ class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenS
             }
 
             createTable()
-
         }
         catch (e: SQLException)
         {

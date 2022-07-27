@@ -12,7 +12,7 @@ import org.pac4j.core.util.HttpActionHelper
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.net.URLEncoder
 
-class OrderlyWebIndirectClient() : IndirectClient() {
+class OrderlyWebIndirectClient : IndirectClient() {
     init {
         setCallbackUrl("/login")
     }

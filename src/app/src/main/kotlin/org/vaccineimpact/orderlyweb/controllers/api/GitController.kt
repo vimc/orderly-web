@@ -6,8 +6,10 @@ import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
-class GitController(context: ActionContext,
-                    private val orderlyServerAPI: OrderlyServerAPI) : Controller(context)
+class GitController(
+        context: ActionContext,
+        private val orderlyServerAPI: OrderlyServerAPI
+) : Controller(context)
 {
 
     constructor(context: ActionContext) :

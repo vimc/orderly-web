@@ -14,8 +14,11 @@ class Orderly(val isReviewer: Boolean,
               val artefactRepository: ArtefactRepository = OrderlyArtefactRepository(),
               val tagRepository: TagRepository = OrderlyWebTagRepository()) : OrderlyClient
 {
-    constructor(context: ActionContext)
-            : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+    constructor(context: ActionContext) : this(
+            context.isReviewer(),
+            context.isGlobalReader(),
+            context.reportReadingScopes
+    )
 
     override fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {

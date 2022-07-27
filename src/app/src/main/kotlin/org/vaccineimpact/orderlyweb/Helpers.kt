@@ -14,14 +14,16 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.servlet.http.HttpServletResponse
 import java.util.*
+import javax.servlet.http.HttpServletResponse
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
 // specific aims.
 
-fun addDefaultResponseHeaders(res: HttpServletResponse,
-                              contentType: String = "${ContentTypes.json}; charset=utf-8")
+fun addDefaultResponseHeaders(
+        res: HttpServletResponse,
+        contentType: String = "${ContentTypes.json}; charset=utf-8"
+)
 {
     if (!res.containsHeader("Content-Encoding"))
     {
@@ -30,7 +32,6 @@ fun addDefaultResponseHeaders(res: HttpServletResponse,
         // This allows cookies to be received over AJAX
         res.addHeader("Access-Control-Allow-Credentials", "true")
     }
-
 }
 
 class DefaultHeadersFilter(val contentType: String) : Filter
@@ -120,15 +121,18 @@ fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
     if (displaySize.length < maxChars - 1)
     {
         displaySize = bdSize.setScale(
-                maxChars - 1 - displaySize.length, RoundingMode.HALF_UP).toString()
+                maxChars - 1 - displaySize.length, RoundingMode.HALF_UP
+        ).toString()
     }
     return displaySize + " " + selectedSuffix.toString()
 }
 
-fun Controller.downloadFile(files: FileSystem,
-                            absoluteFilePath: String,
-                            filename: String,
-                            contentType: String): Boolean
+fun Controller.downloadFile(
+        files: FileSystem,
+        absoluteFilePath: String,
+        filename: String,
+        contentType: String
+): Boolean
 {
     if (!files.fileExists(absoluteFilePath))
     {
@@ -156,13 +160,13 @@ fun getDateStringFromVersionId(id: String): LocalDateTime
 }
 
 private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
-fun getFriendlyDateTime(date: LocalDateTime) : String
+fun getFriendlyDateTime(date: LocalDateTime): String
 {
     return formatter.format(date)
 }
 
 private val prettyTime = PrettyTime()
-fun getFriendlyRelativeDateTime(date: Date) : String
+fun getFriendlyRelativeDateTime(date: Date): String
 {
     return prettyTime.format(date)
 }

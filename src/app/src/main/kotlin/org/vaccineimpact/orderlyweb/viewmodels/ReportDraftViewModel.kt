@@ -21,8 +21,12 @@ data class ReportDraftViewModel(
         {
             val changelogs = version.changelogs.map { ChangelogItemViewModel.build(it) }
             val parameterValues = version.parameterValues.entries.joinToString(",") { "${it.key}=${it.value}" }
-            return ReportDraftViewModel(version.id,
-                    "${AppConfig()["app.url"]}/report/${version.name}/${version.id}", changelogs, parameterValues)
+            return ReportDraftViewModel(
+                    version.id,
+                    "${AppConfig()["app.url"]}/report/${version.name}/${version.id}",
+                    changelogs,
+                    parameterValues
+            )
         }
     }
 }
@@ -36,16 +40,21 @@ data class DateGroup(val date: String, val drafts: List<ReportDraftViewModel>)
             val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy")
                     .withZone(ZoneId.systemDefault())
 
-            return DateGroup(formatter.format(date), versions
+            return DateGroup(
+                    formatter.format(date),
+                    versions
                     .sortedByDescending { it.date }
-                    .map { ReportDraftViewModel.build(it) })
+                    .map { ReportDraftViewModel.build(it) }
+            )
         }
     }
 }
 
-data class ReportWithDraftsViewModel(val displayName: String,
-                                     val previouslyPublished: Boolean,
-                                     val dateGroups: List<DateGroup>)
+data class ReportWithDraftsViewModel(
+        val displayName: String,
+        val previouslyPublished: Boolean,
+        val dateGroups: List<DateGroup>
+)
 {
     companion object
     {
@@ -57,7 +66,8 @@ data class ReportWithDraftsViewModel(val displayName: String,
                     report.hasBeenPublished,
                     versions.groupBy { v -> v.date.truncatedTo(ChronoUnit.DAYS) }
                             .toSortedMap(reverseOrder())
-                            .map { DateGroup.build(it.key, it.value) })
+                            .map { DateGroup.build(it.key, it.value) }
+            )
         }
     }
 }

@@ -4,9 +4,13 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 
-data class UserViewModel(val email: String, val username: String, val displayName: String,
-                         val directPermissions: List<PermissionViewModel>,
-                         val rolePermissions: List<PermissionViewModel>)
+data class UserViewModel(
+        val email: String,
+        val username: String,
+        val displayName: String,
+        val directPermissions: List<PermissionViewModel>,
+        val rolePermissions: List<PermissionViewModel>
+)
 {
     companion object
     {
@@ -44,8 +48,10 @@ data class UserViewModel(val email: String, val username: String, val displayNam
                         permission.copy(source = commaSeparatedSources)
                     }.sorted()
 
-            return build(user).copy(directPermissions = directPermissionVms,
-                    rolePermissions = rolePermissionVms)
+            return build(user).copy(
+                    directPermissions = directPermissionVms,
+                    rolePermissions = rolePermissionVms
+            )
         }
 
         private fun isNotEmptyOrUnknown(value: String): Boolean

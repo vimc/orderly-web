@@ -26,15 +26,17 @@ data class DefaultViewModel(
             isAdmin: Boolean,
             isGuest: Boolean,
             breadcrumbs: List<Breadcrumb>,
-            appConfig: Config) :
-            this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
+            appConfig: Config
+    ) : this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
 
-    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()):
-            this(context.userProfile,
+    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()) :
+            this(
+                    context.userProfile,
                     context.hasPermission(ReifiedPermission("reports.review", Scope.Global())),
                     context.hasPermission(ReifiedPermission("users.manage", Scope.Global())),
                     context.userProfile?.id == "guest",
-                    breadcrumbs.toList(), appConfig)
+                    breadcrumbs.toList(), appConfig
+            )
 
     override val appName = appConfig["app.name"]
     override val appUrl = appConfig["app.url"]

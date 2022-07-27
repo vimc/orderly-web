@@ -114,11 +114,12 @@ class OrderlyWebTagRepository : TagRepository
         JooqContext().use { ctx ->
             return ctx.dsl.select(
                     REPORT_VERSION_TAG.REPORT_VERSION,
-                    REPORT_VERSION_TAG.TAG)
-                    .from(REPORT_VERSION_TAG)
-                    .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-                    .groupBy { it[REPORT_VERSION_TAG.REPORT_VERSION] }
-                    .mapValues { it.value.map { r -> r[REPORT_VERSION_TAG.TAG] } }
+                    REPORT_VERSION_TAG.TAG
+            )
+            .from(REPORT_VERSION_TAG)
+            .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+            .groupBy { it[REPORT_VERSION_TAG.REPORT_VERSION] }
+            .mapValues { it.value.map { r -> r[REPORT_VERSION_TAG.TAG] } }
         }
     }
 }

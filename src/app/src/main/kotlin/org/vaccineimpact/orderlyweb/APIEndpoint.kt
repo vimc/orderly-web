@@ -54,12 +54,16 @@ data class APIEndpoint(
 
         val config = factory.build()
 
-        spark.before(url, contentType, method, SecurityFilter(
-                config,
-                factory.allClients(),
-                config.authorizers.map { it.key }.joinToString(","),
-                SkipOptionsMatcher.name
-        ))
+        spark.before(url,
+                contentType,
+                method,
+                SecurityFilter(
+                        config,
+                        factory.allClients(),
+                        config.authorizers.map { it.key }.joinToString(","),
+                        SkipOptionsMatcher.name
+                )
+        )
     }
 }
 

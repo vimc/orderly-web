@@ -56,8 +56,11 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                               reportReadingScopes: List<String> = listOf()) : ReportRepository
 {
 
-    constructor(context: ActionContext) :
-            this(context.isReviewer(),context.isGlobalReader(), context.reportReadingScopes)
+    constructor(context: ActionContext) : this(
+            context.isReviewer(),
+            context.isGlobalReader(),
+            context.reportReadingScopes
+    )
 
     override fun getAllReports(): List<Report>
     {

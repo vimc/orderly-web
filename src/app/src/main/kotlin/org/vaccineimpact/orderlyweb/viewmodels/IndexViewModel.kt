@@ -38,11 +38,13 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
     {
         val breadcrumb = Breadcrumb("Main menu", AppConfig()["app.url"])
 
-        fun build(reports: List<ReportVersionWithDescCustomFieldsLatestParamsTags>,
-                  reportTags: Map<String, List<String>>,
-                  allTags: List<String>,
-                  pinnedReports: List<Report>,
-                  context: ActionContext): IndexViewModel
+        fun build(
+                reports: List<ReportVersionWithDescCustomFieldsLatestParamsTags>,
+                reportTags: Map<String, List<String>>,
+                allTags: List<String>,
+                pinnedReports: List<Report>,
+                context: ActionContext
+        ): IndexViewModel
         {
             val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
             {
@@ -137,8 +139,11 @@ data class ReportRowViewModel(val ttKey: Int,
                     tags)
         }
 
-        fun buildVersion(version: ReportVersionWithDescCustomFieldsLatestParamsTags, key: Int,
-                         parent: ReportRowViewModel): ReportRowViewModel
+        fun buildVersion(
+                version: ReportVersionWithDescCustomFieldsLatestParamsTags,
+                key: Int,
+                parent: ReportRowViewModel
+        ): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
             val parameterValues = if (version.parameterValues.keys.count() > 0)
@@ -150,7 +155,8 @@ data class ReportRowViewModel(val ttKey: Int,
                 null
             }
 
-            return ReportRowViewModel(key,
+            return ReportRowViewModel(
+                    key,
                     parent.ttKey,
                     version.name,
                     parent.displayName,
@@ -161,16 +167,19 @@ data class ReportRowViewModel(val ttKey: Int,
                     version.published,
                     version.customFields,
                     parameterValues,
-                    version.tags)
+                    version.tags
+            )
         }
     }
 }
 
-data class PinnedReportViewModel(val name: String,
-                                 val version: String,
-                                 val displayName: String,
-                                 val date: String,
-                                 val zipFile: DownloadableFileViewModel)
+data class PinnedReportViewModel(
+        val name: String,
+        val version: String,
+        val displayName: String,
+        val date: String,
+        val zipFile: DownloadableFileViewModel
+)
 {
     companion object
     {
@@ -179,11 +188,13 @@ data class PinnedReportViewModel(val name: String,
             return versions.map {
 
                 val reportFileViewModelBuilder = ReportFileViewModelBuilder(it.name, it.latestVersion)
-                PinnedReportViewModel(it.name,
+                PinnedReportViewModel(
+                        it.name,
                         it.latestVersion,
                         it.displayName ?: it.name,
                         IndexViewDateFormatter.format(it.latestVersion),
-                        reportFileViewModelBuilder.buildZipFileViewModel())
+                        reportFileViewModelBuilder.buildZipFileViewModel()
+                )
             }
         }
     }

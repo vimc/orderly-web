@@ -67,16 +67,19 @@ class WorkflowRunController(
                     },
                     paramList = report.params?.filter { defaultParams[it.key] != it.value }?.map {
                         Parameter(it.key, it.value)
-                    })
+                    }
+            )
         }
         return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
 
-    internal data class WorkflowQueuedReport(val name: String,
-                                             val key: String,
-                                             @SerializedName(value = "execution_order")
-                                             val executionOrder: Int,
-                                             val params: Map<String, String>?)
+    internal data class WorkflowQueuedReport(
+            val name: String,
+            val key: String,
+            @SerializedName(value = "execution_order")
+            val executionOrder: Int,
+            val params: Map<String, String>?
+    )
 
     internal data class WorkflowRunResponse(
             @SerializedName(value = "workflow_key")

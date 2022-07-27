@@ -11,9 +11,9 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 
@@ -96,12 +96,11 @@ class VersionController(
         else
         {
             (
-                    artefactRepository.getArtefactHashes(report, version)
-                    + orderly.getResourceHashes(report, version)
-                    + orderly.getReadme(report, version)
+                    artefactRepository.getArtefactHashes(report, version) +
+                            orderly.getResourceHashes(report, version) +
+                            orderly.getReadme(report, version)
             )
             .map { "$folderName/${it.key}" }
         }
     }
-
 }

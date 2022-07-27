@@ -14,11 +14,12 @@ class DataController(
         private val config: Config
 ) : Controller(context)
 {
-    constructor(context: ActionContext) :
-            this(context,
-                    Orderly(context),
-                    Files(),
-                    AppConfig())
+    constructor(context: ActionContext) : this(
+            context,
+            Orderly(context),
+            Files(),
+            AppConfig()
+    )
 
     fun get(): Map<String, String>
     {

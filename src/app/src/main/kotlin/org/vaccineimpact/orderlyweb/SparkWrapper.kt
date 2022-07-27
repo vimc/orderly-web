@@ -10,8 +10,13 @@ interface SparkWrapper
 {
     fun before(path: String, acceptType: String, method: HttpMethod, filter: Filter)
     fun after(path: String, acceptType: String, vararg filters: Filter)
-    fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
-            transformer: ResponseTransformer? = null)
+    fun map(
+            fullUrl: String,
+            method: HttpMethod,
+            acceptType: String,
+            route: Route,
+            transformer: ResponseTransformer? = null
+    )
     fun mapGet(fullUrl: String, route: Route)
 }
 
@@ -62,7 +67,7 @@ class SparkServiceWrapper : SparkWrapper
 }
 
 class MethodMatchingFilter(val method: HttpMethod,
-                           val filter: Filter): Filter {
+                           val filter: Filter) : Filter {
 
     override fun handle(request: Request?, response: Response?)
     {

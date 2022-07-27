@@ -6,11 +6,9 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 data class AccessibilityViewModel(val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
-    constructor(context: ActionContext) :
-            this(DefaultViewModel(
-                    context,
-                    IndexViewModel.breadcrumb,
-                    AccessibilityViewModel.breadcrumb))
+    constructor(context: ActionContext) : this(
+            DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb)
+    )
 
     companion object
     {
