@@ -8,14 +8,20 @@ object WebGitRouteConfig : RouteConfig
 {
     private val runReports = setOf("*/reports.run")
     override val endpoints: List<EndpointDefinition> = listOf(
-            WebEndpoint("/git/branch/:branch/commits/",
-                   GitController::class, "getCommits")
-                    .secure(runReports)
-                    .json(),
+            WebEndpoint(
+                    "/git/branch/:branch/commits/",
+                   GitController::class,
+                    "getCommits"
+            )
+            .secure(runReports)
+            .json(),
 
-            WebEndpoint("/git/fetch/",
-                    GitController::class, "fetch")
-                    .secure(runReports)
-                    .json()
+            WebEndpoint(
+                    "/git/fetch/",
+                    GitController::class,
+                    "fetch"
+            )
+            .secure(runReports)
+            .json()
     )
 }

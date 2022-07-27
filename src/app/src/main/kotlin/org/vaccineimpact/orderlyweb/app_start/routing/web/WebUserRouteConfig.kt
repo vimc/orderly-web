@@ -9,39 +9,62 @@ object WebUserRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
-            WebEndpoint("/users/",
-                    UserController::class, "getAllUsers")
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/users/report-readers/",
-                    UserController::class, "getGlobalReportReaders")
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/users/report-readers/:report/",
-                    UserController::class, "getScopedReportReaders",
-                    contentType = ContentTypes.json)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/typeahead/emails/",
-                    UserController::class, "getUserEmails",
-                    contentType = ContentTypes.json)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/users/:user-id/permissions/",
-                    UserController::class, "addPermission",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/users/:user-id/permissions/:name",
-                    UserController::class, "removePermission",
-                    method = HttpMethod.delete)
-                    .json()
-                    .transform()
-                    .secure(usersManage)
+            WebEndpoint(
+                    "/users/",
+                    UserController::class,
+                    "getAllUsers"
+            )
+            .json()
+            .transform()
+            .secure(usersManage),
+
+            WebEndpoint(
+                    "/users/report-readers/",
+                    UserController::class,
+                    "getGlobalReportReaders"
+            )
+            .json()
+            .transform()
+            .secure(usersManage),
+
+            WebEndpoint(
+                    "/users/report-readers/:report/",
+                    UserController::class,
+                    "getScopedReportReaders",
+                    contentType = ContentTypes.json
+            )
+            .json()
+            .transform()
+            .secure(usersManage),
+
+            WebEndpoint(
+                    "/typeahead/emails/",
+                    UserController::class,
+                    "getUserEmails",
+                    contentType = ContentTypes.json
+            )
+            .json()
+            .transform()
+            .secure(usersManage),
+
+            WebEndpoint(
+                    "/users/:user-id/permissions/",
+                    UserController::class,
+                    "addPermission",
+                    method = HttpMethod.post
+            )
+            .json()
+            .transform()
+            .secure(usersManage),
+
+            WebEndpoint(
+                    "/users/:user-id/permissions/:name",
+                    UserController::class,
+                    "removePermission",
+                    method = HttpMethod.delete
+            )
+            .json()
+            .transform()
+            .secure(usersManage)
     )
 }

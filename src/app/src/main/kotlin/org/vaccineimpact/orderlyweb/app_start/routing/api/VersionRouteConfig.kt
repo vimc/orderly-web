@@ -20,70 +20,121 @@ object VersionRouteConfig : RouteConfig
     private val versionController = VersionController::class
 
     override val endpoints = listOf(
-            APIEndpoint("/versions/", reportController, "getAllVersions")
-                    .json()
-                    .transform()
-                    // more specific permission checking in the controller action
-                    .secure(),
+            APIEndpoint(
+                    "/versions/",
+                    reportController,
+                    "getAllVersions"
+            )
+            .json()
+            .transform()
+            // more specific permission checking in the controller action
+            .secure(),
 
-            APIEndpoint("/reports/:name/versions/:version/", versionController, "getByNameAndVersion")
-                    .json()
-                    .transform()
-                    .secure(readReports),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/",
+                    versionController,
+                    "getByNameAndVersion"
+            )
+            .json()
+            .transform()
+            .secure(readReports),
 
-            APIEndpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
-                    ContentTypes.zip)
-                    .allowParameterAuthentication()
-                    .secure(readReports),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/all/",
+                    versionController,
+                    "getZippedByNameAndVersion",
+                    ContentTypes.zip
+            )
+            .allowParameterAuthentication()
+            .secure(readReports),
 
-            APIEndpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(reviewReports),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/publish/",
+                    reportController,
+                    "publish",
+                    method = HttpMethod.post
+            )
+            .json()
+            .transform()
+            .secure(reviewReports),
 
-            APIEndpoint("/reports/:name/versions/:version/changelog/", versionController,
-                    "getChangelogByNameAndVersion")
-                    .json()
-                    .transform()
-                    .secure(readReports)
-                    .allowParameterAuthentication(),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/changelog/",
+                    versionController,
+                    "getChangelogByNameAndVersion"
+            )
+            .json()
+            .transform()
+            .secure(readReports)
+            .allowParameterAuthentication(),
 
-            APIEndpoint("/reports/:name/versions/:version/artefacts/", artefactController, "getMetaData")
-                    .json()
-                    .transform()
-                    .secure(readReports),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/artefacts/",
+                    artefactController,
+                    "getMetaData"
+            )
+            .json()
+            .transform()
+            .secure(readReports),
 
-            APIEndpoint("/reports/:name/versions/:version/artefacts/:artefact/", artefactController, "getFile")
-                    .secure(readReports)
-                    .allowParameterAuthentication(),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/artefacts/:artefact/",
+                    artefactController,
+                    "getFile"
+            )
+            .secure(readReports)
+            .allowParameterAuthentication(),
 
-            APIEndpoint("/reports/:name/versions/:version/resources/", resourceController, "get")
-                    .json()
-                    .transform()
-                    .secure(readReports),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/resources/",
+                    resourceController,
+                    "get"
+            )
+            .json()
+            .transform()
+            .secure(readReports),
 
-            APIEndpoint("/reports/:name/versions/:version/resources/:resource/", resourceController, "download")
-                    .secure(readReports)
-                    .allowParameterAuthentication(),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/resources/:resource/",
+                    resourceController,
+                    "download"
+            )
+            .secure(readReports)
+            .allowParameterAuthentication(),
 
-            APIEndpoint("/reports/:name/versions/:version/data/", dataController, "get")
-                    .json()
-                    .transform()
-                    .secure(readReports),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/data/",
+                    dataController,
+                    "get"
+            )
+            .json()
+            .transform()
+            .secure(readReports),
 
-            APIEndpoint("/reports/:name/versions/:version/data/:data/", dataController, "downloadData")
-                    .secure(readReports)
-                    .allowParameterAuthentication(),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/data/:data/",
+                    dataController,
+                    "downloadData"
+            )
+            .secure(readReports)
+            .allowParameterAuthentication(),
 
-            APIEndpoint("/reports/:name/versions/:version/data/:data/", dataController, "downloadData",
-                    contentType = ContentTypes.csv)
-                    .secure(readReports)
-                    .allowParameterAuthentication(),
+            APIEndpoint(
+                    "/reports/:name/versions/:version/data/:data/",
+                    dataController,
+                    "downloadData",
+                    contentType = ContentTypes.csv
+            )
+            .secure(readReports)
+            .allowParameterAuthentication(),
 
-            APIEndpoint("/reports/:name/versions/:version/run-meta/", versionController, "getRunMetadata",
-                    contentType = ContentTypes.binarydata)
-                    .secure(readReports)
-                    .allowParameterAuthentication()
+            APIEndpoint(
+                    "/reports/:name/versions/:version/run-meta/",
+                    versionController,
+                    "getRunMetadata",
+                    contentType = ContentTypes.binarydata
+            )
+            .secure(readReports)
+            .allowParameterAuthentication()
     )
 }

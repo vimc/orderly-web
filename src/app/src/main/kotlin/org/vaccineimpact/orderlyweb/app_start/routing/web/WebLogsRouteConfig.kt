@@ -9,10 +9,13 @@ object WebLogsRouteConfig : RouteConfig
     private val runReports = setOf("*/reports.run")
 
     override val endpoints = listOf(
-            WebEndpoint("/reports/running/",
-                    ReportRunController::class, "runningReports")
-                    .json()
-                    .secure(runReports)
-                    .transform()
+            WebEndpoint(
+                    "/reports/running/",
+                    ReportRunController::class,
+                    "runningReports"
+            )
+            .json()
+            .secure(runReports)
+            .transform()
     )
 }

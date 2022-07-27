@@ -6,17 +6,19 @@ import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
-class RoleController(context: ActionContext,
-                     private val roleRepo: RoleRepository,
-                     private val authRepo: AuthorizationRepository) : Controller(context)
+class RoleController(
+        context: ActionContext,
+        private val roleRepo: RoleRepository,
+        private val authRepo: AuthorizationRepository
+) : Controller(context)
 {
     constructor(context: ActionContext) : this(context, OrderlyRoleRepository(), OrderlyAuthorizationRepository())
 

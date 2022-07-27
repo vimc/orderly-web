@@ -15,7 +15,6 @@ import java.util.*
 import kotlin.system.exitProcess
 import spark.Spark as spk
 
-
 fun main(args: Array<String>)
 {
     val app = OrderlyWeb()

@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.controllers.web
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.annotations.NoCoverage
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
@@ -186,7 +187,8 @@ class WorkflowRunController(
                             status.status,
                             status.version
                     )
-                })
+                }
+        )
     }
 
     fun validateWorkflow(): List<WorkflowReportWithParams>

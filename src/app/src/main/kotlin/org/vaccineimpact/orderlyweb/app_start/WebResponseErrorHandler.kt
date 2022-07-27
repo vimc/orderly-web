@@ -11,7 +11,7 @@ import spark.Request
 import spark.Response
 import spark.TemplateEngine
 
-class WebResponseErrorHandler(private val templateEngine: TemplateEngine): ResponseErrorHandler
+class WebResponseErrorHandler(private val templateEngine: TemplateEngine) : ResponseErrorHandler
 {
     override fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {

@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.app_start
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.routing.api.*
 import org.vaccineimpact.orderlyweb.app_start.routing.web.*
-import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.AdminController
+import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 
 interface RouteConfig
 {
@@ -25,13 +25,25 @@ object APIRouteConfig : RouteConfig
 
 object WebRouteConfig : RouteConfig
 {
-    private val metricsEndpoint = WebEndpoint("/metrics/", IndexController::class, "metrics",
-    contentType = ContentTypes.text)
+    private val metricsEndpoint = WebEndpoint(
+            "/metrics/",
+            IndexController::class,
+            "metrics",
+            contentType = ContentTypes.text
+    )
 
-    private val accessibilityEndpoint = WebEndpoint("/accessibility/", IndexController:: class, "accessibility")
+    private val accessibilityEndpoint = WebEndpoint(
+            "/accessibility/",
+            IndexController:: class,
+            "accessibility"
+    )
 
-    private val adminEndpoint = WebEndpoint("/manage-access/", AdminController:: class, "admin")
-            .secure(setOf("*/users.manage"))
+    private val adminEndpoint = WebEndpoint(
+            "/manage-access/",
+            AdminController:: class,
+            "admin"
+    )
+    .secure(setOf("*/users.manage"))
 
     override val endpoints: List<EndpointDefinition> =
             WebAuthRouteConfig.endpoints +

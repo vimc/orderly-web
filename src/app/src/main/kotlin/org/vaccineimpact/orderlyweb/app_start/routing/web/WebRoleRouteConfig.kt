@@ -15,24 +15,30 @@ object WebRoleRouteConfig : RouteConfig
             WebEndpoint(
                     "/roles/",
                     RoleController::class,
-                    "getAll")
+                    "getAll"
+            )
             .json()
             .secure(usersManage)
             .transform(),
+
             WebEndpoint(
                     "/roles/report-readers/",
                     RoleController::class,
-                    "getGlobalReportReaders")
+                    "getGlobalReportReaders"
+            )
             .json()
             .secure(usersManage)
             .transform(),
+
             WebEndpoint(
                     "/roles/report-readers/:report/",
                     RoleController::class,
-                    "getScopedReportReaders")
+                    "getScopedReportReaders"
+            )
             .json()
             .secure(usersManage + setOf("*/reports.read"))
             .transform(),
+
             WebEndpoint(
                     "/typeahead/roles/",
                     RoleController::class,
@@ -41,6 +47,7 @@ object WebRoleRouteConfig : RouteConfig
             .json()
             .transform()
             .secure(usersManage),
+
             WebEndpoint(
                     "/roles/",
                     RoleController::class, "addRole",
@@ -49,6 +56,7 @@ object WebRoleRouteConfig : RouteConfig
             .json()
             .transform()
             .secure(usersManage),
+
             WebEndpoint(
                     "/roles/:role-id/",
                     RoleController::class,
@@ -58,6 +66,7 @@ object WebRoleRouteConfig : RouteConfig
             .json()
             .transform()
             .secure(usersManage),
+
             WebEndpoint(
                     "/roles/:role-id/users/",
                     RoleController::class,
@@ -67,6 +76,7 @@ object WebRoleRouteConfig : RouteConfig
             .json()
             .transform()
             .secure(usersManage),
+
             WebEndpoint(
                     "/roles/:role-id/users/:email",
                     RoleController::class,
@@ -85,6 +95,7 @@ object WebRoleRouteConfig : RouteConfig
             .json()
             .transform()
             .secure(usersManage),
+
             WebEndpoint(
                     "/roles/:role-id/permissions/:name",
                     RoleController::class,
@@ -94,6 +105,5 @@ object WebRoleRouteConfig : RouteConfig
             .json()
             .transform()
             .secure(usersManage)
-
     )
 }
