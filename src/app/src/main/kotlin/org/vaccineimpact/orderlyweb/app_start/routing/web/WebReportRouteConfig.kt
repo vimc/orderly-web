@@ -20,8 +20,8 @@ object WebReportRouteConfig : RouteConfig
                     "/",
                     IndexController::class, "index"
             )
-            // more specific permission checking in the controller action
-            .secure(),
+                    // more specific permission checking in the controller action
+                    .secure(),
 
             WebEndpoint(
                     "/global-pinned-reports/",
@@ -29,23 +29,23 @@ object WebReportRouteConfig : RouteConfig
                     "setGlobalPinnedReports",
                     method = HttpMethod.post
             )
-            .json()
-            .secure(configureReports)
-            .transform(),
+                    .json()
+                    .secure(configureReports)
+                    .transform(),
 
             WebEndpoint(
                     "/report/:name/latest/",
                     ReportController::class,
                     "getByNameAndVersion"
             )
-            .secure(readReports),
+                    .secure(readReports),
 
             WebEndpoint(
                     "/report/:name/:version/",
                     ReportController::class,
                     "getByNameAndVersion"
             )
-            .secure(readReports),
+                    .secure(readReports),
 
             WebEndpoint(
                     "/report/:name/actions/run/",
@@ -53,103 +53,103 @@ object WebReportRouteConfig : RouteConfig
                     "run",
                     method = HttpMethod.post
             )
-            .json()
-            .secure(runReports),
+                    .json()
+                    .secure(runReports),
 
             WebEndpoint(
                     "/report/:name/actions/status/:key/",
                     ReportRunController::class,
                     "status"
             )
-            .json()
-            .secure(runReports),
+                    .json()
+                    .secure(runReports),
 
             WebEndpoint(
                     "/run-report/",
                     ReportController::class,
                     "getRunReport"
             )
-            .secure(runReports),
+                    .secure(runReports),
 
             WebEndpoint(
                     "/run-workflow/",
                     WorkflowRunController::class,
                     "getRunWorkflow"
             )
-            .secure(runReports),
+                    .secure(runReports),
 
             WebEndpoint(
                     "/vuex-run-report/",
                     org.vaccineimpact.orderlyweb.controllers.web.vuex.ReportController::class,
                     "getRunReport"
             )
-            .secure(runReports),
+                    .secure(runReports),
 
             WebEndpoint(
                     "/reports/runnable/",
                     ReportController::class,
                     "getRunnableReports"
             )
-            .json()
-            .secure(runReports)
-            .transform(),
+                    .json()
+                    .secure(runReports)
+                    .transform(),
 
             WebEndpoint(
                     "/report/:name/config/parameters/",
                     ReportController::class, "getReportParameters"
             )
-            .json()
-            .secure(runReports)
-            .transform(),
+                    .json()
+                    .secure(runReports)
+                    .transform(),
 
             WebEndpoint(
                     "/running/:key/logs/",
                     org.vaccineimpact.orderlyweb.controllers.web.ReportRunController::class,
                     "getRunningReportLogs"
             )
-            .json()
-            .secure(runReports)
-            .transform(),
+                    .json()
+                    .secure(runReports)
+                    .transform(),
 
             WebEndpoint(
                     "/publish-reports/",
                     ReportController::class,
                     "getPublishReports"
             )
-            .secure(reviewReports),
+                    .secure(reviewReports),
 
             WebEndpoint(
                     "/report-drafts/",
                     ReportController::class,
                     "getDrafts"
             )
-            .json()
-            .transform()
-            .secure(reviewReports),
+                    .json()
+                    .transform()
+                    .secure(reviewReports),
 
             WebEndpoint(
                     "/bulk-publish/",
                     ReportController::class, "publishReports"
             )
-            .post()
-            .json()
-            .secure(reviewReports),
+                    .post()
+                    .json()
+                    .secure(reviewReports),
 
             WebEndpoint(
                     "/report/:name/dependencies/",
                     ReportController::class,
                     "getDependencies"
             )
-            .json()
-            .secure(readReports),
+                    .json()
+                    .secure(readReports),
 
             WebEndpoint(
                     "/report/run-metadata",
                     ReportController::class,
                     "getRunMetadata"
             )
-            .json()
-            .transform()
-            .secure(runReports)
+                    .json()
+                    .transform()
+                    .secure(runReports)
     )
 }

@@ -13,13 +13,16 @@ interface RoleRepository
     fun getAllRoleNames(): List<String>
     fun getAllRoles(): List<Role>
 
-    companion object {
+    companion object
+    {
         const val ADMIN_ROLE = "Admin"
     }
 }
 
-class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
-                            private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) :
+class OrderlyRoleRepository(
+        private val userMapper: UserMapper = UserMapper(),
+        private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()
+) :
         RoleRepository
 {
     override fun getAllRoleNames(): List<String>
@@ -38,27 +41,35 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
     {
         val roleNames = getAllRoleNames()
         return JooqContext().use {
-            it.dsl.select(ORDERLYWEB_USER_GROUP.ID,
+            it.dsl.select(
+                    ORDERLYWEB_USER_GROUP.ID,
                     ORDERLYWEB_USER.USERNAME,
                     ORDERLYWEB_USER.DISPLAY_NAME,
-                    ORDERLYWEB_USER.EMAIL)
-                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                    ORDERLYWEB_USER.EMAIL
+            )
+                    .fromJoinPath(
+                            ORDERLYWEB_USER_GROUP,
                             ORDERLYWEB_USER_GROUP_USER,
-                            ORDERLYWEB_USER, joinType = JoinType.LEFT_OUTER_JOIN)
+                            ORDERLYWEB_USER, joinType = JoinType.LEFT_OUTER_JOIN
+                    )
                     .where(ORDERLYWEB_USER_GROUP.ID.`in`(roleNames))
                     .fetch()
-                    .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID]}
+                    .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID] }
                     .map(::mapUserGroup)
         }
     }
 
-    private fun reportReadingGroupsQuery(db: JooqContext) = db.dsl.select(ORDERLYWEB_USER_GROUP.ID,
+    private fun reportReadingGroupsQuery(db: JooqContext) = db.dsl.select(
+            ORDERLYWEB_USER_GROUP.ID,
             ORDERLYWEB_USER.USERNAME,
             ORDERLYWEB_USER.DISPLAY_NAME,
-            ORDERLYWEB_USER.EMAIL)
-            .fromJoinPath(ORDERLYWEB_USER_GROUP,
+            ORDERLYWEB_USER.EMAIL
+    )
+            .fromJoinPath(
+                    ORDERLYWEB_USER_GROUP,
                     ORDERLYWEB_USER_GROUP_USER,
-                    ORDERLYWEB_USER, joinType = JoinType.LEFT_OUTER_JOIN)
+                    ORDERLYWEB_USER, joinType = JoinType.LEFT_OUTER_JOIN
+            )
             .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
             .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
             .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
@@ -93,16 +104,19 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
         val roleName = group.key
         val permissions = authRepo.getPermissionsForGroup(roleName)
 
-        return Role(group.key, group.value.mapNotNull { u ->
-            if (u[ORDERLYWEB_USER.USERNAME] != null)
-            {
-                userMapper.mapUser(u)
-            }
-            else
-            {
-                null
-            }
-        }, permissions)
+        return Role(
+                group.key,
+                group.value.mapNotNull { u ->
+                    if (u[ORDERLYWEB_USER.USERNAME] != null)
+                    {
+                        userMapper.mapUser(u)
+                    }
+                    else
+                    {
+                        null
+                    }
+                },
+                permissions
+        )
     }
-
 }

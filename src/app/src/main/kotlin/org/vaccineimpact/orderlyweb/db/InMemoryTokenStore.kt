@@ -6,6 +6,7 @@ class InMemoryTokenStore : OnetimeTokenStore
 
     override fun setup()
     {
+        // no op override
     }
 
     @Synchronized

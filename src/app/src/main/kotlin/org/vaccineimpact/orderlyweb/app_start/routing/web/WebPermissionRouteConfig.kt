@@ -12,8 +12,8 @@ object WebPermissionRouteConfig : RouteConfig
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
             WebEndpoint("/typeahead/permissions/", PermissionController::class, "getPermissionNames")
-            .json()
-            .secure(usersManage)
-            .transform()
+                    .json()
+                    .secure(usersManage)
+                    .transform()
     )
 }

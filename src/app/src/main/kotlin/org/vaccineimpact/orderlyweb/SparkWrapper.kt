@@ -17,6 +17,7 @@ interface SparkWrapper
             route: Route,
             transformer: ResponseTransformer? = null
     )
+
     fun mapGet(fullUrl: String, route: Route)
 }
 
@@ -38,8 +39,10 @@ class SparkServiceWrapper : SparkWrapper
         Spark.after(path, acceptType, *filters)
     }
 
-    override fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
-                     transformer: ResponseTransformer?)
+    override fun map(
+            fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
+            transformer: ResponseTransformer?
+    )
     {
         when (transformer)
         {
@@ -66,12 +69,16 @@ class SparkServiceWrapper : SparkWrapper
     }
 }
 
-class MethodMatchingFilter(val method: HttpMethod,
-                           val filter: Filter) : Filter {
+class MethodMatchingFilter(
+        val method: HttpMethod,
+        val filter: Filter
+) : Filter
+{
 
     override fun handle(request: Request?, response: Response?)
     {
-        if (request?.requestMethod()?.lowercase() == method.toString().lowercase()) {
+        if (request?.requestMethod()?.lowercase() == method.toString().lowercase())
+        {
             return filter.handle(request, response)
         }
     }

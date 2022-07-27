@@ -14,7 +14,6 @@ interface DocumentRepository
 
     fun add(path: String, name: String, displayName: String, isFile: Boolean, external: Boolean, parentPath: String?)
     fun setVisibility(documents: List<Document>, show: Boolean)
-
 }
 
 class OrderlyDocumentRepository : DocumentRepository
@@ -52,12 +51,14 @@ class OrderlyDocumentRepository : DocumentRepository
         }
     }
 
-    override fun add(path: String,
-                     name: String,
-                     displayName: String,
-                     isFile: Boolean,
-                     external: Boolean,
-                     parentPath: String?)
+    override fun add(
+            path: String,
+            name: String,
+            displayName: String,
+            isFile: Boolean,
+            external: Boolean,
+            parentPath: String?
+    )
     {
         JooqContext().use { db ->
             db.dsl.insertInto(ORDERLYWEB_DOCUMENT)
@@ -97,9 +98,14 @@ class OrderlyDocumentRepository : DocumentRepository
 
     private fun mapDocument(db: JooqContext, record: Record): Document
     {
-        val doc = Document(record[ORDERLYWEB_DOCUMENT.NAME], record[ORDERLYWEB_DOCUMENT.DISPLAY_NAME]
-                ?: record[ORDERLYWEB_DOCUMENT.NAME], record[ORDERLYWEB_DOCUMENT.PATH],
-                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, record[ORDERLYWEB_DOCUMENT.EXTERNAL] == 1, listOf())
+        val doc = Document(
+                record[ORDERLYWEB_DOCUMENT.NAME],
+                record[ORDERLYWEB_DOCUMENT.DISPLAY_NAME] ?: record[ORDERLYWEB_DOCUMENT.NAME],
+                record[ORDERLYWEB_DOCUMENT.PATH],
+                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1,
+                record[ORDERLYWEB_DOCUMENT.EXTERNAL] == 1,
+                listOf()
+        )
         return doc.copy(children = getChildren(db, doc))
     }
 

@@ -46,7 +46,8 @@ data class ReportVersionPageViewModel(
                 InputDataViewModel(
                         it.name,
                         fileViewModelBuilder.buildDataFileViewModel(it.name, "csv", it.csvSize),
-                        fileViewModelBuilder.buildDataFileViewModel(it.name, "rds", it.rdsSize))
+                        fileViewModelBuilder.buildDataFileViewModel(it.name, "rds", it.rdsSize)
+                )
             }
 
             val resourceViewModels = report.resources.map {
@@ -61,8 +62,10 @@ data class ReportVersionPageViewModel(
 
             val displayName = report.displayName ?: report.name
 
-            val breadcrumb = Breadcrumb("${report.name} (${report.id})",
-                    "${AppConfig()["app.url"]}/report/${report.name}/${report.id}/")
+            val breadcrumb = Breadcrumb(
+                    "${report.name} (${report.id})",
+                    "${AppConfig()["app.url"]}/report/${report.name}/${report.id}/"
+            )
 
             val changelogViewModel = changelog.sortedByDescending { it.reportVersion }
                     .groupBy { it.reportVersion }.map {
@@ -99,14 +102,15 @@ data class ReportVersionPageViewModel(
                     report.instances,
                     startTimeString,
                     elapsedString,
-                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb)
+            )
         }
 
         private fun getFocalArtefactUrl(builder: ReportFileViewModelBuilder, artefacts: List<Artefact>): String?
         {
-            //reproducing existing reportle behaviour - show the first artefact inline if it is possible
-            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() &&
-                    canRenderInBrowser(artefacts[0].files[0].name))
+            // reproducing existing reportle behaviour - show the first artefact inline if it is possible
+            val hasFocal = artefacts.any() && artefacts[0].files.any() && canRenderInBrowser(artefacts[0].files[0].name)
+            val focalArtefactFile = if (hasFocal)
             {
                 artefacts[0].files[0]
             }
@@ -152,7 +156,7 @@ data class ReportVersionPageViewModel(
 
         private fun getInlineFigureFile(files: List<FileInfo>): FileInfo?
         {
-            //reproducing existing reportle behaviour - show the first file inline if it is an image
+            // reproducing existing reportle behaviour - show the first file inline if it is an image
             return if (files.count() > 0 && isImage(files[0].name))
             {
                 files[0]
@@ -167,8 +171,10 @@ data class ReportVersionPageViewModel(
                 VersionPickerViewModel
         {
             val date = getDateStringFromVersionId(id)
-            return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", getFriendlyDateTime(date),
-                    selected = id == currentVersion)
+            return VersionPickerViewModel(
+                    "${AppConfig()["app.url"]}/report/$reportName/$id", getFriendlyDateTime(date),
+                    selected = id == currentVersion
+            )
         }
     }
 }

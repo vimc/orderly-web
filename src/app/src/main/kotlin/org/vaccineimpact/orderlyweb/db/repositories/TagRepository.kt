@@ -17,15 +17,21 @@ interface TagRepository
 
 class OrderlyWebTagRepository : TagRepository
 {
-    override fun getAllTags(): List<String> {
+    override fun getAllTags(): List<String>
+    {
         JooqContext().use {
             return it.dsl.select(
-                            ORDERLYWEB_REPORT_TAG.TAG)
+                    ORDERLYWEB_REPORT_TAG.TAG
+            )
                     .from(ORDERLYWEB_REPORT_TAG)
-                    .union(it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                            .from(ORDERLYWEB_REPORT_VERSION_TAG))
-                    .union(it.dsl.select(TAG.ID)
-                            .from(TAG))
+                    .union(
+                            it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                    )
+                    .union(
+                            it.dsl.select(TAG.ID)
+                                    .from(TAG)
+                    )
                     .fetchInto(String::class.java)
                     .distinct()
                     .sorted()
@@ -37,7 +43,8 @@ class OrderlyWebTagRepository : TagRepository
         JooqContext().use { ctx ->
             return ctx.dsl.select(
                     ORDERLYWEB_REPORT_TAG.REPORT,
-                    ORDERLYWEB_REPORT_TAG.TAG)
+                    ORDERLYWEB_REPORT_TAG.TAG
+            )
                     .from(ORDERLYWEB_REPORT_TAG)
                     .where(ORDERLYWEB_REPORT_TAG.REPORT.`in`(reportNames))
                     .groupBy { it[ORDERLYWEB_REPORT_TAG.REPORT] }
@@ -56,9 +63,11 @@ class OrderlyWebTagRepository : TagRepository
 
                 for (tag in tags.reportTags)
                 {
-                    dsl.insertInto(ORDERLYWEB_REPORT_TAG,
+                    dsl.insertInto(
+                            ORDERLYWEB_REPORT_TAG,
                             ORDERLYWEB_REPORT_TAG.REPORT,
-                            ORDERLYWEB_REPORT_TAG.TAG)
+                            ORDERLYWEB_REPORT_TAG.TAG
+                    )
                             .values(reportName, tag)
                             .onDuplicateKeyIgnore()
                             .execute()
@@ -70,9 +79,11 @@ class OrderlyWebTagRepository : TagRepository
 
                 for (tag in tags.versionTags)
                 {
-                    dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
+                    dsl.insertInto(
+                            ORDERLYWEB_REPORT_VERSION_TAG,
                             ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                            ORDERLYWEB_REPORT_TAG.TAG)
+                            ORDERLYWEB_REPORT_TAG.TAG
+                    )
                             .values(versionId, tag)
                             .onDuplicateKeyIgnore()
                             .execute()
@@ -86,7 +97,8 @@ class OrderlyWebTagRepository : TagRepository
         JooqContext().use { ctx ->
             return ctx.dsl.select(
                     ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    ORDERLYWEB_REPORT_VERSION_TAG.TAG
+            )
                     .from(ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
                     .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
@@ -99,7 +111,8 @@ class OrderlyWebTagRepository : TagRepository
         JooqContext().use { ctx ->
             return ctx.dsl.select(
                     ORDERLYWEB_REPORT_TAG.TAG,
-                    REPORT_VERSION.ID)
+                    REPORT_VERSION.ID
+            )
                     .from(ORDERLYWEB_REPORT_TAG)
                     .innerJoin(REPORT_VERSION)
                     .on(ORDERLYWEB_REPORT_TAG.REPORT.eq(REPORT_VERSION.REPORT))
@@ -116,10 +129,10 @@ class OrderlyWebTagRepository : TagRepository
                     REPORT_VERSION_TAG.REPORT_VERSION,
                     REPORT_VERSION_TAG.TAG
             )
-            .from(REPORT_VERSION_TAG)
-            .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-            .groupBy { it[REPORT_VERSION_TAG.REPORT_VERSION] }
-            .mapValues { it.value.map { r -> r[REPORT_VERSION_TAG.TAG] } }
+                    .from(REPORT_VERSION_TAG)
+                    .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+                    .groupBy { it[REPORT_VERSION_TAG.REPORT_VERSION] }
+                    .mapValues { it.value.map { r -> r[REPORT_VERSION_TAG.TAG] } }
         }
     }
 }

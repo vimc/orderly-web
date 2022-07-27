@@ -12,10 +12,12 @@ interface ReportVersion
 }
 
 data class ReportVersionWithChangelogsParams
-constructor(override val name: String,
-            override val displayName: String?,
-            override val id: String,
-            override val date: Instant,
-            override val published: Boolean,
-            val parameterValues: Map<String, String>,
-            val changelogs: List<Changelog>): ReportVersion
+constructor(
+        override val name: String,
+        override val displayName: String?,
+        override val id: String,
+        override val date: Instant,
+        override val published: Boolean,
+        val parameterValues: Map<String, String>,
+        val changelogs: List<Changelog>
+) : ReportVersion

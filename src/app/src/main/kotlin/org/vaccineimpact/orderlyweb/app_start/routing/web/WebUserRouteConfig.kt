@@ -14,18 +14,18 @@ object WebUserRouteConfig : RouteConfig
                     UserController::class,
                     "getAllUsers"
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/users/report-readers/",
                     UserController::class,
                     "getGlobalReportReaders"
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/users/report-readers/:report/",
@@ -33,9 +33,9 @@ object WebUserRouteConfig : RouteConfig
                     "getScopedReportReaders",
                     contentType = ContentTypes.json
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/typeahead/emails/",
@@ -43,9 +43,9 @@ object WebUserRouteConfig : RouteConfig
                     "getUserEmails",
                     contentType = ContentTypes.json
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/users/:user-id/permissions/",
@@ -53,9 +53,9 @@ object WebUserRouteConfig : RouteConfig
                     "addPermission",
                     method = HttpMethod.post
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/users/:user-id/permissions/:name",
@@ -63,8 +63,8 @@ object WebUserRouteConfig : RouteConfig
                     "removePermission",
                     method = HttpMethod.delete
             )
-            .json()
-            .transform()
-            .secure(usersManage)
+                    .json()
+                    .transform()
+                    .secure(usersManage)
     )
 }

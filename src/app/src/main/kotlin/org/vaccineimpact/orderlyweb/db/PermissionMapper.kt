@@ -8,20 +8,24 @@ class PermissionMapper
 {
     fun mapPermission(dbPermission: Record): ReifiedPermission
     {
-        return ReifiedPermission(dbPermission[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION],
-                mapScope(dbPermission))
+        return ReifiedPermission(
+                dbPermission[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION],
+                mapScope(dbPermission)
+        )
     }
 
-    private fun mapScope(dbScope: Record): Scope {
+    private fun mapScope(dbScope: Record): Scope
+    {
         return if (dbScope[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] == "*")
         {
             Scope.Global()
         }
         else
         {
-            Scope.Specific(dbScope[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] as String,
-                    dbScope[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID])
-
+            Scope.Specific(
+                    dbScope[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] as String,
+                    dbScope[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID]
+            )
         }
     }
 }

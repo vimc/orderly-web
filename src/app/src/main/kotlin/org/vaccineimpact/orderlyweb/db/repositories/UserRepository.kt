@@ -61,9 +61,9 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                     ORDERLYWEB_USER.DISPLAY_NAME,
                     ORDERLYWEB_USER.EMAIL
             )
-            .from(ORDERLYWEB_USER)
-            .fetch()
-            .map(userMapper::mapUser)
+                    .from(ORDERLYWEB_USER)
+                    .fetch()
+                    .map(userMapper::mapUser)
         }
     }
 
@@ -123,13 +123,15 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                 ORDERLYWEB_USER.DISPLAY_NAME,
                 ORDERLYWEB_USER.EMAIL
         )
-        .fromJoinPath(ORDERLYWEB_USER_GROUP,
-                ORDERLYWEB_USER_GROUP_USER,
-                ORDERLYWEB_USER)
-        .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
-        .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
-        .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
-        .and(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
+                .fromJoinPath(
+                        ORDERLYWEB_USER_GROUP,
+                        ORDERLYWEB_USER_GROUP_USER,
+                        ORDERLYWEB_USER
+                )
+                .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+                .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
+                .and(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
     }
 
     private fun getUserRecord(email: String, db: JooqContext): Record?
@@ -141,9 +143,8 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                 ORDERLYWEB_USER.USER_SOURCE,
                 ORDERLYWEB_USER.LAST_LOGGED_IN
         )
-        .from(ORDERLYWEB_USER)
-        .where(ORDERLYWEB_USER.EMAIL.eq(email))
-        .singleOrNull()
+                .from(ORDERLYWEB_USER)
+                .where(ORDERLYWEB_USER.EMAIL.eq(email))
+                .singleOrNull()
     }
-
 }

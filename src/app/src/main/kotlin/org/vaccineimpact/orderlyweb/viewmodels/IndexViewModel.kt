@@ -13,26 +13,32 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>,
-                          val tags: List<String>,
-                          val pinnedReports: List<PinnedReportViewModel>,
-                          val customFieldKeys: List<String>,
-                          val showProjectDocs: Boolean,
-                          val canSetPinnedReports: Boolean,
-                          @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
-                          val appViewModel: AppViewModel,
-                          val isRunner: Boolean) : AppViewModel by appViewModel
+data class IndexViewModel(
+        @Serialise("reportsJson") val reports: List<ReportRowViewModel>,
+        val tags: List<String>,
+        val pinnedReports: List<PinnedReportViewModel>,
+        val customFieldKeys: List<String>,
+        val showProjectDocs: Boolean,
+        val canSetPinnedReports: Boolean,
+        @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
+        val appViewModel: AppViewModel,
+        val isRunner: Boolean
+) : AppViewModel by appViewModel
 {
-    constructor(context: ActionContext,
-                reports: List<ReportRowViewModel>,
-                tags: List<String>,
-                pinnedReports: List<PinnedReportViewModel>,
-                customFieldKeys: List<String>,
-                showProjectDocs: Boolean,
-                canSetPinnedReports: Boolean,
-                reportDisplayNames: Map<String, String>?,
-                isRunner: Boolean) : this(reports, tags, pinnedReports, customFieldKeys,
-            showProjectDocs, canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isRunner)
+    constructor(
+            context: ActionContext,
+            reports: List<ReportRowViewModel>,
+            tags: List<String>,
+            pinnedReports: List<PinnedReportViewModel>,
+            customFieldKeys: List<String>,
+            showProjectDocs: Boolean,
+            canSetPinnedReports: Boolean,
+            reportDisplayNames: Map<String, String>?,
+            isRunner: Boolean
+    ) : this(
+            reports, tags, pinnedReports, customFieldKeys,
+            showProjectDocs, canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isRunner
+    )
 
     companion object
     {
@@ -89,8 +95,10 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 null
             }
 
-            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels,
-                    emptyCustomFields.keys.sorted(), showDocs, canSetPinnedReports, reportDisplayNames, isRunner)
+            return IndexViewModel(
+                    context, reportRows, allTags, pinnedReportsViewModels,
+                    emptyCustomFields.keys.sorted(), showDocs, canSetPinnedReports, reportDisplayNames, isRunner
+            )
         }
     }
 }
@@ -110,33 +118,39 @@ private object IndexViewDateFormatter
     }
 }
 
-data class ReportRowViewModel(val ttKey: Int,
-                              val ttParent: Int,
-                              val name: String,
-                              val displayName: String,
-                              val id: String,
-                              val latestVersion: String,
-                              val date: String?,
-                              val numVersions: Int,
-                              val published: Boolean?,
-                              val customFields: Map<String, String?>,
-                              val parameterValues: String?,
-                              val tags: List<String>)
+data class ReportRowViewModel(
+        val ttKey: Int,
+        val ttParent: Int,
+        val name: String,
+        val displayName: String,
+        val id: String,
+        val latestVersion: String,
+        val date: String?,
+        val numVersions: Int,
+        val published: Boolean?,
+        val customFields: Map<String, String?>,
+        val parameterValues: String?,
+        val tags: List<String>
+)
 {
     companion object
     {
-        fun buildParent(key: Int,
-                        versions: List<ReportVersionWithDescCustomFieldsLatestParamsTags>,
-                        customFields: Map<String, String?>,
-                        tags: List<String>): ReportRowViewModel
+        fun buildParent(
+                key: Int,
+                versions: List<ReportVersionWithDescCustomFieldsLatestParamsTags>,
+                customFields: Map<String, String?>,
+                tags: List<String>
+        ): ReportRowViewModel
         {
             val latestVersion = versions.sortedByDescending { it.date }.first()
             val numVersions = versions.count()
             val displayName = latestVersion.displayName ?: latestVersion.name
 
-            return ReportRowViewModel(key, 0, latestVersion.name, displayName,
+            return ReportRowViewModel(
+                    key, 0, latestVersion.name, displayName,
                     latestVersion.id, latestVersion.id, null, numVersions, null, customFields, null,
-                    tags)
+                    tags
+            )
         }
 
         fun buildVersion(

@@ -17,45 +17,45 @@ object WebRoleRouteConfig : RouteConfig
                     RoleController::class,
                     "getAll"
             )
-            .json()
-            .secure(usersManage)
-            .transform(),
+                    .json()
+                    .secure(usersManage)
+                    .transform(),
 
             WebEndpoint(
                     "/roles/report-readers/",
                     RoleController::class,
                     "getGlobalReportReaders"
             )
-            .json()
-            .secure(usersManage)
-            .transform(),
+                    .json()
+                    .secure(usersManage)
+                    .transform(),
 
             WebEndpoint(
                     "/roles/report-readers/:report/",
                     RoleController::class,
                     "getScopedReportReaders"
             )
-            .json()
-            .secure(usersManage + setOf("*/reports.read"))
-            .transform(),
+                    .json()
+                    .secure(usersManage + setOf("*/reports.read"))
+                    .transform(),
 
             WebEndpoint(
                     "/typeahead/roles/",
                     RoleController::class,
                     "getAllRoleNames"
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/roles/",
                     RoleController::class, "addRole",
                     method = HttpMethod.post
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/roles/:role-id/",
@@ -63,9 +63,9 @@ object WebRoleRouteConfig : RouteConfig
                     "deleteRole",
                     method = HttpMethod.delete
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/roles/:role-id/users/",
@@ -73,9 +73,9 @@ object WebRoleRouteConfig : RouteConfig
                     "addUser",
                     method = HttpMethod.post
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/roles/:role-id/users/:email",
@@ -83,18 +83,18 @@ object WebRoleRouteConfig : RouteConfig
                     "removeUser",
                     method = HttpMethod.delete
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
             WebEndpoint(
                     "/roles/:role-id/permissions/",
                     RoleController::class,
                     "addPermission",
                     method = HttpMethod.post
             )
-            .json()
-            .transform()
-            .secure(usersManage),
+                    .json()
+                    .transform()
+                    .secure(usersManage),
 
             WebEndpoint(
                     "/roles/:role-id/permissions/:name",
@@ -102,8 +102,8 @@ object WebRoleRouteConfig : RouteConfig
                     "removePermission",
                     method = HttpMethod.delete
             )
-            .json()
-            .transform()
-            .secure(usersManage)
+                    .json()
+                    .transform()
+                    .secure(usersManage)
     )
 }

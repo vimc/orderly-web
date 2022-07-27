@@ -8,8 +8,8 @@ data class ReportVersionWithArtefactsDataDescParamsResources(
          val resources: List<FileInfo>,
          val dataInfo: List<DataInfo>,
          val parameterValues: Map<String, String>,
-         val instances: Map<String, String>)
-    : ReportVersion
+         val instances: Map<String, String>
+) : ReportVersion
 {
     override val date: Instant = basicReportVersion.date
     val description: String? = basicReportVersion.description

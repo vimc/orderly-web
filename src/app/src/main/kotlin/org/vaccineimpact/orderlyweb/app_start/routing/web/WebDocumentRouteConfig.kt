@@ -15,16 +15,16 @@ object WebDocumentRouteConfig : RouteConfig
                     "getDocument",
                     contentType = ContentTypes.binarydata
             )
-            .secure(readDocuments),
+                    .secure(readDocuments),
             WebEndpoint("/project-docs/", DocumentController::class, "getIndex")
-            .secure(readDocuments),
+                    .secure(readDocuments),
             WebEndpoint("/documents/", DocumentController::class, "getAll")
-            .secure(readDocuments)
-            .transform()
-            .json(),
+                    .secure(readDocuments)
+                    .transform()
+                    .json(),
             WebEndpoint("/documents/refresh/", DocumentController::class, "refreshDocuments")
-            .post()
-            .json()
-            .secure(manageDocuments)
+                    .post()
+                    .json()
+                    .secure(manageDocuments)
     )
 }

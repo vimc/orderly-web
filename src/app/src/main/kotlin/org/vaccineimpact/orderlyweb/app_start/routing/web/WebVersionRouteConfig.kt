@@ -17,51 +17,51 @@ object WebVersionRouteConfig : RouteConfig
                     "getFile",
                     contentType = ContentTypes.binarydata
             )
-            .secure(readReports),
+                    .secure(readReports),
             WebEndpoint(
                     "/report/:name/version/:version/resources/:resource/",
                     ResourceController::class,
                     "download",
                     contentType = ContentTypes.binarydata
             )
-            .secure(readReports),
+                    .secure(readReports),
             WebEndpoint(
                     "/report/:name/version/:version/all/",
                     VersionController::class,
                     "getZippedByNameAndVersion",
                     contentType = ContentTypes.binarydata
             )
-            .secure(readReports),
+                    .secure(readReports),
             WebEndpoint(
                     "/report/:name/version/:version/publish/",
                     ReportController::class,
                     "publish",
                     method = HttpMethod.post
             )
-            .transform()
-            .json()
-            .secure(reviewReports),
+                    .transform()
+                    .json()
+                    .secure(reviewReports),
             WebEndpoint(
                     "/report/:name/version/:version/data/:data/",
                     DataController::class,
                     "downloadData",
                     contentType = ContentTypes.binarydata
             )
-            .secure(readReports),
+                    .secure(readReports),
             WebEndpoint(
                     "/report/:name/version/:version/update-tags/",
                     org.vaccineimpact.orderlyweb.controllers.web.ReportController::class,
                     "tagVersion"
             )
-            .json()
-            .post()
-            .secure(reviewReports),
+                    .json()
+                    .post()
+                    .secure(reviewReports),
             WebEndpoint(
                     "/report/:name/version/:version/tags/", VersionController::class,
                     "getTags"
             )
-            .json()
-            .transform()
-            .secure(readReports)
+                    .json()
+                    .transform()
+                    .secure(readReports)
     )
 }
