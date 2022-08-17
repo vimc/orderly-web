@@ -9,7 +9,7 @@ See [Release process](ReleaseProcess.md) for how to make a release
 
 ## Developing
 System requirements:
-* **openjdk 8**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
+* **openjdk 11**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
 (for  development), not just the jre package.
 * **Docker**
 * **Docker Compose**: Install as per: https://docs.docker.com/compose/install/
