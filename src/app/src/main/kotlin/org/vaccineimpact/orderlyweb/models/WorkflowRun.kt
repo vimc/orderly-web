@@ -71,6 +71,6 @@ data class WorkflowReportWithDependencies(
 
 data class WorkflowSummary(
         val reports: List<WorkflowReportWithDependencies>,
-        val ref: String,
+        val ref: String?,
         val missingDependencies: Map<String, List<String>>
 )

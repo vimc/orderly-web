@@ -111,6 +111,48 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `can get workflow run summary with null ref`()
+    {
+        val requestBody = """{"ref": null, "reports": [{"name": "r1"}]}"""
+
+        val context = mock<ActionContext> {
+            on { getRequestBody() } doReturn requestBody
+            on { queryParams() } doReturn mapOf()
+        }
+
+        val mockSummary = Result(
+                status = ResultStatus.SUCCESS,
+                data = WorkflowSummary(listOf(
+                        WorkflowReportWithDependencies(
+                                name = "r1",
+                                instance = "testInstance",
+                                params = mapOf("nmin" to "1000", "disease" to "YF"),
+                                defaultParamList = null,
+                                paramList = null,
+                                dependsOn = listOf("dep")
+                        )),
+                        ref = null,
+                        missingDependencies = mapOf("r1" to listOf("example"))),
+                errors = listOf()
+        )
+
+        val mockAPIResponse = OrderlyServerResponse(Serializer.instance.gson.toJson(mockSummary), 200)
+
+        val apiClient = mock<OrderlyServerAPI> {
+            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
+            on { getReportParameters(eq("r1"), eq(mapOf())) } doReturn listOf(Parameter("nmin", "100"),
+                    Parameter("disease", "YF"))
+        }
+
+        val repo = mock<WorkflowRunRepository>()
+        val sut = WorkflowRunController(context, repo, apiClient, mock())
+        val result = sut.getWorkflowSummary()
+
+        assertThat(result.ref).isEqualTo(null)
+    }
+
+
+    @Test
     fun `can get workflow details`()
     {
         val now = Instant.now()
