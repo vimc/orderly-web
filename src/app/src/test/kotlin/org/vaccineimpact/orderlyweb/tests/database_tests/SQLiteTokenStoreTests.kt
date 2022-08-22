@@ -54,8 +54,8 @@ class SQLiteTokenStoreTests
 
         getJooqContext().use {
 
-            val result = it.dsl.selectFrom(sut.ONETIME_TOKEN)
-                    .where(sut.TOKEN.eq("testtoken"))
+            val result = it.dsl.selectFrom(sut.oneTimeToken)
+                    .where(sut.token.eq("testtoken"))
                     .fetchAny()
 
             assertThat(result).isNotNull()
@@ -72,8 +72,8 @@ class SQLiteTokenStoreTests
         val sut = SQLiteTokenStore()
 
         getJooqContext().use {
-            it.dsl.insertInto(sut.ONETIME_TOKEN)
-                    .set(sut.TOKEN, token)
+            it.dsl.insertInto(sut.oneTimeToken)
+                    .set(sut.token, token)
                     .execute()
         }
 
