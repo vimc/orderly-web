@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb
 import com.google.gson.reflect.TypeToken
 import org.ocpsoft.prettytime.PrettyTime
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.errors.DataError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import spark.Filter
 import spark.Request
@@ -154,7 +155,7 @@ fun getDateStringFromVersionId(id: String): LocalDateTime
 {
     val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
     val match = regex.matchEntire(id)
-            ?.groupValues ?: throw Exception("Badly formatted report id $id")
+            ?.groupValues ?: throw DataError("Badly formatted report id $id")
 
     return LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
 }

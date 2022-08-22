@@ -4,6 +4,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.ViewModelError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
@@ -52,7 +53,7 @@ data class DefaultViewModel(
     {
         if (!breadcrumbs.any())
         {
-            throw Exception("All ViewModel classes must have at least one breadcrumb")
+            throw ViewModelError("All ViewModel classes must have at least one breadcrumb")
         }
     }
 }
