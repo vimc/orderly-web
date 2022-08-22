@@ -10,6 +10,12 @@ potential-bugs:
   UnsafeCallOnNullableType:
     active: false
 
+exceptions:
+  SwallowedException:
+    active: false
+  TooGenericExceptionCaught:
+    active: false
+
 formatting:
   Indentation:
     active: false
