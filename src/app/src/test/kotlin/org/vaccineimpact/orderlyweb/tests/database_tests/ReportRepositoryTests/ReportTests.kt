@@ -174,38 +174,38 @@ class ReportTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can toggle publish status`()
+    fun `can set published status`()
     {
-        insertReport("test", "version1", published = true)
+        insertReport("test", "version1", published = false)
 
         val sut = createSut(isReviewer = true)
 
         var result = sut.togglePublishStatus("test", "version1")
 
-        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
-        assertThat(result).isFalse()
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue
+        assertThat(result).isTrue
 
-        result = sut.togglePublishStatus("test", "version1")
-        assertThat(result).isTrue()
+        result = sut.togglePublishStatus("test", "version1", false)
+        assertThat(result).isFalse
 
-        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse
 
     }
 
     @Test
-    fun `can toggle publish status when OrderlyWeb_Report_version does not yet exist`()
+    fun `can set published status when OrderlyWeb_Report_version does not yet exist`()
     {
         insertReport("test", "version1", addOrderlyWebReportVersion = false)
         val sut = createSut(isReviewer = true)
 
         var result = sut.togglePublishStatus("test", "version1")
-        assertThat(result).isTrue()
-        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
+        assertThat(result).isTrue
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue
 
-        result = sut.togglePublishStatus("test", "version1")
-        assertThat(result).isFalse()
+        result = sut.togglePublishStatus("test", "version1", false)
+        assertThat(result).isFalse
 
-        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse
     }
 
     @Test

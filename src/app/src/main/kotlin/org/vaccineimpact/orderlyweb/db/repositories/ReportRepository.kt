@@ -18,7 +18,7 @@ interface ReportRepository
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
 
-    fun togglePublishStatus(name: String, version: String): Boolean
+    fun togglePublishStatus(name: String, version: String, value: Boolean = true): Boolean
 
     @Throws(UnknownObjectError::class)
 
@@ -167,12 +167,9 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun togglePublishStatus(name: String, version: String): Boolean
+    override fun togglePublishStatus(name: String, version: String, value: Boolean): Boolean
     {
         JooqContext().use {
-            val existing = getReportVersion(name, version, it)
-            val newStatus = !existing.published
-
             val rowExists = it.dsl.select(count())
                     .from(ORDERLYWEB_REPORT_VERSION)
                     .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
@@ -181,7 +178,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             if (rowExists > 0)
             {
                 it.dsl.update(ORDERLYWEB_REPORT_VERSION)
-                        .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, newStatus)
+                        .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, value)
                         .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
                         .execute()
             }
@@ -190,11 +187,11 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 val record = it.dsl.newRecord(ORDERLYWEB_REPORT_VERSION)
                         .apply {
                             this.id = version
-                            this.published = newStatus
+                            this.published = value
                         }
                 record.store()
             }
-            return newStatus
+            return value
         }
     }
 
