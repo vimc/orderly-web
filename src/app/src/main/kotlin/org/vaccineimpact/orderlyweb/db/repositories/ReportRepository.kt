@@ -295,7 +295,8 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(shouldIncludeReportVersion)
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
-                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
+                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java)
+                    ?: throw UnknownObjectError(report, "report")
         }
     }
 
@@ -380,7 +381,10 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    private fun getParametersForVersions(versionIds: Collection<String>, ctx: JooqContext): Map<String, Map<String, String>>
+    private fun getParametersForVersions(
+        versionIds: Collection<String>,
+        ctx: JooqContext
+    ): Map<String, Map<String, String>>
     {
         return ctx.dsl.select(
                 PARAMETERS.REPORT_VERSION,
