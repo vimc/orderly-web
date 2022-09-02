@@ -136,7 +136,7 @@ class ReportControllerTests : ControllerTest()
         val mockContext = mock<ActionContext> {
             on { this.params(":version") } doReturn version
             on { this.params(":name") } doReturn name
-            on { this.queryParams(":value") } doReturn "false"
+            on { this.queryParams("value") } doReturn "false"
         }
 
         val sut = ReportController(mockContext, mock(), mockReportRepo, mockConfig)
