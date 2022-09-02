@@ -130,7 +130,7 @@ class ReportControllerTests : ControllerTest()
         val name = "reportName"
         val version = "v1"
         val mockReportRepo = mock<ReportRepository>() {
-            on { togglePublishStatus(name, version, false) } doReturn false
+            on { setPublishStatus(name, version, false) } doReturn false
         }
 
         val mockContext = mock<ActionContext> {
@@ -145,7 +145,7 @@ class ReportControllerTests : ControllerTest()
 
         assertThat(result).isEqualTo(false)
 
-        verify(mockReportRepo).togglePublishStatus(name, version, false)
+        verify(mockReportRepo).setPublishStatus(name, version, false)
     }
 
 }

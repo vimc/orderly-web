@@ -18,7 +18,7 @@ interface ReportRepository
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
 
-    fun togglePublishStatus(name: String, version: String, value: Boolean = true): Boolean
+    fun setPublishStatus(name: String, version: String, value: Boolean = true): Boolean
 
     @Throws(UnknownObjectError::class)
 
@@ -167,7 +167,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun togglePublishStatus(name: String, version: String, value: Boolean): Boolean
+    override fun setPublishStatus(name: String, version: String, value: Boolean): Boolean
     {
         JooqContext().use {
             val rowExists = it.dsl.select(count())

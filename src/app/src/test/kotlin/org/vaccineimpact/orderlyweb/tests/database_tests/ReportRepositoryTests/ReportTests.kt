@@ -7,7 +7,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
@@ -180,12 +179,12 @@ class ReportTests : CleanDatabaseTests()
 
         val sut = createSut(isReviewer = true)
 
-        var result = sut.togglePublishStatus("test", "version1")
+        var result = sut.setPublishStatus("test", "version1")
 
         assertThat(sut.getReportVersion("test", "version1").published).isTrue
         assertThat(result).isTrue
 
-        result = sut.togglePublishStatus("test", "version1", false)
+        result = sut.setPublishStatus("test", "version1", false)
         assertThat(result).isFalse
 
         assertThat(sut.getReportVersion("test", "version1").published).isFalse
@@ -198,11 +197,11 @@ class ReportTests : CleanDatabaseTests()
         insertReport("test", "version1", addOrderlyWebReportVersion = false)
         val sut = createSut(isReviewer = true)
 
-        var result = sut.togglePublishStatus("test", "version1")
+        var result = sut.setPublishStatus("test", "version1")
         assertThat(result).isTrue
         assertThat(sut.getReportVersion("test", "version1").published).isTrue
 
-        result = sut.togglePublishStatus("test", "version1", false)
+        result = sut.setPublishStatus("test", "version1", false)
         assertThat(result).isFalse
 
         assertThat(sut.getReportVersion("test", "version1").published).isFalse
