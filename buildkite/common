@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -ex
 
-if [ "$BUILDKITE" = "true" ]; then
+if [ -n "${BUILDKITE-}" ]; then
     GIT_ID=${BUILDKITE_COMMIT:0:7}
 else
     GIT_ID=$(git rev-parse --short=7 HEAD)
 fi
 
-if [ "$BUILDKITE" = "true" ]; then
+if [ -n "${BUILDKITE-}" ]; then
     GIT_BRANCH=$BUILDKITE_BRANCH
 else
     GIT_BRANCH=$(git symbolic-ref --short HEAD)

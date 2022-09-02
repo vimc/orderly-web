@@ -49,10 +49,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Referer" : [ {
             "matcher" : "glob",
             "value" : "http://localhost:8888/*"
@@ -135,10 +131,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Cookie" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -216,10 +208,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Origin" : [ {
             "matcher" : "exact",
             "value" : "https://github.com"
@@ -294,10 +282,6 @@
           "Accept-Encoding" : [ {
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -374,10 +358,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Origin" : [ {
             "matcher" : "exact",
             "value" : "https://github.com"
@@ -452,10 +432,6 @@
           "Accept-Encoding" : [ {
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -532,10 +508,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Origin" : [ {
             "matcher" : "exact",
             "value" : "https://github.com"
@@ -610,10 +582,6 @@
           "Accept-Encoding" : [ {
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -694,10 +662,6 @@
             "matcher" : "regex",
             "value" : ".*"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Cookie" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -771,10 +735,6 @@
           "Accept-Encoding" : [ {
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -904,10 +864,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Referer" : [ {
             "matcher" : "exact",
             "value" : "https://github.com/"
@@ -972,10 +928,6 @@
           "Accept-Encoding" : [ {
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -1066,10 +1018,6 @@
           "Cache-Control" : [ {
             "matcher" : "exact",
             "value" : "max-age=0"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -1181,10 +1129,6 @@
             "matcher" : "exact",
             "value" : "max-age=0"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Cookie" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -1263,10 +1207,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Origin" : [ {
             "matcher" : "exact",
             "value" : "https://github.com"
@@ -1342,10 +1282,6 @@
             "matcher" : "regex",
             "value" : ".*"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "Content-Length" : [ {
             "matcher" : "exact",
             "value" : "175"
@@ -1419,10 +1355,6 @@
             "matcher" : "exact",
             "value" : "token notarealtoken"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "User-Agent" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -1495,10 +1427,6 @@
             "matcher" : "exact",
             "value" : "token notarealtoken"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "User-Agent" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -1569,10 +1497,6 @@
           "Authorization" : [ {
             "matcher" : "exact",
             "value" : "token notarealtoken"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "User-Agent" : [ {
             "matcher" : "regex",
@@ -1645,10 +1569,6 @@
             "matcher" : "exact",
             "value" : "token notarealtoken"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "User-Agent" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -1719,10 +1639,6 @@
           "Authorization" : [ {
             "matcher" : "exact",
             "value" : "Bearer notarealtoken"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "User-Agent" : [ {
             "matcher" : "regex",
@@ -1796,10 +1712,6 @@
             "matcher" : "exact",
             "value" : "token notarealtoken"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "User-Agent" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -1872,10 +1784,6 @@
             "matcher" : "exact",
             "value" : "token notarealtoken"
           } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
-          } ],
           "User-Agent" : [ {
             "matcher" : "regex",
             "value" : ".*"
@@ -1947,10 +1855,6 @@
           "Authorization" : [ {
             "matcher" : "exact",
             "value" : "token notarealtoken"
-          } ],
-          "Connection" : [ {
-            "matcher" : "exact",
-            "value" : "keep-alive"
           } ],
           "User-Agent" : [ {
             "matcher" : "regex",

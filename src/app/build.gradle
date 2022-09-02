@@ -24,7 +24,7 @@ mainClassName = "org.vaccineimpact.orderlyweb.app_start.SparkAppKt"
 dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation "com.sparkjava:spark-core:2.7.1"
+    implementation "com.sparkjava:spark-core:2.9.3"
     implementation "com.sparkjava:spark-template-freemarker:2.7.1"
     implementation "org.slf4j:slf4j-simple:1.7.25"
     implementation "com.google.code.gson:gson:2.2.4"
@@ -35,10 +35,10 @@ dependencies {
     implementation "org.postgresql:postgresql:9.4.1212.jre7"
     implementation "org.jooq:jooq:3.13.5"
     implementation "org.jooq:jooq-meta:3.13.5"
-    implementation "org.pac4j:spark-pac4j:3.0.0"
-    implementation "org.pac4j:pac4j-http:3.2.0"
-    implementation 'org.pac4j:pac4j-jwt:3.2.0'
-    implementation 'org.pac4j:pac4j-oauth:3.6.1'
+    implementation "org.pac4j:spark-pac4j:5.0.0"
+    implementation "org.pac4j:pac4j-http:5.4.0"
+    implementation 'org.pac4j:pac4j-jwt:5.4.0'
+    implementation 'org.pac4j:pac4j-oauth:5.4.0'
     implementation 'commons-codec:commons-codec:1.10'
     implementation "org.json:json:20201115"
     implementation "com.squareup.okhttp3:okhttp:4.8.1"

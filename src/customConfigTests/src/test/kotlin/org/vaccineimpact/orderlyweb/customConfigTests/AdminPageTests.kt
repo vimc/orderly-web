@@ -28,7 +28,6 @@ class AdminPageTests : SeleniumTest()
         }
 
         startApp("auth.provider=montagu")
-
         loginWithMontagu()
 
         val adminUrl = RequestHelper.webBaseUrl + "/manage-access/"

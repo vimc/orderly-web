@@ -23,7 +23,7 @@ class OrderlyWebIndirectClientTests
         val authenticator = sut.authenticator
         assertThat(authenticator is NeverInvokedAuthenticator).isTrue()
 
-        val redirectActionBuilder = sut.redirectActionBuilder
+        val redirectActionBuilder = sut.redirectionActionBuilder
         assertThat(redirectActionBuilder is OrderlyWebIndirectClientRedirectActionBuilder).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("/login")

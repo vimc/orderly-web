@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
+import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -22,9 +23,9 @@ import java.io.Reader
 import javax.servlet.MultipartConfigElement
 
 open class DirectActionContext(
-    private val context: SparkWebContext,
-    private val appConfig: Config = AppConfig(),
-    private val profileManager: ProfileManager<CommonProfile>? = null
+        private val context: SparkWebContext,
+        private val appConfig: Config = AppConfig(),
+        private val profileManager: ProfileManager? = null
 ) : ActionContext
 {
     private val request
@@ -52,8 +53,9 @@ open class DirectActionContext(
     }
 
     override val userProfile: CommonProfile? by lazy {
-        val manager = profileManager ?: ProfileManager<CommonProfile>(context)
-        manager.getAll(true).singleOrNull()
+
+        val manager = profileManager ?: ProfileManager(context, JEESessionStore.INSTANCE)
+        manager.profiles.singleOrNull() as CommonProfile?
     }
 
     override val permissions by lazy {
@@ -130,12 +132,15 @@ open class DirectActionContext(
 
     override fun getPartReader(partName: String): Reader
     {
-        if (request.contentLength() == 0) {
+        if (request.contentLength() == 0)
+        {
             throw BadRequest("No data provided")
         }
 
-        request.attribute("org.eclipse.jetty.multipartConfig",
-            MultipartConfigElement(System.getProperty("java.io.tmpdir")))
+        request.attribute(
+                "org.eclipse.jetty.multipartConfig",
+                MultipartConfigElement(System.getProperty("java.io.tmpdir"))
+        )
         val stream = request.raw().getPart(partName).inputStream
         return BufferedReader(stream.reader())
     }
@@ -157,11 +162,11 @@ fun ActionContext.permissionFromPostData(): ReifiedPermission
             ""
     )
 
-    return ReifiedPermission(permission.name,
-            Scope.parse(permission))
+    return ReifiedPermission(permission.name, Scope.parse(permission))
 }
 
-fun ActionContext.permissionFromRouteParams(): ReifiedPermission {
+fun ActionContext.permissionFromRouteParams(): ReifiedPermission
+{
     val name = this.params(":name")
     val scopePrefix = this.queryParams("scopePrefix")
     val scopeId = this.queryParams("scopeId")

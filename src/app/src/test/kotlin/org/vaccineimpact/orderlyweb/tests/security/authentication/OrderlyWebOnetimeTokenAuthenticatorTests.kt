@@ -49,7 +49,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
         val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
-        sut.validate(credentials, fakeContext)
+        sut.validate(credentials, fakeContext, mock())
 
     }
 
@@ -73,7 +73,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
         val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
-        assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -96,7 +96,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
         val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
                 helper.issuerName, fakeStore)
 
-        sut.validate(credentials, fakeContext)
+        sut.validate(credentials, fakeContext, mock())
         assertThat(credentials.userProfile).isNull()
     }
 
@@ -121,7 +121,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
                 helper.issuerName,
                 fakeStore)
 
-        assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -143,7 +143,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
         val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
-        assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -166,6 +166,6 @@ class OrderlyWebOnetimeTokenAuthenticatorTests
         val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
-        assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)
     }
 }

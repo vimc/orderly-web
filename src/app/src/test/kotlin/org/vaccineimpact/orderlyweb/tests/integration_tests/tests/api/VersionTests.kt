@@ -9,11 +9,13 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
+import org.vaccineimpact.orderlyweb.models.FileInfo
+import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.InsertableChangelog
-import org.vaccineimpact.orderlyweb.tests.insertChangelog
+import org.vaccineimpact.orderlyweb.tests.*
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
@@ -180,6 +182,12 @@ class VersionTests : IntegrationTest()
     fun `can get report by name and version`()
     {
         insertReport("testname", "testversion")
+        insertFileInput("testversion", "file.csv", FilePurpose.RESOURCE, 2345)
+        insertFileInput("testversion", "graph.png", FilePurpose.RESOURCE, 3456)
+        insertData("testversion", "dat", "some sql", "testdb", "somehash", 9876, 7654)
+        insertArtefact("testversion", "some artefact",
+                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
+
         val response = apiRequestHelper.get("/reports/testname/versions/testversion",
                 userEmail = fakeGlobalReportReader())
         assertSuccessful(response)

@@ -1,6 +1,6 @@
 # OrderlyWeb
 
-[![Build Status](https://travis-ci.com/vimc/orderly-web.svg?branch=master)](https://travis-ci.com/vimc/orderly-web)
+[![Build status](https://badge.buildkite.com/54990e80cd2495e45bbe78d46afaee17147451bd4d620aacbf.svg?branch=master)](https://buildkite.com/mrc-ide/orderly-web)
 [![codecov.io](https://codecov.io/github/vimc/orderly-web/coverage.svg?branch=master)](https://codecov.io/github/vimc/orderly-web?branch=master)
 
 See [spec.md](/docs/spec/spec.md) for the full API specification.
@@ -9,7 +9,7 @@ See [Release process](ReleaseProcess.md) for how to make a release
 
 ## Developing
 System requirements:
-* **openjdk 8**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
+* **openjdk 11**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
 (for  development), not just the jre package.
 * **Docker**
 * **Docker Compose**: Install as per: https://docs.docker.com/compose/install/

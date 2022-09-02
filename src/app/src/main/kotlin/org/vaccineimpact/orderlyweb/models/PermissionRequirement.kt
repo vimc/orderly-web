@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.models
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException
+import org.vaccineimpact.orderlyweb.errors.ScopeParseException
 
 data class PermissionRequirement(val name: String, val scopeRequirement: ScopeRequirement)
 {
@@ -63,7 +64,9 @@ sealed class ScopeRequirement(val value: String)
                 val idKey = parts[1]
                 if (!idKey.startsWith('<') || !idKey.endsWith('>'))
                 {
-                    throw Exception("Unable to parse $rawScope as a scope requirement - missing angle brackets from scope ID URL key")
+                    val e = "Unable to parse $rawScope as a scope requirement - " +
+                            "missing angle brackets from scope ID URL key"
+                    throw ScopeParseException(e)
                 }
                 return Specific(parts[0], idKey.trim('<', '>'))
             }

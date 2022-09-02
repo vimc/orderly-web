@@ -28,8 +28,8 @@ class ReportLogsTests : IntegrationTest()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(permissions)
         val contentType = ContentTypes.json
 
-        val now = Instant.now()
-        val now2 = Instant.now()
+        val now = Instant.ofEpochMilli(1655378424228)
+        val now2 = Instant.ofEpochMilli(1655378424229)
 
         OrderlyWebReportRunRepository().addReportRun(
             "key1",

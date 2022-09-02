@@ -2,17 +2,21 @@ package org.vaccineimpact.orderlyweb.security.authorization
 
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
+import java.util.*
 
-class OrderlyAuthorizationGenerator<T : CommonProfile>(private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository())
-    : AuthorizationGenerator<T>
+class OrderlyAuthorizationGenerator(
+        private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()
+) : AuthorizationGenerator
 {
-    override fun generate(context: WebContext?, profile: T): T
+    override fun generate(context: WebContext?, sessionStore: SessionStore, profile: UserProfile): Optional<UserProfile>
     {
         val permissions = authRepo.getPermissionsForUser(profile.id)
-        profile.orderlyWebPermissions = permissions
-        return profile
+        (profile as CommonProfile).permissions = permissions.toSet()
+        return Optional.of(profile)
     }
 }

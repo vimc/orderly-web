@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.security
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Test
 import org.mockito.internal.verification.Times
+import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.security.GuestUserManager
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
@@ -20,15 +21,16 @@ class OrderlyWebSecurityLogicTests
         val sut = OrderlyWebSecurityLogic(config, guestUserManager)
         try
         {
-            sut.perform(mock(), mock(), mock(), mock(), "", "", "", false)
+            sut.perform(mock<SparkWebContext>(), mock(), mock(), mock(), mock(), "", "", "", false)
         }
         catch (e: Exception)
         {
+            val t = e.message
             // will throw errors because of all the mocked params, but we don't care
             // because we're not testing that and the method we care about is called
             // before the exceptions get thrown
         }
-        verify(guestUserManager).updateProfile(eq(true), any(), any(), any())
+        verify(guestUserManager).updateProfile(eq(true), any(), any(), any(), any())
     }
 
     @Test
@@ -42,7 +44,7 @@ class OrderlyWebSecurityLogicTests
         val sut = OrderlyWebSecurityLogic(config, guestUserManager)
         try
         {
-            sut.perform(mock(), mock(), mock(), mock(), "", "", "", false)
+            sut.perform(mock<SparkWebContext>(), mock(), mock(), mock(), mock(), "", "", "", false)
         }
         catch (e: Exception)
         {
@@ -50,6 +52,6 @@ class OrderlyWebSecurityLogicTests
             // because we're not testing that and the method we care about is called
             // before the exceptions get thrown
         }
-        verify(guestUserManager).updateProfile(eq(false), any(), any(), any())
+        verify(guestUserManager).updateProfile(eq(false), any(), any(), any(), any())
     }
 }

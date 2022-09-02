@@ -13,6 +13,6 @@ class NeverInvokedCredentialsExtractorTestsTests
     {
         val sut = NeverInvokedCredentialsExtractor()
 
-        Assertions.assertThatThrownBy { sut.extract(mock()) }.isInstanceOf(UnsupportedOperationException::class.java)
+        Assertions.assertThatThrownBy { sut.extract(mock(), mock()) }.isInstanceOf(UnsupportedOperationException::class.java)
     }
 }

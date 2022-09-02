@@ -33,7 +33,7 @@ class GithubAuthenticatorTests
     {
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
-        assertThatThrownBy { sut.validate(null, mock()) }
+        assertThatThrownBy { sut.validate(null, mock(), mock()) }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("No credentials supplied")
     }
@@ -42,7 +42,7 @@ class GithubAuthenticatorTests
     fun `token validation calls github auth helper`()
     {
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
-        sut.validate(TokenCredentials("token"), mock())
+        sut.validate(TokenCredentials("token"), mock(), mock())
         verify(mockGithubAuthHelper).authenticate("token")
         verify(mockGithubAuthHelper).checkGitHubOrgAndTeamMembership()
         verify(mockGithubAuthHelper).getUser()
@@ -55,7 +55,7 @@ class GithubAuthenticatorTests
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
     }
@@ -66,7 +66,7 @@ class GithubAuthenticatorTests
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         assertThat(credentials.userProfile.id).isEqualTo("email")
     }
@@ -77,7 +77,7 @@ class GithubAuthenticatorTests
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
+        sut.validate(credentials, mock(), mock())
 
         verify(mockUserData).addUser("email", "user.name", "full name", UserSource.GitHub)
     }

@@ -22,7 +22,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/fake/url/"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isFalse()
     }
@@ -39,7 +39,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/some/url/"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isTrue()
     }
@@ -56,7 +56,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/some/url/?query=whatever"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isTrue()
     }
@@ -73,7 +73,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/some/url/"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isFalse()
     }
@@ -90,7 +90,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/some/url/?query=whatever"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isFalse()
     }
@@ -107,7 +107,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/some/url/?query=somethingelse"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isFalse()
     }
@@ -124,7 +124,7 @@ class OrderlyWebAPIAuthorizerTests
             on(it.path) doReturn "/fake/url/"
         }
 
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
+        val result = sut.isAuthorized(fakeContext, mock(), listOf(profile))
 
         assertThat(result).isTrue()
 

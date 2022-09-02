@@ -12,10 +12,10 @@ class JWTCookieClient(helper: TokenVerifier) : OrderlyWebTokenCredentialClient, 
         OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer)
 )
 {
-    override fun clientInit()
+    override fun internalInit(forceReinit: Boolean)
     {
         setAuthorizationGenerator(OrderlyAuthorizationGenerator())
-        super.clientInit()
+        super.internalInit(forceReinit)
     }
 
     companion object

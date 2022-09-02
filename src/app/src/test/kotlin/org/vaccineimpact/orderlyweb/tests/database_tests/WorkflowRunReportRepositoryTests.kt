@@ -18,7 +18,7 @@ import java.time.Instant
 
 class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
 {
-    private val startTime = Instant.now()
+    private val startTime = Instant.ofEpochMilli(1655378424228)
 
     @Before
     fun createWorkflow()
@@ -154,12 +154,11 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     @Test
     fun `can get report run when date is not null`()
     {
-        val now = Instant.now()
         val sut = OrderlyWebWorkflowRunReportRepository()
         insertWorkflowRunReport("test_wf_key", "report_with_date_key", "report_with_date_name",
-            mapOf(), now)
+            mapOf(), startTime)
         val result = sut.getReportRun("report_with_date_key")
-        assertThat(result.date).isEqualTo(now)
+        assertThat(result.date).isEqualTo(startTime)
     }
 
     @Test

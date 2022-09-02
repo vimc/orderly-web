@@ -14,7 +14,6 @@ import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Request
 import spark.Response
@@ -27,20 +26,15 @@ import javax.servlet.http.Part
 class DirectActionContextTests
 {
     val mockUserProfile = mock<CommonProfile> {
-        on { it.getAttributes() } doReturn mapOf(
-                "orderlyWebPermissions" to
-                        PermissionSet(
-                                setOf(
-                                        ReifiedPermission("reports.read", Scope.Global()),
-                                        ReifiedPermission("reports.read", Scope.Specific("version", "testId")),
-                                        ReifiedPermission("reports.read", Scope.Specific("report", "testname"))
-                                )
-                        )
+        on { it.permissions } doReturn setOf(
+                ReifiedPermission("reports.read", Scope.Global()).toString(),
+                ReifiedPermission("reports.read", Scope.Specific("version", "testId")).toString(),
+                ReifiedPermission("reports.read", Scope.Specific("report", "testname")).toString()
         )
     }
 
-    val mockProfileManager = mock<ProfileManager<CommonProfile>> {
-        on { it.getAll(true) } doReturn listOf(mockUserProfile)
+    val mockProfileManager = mock<ProfileManager> {
+        on { it.profiles } doReturn listOf(mockUserProfile)
     }
 
     val mockPostRequest = mock<Request> {
@@ -94,7 +88,7 @@ class DirectActionContextTests
     {
         val sut = DirectActionContext(mockPostSparkContext)
 
-        assertThatThrownBy{ sut.postData("something else") }.isInstanceOf(MissingParameterError::class.java)
+        assertThatThrownBy { sut.postData("something else") }.isInstanceOf(MissingParameterError::class.java)
     }
 
     @Test
@@ -241,8 +235,10 @@ class DirectActionContextTests
         val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn false
         }
-        val sut = DirectActionContext(context, profileManager = mockProfileManager,
-                appConfig = mockConfig)
+        val sut = DirectActionContext(
+                context, profileManager = mockProfileManager,
+                appConfig = mockConfig
+        )
 
         assertThat(sut.isGlobalReader()).isTrue()
     }
@@ -254,8 +250,10 @@ class DirectActionContextTests
         val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn false
         }
-        val sut = DirectActionContext(context, profileManager = mockProfileManager,
-                appConfig = mockConfig)
+        val sut = DirectActionContext(
+                context, profileManager = mockProfileManager,
+                appConfig = mockConfig
+        )
 
         assertThat(sut.isReviewer()).isTrue()
     }
@@ -282,10 +280,12 @@ class DirectActionContextTests
 
         val sut = DirectActionContext(context)
 
-        assertThat(sut.queryParams()).isEqualTo(mapOf<String, String?>(
-            "a" to "b",
-            "c" to null
-        ))
+        assertThat(sut.queryParams()).isEqualTo(
+                mapOf<String, String?>(
+                        "a" to "b",
+                        "c" to null
+                )
+        )
     }
 
     @Test
@@ -323,7 +323,7 @@ class DirectActionContextTests
     @Test
     fun `getPartReader throws BadRequest when content is empty`()
     {
-        val mockRequest = mock<Request>{
+        val mockRequest = mock<Request> {
             on { contentLength() } doReturn 0
         }
         val mockContext = mock<SparkWebContext> {
@@ -331,7 +331,7 @@ class DirectActionContextTests
         }
 
         val sut = DirectActionContext(mockContext)
-        assertThatThrownBy{ sut.getPartReader("file") }
+        assertThatThrownBy { sut.getPartReader("file") }
                 .isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("No data provided")
     }

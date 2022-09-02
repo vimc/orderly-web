@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.security.authentication
 
 import com.nimbusds.jwt.JWT
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
@@ -13,9 +15,12 @@ class OrderlyWebOnetimeTokenAuthenticator(
         private val tokenStore: OnetimeTokenStore
 ) : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
-    override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
+    override fun createJwtProfile(
+            credentials: TokenCredentials, jwt: JWT,
+            context: WebContext, sessionStore: SessionStore
+    )
     {
-        super.createJwtProfile(credentials, jwt)
+        super.createJwtProfile(credentials, jwt, context, sessionStore)
 
         val claims = jwt.jwtClaimsSet
         val issuer = claims.issuer
@@ -43,5 +48,4 @@ class OrderlyWebOnetimeTokenAuthenticator(
 
         credentials.userProfile?.id = claims.getClaim("id").toString()
     }
-
 }

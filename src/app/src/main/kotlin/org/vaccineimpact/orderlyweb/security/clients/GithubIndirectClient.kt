@@ -12,11 +12,11 @@ class GithubIndirectClient(key: String, secret: String): GitHubClient(key, secre
         setCallbackUrl("${AppConfig()["app.url"]}/login")
     }
 
-    override fun clientInit()
+    override fun internalInit(forceReinit: Boolean)
     {
         scope = "read:org user:email"
         defaultAuthenticator(GithubOAuthAuthenticator(configuration, this))
-        super.clientInit()
+        super.internalInit(forceReinit)
         this.profileCreator = GithubOAuthProfileCreator(configuration, this, OrderlyUserRepository())
         setAuthorizationGenerator(OrderlyAuthorizationGenerator())
     }
