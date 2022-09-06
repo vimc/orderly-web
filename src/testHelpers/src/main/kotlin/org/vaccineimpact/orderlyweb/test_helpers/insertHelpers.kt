@@ -327,8 +327,6 @@ private fun insertReportAndVersion(name: String,
                     this.date = date
                     this.displayname = display
                     this.description = "description $name"
-                    this.requester = ""
-                    this.author = ""
                     this.published = false
                     this.connection = false
                     this.elapsed = elapsed

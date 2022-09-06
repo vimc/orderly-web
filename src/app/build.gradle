@@ -73,7 +73,7 @@ docker {
 // creates folder at app/demo with up to date orderly test data
 task generateTestData() {
     doLast {
-        String image = "vimc/orderly:master"
+        String image = "vimc/orderly:vimc-2929"
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
 
