@@ -97,12 +97,12 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
     {
         val reportsQsParams: MutableMap<String, String> = mutableMapOf("show_all" to "true")
         val parametersQsParams: MutableMap<String, String> = mutableMapOf()
-        if (commit != null)
+        if (!commit.isNullOrEmpty())
         {
             reportsQsParams["commit"] = commit
             parametersQsParams["commit"] = commit
         }
-        if (branch != null)
+        if (!branch.isNullOrEmpty())
         {
             reportsQsParams["branch"] = branch
         }
