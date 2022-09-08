@@ -148,4 +148,51 @@ class ReportControllerTests : ControllerTest()
         verify(mockReportRepo).setPublishStatus(name, version, false)
     }
 
+    @Test
+    fun `publishes report with default value when query param is blank`()
+    {
+        val name = "reportName"
+        val version = "v1"
+        val mockReportRepo = mock<ReportRepository>() {
+            on { setPublishStatus(name, version, true) } doReturn true
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.params(":version") } doReturn version
+            on { this.params(":name") } doReturn name
+            on { this.queryParams("value") } doReturn ""
+        }
+
+        val sut = ReportController(mockContext, mock(), mockReportRepo, mockConfig)
+
+        val result = sut.publish()
+
+        assertThat(result).isEqualTo(true)
+
+        verify(mockReportRepo).setPublishStatus(name, version, true)
+    }
+
+    @Test
+    fun `publishes report with default value when query param is not provided`()
+    {
+        val name = "reportName"
+        val version = "v1"
+        val mockReportRepo = mock<ReportRepository>() {
+            on { setPublishStatus(name, version, true) } doReturn true
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.params(":version") } doReturn version
+            on { this.params(":name") } doReturn name
+        }
+
+        val sut = ReportController(mockContext, mock(), mockReportRepo, mockConfig)
+
+        val result = sut.publish()
+
+        assertThat(result).isEqualTo(true)
+
+        verify(mockReportRepo).setPublishStatus(name, version, true)
+    }
+
 }
