@@ -130,7 +130,7 @@ class ReportControllerTests : ControllerTest()
         val name = "reportName"
         val version = "v1"
         val mockReportRepo = mock<ReportRepository>() {
-            on { setPublishStatus(name, version, false) } doReturn false
+            on { setPublishStatus(name, version) } doReturn false
         }
 
         val mockContext = mock<ActionContext> {
@@ -154,7 +154,7 @@ class ReportControllerTests : ControllerTest()
         val name = "reportName"
         val version = "v1"
         val mockReportRepo = mock<ReportRepository>() {
-            on { setPublishStatus(name, version, true) } doReturn true
+            on { setPublishStatus(name, version) } doReturn true
         }
 
         val mockContext = mock<ActionContext> {
@@ -178,7 +178,7 @@ class ReportControllerTests : ControllerTest()
         val name = "reportName"
         val version = "v1"
         val mockReportRepo = mock<ReportRepository>() {
-            on { setPublishStatus(name, version, true) } doReturn true
+            on { setPublishStatus(name, version) } doReturn true
         }
 
         val mockContext = mock<ActionContext> {
