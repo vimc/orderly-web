@@ -10,7 +10,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportVersionFul
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebReportVersionFull extends TableImpl<OrderlywebReportVersionFullRecord> {
 
-    private static final long serialVersionUID = -595433391;
+    private static final long serialVersionUID = -269891163;
 
     /**
      * The reference instance of <code>orderlyweb_report_version_full</code>
@@ -93,16 +93,6 @@ public class OrderlywebReportVersionFull extends TableImpl<OrderlywebReportVersi
     public final TableField<OrderlywebReportVersionFullRecord, Boolean> GIT_CLEAN = createField(DSL.name("git_clean"), org.jooq.impl.SQLDataType.BOOLEAN, this, "");
 
     /**
-     * The column <code>orderlyweb_report_version_full.requester</code>.
-     */
-    public final TableField<OrderlywebReportVersionFullRecord, String> REQUESTER = createField(DSL.name("requester"), org.jooq.impl.SQLDataType.CHAR, this, "");
-
-    /**
-     * The column <code>orderlyweb_report_version_full.author</code>.
-     */
-    public final TableField<OrderlywebReportVersionFullRecord, String> AUTHOR = createField(DSL.name("author"), org.jooq.impl.SQLDataType.CHAR, this, "");
-
-    /**
      * The column <code>orderlyweb_report_version_full.published</code>.
      */
     public final TableField<OrderlywebReportVersionFullRecord, Boolean> PUBLISHED = createField(DSL.name("published"), org.jooq.impl.SQLDataType.BOOLEAN, this, "");
@@ -133,7 +123,7 @@ public class OrderlywebReportVersionFull extends TableImpl<OrderlywebReportVersi
     }
 
     private OrderlywebReportVersionFull(Name alias, Table<OrderlywebReportVersionFullRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.view("CREATE VIEW orderlyweb_report_version_full AS\nSELECT rv.id, report, date, displayname, description, connection, elapsed, git_sha, git_branch, git_clean, requester, author,\n    COALESCE(ow_rv.published, 0) as published\nFROM report_version rv\nLEFT OUTER JOIN orderlyweb_report_version ow_rv\nON rv.id = ow_rv.id"));
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.view("CREATE VIEW orderlyweb_report_version_full AS\nSELECT rv.id, report, date, displayname, description, connection, elapsed, git_sha, git_branch, git_clean, ow_rv.published\nFROM report_version rv\nINNER JOIN orderlyweb_report_version ow_rv\nON rv.id = ow_rv.id"));
     }
 
     public <O extends Record> OrderlywebReportVersionFull(Table<O> child, ForeignKey<O, OrderlywebReportVersionFullRecord> key) {
@@ -172,11 +162,11 @@ public class OrderlywebReportVersionFull extends TableImpl<OrderlywebReportVersi
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<String, String, Timestamp, String, String, Boolean, Double, String, String, Boolean, String, String, Boolean> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row11<String, String, Timestamp, String, String, Boolean, Double, String, String, Boolean, Boolean> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }
