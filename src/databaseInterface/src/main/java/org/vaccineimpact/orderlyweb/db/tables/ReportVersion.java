@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReportVersion extends TableImpl<ReportVersionRecord> {
 
-    private static final long serialVersionUID = -462684146;
+    private static final long serialVersionUID = 971421850;
 
     /**
      * The reference instance of <code>report_version</code>
@@ -100,21 +100,6 @@ public class ReportVersion extends TableImpl<ReportVersionRecord> {
      * The column <code>report_version.git_clean</code>.
      */
     public final TableField<ReportVersionRecord, Boolean> GIT_CLEAN = createField(DSL.name("git_clean"), org.jooq.impl.SQLDataType.BOOLEAN, this, "");
-
-    /**
-     * The column <code>report_version.requester</code>.
-     */
-    public final TableField<ReportVersionRecord, String> REQUESTER = createField(DSL.name("requester"), org.jooq.impl.SQLDataType.CHAR.nullable(false), this, "");
-
-    /**
-     * The column <code>report_version.author</code>.
-     */
-    public final TableField<ReportVersionRecord, String> AUTHOR = createField(DSL.name("author"), org.jooq.impl.SQLDataType.CHAR.nullable(false), this, "");
-
-    /**
-     * The column <code>report_version.comment</code>.
-     */
-    public final TableField<ReportVersionRecord, String> COMMENT = createField(DSL.name("comment"), org.jooq.impl.SQLDataType.CHAR, this, "");
 
     /**
      * Create a <code>report_version</code> table reference
@@ -200,11 +185,11 @@ public class ReportVersion extends TableImpl<ReportVersionRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<String, String, Timestamp, String, String, Boolean, Boolean, Double, String, String, Boolean, String, String, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row11<String, String, Timestamp, String, String, Boolean, Boolean, Double, String, String, Boolean> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }
