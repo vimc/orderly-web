@@ -34,7 +34,6 @@ class FineGrainedPermissionTests : CustomConfigTests()
         startApp("auth.fine_grained=false")
 
         val response = RequestHelper().get("/reports/minimal", userEmail = "test.user@example.com")
-        val body = response.text
 
         assertSuccessful(response)
     }

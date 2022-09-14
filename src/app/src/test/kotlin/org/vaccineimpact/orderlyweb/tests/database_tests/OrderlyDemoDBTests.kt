@@ -280,14 +280,9 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.date.getTime()).isGreaterThan(0)
                 assertThat(r.connection).isNotNull()
                 assertThat(r.published).isNotNull()
-                assertThat(r.requester).isNotBlank()
-                assertThat(r.author).isNotBlank()
-
 
                 if (r.displayname?.isNotBlank()?:false) atLeastOneDisplayName = true
                 if (r.description?.isNotBlank()?:false) atLeastOneDescription = true
-                if (r.comment?.isNotBlank()?:false) atLeastOneComment = true
-
             }
 
             assertThat(atLeastOneDisplayName)

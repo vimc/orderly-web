@@ -414,3 +414,83 @@
 
 ## Other branches merged in this release
 
+# v1.12.0
+
+## Tickets
+* mrc-1947: HINT Versioning: Template PR
+* mrc-2333: Pre-select report on reports logs page
+* mrc-2401: Remember state for workflow progress page
+* mrc-2595: Support /latest path to link to latest available version of a report
+* mrc-2644: Update release script to latest YouTrack API
+* mrc-2657: Use Vue Select in report-list component
+* mrc-2690: Fix front-end tests in Node 12
+* mrc-2707: Parse CSV input
+* mrc-2708: Back-end for workflow summary page
+* mrc-2709_basicpage: Add front-end workflow summary page
+* mrc-2714: POST CSV file to endpoint for validation
+* mrc-2715: Add Import CSV to Workflow Report Component
+* mrc-2718: Fix massive runWorkflowTabs bundle
+* mrc-2720: Validate workflow csv
+* mrc-2722: Workflow Report status should distinguish 'Failed' from 'Impossible'
+* mrc-2723: Update front-end tests to remove warnings
+* mrc-2725: Add parameters view to Workflow summary page
+* mrc-2726: Stop test suites importing from other test suites
+* mrc-2747: v-select styling is whack
+* mrc-2822: Import workflow csv validation messages to use file row numbers and column numbers
+* mrc-2825: Supports orderly server schema which include $ref in JSONValidator
+* mrc-2829: Use 'allReports' flag to get all runnable reports for workflows
+* mrc-2879: Workflow summary header
+* mrc-2880: Add and test report boxes to workflow summary - the grey side
+* mrc-2881: Dependencies boxes in workflow summary
+* mrc-2882: show default parameters - expand and collapse
+* mrc-2884: Add logs and status column to orderlyweb_workflow_run_reports table
+* mrc-2886: Update get running report logs endpoint to support fetching logs for workflow reports
+* mrc-2887: Front end: fetch workflow report logs and display in dialog
+* mrc-2889: Add report parameters to workflow progress tab
+* mrc-2892: Update test for changes made in orderlyR for workflow/summary endpoints
+* mrc-2898: Return start time for running workflow report when available
+* mrc-2899: Add report_version to orderlyweb_workflow_run_reports
+* mrc-2936: Add Vuex and Vue Router, load runReportTabs and runReportMetadata from front end
+* mrc-2937-v2: runReport module: add availableReports
+* mrc-2940: git module: select branch
+* mrc-2940_1: git module: select branch
+* mrc-2942: gitModule: refreshGit
+* mrc-2946: Initial Vuex store for the runWorkflows app
+* mrc-2947: Add front-end linting to OrderlyWeb
+* mrc-2948: Massive runWorkflowTabs bundle once again
+* mrc-2950: Support running multiple orderly instances
+* mrc-2951: Update weblogin URL to include full app URL
+* mrc-2966: OrderlyWeb using deprecated github api endpoint
+* mrc-2973: Fix OW custom config tests
+* mrc-2995: Retain schema and test changes for reverted PR for mrc-2966
+* mrc-2996: Use hub4j client
+* mrc-2999: Create parallel runReportTabs component, displayed under the new route
+* mrc-3002: Backend for new runReport route (for supporting Vuex)
+* mrc-3011: Fix flakiness in RunWorkflowTests
+* mrc-3012: Add new git selection component which displays branches
+* mrc-3033: Return workflow run statuses in the same order as the workflow summary
+* mrc-3033_migration: Return workflow run statuses in the same order as the workflow summary
+* mrc-3066: Upgrade gradle to latest version
+* mrc-3067: Update Kotlin version
+* mrc-3068: Upgrade Java8 -> Java 11
+* mrc-3136: Cannot add an unchanged report to a workflow csv on a branch other than master
+* mrc-3137: Fix build by changing test which relies orderly kill report error thrown
+* mrc-3217: Fix failing selenium test on orderly web
+* mrc-3242: Update OrderlyWeb Queue Status Schema
+* mrc-3353: Upgrade pac4j
+* mrc-3401: Fix GET report version schema/spec in OW
+
+## Other branches merged in this release
+* dependabot/npm_and_yarn/src/app/static/path-parse-1.0.7
+* dependabot/npm_and_yarn/src/app/static/postcss-7.0.36
+* fix-params-issue-hint
+* revert-439-mrc-2966
+
+# v1.12.1
+
+## Tickets
+* mrc-2349: make author and requester properly optional in orderlyweb
+* vimc-6714: Support workflow summary on orderly repo which doesn't allow git switching
+
+## Other branches merged in this release
+

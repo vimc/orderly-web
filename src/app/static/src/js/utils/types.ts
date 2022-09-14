@@ -1,7 +1,7 @@
-import {GitState} from "../store/git/git";
-import {ReportsState} from "../store/reports/reports";
-import {Payload} from "vuex";
-import {ErrorsState} from "../store/errors/errors";
+import { GitState } from "../store/git/git";
+import { ReportsState } from "../store/reports/reports";
+import { Payload } from "vuex";
+import { ErrorsState } from "../store/errors/errors";
 
 export interface Parameter {
     name: string,
@@ -146,7 +146,7 @@ export interface WorkflowReportWithDependencies {
 export interface WorkflowSummaryResponse {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
-    ref: string
+    ref: string | null
 }
 
 export interface RunnerRootState {
@@ -158,7 +158,7 @@ export interface RunnerRootState {
 export interface GitCommit {
     id: string,
     date_time: string,
-    age:number
+    age: number
 }
 
 export type EmptyObject = Record<string, never>
