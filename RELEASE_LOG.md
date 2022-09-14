@@ -486,3 +486,11 @@
 * fix-params-issue-hint
 * revert-439-mrc-2966
 
+# v1.12.1
+
+## Tickets
+* mrc-2349: make author and requester properly optional in orderlyweb
+* vimc-6714: Support workflow summary on orderly repo which doesn't allow git switching
+
+## Other branches merged in this release
+
