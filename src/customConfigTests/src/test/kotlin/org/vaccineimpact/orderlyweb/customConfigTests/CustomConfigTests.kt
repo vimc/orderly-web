@@ -61,6 +61,7 @@ abstract class CustomConfigTests
     protected fun assertSuccessful(response: Response)
     {
         Assertions.assertThat(response.statusCode)
+                .withFailMessage(response.text)
                 .isEqualTo(200)
     }
 
