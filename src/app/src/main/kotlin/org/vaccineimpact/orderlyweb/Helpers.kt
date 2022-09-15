@@ -90,14 +90,16 @@ fun canRenderInBrowser(fileName: String): Boolean
     return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm", "bmp"))
 }
 
+// We use the enum names to render size labels so don't want to be constrained by detekt rule here
+@Suppress("EnumNaming")
+private enum class SizeSuffix
+{
+    bytes, KB, MB, GB, TB, PB, EB, ZB, YB
+}
+
 // Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
 // Improved version of the same method in commons.io FileUtils, supporting greater precision
 // and rounding up as well as down
-private enum class SizeSuffix
-{
-    Bytes, Kb, Mb, Gb, Tb, Pb, Eb, Zb, Yb
-}
-
 const val KILO_DIVISOR = 1024L
 fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
 {
@@ -105,10 +107,10 @@ fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
 
     var displaySize: String
     var bdSize = BigDecimal(size)
-    var selectedSuffix = SizeSuffix.Bytes
+    var selectedSuffix = SizeSuffix.bytes
     for (sizeSuffix in SizeSuffix.values())
     {
-        if (!sizeSuffix.equals(SizeSuffix.Bytes))
+        if (!sizeSuffix.equals(SizeSuffix.bytes))
         {
             if (bdSize.setScale(0, RoundingMode.HALF_UP).toString().length <= maxChars)
             {
