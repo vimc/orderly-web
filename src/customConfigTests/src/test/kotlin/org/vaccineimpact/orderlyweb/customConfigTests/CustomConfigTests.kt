@@ -6,8 +6,7 @@ import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import java.io.File
@@ -95,7 +94,8 @@ abstract class CustomConfigTests
         return try
         {
             JooqContext(dbLocation).use {
-                it.dsl.selectFrom(ORDERLYWEB_USER).fetchAny()
+                it.dsl.selectFrom(ORDERLYWEB_REPORT_VERSION_FULL).fetchAny()
+                it.dsl.selectFrom(ORDERLYWEB_REPORT_RUN).fetchAny()
             }
             true
         }
