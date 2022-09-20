@@ -6,8 +6,10 @@ import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import org.vaccineimpact.orderlyweb.security.issuing.TokenIssuer
 import java.security.KeyPair
 
-class WebTokenHelper(keyPair: KeyPair,
-                     val issuerName: String)
+class WebTokenHelper(
+        keyPair: KeyPair,
+        val issuerName: String
+)
 {
     val issuer = TokenIssuer(keyPair, issuerName)
     val verifier = RSATokenVerifier(keyPair, issuerName)

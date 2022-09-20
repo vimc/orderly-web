@@ -3,9 +3,8 @@ package org.vaccineimpact.orderlyweb.app_start.routing.api
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.api.UserController
-import spark.route.HttpMethod
 
-object UserRouteConfig: RouteConfig {
+object UserRouteConfig : RouteConfig {
     private val usersManage = setOf("*/users.manage")
     override val endpoints: List<EndpointDefinition> = listOf(
             APIEndpoint("/login/", UserController::class, "auth")

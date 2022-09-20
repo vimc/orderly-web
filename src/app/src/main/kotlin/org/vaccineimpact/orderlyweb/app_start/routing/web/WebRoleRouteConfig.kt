@@ -12,63 +12,98 @@ object WebRoleRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
-            WebEndpoint("/roles/",
-                    RoleController::class, "getAll")
+            WebEndpoint(
+                    "/roles/",
+                    RoleController::class,
+                    "getAll"
+            )
                     .json()
                     .secure(usersManage)
                     .transform(),
-            WebEndpoint("/roles/report-readers/",
-                    RoleController::class, "getGlobalReportReaders")
+
+            WebEndpoint(
+                    "/roles/report-readers/",
+                    RoleController::class,
+                    "getGlobalReportReaders"
+            )
                     .json()
                     .secure(usersManage)
                     .transform(),
-            WebEndpoint("/roles/report-readers/:report/",
-                    RoleController::class, "getScopedReportReaders")
+
+            WebEndpoint(
+                    "/roles/report-readers/:report/",
+                    RoleController::class,
+                    "getScopedReportReaders"
+            )
                     .json()
                     .secure(usersManage + setOf("*/reports.read"))
                     .transform(),
-            WebEndpoint("/typeahead/roles/",
-                    RoleController::class, "getAllRoleNames")
+
+            WebEndpoint(
+                    "/typeahead/roles/",
+                    RoleController::class,
+                    "getAllRoleNames"
+            )
                     .json()
                     .transform()
                     .secure(usersManage),
-            WebEndpoint("/roles/",
+
+            WebEndpoint(
+                    "/roles/",
                     RoleController::class, "addRole",
-                    method = HttpMethod.post)
+                    method = HttpMethod.post
+            )
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+
+            WebEndpoint(
+                    "/roles/:role-id/",
+                    RoleController::class,
+                    "deleteRole",
+                    method = HttpMethod.delete
+            )
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+
+            WebEndpoint(
+                    "/roles/:role-id/users/",
+                    RoleController::class,
+                    "addUser",
+                    method = HttpMethod.post
+            )
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+
+            WebEndpoint(
+                    "/roles/:role-id/users/:email",
+                    RoleController::class,
+                    "removeUser",
+                    method = HttpMethod.delete
+            )
                     .json()
                     .transform()
                     .secure(usersManage),
             WebEndpoint(
-                    "/roles/:role-id/",
-                    RoleController::class, "deleteRole",
-                    method = HttpMethod.delete)
+                    "/roles/:role-id/permissions/",
+                    RoleController::class,
+                    "addPermission",
+                    method = HttpMethod.post
+            )
                     .json()
                     .transform()
                     .secure(usersManage),
-            WebEndpoint("/roles/:role-id/users/",
-                    RoleController::class, "addUser",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/roles/:role-id/users/:email",
-                    RoleController::class, "removeUser",
-                    method = HttpMethod.delete)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/roles/:role-id/permissions/",
-                    RoleController::class, "addPermission",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/roles/:role-id/permissions/:name",
-                    RoleController::class, "removePermission",
-                    method = HttpMethod.delete)
+
+            WebEndpoint(
+                    "/roles/:role-id/permissions/:name",
+                    RoleController::class,
+                    "removePermission",
+                    method = HttpMethod.delete
+            )
                     .json()
                     .transform()
                     .secure(usersManage)
-
     )
 }

@@ -4,7 +4,8 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.api.DataController
 
-object DataRouteConfig : RouteConfig {
+object DataRouteConfig : RouteConfig
+{
     private val readReports = setOf("*/reports.read")
     private val controller = DataController::class
 

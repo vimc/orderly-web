@@ -21,8 +21,7 @@ data class ReifiedPermission(
 
     override fun hashCode() = toString().hashCode()
 
-    fun satisfiedBy(permission: ReifiedPermission)
-            = name == permission.name && permission.scope.encompasses(scope)
+    fun satisfiedBy(permission: ReifiedPermission) = name == permission.name && permission.scope.encompasses(scope)
 
     companion object
     {

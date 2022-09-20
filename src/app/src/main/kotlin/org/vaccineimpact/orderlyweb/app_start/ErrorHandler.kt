@@ -9,11 +9,12 @@ import spark.Request
 import spark.Response
 import spark.TemplateEngine
 import java.lang.reflect.InvocationTargetException
-import spark.Spark as spk
 
-class ErrorHandler(templateEngine: TemplateEngine,
-                   private val webErrorHandler: ResponseErrorHandler = WebResponseErrorHandler(templateEngine),
-                   private val apiErrorHandler: ResponseErrorHandler = APIResponseErrorHandler())
+class ErrorHandler(
+        templateEngine: TemplateEngine,
+        private val webErrorHandler: ResponseErrorHandler = WebResponseErrorHandler(templateEngine),
+        private val apiErrorHandler: ResponseErrorHandler = APIResponseErrorHandler()
+)
 {
     private val logger = LoggerFactory.getLogger(ErrorHandler::class.java)
 
@@ -62,7 +63,9 @@ class ErrorHandler(templateEngine: TemplateEngine,
 
     fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
-        logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
+        val uri = req.uri()
+        val errName = error::class.simpleName
+        logger.warn("For request $uri, a $errName occurred with the following problems: ${error.problems}")
 
         if (req.pathInfo().startsWith(Router.apiUrlBase) || req.headers("Accept").contains("application/json"))
         {
@@ -76,8 +79,8 @@ class ErrorHandler(templateEngine: TemplateEngine,
 
     // Just a helper to let us call Spark.exception using generic type parameters
     private inline fun <reified TException : Exception> sparkException(
-            noinline handler: (exception: TException,
-                               req: Request, res: Response) -> Unit)
+            noinline handler: (exception: TException, req: Request, res: Response) -> Unit
+    )
     {
         return spark.Spark.exception(TException::class.java) { e, req, res ->
             handler(e as TException, req, res)

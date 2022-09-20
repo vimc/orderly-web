@@ -17,7 +17,6 @@ interface ArtefactRepository
 
     @Throws(UnknownObjectError::class)
     fun getArtefactHash(name: String, version: String, filename: String): String
-
 }
 
 class OrderlyArtefactRepository : ArtefactRepository
@@ -26,8 +25,10 @@ class OrderlyArtefactRepository : ArtefactRepository
     {
         JooqContext().use {
 
-            return it.dsl.select(Tables.REPORT_VERSION_ARTEFACT.ID, Tables.REPORT_VERSION_ARTEFACT.FORMAT,
-                    Tables.REPORT_VERSION_ARTEFACT.DESCRIPTION)
+            return it.dsl.select(
+                    Tables.REPORT_VERSION_ARTEFACT.ID, Tables.REPORT_VERSION_ARTEFACT.FORMAT,
+                    Tables.REPORT_VERSION_ARTEFACT.DESCRIPTION
+            )
                     .from(Tables.REPORT_VERSION_ARTEFACT)
                     .where(Tables.REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
                     .fetch()
@@ -41,7 +42,7 @@ class OrderlyArtefactRepository : ArtefactRepository
                                 .on(Tables.FILE_ARTEFACT.FILE_HASH.eq(Tables.FILE.HASH))
                                 .where(Tables.FILE_ARTEFACT.ARTEFACT.eq(id))
                                 .fetch()
-                                .map{ r -> FileInfo(r[Tables.FILE_ARTEFACT.FILENAME], r[Tables.FILE.SIZE]) }
+                                .map { r -> FileInfo(r[Tables.FILE_ARTEFACT.FILENAME], r[Tables.FILE.SIZE]) }
 
                         Artefact(parseEnum(format), description, files)
                     }

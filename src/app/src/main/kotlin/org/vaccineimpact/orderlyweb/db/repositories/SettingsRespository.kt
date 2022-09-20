@@ -5,11 +5,11 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 
 interface SettingsRepository
 {
-    fun getAuthAllowGuest(): Boolean;
-    fun setAuthAllowGuest(value: Boolean);
+    fun getAuthAllowGuest(): Boolean
+    fun setAuthAllowGuest(value: Boolean)
 }
 
-class OrderlySettingsRepository: SettingsRepository
+class OrderlySettingsRepository : SettingsRepository
 {
     override fun getAuthAllowGuest(): Boolean
     {
@@ -28,5 +28,4 @@ class OrderlySettingsRepository: SettingsRepository
                     .execute()
         }
     }
-
 }

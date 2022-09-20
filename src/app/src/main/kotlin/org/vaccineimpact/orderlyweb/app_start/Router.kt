@@ -12,17 +12,20 @@ import spark.Spark.notFound
 import spark.TemplateEngine
 import spark.template.freemarker.FreeMarkerEngine
 
-
-class Router(private val actionResolver: ActionResolver,
-             private val authenticationRouteBuilder: AuthenticationRouteBuilder,
-             private val sparkWrapper: SparkWrapper,
-             private val errorHandler: ErrorHandler)
+class Router(
+        private val actionResolver: ActionResolver,
+        private val authenticationRouteBuilder: AuthenticationRouteBuilder,
+        private val sparkWrapper: SparkWrapper,
+        private val errorHandler: ErrorHandler
+)
 {
     constructor(templateEngine: TemplateEngine) :
-            this(ActionResolver(templateEngine),
+            this(
+                    ActionResolver(templateEngine),
                     OrderlyAuthenticationRouteBuilder(OrderlyWebAuthenticationConfig()),
                     SparkServiceWrapper(),
-                    ErrorHandler(templateEngine))
+                    ErrorHandler(templateEngine)
+            )
 
     constructor(freeMarkerConfig: Configuration) :
             this(FreeMarkerEngine(freeMarkerConfig))

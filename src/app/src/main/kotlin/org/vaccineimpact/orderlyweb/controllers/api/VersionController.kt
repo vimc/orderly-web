@@ -1,9 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -14,26 +10,33 @@ import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 
-class VersionController(context: ActionContext,
-                        private val orderly: OrderlyClient,
-                        private val reportRepository: ReportRepository,
-                        private val artefactRepository: ArtefactRepository,
-                        private val zip: ZipClient,
-                        private val files: FileSystem = Files(),
-                        private val config: Config) : Controller(context)
+class VersionController(
+        context: ActionContext,
+        private val orderly: OrderlyClient,
+        private val reportRepository: ReportRepository,
+        private val artefactRepository: ArtefactRepository,
+        private val zip: ZipClient,
+        private val files: FileSystem = Files(),
+        private val config: Config
+) : Controller(context)
 {
 
-    constructor(context: ActionContext) :
-            this(context,
-                    Orderly(context),
-                    OrderlyReportRepository(context),
-                    OrderlyArtefactRepository(),
-                    Zip(),
-                    Files(),
-                    AppConfig())
+    constructor(context: ActionContext) : this(
+            context,
+            Orderly(context),
+            OrderlyReportRepository(context),
+            OrderlyArtefactRepository(),
+            Zip(),
+            Files(),
+            AppConfig()
+    )
 
     fun getChangelogByNameAndVersion(): List<Changelog>
     {
@@ -92,11 +95,12 @@ class VersionController(context: ActionContext,
         }
         else
         {
-            (artefactRepository.getArtefactHashes(report, version)
-                    + orderly.getResourceHashes(report, version)
-                    + orderly.getReadme(report, version))
-                    .map { "$folderName/${it.key}" }
+            (
+                    artefactRepository.getArtefactHashes(report, version) +
+                            orderly.getResourceHashes(report, version) +
+                            orderly.getReadme(report, version)
+            )
+            .map { "$folderName/${it.key}" }
         }
     }
-
 }

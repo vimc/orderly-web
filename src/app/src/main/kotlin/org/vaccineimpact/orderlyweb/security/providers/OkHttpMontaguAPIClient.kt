@@ -6,14 +6,16 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.slf4j.LoggerFactory
+import org.eclipse.jetty.http.HttpStatus
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import java.io.IOException
 import java.security.cert.X509Certificate
-import javax.net.ssl.*
-
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 interface MontaguAPIClient
 {
@@ -31,7 +33,6 @@ interface MontaguAPIClient
     {
         override fun toString(): String = message
     }
-
 }
 
 abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
@@ -42,10 +43,13 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         fun create(appConfig: Config = AppConfig()): OkHttpMontaguAPIClient
         {
             return if (appConfig.getBool("allow.localhost"))
+            {
                 LocalOkHttpMontaguApiClient(appConfig)
+            }
             else
+            {
                 RemoteHttpMontaguApiClient(appConfig)
-
+            }
         }
     }
 
@@ -58,9 +62,12 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
                 .use { response ->
                     val result = parseResult(response.body!!.string())
 
-                    if (response.code != 200)
+                    if (response.code != HttpStatus.OK_200)
                     {
-                        throw MontaguAPIException("Response had errors ${result.errors.joinToString(",") { it.toString() }}", response.code)
+                        throw MontaguAPIException(
+                                "Response had errors ${result.errors.joinToString(",") { it.toString() }}",
+                                response.code
+                        )
                     }
 
                     return result.data as MontaguAPIClient.UserDetails
@@ -80,9 +87,11 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         }
         catch (e: JsonSyntaxException)
         {
-            throw MontaguAPIException("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e", 500)
+            throw MontaguAPIException(
+                    "Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e",
+                    HttpStatus.INTERNAL_SERVER_ERROR_500
+            )
         }
-
     }
 
     private fun getHttpResponse(url: String, headers: Map<String, String>): Response
@@ -90,7 +99,7 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
         val client = getHttpClient()
 
         val headersBuilder = Headers.Builder()
-        headers.forEach { k, v ->  headersBuilder.add(k, v)}
+        headers.forEach { k, v -> headersBuilder.add(k, v) }
 
         val request = Request.Builder()
                 .url(url)
@@ -103,17 +112,22 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
     protected abstract fun getHttpClient(): OkHttpClient
 }
 
-class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
+class LocalOkHttpMontaguApiClient(appConfig: Config) : OkHttpMontaguAPIClient(appConfig)
 {
     override fun getHttpClient(): OkHttpClient
     {
-        //Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
+        // Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
         // Create a trust manager that does not validate certificate chains
-        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager
+        {
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?)
+            {
+                // no op override
             }
 
-            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?)
+            {
+                // no op override
             }
 
             override fun getAcceptedIssuers() = arrayOf<X509Certificate>()

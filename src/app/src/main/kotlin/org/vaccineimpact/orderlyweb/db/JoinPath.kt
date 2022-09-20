@@ -33,7 +33,8 @@ class JoinPath(tables: Iterable<TableImpl<*>>, val joinType: JoinType)
 class JoinPathStep(
         private val from: TableImpl<*>,
         private val to: TableImpl<*>,
-        private val joinType: JoinType = JoinType.JOIN)
+        private val joinType: JoinType = JoinType.JOIN
+)
 {
     private val foreignKeyField: TableField<*, Any>
     private val primaryKeyField: Field<Any>
@@ -68,8 +69,7 @@ class JoinPathStep(
 fun <T : Record> SelectJoinStep<T>.joinPath(
         vararg tables: TableImpl<*>,
         joinType: JoinType = JoinType.JOIN
-)
-        : SelectJoinStep<T>
+): SelectJoinStep<T>
 {
     return JoinPath(tables.toList(), joinType).doJoin(this)
 }
@@ -77,8 +77,7 @@ fun <T : Record> SelectJoinStep<T>.joinPath(
 fun <T : Record> SelectFromStep<T>.fromJoinPath(
         vararg tables: TableImpl<*>,
         joinType: JoinType = JoinType.JOIN
-)
-        : SelectJoinStep<T>
+): SelectJoinStep<T>
 {
     val query = this.from(tables.first())
     return JoinPath(tables.toList(), joinType).doJoin(query)
@@ -93,4 +92,3 @@ fun <T> T.getOther(a: T, b: T) = when (this)
 
 // This helper avoids overloading ambiguity when the field type is "Any"
 fun <T> TableField<*, T>.eqField(otherField: Field<T>): Condition = this.eq(otherField)
-

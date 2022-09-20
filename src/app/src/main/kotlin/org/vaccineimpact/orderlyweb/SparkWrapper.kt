@@ -4,13 +4,20 @@ import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import spark.*
 import spark.route.HttpMethod
 
-//Make classes which use the static methods of Spark unit testable by providing a wrapper interface for them to use instead
+// Make classes which use the static methods of Spark unit testable by providing a wrapper interface for them to use
+// instead
 interface SparkWrapper
 {
     fun before(path: String, acceptType: String, method: HttpMethod, filter: Filter)
     fun after(path: String, acceptType: String, vararg filters: Filter)
-    fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
-            transformer: ResponseTransformer? = null)
+    fun map(
+            fullUrl: String,
+            method: HttpMethod,
+            acceptType: String,
+            route: Route,
+            transformer: ResponseTransformer? = null
+    )
+
     fun mapGet(fullUrl: String, route: Route)
 }
 
@@ -32,7 +39,10 @@ class SparkServiceWrapper : SparkWrapper
         Spark.after(path, acceptType, *filters)
     }
 
-    override fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route, transformer: ResponseTransformer?)
+    override fun map(
+            fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
+            transformer: ResponseTransformer?
+    )
     {
         when (transformer)
         {
@@ -59,12 +69,16 @@ class SparkServiceWrapper : SparkWrapper
     }
 }
 
-class MethodMatchingFilter(val method: HttpMethod,
-                           val filter: Filter): Filter {
+class MethodMatchingFilter(
+        val method: HttpMethod,
+        val filter: Filter
+) : Filter
+{
 
     override fun handle(request: Request?, response: Response?)
     {
-        if (request?.requestMethod()?.lowercase() == method.toString().lowercase()) {
+        if (request?.requestMethod()?.lowercase() == method.toString().lowercase())
+        {
             return filter.handle(request, response)
         }
     }

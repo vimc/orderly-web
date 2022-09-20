@@ -6,17 +6,19 @@ import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
-class RoleController(context: ActionContext,
-                     private val roleRepo: RoleRepository,
-                     private val authRepo: AuthorizationRepository) : Controller(context)
+class RoleController(
+        context: ActionContext,
+        private val roleRepo: RoleRepository,
+        private val authRepo: AuthorizationRepository
+) : Controller(context)
 {
     constructor(context: ActionContext) : this(context, OrderlyRoleRepository(), OrderlyAuthorizationRepository())
 
@@ -53,7 +55,7 @@ class RoleController(context: ActionContext,
         val roleId = roleId()
         if (roleId == RoleRepository.ADMIN_ROLE)
         {
-            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.");
+            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.")
         }
 
         val roleNames = getAllRoleNames()
@@ -120,7 +122,7 @@ class RoleController(context: ActionContext,
 
     private fun roleId(): String = context.params(":role-id")
 
-    private fun List<Role>.toSortedViewModels() : List<RoleViewModel>
+    private fun List<Role>.toSortedViewModels(): List<RoleViewModel>
     {
         return this.map { RoleViewModel.build(it) }
                 .sortedBy{ it.name }

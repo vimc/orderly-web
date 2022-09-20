@@ -10,16 +10,22 @@ object WebSettingsRouteConfig : RouteConfig
     private val usersManage = setOf("*/users.manage")
 
     override val endpoints: List<EndpointDefinition> = listOf(
-                    WebEndpoint("/settings/auth-allow-guest/",
-                            SettingsController::class, "getAuthAllowGuest")
-                            .json()
-                            .secure(usersManage)
-                            .transform(),
-                    WebEndpoint("/settings/auth-allow-guest/",
-                            SettingsController::class, "setAuthAllowGuest",
-                            method = HttpMethod.post)
-                            .json()
-                            .secure(usersManage)
-                            .transform()
+            WebEndpoint(
+                    "/settings/auth-allow-guest/",
+                    SettingsController::class,
+                    "getAuthAllowGuest"
             )
+                    .json()
+                    .secure(usersManage)
+                    .transform(),
+            WebEndpoint(
+                    "/settings/auth-allow-guest/",
+                    SettingsController::class,
+                    "setAuthAllowGuest",
+                    method = HttpMethod.post
+            )
+                    .json()
+                    .secure(usersManage)
+                    .transform()
+    )
 }

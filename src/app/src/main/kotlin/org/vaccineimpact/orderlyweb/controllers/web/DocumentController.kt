@@ -17,10 +17,12 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.zip.ZipException
 
-class DocumentController(context: ActionContext,
-                         private val config: Config,
-                         private val files: FileSystem,
-                         private val docsRepo: DocumentRepository) : Controller(context)
+class DocumentController(
+        context: ActionContext,
+        private val config: Config,
+        private val files: FileSystem,
+        private val docsRepo: DocumentRepository
+) : Controller(context)
 {
     constructor(context: ActionContext) : this(context, AppConfig(), Files(), OrderlyDocumentRepository())
 
@@ -74,7 +76,7 @@ class DocumentController(context: ActionContext,
             url = url.split("?")[0]
             url = "$url?dl=1"
         }
-        val URL = try
+        val urlObj = try
         {
             URL(url)
         }
@@ -84,7 +86,7 @@ class DocumentController(context: ActionContext,
         }
         try
         {
-            files.saveArchiveFromUrl(URL, documentsRoot)
+            files.saveArchiveFromUrl(urlObj, documentsRoot)
         }
         catch (e: ZipException)
         {
@@ -95,14 +97,13 @@ class DocumentController(context: ActionContext,
         val unrefreshedDocs = allDocs.toMutableList()
         refreshDocumentsInDir(root, unrefreshedDocs)
 
-        //Hide all known docs which were not found
+        // Hide all known docs which were not found
         docsRepo.setVisibility(unrefreshedDocs, false)
 
         return okayResponse()
     }
 
-    private fun refreshDocumentsInDir(dir: DocumentDetails,
-                                      unrefreshedDocs: MutableList<Document>)
+    private fun refreshDocumentsInDir(dir: DocumentDetails, unrefreshedDocs: MutableList<Document>)
     {
         val children = files.getAllChildren(dir.absolutePath, documentsRoot)
         for (child in children)
@@ -116,7 +117,14 @@ class DocumentController(context: ActionContext,
             }
             else
             {
-                docsRepo.add(child.pathFragment!!, child.name, child.displayName, child.isFile, child.external, dir.pathFragment)
+                docsRepo.add(
+                        child.pathFragment!!,
+                        child.name,
+                        child.displayName,
+                        child.isFile,
+                        child.external,
+                        dir.pathFragment
+                )
             }
 
             if (!child.isFile)

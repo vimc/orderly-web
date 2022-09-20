@@ -168,7 +168,8 @@ class OrderlyServer(
                     queryParams.forEach { (key, value) ->
                         addQueryParameter(key, value)
                     }
-                }.build(), json.toRequestBody(ContentTypes.json.toMediaType())
+                }.build(),
+                json.toRequestBody(ContentTypes.json.toMediaType())
         )
 
     private fun post(

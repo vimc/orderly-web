@@ -12,9 +12,9 @@ import java.io.Reader
 interface WorkflowLogic
 {
     fun parseAndValidateWorkflowCSV(
-        reader: Reader,
-        branch: String?,
-        commit: String?
+            reader: Reader,
+            branch: String?,
+            commit: String?
     ): List<WorkflowReportWithParams>
 }
 
@@ -23,9 +23,9 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
     constructor() : this(OrderlyServer(AppConfig()).throwOnError())
 
     override fun parseAndValidateWorkflowCSV(
-        reader: Reader,
-        branch: String?,
-        commit: String?
+            reader: Reader,
+            branch: String?,
+            commit: String?
     ): List<WorkflowReportWithParams>
     {
         val rows = CSVReader(reader).use { it.readAll() }
@@ -65,8 +65,12 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
             val numCells = row.count()
             if (numCells != numCols)
             {
-                errors.add(errorTemplate(rowIdx + 2, null,
-                        "row should contain $numCols values, $numCells values found"))
+                errors.add(
+                        errorTemplate(
+                                rowIdx + 2, null,
+                                "row should contain $numCols values, $numCells values found"
+                        )
+                )
             }
 
             val reportName = row[0]
@@ -88,11 +92,11 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
     }
 
     private fun validateWorkflowReports(
-        reports: List<WorkflowReportWithParams>,
-        branch: String?,
-        commit: String?,
-        headers: List<String>,
-        errorTemplate: (row: Int, col: Int?, msg: String) -> String
+            reports: List<WorkflowReportWithParams>,
+            branch: String?,
+            commit: String?,
+            headers: List<String>,
+            errorTemplate: (row: Int, col: Int?, msg: String) -> String
     ): List<String>
     {
         val reportsQsParams: MutableMap<String, String> = mutableMapOf("show_all" to "true")
@@ -130,8 +134,8 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
 
                 val orderlyParams = orderlyParamsList.associateBy { it.name }
                 val missingParameters = orderlyParams.values
-                        .filter{ it.value == null && !report.params.keys.contains(it.name) }
-                missingParameters.forEach{
+                        .filter { it.value == null && !report.params.keys.contains(it.name) }
+                missingParameters.forEach {
                     // The missing parameter may or may not have a column in the file
                     val paramIdx = parameterHeaders.indexOf(it.name)
                     val col = if (paramIdx == -1)
@@ -144,17 +148,21 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
                     }
 
                     errors.add(
-                            errorTemplate(rowIdx, col,
-                            "required parameter '${it.name}' was not provided for report '${report.name}'")
+                            errorTemplate(
+                                    rowIdx, col,
+                                    "required parameter '${it.name}' was not provided for report '${report.name}'"
+                            )
                     )
                 }
 
-                val unexpectedParameters = report.params.keys.filterNot{ orderlyParams.keys.contains(it) }
-                unexpectedParameters.forEach{
+                val unexpectedParameters = report.params.keys.filterNot { orderlyParams.keys.contains(it) }
+                unexpectedParameters.forEach {
                     val col = parameterHeaders.indexOf(it) + 2
                     errors.add(
-                            errorTemplate(rowIdx, col,
-                                    "unexpected parameter '$it' provided for report '${report.name}'")
+                            errorTemplate(
+                                    rowIdx, col,
+                                    "unexpected parameter '$it' provided for report '${report.name}'"
+                            )
                     )
                 }
             }

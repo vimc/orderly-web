@@ -8,4 +8,3 @@ inline fun <reified T : Enum<T>> parseEnum(name: String): T
             .firstOrNull { name.equals(it.name, ignoreCase = true) }
             ?: throw UnknownEnumValue(name, T::class.simpleName ?: "[unknown]")
 }
-

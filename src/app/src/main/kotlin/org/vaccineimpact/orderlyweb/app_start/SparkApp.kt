@@ -15,7 +15,6 @@ import java.util.*
 import kotlin.system.exitProcess
 import spark.Spark as spk
 
-
 fun main(args: Array<String>)
 {
     val app = OrderlyWeb()
@@ -40,6 +39,8 @@ class OrderlyWeb
     companion object
     {
         val urls: MutableList<String> = mutableListOf()
+        const val WAIT_TIME_MS = 2000L
+        const val PORT_ATTEMPTS = 5
     }
 
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
@@ -86,13 +87,13 @@ class OrderlyWeb
         val config = AppConfig()
         val port = config.getInt("app.port")
 
-        var attempts = 5
+        var attempts = PORT_ATTEMPTS
         spk.port(port)
 
         while (!isPortAvailable(port) && attempts > 0)
         {
             logger.info("Waiting for port $port to be available, $attempts attempts remaining")
-            Thread.sleep(2000)
+            Thread.sleep(WAIT_TIME_MS)
             attempts--
         }
         if (attempts == 0)

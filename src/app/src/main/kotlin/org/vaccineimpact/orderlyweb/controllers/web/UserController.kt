@@ -10,15 +10,19 @@ import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.security.OrderlyWebGuestUserManager
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
-class UserController(context: ActionContext,
-                     private val userRepo: UserRepository,
-                     private val authRepo: AuthorizationRepository,
-                     private val roleRepo: RoleRepository) : Controller(context)
+class UserController(
+        context: ActionContext,
+        private val userRepo: UserRepository,
+        private val authRepo: AuthorizationRepository,
+        private val roleRepo: RoleRepository
+) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context,
+    constructor(context: ActionContext) : this(
+            context,
             OrderlyUserRepository(),
             OrderlyAuthorizationRepository(),
-            OrderlyRoleRepository())
+            OrderlyRoleRepository()
+    )
 
     fun getScopedReportReaders(): List<UserViewModel>
     {
