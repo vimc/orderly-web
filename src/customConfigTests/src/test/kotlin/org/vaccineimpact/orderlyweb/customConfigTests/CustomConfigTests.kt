@@ -5,6 +5,9 @@ import org.junit.After
 import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import java.io.File
@@ -33,12 +36,16 @@ abstract class CustomConfigTests
     {
         println("Copying database from: ${AppConfig()["db.template"]}")
 
-        val newDbFile = File(AppConfig()["db.location"])
+        val newDb = AppConfig()["db.location"]
+        val source = AppConfig()["db.template"]
 
-        val source = File(AppConfig()["db.template"])
-
-        source.copyTo(newDbFile, true)
-        Thread.sleep(1000)
+        while (!isDBAvailable(source)) {
+            Thread.sleep(500)
+        }
+        File(source).copyTo(File(newDb), true)
+        while (!isDBAvailable(newDb)) {
+            Thread.sleep(500)
+        }
     }
 
     @After
@@ -78,6 +85,21 @@ abstract class CustomConfigTests
             true
         }
         catch (e: BindException)
+        {
+            false
+        }
+    }
+
+    private fun isDBAvailable(dbLocation: String): Boolean
+    {
+        return try
+        {
+            JooqContext(dbLocation).use {
+                it.dsl.selectFrom(ORDERLYWEB_USER).fetchAny()
+            }
+            true
+        }
+        catch (e: Exception)
         {
             false
         }
