@@ -100,7 +100,7 @@ abstract class CustomConfigTests
         {
             return spark.Spark.routes().size > 0
         }
-        catch (e: NullPointerException)
+        catch (e: Exception)
         {
             false
         }
