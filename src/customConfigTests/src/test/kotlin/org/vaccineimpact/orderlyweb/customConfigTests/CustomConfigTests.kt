@@ -95,7 +95,6 @@ abstract class CustomConfigTests
         {
             JooqContext(dbLocation).use {
                 it.dsl.selectFrom(ORDERLYWEB_REPORT_VERSION_FULL).fetchAny()
-                it.dsl.selectFrom(ORDERLYWEB_REPORT_RUN).fetchAny()
             }
             true
         }
