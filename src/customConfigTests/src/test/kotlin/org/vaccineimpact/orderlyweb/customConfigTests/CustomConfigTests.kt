@@ -25,6 +25,10 @@ abstract class CustomConfigTests
         {
             Thread.sleep(500)
         }
+        while (isSparkInstanceRunning())
+        {
+            Thread.sleep(500)
+        }
 
         main(emptyArray())
         Thread.sleep(500)
@@ -51,6 +55,7 @@ abstract class CustomConfigTests
     fun cleanup()
     {
         spark.Spark.stop()
+
         File(AppConfig()["db.location"]).delete()
 
         // reset the properties
@@ -84,6 +89,18 @@ abstract class CustomConfigTests
             true
         }
         catch (e: BindException)
+        {
+            false
+        }
+    }
+
+    private fun isSparkInstanceRunning(): Boolean
+    {
+        return try
+        {
+            return spark.Spark.routes().size > 0
+        }
+        catch (e: NullPointerException)
         {
             false
         }
