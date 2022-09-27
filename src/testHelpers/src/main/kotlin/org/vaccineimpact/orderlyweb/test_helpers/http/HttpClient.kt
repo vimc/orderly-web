@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.Closeable
 import java.net.CookieManager
 import java.util.*
 
@@ -102,7 +103,7 @@ data class BasicAuthorization(val user: String, val password: String) : Authoriz
         }
 }
 
-class Response(private val okHttpResponse: okhttp3.Response)
+class Response(private val okHttpResponse: okhttp3.Response): Closeable
 {
     val content: ByteArray by lazy(okHttpResponse.body!!::bytes)
     val headers: Map<String, String>
@@ -110,4 +111,8 @@ class Response(private val okHttpResponse: okhttp3.Response)
     val statusCode: Int
         get() = okHttpResponse.code
     val text: String by lazy(okHttpResponse.body!!::string)
+    override fun close()
+    {
+        okHttpResponse.close()
+    }
 }

@@ -56,14 +56,15 @@ class OrderlyWeb
     {
         val freeMarkerConfig = buildFreemarkerConfig(File("templates").absoluteFile)
 
-        staticFiles.externalLocation(File("static/public").absolutePath)
-
         waitForGoSignal()
 
         logger.info("Using the following config")
         logger.info(getPropertiesAsString(AppConfig.properties))
 
         setupPort()
+
+        staticFiles.externalLocation(File("static/public").absolutePath)
+
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
         spk.options("*") { _, res ->
             res.header("Access-Control-Allow-Headers", "Authorization")

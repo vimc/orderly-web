@@ -5,6 +5,8 @@ import org.junit.After
 import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import java.io.File
@@ -23,6 +25,10 @@ abstract class CustomConfigTests
         {
             Thread.sleep(500)
         }
+        while (isSparkInstanceRunning())
+        {
+            Thread.sleep(500)
+        }
 
         main(emptyArray())
         Thread.sleep(500)
@@ -33,18 +39,23 @@ abstract class CustomConfigTests
     {
         println("Copying database from: ${AppConfig()["db.template"]}")
 
-        val newDbFile = File(AppConfig()["db.location"])
+        val newDb = AppConfig()["db.location"]
+        val source = AppConfig()["db.template"]
 
-        val source = File(AppConfig()["db.template"])
-
-        source.copyTo(newDbFile, true)
-        Thread.sleep(1000)
+        while (!isDBAvailable(source)) {
+            Thread.sleep(500)
+        }
+        File(source).copyTo(File(newDb), true)
+        while (!isDBAvailable(newDb)) {
+            Thread.sleep(500)
+        }
     }
 
     @After
     fun cleanup()
     {
         spark.Spark.stop()
+
         File(AppConfig()["db.location"]).delete()
 
         // reset the properties
@@ -78,6 +89,33 @@ abstract class CustomConfigTests
             true
         }
         catch (e: BindException)
+        {
+            false
+        }
+    }
+
+    private fun isSparkInstanceRunning(): Boolean
+    {
+        return try
+        {
+            return spark.Spark.routes().size > 0
+        }
+        catch (e: Exception)
+        {
+            false
+        }
+    }
+
+    private fun isDBAvailable(dbLocation: String): Boolean
+    {
+        return try
+        {
+            JooqContext(dbLocation).use {
+                it.dsl.selectFrom(ORDERLYWEB_REPORT_VERSION_FULL).fetchAny()
+            }
+            true
+        }
+        catch (e: Exception)
         {
             false
         }

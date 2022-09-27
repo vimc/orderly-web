@@ -9,7 +9,7 @@ dependencies {
     testImplementation "com.github.fge:json-schema-validator:2.2.6"
     testImplementation "org.seleniumhq.selenium:selenium-java:3.11.0"
     testImplementation "io.specto:hoverfly-java:0.12.0"
-    testImplementation "com.sparkjava:spark-core:2.7.1"
+    testImplementation "com.sparkjava:spark-core:2.9.3"
     testImplementation "org.jooq:jooq:3.13.5"
     testImplementation "org.jooq:jooq-meta:3.13.5"
 
