@@ -27,5 +27,6 @@ export ORG=vimc
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$here/../config/orderly_server_version)
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
-export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
+export ORDERLY_DEMO_PATH=$here/../demo
+export ORDERLY_DEMO=$(realpath $ORDERLY_DEMO_PATH)

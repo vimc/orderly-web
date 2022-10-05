@@ -9,6 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -66,16 +67,13 @@ class BundleImportTests : IntegrationTest()
     // This is a simply a unique identifier - it does not depend on the contents of the orderly store
     private val reportVersion = "20201126-153124-9a32811a"
 
-    // Note that this is orderly.server's MONTAGU_ORDERLY_PATH, not OrderlyWeb's orderly_root
-    private val orderlyServerRoot = "git/"
-
     private var dbPath: Path by Delegates.notNull()
     private var dbContent: ByteArray by Delegates.notNull()
 
     @Before
     fun `backup orderly state`()
     {
-        dbPath = Paths.get("${orderlyServerRoot}orderly.sqlite")
+        dbPath = Paths.get("${AppConfig()["orderly.root"]}/orderly.sqlite")
         dbContent = Files.readAllBytes(dbPath)
     }
 
@@ -97,6 +95,6 @@ class BundleImportTests : IntegrationTest()
     fun `restore orderly state`()
     {
         Files.write(dbPath, dbContent)
-        File("${orderlyServerRoot}archive/$reportName/$reportVersion/").deleteRecursively()
+        File("${AppConfig()["orderly.root"]}/archive/$reportName/$reportVersion/").deleteRecursively()
     }
 }

@@ -19,7 +19,7 @@ function cleanup() {
 trap cleanup EXIT
 docker run --rm \
     -d \
-    -v $PWD/demo:/orderly \
+    -v $ORDERLY_DEMO:/orderly \
     -p 8888:8888 \
     --name orderly-web \
     $IMAGE

@@ -21,11 +21,7 @@ docker build \
 # Generate orderly data and migrate for orderly web tables
 $here/make-db.sh
 
-# Fix up git remote
-git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
-
 # Run all dependencies
-export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
@@ -38,8 +34,7 @@ function cleanup() {
 }
 trap cleanup EXIT
 docker run --rm \
-    -v $PWD/demo:/api/src/app/demo \
-    -v $PWD/git:/api/src/app/git \
+    -v $ORDERLY_DEMO:/api/src/app/demo \
     -v $PWD/reports:/api/src/app/build/reports \
     -v $PWD/coverage:/api/src/app/coverage \
     -v /var/run/docker.sock:/var/run/docker.sock \

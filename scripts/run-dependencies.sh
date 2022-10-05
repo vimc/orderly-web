@@ -2,9 +2,13 @@
 here=$(dirname $0)
 
 echo "using orderly path:"
-echo $MONTAGU_ORDERLY_PATH
+echo $ORDERLY_DEMO
+
+# Fix up git remote
+git --git-dir=$ORDERLY_DEMO/.git remote set-url origin /orderly/upstream
 
 config_path=$(realpath $here/../config)
+export ORDERLY_DEMO=$(realpath $ORDERLY_DEMO)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml

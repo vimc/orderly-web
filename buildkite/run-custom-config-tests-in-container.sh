@@ -14,9 +14,6 @@ docker build --tag orderly-web-custom-config-tests \
 # create the db
 $here/make-db.sh
 
-# Fix up git remote
-git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
-
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
@@ -26,7 +23,7 @@ function cleanup() {
 }
 trap cleanup EXIT
 docker run --rm \
-    -v $PWD/git:/api/src/app/git \
-    -v $PWD/git:/api/src/customConfigTests/git \
+    -v $ORDERLY_DEMO:/api/src/app/demo \
+    -v $ORDERLY_DEMO:/api/src/customConfigTests/demo \
     --network=host \
     orderly-web-custom-config-tests

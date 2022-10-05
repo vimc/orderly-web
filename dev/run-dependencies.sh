@@ -5,17 +5,12 @@ here=$(dirname $0)
 (
 	cd $here/../src
 	# get fresh tests data
-	rm -rf app/demo
-	rm -rf app/git
+	./gradlew :cleanUpTestData
 	./gradlew :generateTestData
-	./gradlew :customConfigTests:copyGitDemo
+	./gradlew :customConfigTests:copyOrderlyDemo
 )
 
-$here/migrate-local-test.sh
-
-git --git-dir=$here/../src/app/git/.git remote set-url origin /orderly/upstream
-
-export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/app/git)
+export ORDERLY_DEMO=$(realpath $here/../src/app/demo)
 
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh

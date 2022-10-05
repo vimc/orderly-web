@@ -22,6 +22,7 @@ version '1.0-SNAPSHOT'
 task run(dependsOn: ':app:run')
 task generateDatabaseInterface(dependsOn: ':generateDatabaseInterface:run')
 task generateTestData(dependsOn: ':app:generateTestData')
+task cleanUpTestData(dependsOn: ':app:cleanUpTestData')
 
 def loadPropertiesFile(path) {
     def props = new Properties()

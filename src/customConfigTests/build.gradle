@@ -32,25 +32,16 @@ task copyTemplates(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
-task copyDemo(type: Copy) {
+task copyOrderlyDemo(type: Copy) {
     from '../app/demo'
     include '*/**'
     into 'demo'
     outputs.upToDateWhen { false }
 }
 
-task copyGitDemo(type: Copy) {
-    from '../app/git'
-    include '*/**'
-    into 'git'
-    outputs.upToDateWhen { false }
-}
-
-copyDemo.dependsOn 'copyGitDemo'
-
 test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'
-test.dependsOn ':app:archiveGitDemo'
+test.dependsOn ':app:archiveOrderlyDemo'
 
 test {
     testLogging {
@@ -59,6 +50,6 @@ test {
         events "failed", "standard_error"
     }
     afterTest {  desc ,  result  ->
-        project(':app').resetGitDemo()
+        project(':app').resetOrderlyDemo()
     }
 }
