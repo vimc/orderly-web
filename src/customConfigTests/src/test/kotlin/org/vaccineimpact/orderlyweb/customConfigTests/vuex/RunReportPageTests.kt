@@ -20,6 +20,7 @@ class RunReportPageTests : SeleniumTest()
     @Before
     fun setUp()
     {
+        System.err.println("CLASS SETUP")
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")

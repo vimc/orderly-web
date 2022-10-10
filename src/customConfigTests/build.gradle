@@ -39,15 +39,15 @@ task copyOrderlyDemo(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
-test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'
+test.dependsOn 'copyTemplates'
 test.dependsOn ':app:archiveOrderlyDemo'
 
 test {
     testLogging {
         // remove standard output logging
         // by assigning only 'failed' and 'standard_error' events
-        events "failed", "standard_error"
+        events "failed", "standard_error", "standard_out"
     }
     afterTest {  desc ,  result  ->
         project(':app').resetOrderlyDemo()

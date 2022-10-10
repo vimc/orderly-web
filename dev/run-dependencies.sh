@@ -2,11 +2,9 @@
 set -e
 
 here=$(dirname $0)
+$here/../buildkite/make-db.sh
 (
 	cd $here/../src
-	# get fresh tests data
-	./gradlew :cleanUpTestData
-	./gradlew :generateTestData
 	./gradlew :customConfigTests:copyOrderlyDemo
 )
 

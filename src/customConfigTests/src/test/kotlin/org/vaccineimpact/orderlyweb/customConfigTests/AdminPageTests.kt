@@ -5,18 +5,17 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
-import org.openqa.selenium.remote.RemoteWebElement
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertRole
-import java.time.Duration
 
 class AdminPageTests : SeleniumTest()
 {
     @Before
     fun setUp()
     {
+        System.err.println("CLASS SETUP")
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             insertUserAndGroup(it, "another.user@example.com")

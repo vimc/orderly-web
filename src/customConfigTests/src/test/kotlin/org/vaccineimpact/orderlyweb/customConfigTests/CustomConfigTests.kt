@@ -24,10 +24,12 @@ abstract class CustomConfigTests
         while (!isPortAvailable())
         {
             Thread.sleep(500)
+            System.err.println("Port not available yet")
         }
         while (isSparkInstanceRunning())
         {
             Thread.sleep(500)
+            System.err.println("Spark not available yet")
         }
 
         main(emptyArray())
@@ -37,17 +39,20 @@ abstract class CustomConfigTests
     @Before
     fun createDatabase()
     {
-        println("Copying database from: ${AppConfig()["db.template"]}")
+        System.err.println("BASE BASE SETUP")
+        System.err.println("Copying database from: ${AppConfig()["db.template"]}")
 
         val newDb = AppConfig()["db.location"]
         val source = AppConfig()["db.template"]
 
         while (!isDBAvailable(source)) {
             Thread.sleep(500)
+            System.err.println("source db not available yet at $source")
         }
         File(source).copyTo(File(newDb), true)
         while (!isDBAvailable(newDb)) {
             Thread.sleep(500)
+            System.err.println("db not available yet at $newDb")
         }
     }
 
@@ -57,6 +62,7 @@ abstract class CustomConfigTests
         spark.Spark.stop()
 
         File(AppConfig()["db.location"]).delete()
+        File(AppConfig()["db.template"]).delete()
 
         // reset the properties
         AppConfig.properties.apply {

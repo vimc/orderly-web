@@ -70,39 +70,11 @@ docker {
     files tasks.distTar.outputs, "app.jar"
 }
 
-// creates folder at app/demo with up to date orderly test data
+// creates folder at app/demo with fresh orderly test data
 task generateTestData() {
     doLast {
-        String image = "vimc/orderly:mrc-3665"
-        def username = System.properties['user.name']
-        def uid = ["id", "-u", username].execute().text.trim()
-
-        println("Pulling " + image)
-
         exec {
-            commandLine 'docker', 'pull', image
-        }
-        exec {
-            commandLine 'docker', 'run', '--rm', '--entrypoint', 'run_orderly_demo.sh', '--user', uid,
-                    '--env', 'HOME=/tmp', '-v', "$projectDir:/orderly", '-w', "/orderly", image, "orderly_demo", "demo"
-        }
-        
-        String owMigrateImage = "vimc/orderlyweb-migrate:master"
-        println("Pulling " + owMigrateImage)
-        exec {
-            commandLine 'docker', 'pull', owMigrateImage
-        }
-        exec {
-            commandLine 'docker', 'run', '--rm', '-v', "$projectDir/demo:/orderly", owMigrateImage
-        }
-    }
-}
-
-// removes the app/demo folder
-task cleanUpTestData() {
-    doLast {
-        exec {
-            commandLine "rm", "$projectDir/demo", "-rf"
+            commandLine "$projectDir/../../buildkite/make-db.sh"
         }
     }
 }
@@ -120,11 +92,9 @@ task archiveOrderlyDemo() {
             commandLine "tar", "czf", "$projectDir/demo.tar.gz", "-C", "$projectDir", "demo"
         }
     }
-
 }
 
 compileTestKotlin.dependsOn 'copyConfigToResources'
-
 test.dependsOn 'copySpec'
 test.dependsOn 'copyConfigToResources'
 test.dependsOn 'copyTestConfigToResources'
