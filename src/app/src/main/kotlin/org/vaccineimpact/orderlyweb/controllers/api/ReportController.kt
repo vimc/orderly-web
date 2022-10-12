@@ -32,7 +32,20 @@ class ReportController(
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        return reportRepository.togglePublishStatus(name, version)
+        val value = context.queryParams("value")
+
+        val booleanValue = when
+        {
+            value.isNullOrBlank() ->
+            {
+                true
+            }
+            else ->
+            {
+                value.toBoolean()
+            }
+        }
+        return reportRepository.setPublishStatus(name, version, booleanValue)
     }
 
     fun getAllReports(): List<Report>

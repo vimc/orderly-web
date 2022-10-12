@@ -130,7 +130,55 @@ class ReportControllerTests : ControllerTest()
         val name = "reportName"
         val version = "v1"
         val mockReportRepo = mock<ReportRepository>() {
-            on { togglePublishStatus(name, version) } doReturn false
+            on { setPublishStatus(name, version) } doReturn false
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.params(":version") } doReturn version
+            on { this.params(":name") } doReturn name
+            on { this.queryParams("value") } doReturn "false"
+        }
+
+        val sut = ReportController(mockContext, mock(), mockReportRepo, mockConfig)
+
+        val result = sut.publish()
+
+        assertThat(result).isEqualTo(false)
+
+        verify(mockReportRepo).setPublishStatus(name, version, false)
+    }
+
+    @Test
+    fun `publishes report with default value when query param is blank`()
+    {
+        val name = "reportName"
+        val version = "v1"
+        val mockReportRepo = mock<ReportRepository>() {
+            on { setPublishStatus(name, version) } doReturn true
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.params(":version") } doReturn version
+            on { this.params(":name") } doReturn name
+            on { this.queryParams("value") } doReturn ""
+        }
+
+        val sut = ReportController(mockContext, mock(), mockReportRepo, mockConfig)
+
+        val result = sut.publish()
+
+        assertThat(result).isEqualTo(true)
+
+        verify(mockReportRepo).setPublishStatus(name, version, true)
+    }
+
+    @Test
+    fun `publishes report with default value when query param is not provided`()
+    {
+        val name = "reportName"
+        val version = "v1"
+        val mockReportRepo = mock<ReportRepository>() {
+            on { setPublishStatus(name, version) } doReturn true
         }
 
         val mockContext = mock<ActionContext> {
@@ -142,9 +190,9 @@ class ReportControllerTests : ControllerTest()
 
         val result = sut.publish()
 
-        assertThat(result).isEqualTo(false)
+        assertThat(result).isEqualTo(true)
 
-        verify(mockReportRepo).togglePublishStatus(name, version)
+        verify(mockReportRepo).setPublishStatus(name, version, true)
     }
 
 }

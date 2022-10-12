@@ -38,8 +38,11 @@ class VersionTests : IntegrationTest()
         val versionId = unpublishedVersion[REPORT_VERSION.ID]
         val reportName = unpublishedVersion[REPORT_VERSION.REPORT]
 
-        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post(
+            "/reports/$reportName/versions/$versionId/publish/",
+            mapOf("value" to true),
+            userEmail = fakeGlobalReportReviewer()
+        )
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")

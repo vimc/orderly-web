@@ -7,7 +7,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
@@ -174,38 +173,38 @@ class ReportTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can toggle publish status`()
+    fun `can set published status`()
     {
-        insertReport("test", "version1", published = true)
+        insertReport("test", "version1", published = false)
 
         val sut = createSut(isReviewer = true)
 
-        var result = sut.togglePublishStatus("test", "version1")
+        var result = sut.setPublishStatus("test", "version1")
 
-        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
-        assertThat(result).isFalse()
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue
+        assertThat(result).isTrue
 
-        result = sut.togglePublishStatus("test", "version1")
-        assertThat(result).isTrue()
+        result = sut.setPublishStatus("test", "version1", false)
+        assertThat(result).isFalse
 
-        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse
 
     }
 
     @Test
-    fun `can toggle publish status when OrderlyWeb_Report_version does not yet exist`()
+    fun `can set published status when OrderlyWeb_Report_version does not yet exist`()
     {
         insertReport("test", "version1", addOrderlyWebReportVersion = false)
         val sut = createSut(isReviewer = true)
 
-        var result = sut.togglePublishStatus("test", "version1")
-        assertThat(result).isTrue()
-        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
+        var result = sut.setPublishStatus("test", "version1")
+        assertThat(result).isTrue
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue
 
-        result = sut.togglePublishStatus("test", "version1")
-        assertThat(result).isFalse()
+        result = sut.setPublishStatus("test", "version1", false)
+        assertThat(result).isFalse
 
-        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse
     }
 
     @Test
