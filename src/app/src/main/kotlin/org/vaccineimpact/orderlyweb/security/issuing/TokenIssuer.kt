@@ -2,16 +2,19 @@ package org.vaccineimpact.orderlyweb.security.issuing
 
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.security.KeyPair
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import org.vaccineimpact.orderlyweb.db.AppConfig
+
+const val NONCE_SIZE = 32
+const val ONETIME_LINK_LIFESPAN_MINUTES = 10L
 
 open class TokenIssuer(keyPair: KeyPair, val issuer: String)
 {
-    val oneTimeLinkLifeSpan: Duration = Duration.ofMinutes(10)
+    val oneTimeLinkLifeSpan: Duration = Duration.ofMinutes(ONETIME_LINK_LIFESPAN_MINUTES)
     val signatureConfiguration = RSASignatureConfiguration(keyPair)
 
     val tokenLifeSpan = Duration.ofMinutes(AppConfig()["token_expiry.minutes"].toLong())
@@ -53,7 +56,7 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
 
     private fun getNonce(): String
     {
-        val bytes = ByteArray(32)
+        val bytes = ByteArray(NONCE_SIZE)
         random.nextBytes(bytes)
         return Base64.getEncoder().encodeToString(bytes)
     }
@@ -65,6 +68,6 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
 
     companion object
     {
-        val oneTimeActionSubject = "onetime_link"
+        const val oneTimeActionSubject = "onetime_link"
     }
 }

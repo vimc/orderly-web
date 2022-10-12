@@ -22,15 +22,18 @@ interface FileSystem
 
 class Files(val zip: ZipClient = Zip()) : FileSystem
 {
+    companion object {
+        const val BUFFER_SIZE = 8000
+        const val BUFFER_ARRAY_SIZE = 1024
+    }
 
     override fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
     {
-        val buffer = ByteArray(1024)
-        val bufferSize = 8000
+        val buffer = ByteArray(BUFFER_ARRAY_SIZE)
 
         BufferedInputStream(FileInputStream(absoluteFilePath)).use { inputStream ->
 
-            GZIPOutputStream(outputStream, bufferSize).use {
+            GZIPOutputStream(outputStream, BUFFER_SIZE).use {
 
                 gzipOutputStream ->
 
@@ -48,7 +51,6 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
     {
         return File(absoluteFilePath).exists()
     }
-
 
     override fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     {
@@ -74,7 +76,8 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
 
         FileUtils.copyURLToFile(
                 url,
-                tmpFile)
+                tmpFile
+        )
 
         val tmpDir = java.nio.file.Files.createTempDirectory("documents").toFile()
 
@@ -97,12 +100,14 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
         }
         else
         {
-            DocumentDetails(file.name,
-                    file.name,
-                    file.absolutePath,
-                    file.absolutePath.removePrefix(documentsRoot),
-                    file.isFile,
-                    false)
+            DocumentDetails(
+                file.name,
+                file.name,
+                file.absolutePath,
+                file.absolutePath.removePrefix(documentsRoot),
+                file.isFile,
+                false
+            )
         }
     }
 
@@ -130,9 +135,11 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
     }
 }
 
-class DocumentDetails(val name: String,
-                      val displayName: String,
-                      val absolutePath: String,
-                      val pathFragment: String?,
-                      val isFile: Boolean,
-                      val external: Boolean)
+class DocumentDetails(
+    val name: String,
+    val displayName: String,
+    val absolutePath: String,
+    val pathFragment: String?,
+    val isFile: Boolean,
+    val external: Boolean
+)

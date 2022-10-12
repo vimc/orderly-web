@@ -6,14 +6,21 @@ import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 
-class Orderly(val isReviewer: Boolean,
-              val isGlobalReader: Boolean,
-              val reportReadingScopes: List<String> = listOf(),
-              val reportRepository: ReportRepository = OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
-              val artefactRepository: ArtefactRepository = OrderlyArtefactRepository(),
-              val tagRepository: TagRepository = OrderlyWebTagRepository()) : OrderlyClient
+class Orderly(
+        val isReviewer: Boolean,
+        val isGlobalReader: Boolean,
+        val reportReadingScopes: List<String> = listOf(),
+        val reportRepository: ReportRepository =
+                OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
+        val artefactRepository: ArtefactRepository = OrderlyArtefactRepository(),
+        val tagRepository: TagRepository = OrderlyWebTagRepository()
+) : OrderlyClient
 {
-    constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+    constructor(context: ActionContext) : this(
+            context.isReviewer(),
+            context.isGlobalReader(),
+            context.reportReadingScopes
+    )
 
     override fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
@@ -21,19 +28,22 @@ class Orderly(val isReviewer: Boolean,
         return mapToReportVersions(basicVersions)
     }
 
-    override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionWithArtefactsDataDescParamsResources
+    override fun getDetailsByNameAndVersion(name: String, version: String):
+            ReportVersionWithArtefactsDataDescParamsResources
     {
         val basicReportVersion = reportRepository.getReportVersion(name, version)
         val artefacts = artefactRepository.getArtefacts(name, version)
         val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
         val instances = reportRepository.getReportVersionInstances(version)
 
-        return ReportVersionWithArtefactsDataDescParamsResources(basicReportVersion,
+        return ReportVersionWithArtefactsDataDescParamsResources(
+                basicReportVersion,
                 artefacts = artefacts,
                 resources = getResourceFiles(name, version),
                 dataInfo = getDataInfo(name, version),
                 parameterValues = parameterValues,
-                instances = instances)
+                instances = instances
+        )
     }
 
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
@@ -54,7 +64,8 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
             return it.dsl.select(
                     REPORT_VERSION_DATA.NAME,
-                    REPORT_VERSION_DATA.HASH)
+                    REPORT_VERSION_DATA.HASH
+            )
                     .from(REPORT_VERSION_DATA)
                     .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
                     .fetch()
@@ -114,7 +125,8 @@ class Orderly(val isReviewer: Boolean,
         return reportRepository.getDatedChangelogForReport(basicVersion.name, basicVersion.date)
     }
 
-    private fun mapToReportVersions(basicVersions: List<ReportVersionWithDescLatest>): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
+    private fun mapToReportVersions(basicVersions: List<ReportVersionWithDescLatest>):
+            List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
         val versionIds = basicVersions.map { it.id }
         val allCustomFields = reportRepository.getAllCustomFields()
@@ -140,10 +152,12 @@ class Orderly(val isReviewer: Boolean,
             val reportTags = allReportTags[versionId] ?: listOf()
             val orderlyTags = allOrderlyTags[versionId] ?: listOf()
 
-            ReportVersionWithDescCustomFieldsLatestParamsTags(it,
+            ReportVersionWithDescCustomFieldsLatestParamsTags(
+                    it,
                     versionCustomFields,
                     versionParameters,
-                    (versionTags + reportTags + orderlyTags).distinct().sorted())
+                    (versionTags + reportTags + orderlyTags).distinct().sorted()
+            )
         }
     }
 
@@ -154,7 +168,8 @@ class Orderly(val isReviewer: Boolean,
             return it.dsl.select(
                     REPORT_VERSION_DATA.NAME,
                     DATA.SIZE_CSV,
-                    DATA.SIZE_RDS)
+                    DATA.SIZE_RDS
+            )
                     .from(REPORT_VERSION_DATA)
                     .innerJoin(DATA)
                     .on(REPORT_VERSION_DATA.HASH.eq(DATA.HASH))
@@ -176,7 +191,6 @@ class Orderly(val isReviewer: Boolean,
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetch()
                     .map { FileInfo(it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
-
         }
     }
 }

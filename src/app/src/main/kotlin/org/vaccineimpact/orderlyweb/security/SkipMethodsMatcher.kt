@@ -21,5 +21,5 @@ open class SkipMethodsMatcher(methodsToSkip: List<HttpConstants.HTTP_METHOD>) : 
 
 object SkipOptionsMatcher : SkipMethodsMatcher(listOf(HttpConstants.HTTP_METHOD.OPTIONS))
 {
-    val name = "SkipOptions"
+    const val name = "SkipOptions"
 }

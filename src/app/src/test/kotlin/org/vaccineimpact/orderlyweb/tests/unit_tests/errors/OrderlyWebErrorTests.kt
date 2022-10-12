@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.errors
 
 import com.google.gson.JsonSyntaxException
 import org.assertj.core.api.Assertions.assertThat
+import org.jetbrains.annotations.TestOnly
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.errors.*
 import org.vaccineimpact.orderlyweb.models.ResultStatus
@@ -53,6 +54,20 @@ class OrderlyWebErrorTests
 
         assertExpectedOrderlyWebError(sut, 404,
                 "Unknown report : '123'", "unknown-report" )
+    }
+
+    @Test
+    fun `can create ViewModelError`()
+    {
+        val sut = ViewModelError("Invalid view model")
+        assertExpectedOrderlyWebError(sut, 500, "Invalid view model", "view-model-error")
+    }
+
+    @Test
+    fun `can create DataError`()
+    {
+        val sut = DataError("Invalid data")
+        assertExpectedOrderlyWebError(sut, 500, "Invalid data", "data-error")
     }
 
     private fun assertExpectedOrderlyWebError(sut: OrderlyWebError, expectedHttpStatus: Int, expectedMessage: String,

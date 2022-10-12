@@ -5,18 +5,20 @@ import java.time.Instant
 
 data class UserDetails
 @ConstructorProperties("username", "displayName", "email", "userSource", "lastLoggedIn")
-constructor(val username: String,
-            val displayName: String,
-            val email: String,
-            val source: String,
-            val lastLoggedIn: Instant
+constructor(
+        val username: String,
+        val displayName: String,
+        val email: String,
+        val source: String,
+        val lastLoggedIn: Instant
 )
 
 data class User
 @ConstructorProperties("username", "displayName", "email")
-constructor(val username: String,
-            val displayName: String,
-            val email: String
+constructor(
+        val username: String,
+        val displayName: String,
+        val email: String
 )
 
 enum class UserSource

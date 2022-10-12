@@ -9,14 +9,16 @@ import org.openqa.selenium.By
 import org.openqa.selenium.Proxy
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeDriverService
+import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
-
 
 abstract class SeleniumTest : CustomConfigTests()
 {
@@ -24,7 +26,7 @@ abstract class SeleniumTest : CustomConfigTests()
     protected lateinit var wait: WebDriverWait
 
     @get:Rule
-    val debugHelper = DebugHelper()
+    val debugHelper = SeleniumDebugHelper()
 
     companion object
     {
@@ -42,11 +44,15 @@ abstract class SeleniumTest : CustomConfigTests()
         proxy.httpProxy = "localhost:" + hoverflyRule.proxyPort
         proxy.sslProxy = "localhost:" + hoverflyRule.proxyPort
         System.setProperty("webdriver.chrome.whitelistedIps", "")
-        driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
+        val chromeDriverService = ChromeDriverService.createDefaultService()
+        chromeDriverService.sendOutputTo(FileOutputStream("/dev/null"))
+        driver = ChromeDriver(chromeDriverService, ChromeOptions()
                 .apply {
-                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox", "--disable-dev-shm-usage")
+                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox",
+                            "--disable-dev-shm-usage")
                     setProxy(proxy)
                 })
+
         driver.manage().timeouts().implicitlyWait(12, TimeUnit.SECONDS)
         wait = WebDriverWait(driver, 12)
         debugHelper.driver = driver

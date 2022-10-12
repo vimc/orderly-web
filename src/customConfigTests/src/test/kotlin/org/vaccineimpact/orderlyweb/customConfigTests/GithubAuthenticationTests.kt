@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
@@ -12,6 +12,9 @@ import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 class GithubAuthenticationTests : CustomConfigTests()
 {
     private val JSONValidator = JSONValidator()
+
+    @get:Rule
+    val debugHelper = DebugHelper()
 
     // Token with read:org and user:email scope, for a test user who only has access to a test org with no
     // repos. Token reversed so GitHub doesn't spot it and invalidate it
@@ -125,20 +128,26 @@ class GithubAuthenticationTests : CustomConfigTests()
 
     private fun assertAuthSuccess(result: Response)
     {
-        assertSuccessful(result)
+        result.use {
+            assertSuccessful(result)
 
-        val json = JsonLoader.fromString(result.text)
-        assertThat(json["token_type"].textValue()).isEqualTo("bearer")
-        assertThat(json["access_token"]).isNotNull
-        assertThat(isLong(json["expires_in"].toString())).isTrue()
+            val json = JsonLoader.fromString(result.text)
+            assertThat(json["token_type"].textValue()).isEqualTo("bearer")
+            assertThat(json["access_token"]).isNotNull
+            assertThat(isLong(json["expires_in"].toString())).isTrue()
+        }
     }
 
     private fun assertAuthFailure(result: Response)
     {
-        assertThat(result.statusCode).isEqualTo(401)
-        JSONValidator.validateError(result.text,
-                expectedErrorCode = "github-token-invalid",
-                expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid")
+        result.use {
+            assertThat(result.statusCode).isEqualTo(401)
+            JSONValidator.validateError(
+                    result.text,
+                    expectedErrorCode = "github-token-invalid",
+                    expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid"
+            )
+        }
     }
 
     private fun isLong(raw: String): Boolean

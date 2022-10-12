@@ -24,22 +24,39 @@ object ReportRouteConfig : RouteConfig
                     .transform()
                     .secure(readReports),
 
-            APIEndpoint("/reports/:name/run/", ReportRunController::class, "run",
-                    method = HttpMethod.post)
-                    .json()
-                    .secure(runReports),
+            APIEndpoint(
+                    "/reports/:name/run/",
+                    ReportRunController::class,
+                    "run",
+                    method = HttpMethod.post
+            )
+            .json()
+            .secure(runReports),
 
-            APIEndpoint("/reports/:key/status/", ReportRunController::class, "status")
-                    .json()
-                    .secure(runReports),
-            APIEndpoint("/reports/:key/kill/", ReportRunController::class, "kill",
-                    method = HttpMethod.delete)
-                    .json()
-                    .secure(runReports),
+            APIEndpoint(
+                    "/reports/:key/status/",
+                    ReportRunController::class,
+                    "status"
+            )
+            .json()
+            .secure(runReports),
 
-            APIEndpoint("/reports/:name/latest/changelog/", ReportController::class, "getLatestChangelogByName")
-                    .json()
-                    .transform()
-                    .secure(readReports)
+            APIEndpoint(
+                    "/reports/:key/kill/",
+                    ReportRunController::class,
+                    "kill",
+                    method = HttpMethod.delete
+            )
+            .json()
+            .secure(runReports),
+
+            APIEndpoint(
+                    "/reports/:name/latest/changelog/",
+                    ReportController::class,
+                    "getLatestChangelogByName"
+            )
+            .json()
+            .transform()
+            .secure(readReports)
     )
 }

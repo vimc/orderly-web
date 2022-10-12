@@ -3,11 +3,11 @@ package org.vaccineimpact.orderlyweb.security.authentication
 import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.model.Token
 import org.pac4j.core.client.IndirectClient
-import org.pac4j.oauth.config.OAuth20Configuration
-import org.pac4j.oauth.profile.creator.OAuth20ProfileCreator
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.UserProfile
+import org.pac4j.oauth.config.OAuth20Configuration
+import org.pac4j.oauth.profile.creator.OAuth20ProfileCreator
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.UserRepository

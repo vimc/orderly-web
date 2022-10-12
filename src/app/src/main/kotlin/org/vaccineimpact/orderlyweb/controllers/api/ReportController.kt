@@ -21,11 +21,12 @@ class ReportController(
     config: Config
 ) : Controller(context, config)
 {
-    constructor(context: ActionContext) :
-            this(context,
-                    Orderly(context),
-                    OrderlyReportRepository(context),
-                    AppConfig())
+    constructor(context: ActionContext) : this(
+            context,
+            Orderly(context),
+            OrderlyReportRepository(context),
+            AppConfig()
+    )
 
     fun publish(): Boolean
     {

@@ -7,12 +7,13 @@ import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 
-class SettingsController(context: ActionContext,
-                         private val repo: SettingsRepository,
-                         private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()) : Controller(context)
+class SettingsController(
+        context: ActionContext,
+        private val repo: SettingsRepository,
+        private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
+) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context,
-            OrderlySettingsRepository())
+    constructor(context: ActionContext) : this(context, OrderlySettingsRepository())
 
     fun getAuthAllowGuest(): Boolean
     {

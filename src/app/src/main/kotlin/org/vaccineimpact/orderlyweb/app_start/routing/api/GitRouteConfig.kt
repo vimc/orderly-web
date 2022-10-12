@@ -37,5 +37,4 @@ object GitRouteConfig : RouteConfig {
                     .json()
                     .secure(runReports)
     )
-
 }

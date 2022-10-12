@@ -38,10 +38,12 @@ class ReportRunController(
         val gitCommit = context.postData<String>()["gitCommit"]
         val timeout = context.queryParams("timeout")
 
-        val body = Gson().toJson(mapOf(
-                "params" to params,
-                "changelog" to changelog
-        ))
+        val body = Gson().toJson(
+                mapOf(
+                        "params" to params,
+                        "changelog" to changelog
+                )
+        )
         val response =
             orderlyServerAPI.post(
                 "/v1/reports/$name/run/",

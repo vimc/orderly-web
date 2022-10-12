@@ -1,7 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -10,16 +8,19 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 
-class ResourceController(context: ActionContext,
-                         private val orderly: OrderlyClient,
-                         private val files: FileSystem,
-                         private val config: Config) : Controller(context)
+class ResourceController(
+        context: ActionContext,
+        private val orderly: OrderlyClient,
+        private val files: FileSystem,
+        private val config: Config
+) : Controller(context)
 {
-    constructor(context: ActionContext) :
-            this(context,
-                    Orderly(context),
-                    Files(),
-                    AppConfig())
+    constructor(context: ActionContext) : this(
+            context,
+            Orderly(context),
+            Files(),
+            AppConfig()
+    )
 
     fun get(): Map<String, String>
     {
@@ -39,7 +40,9 @@ class ResourceController(context: ActionContext,
         val absoluteFilePath = "${this.config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
+        {
             throw OrderlyFileNotFoundError(resourcename)
+        }
 
         context.addResponseHeader("Content-Disposition", "attachment; filename=\"$filename\"")
         context.addDefaultResponseHeaders(ContentTypes.binarydata)
@@ -49,5 +52,4 @@ class ResourceController(context: ActionContext,
 
         return true
     }
-
 }

@@ -4,29 +4,40 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.ViewModelError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 
 data class Breadcrumb(val name: String, val url: String?)
 
-data class DefaultViewModel(override val loggedIn: Boolean,
-                            override val user: String?,
-                            override val isReviewer: Boolean,
-                            override val isAdmin: Boolean,
-                            override val isGuest: Boolean,
-                            override val breadcrumbs: List<Breadcrumb>,
-                            private val appConfig: Config = AppConfig()) : AppViewModel
+data class DefaultViewModel(
+        override val loggedIn: Boolean,
+        override val user: String?,
+        override val isReviewer: Boolean,
+        override val isAdmin: Boolean,
+        override val isGuest: Boolean,
+        override val breadcrumbs: List<Breadcrumb>,
+        private val appConfig: Config = AppConfig()
+) : AppViewModel
 {
-    constructor(userProfile: CommonProfile?, isReviewer: Boolean, isAdmin: Boolean, isGuest: Boolean, breadcrumbs: List<Breadcrumb>, appConfig: Config) :
-            this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
+    constructor(
+            userProfile: CommonProfile?,
+            isReviewer: Boolean,
+            isAdmin: Boolean,
+            isGuest: Boolean,
+            breadcrumbs: List<Breadcrumb>,
+            appConfig: Config
+    ) : this(userProfile != null, userProfile?.id, isReviewer, isAdmin, isGuest, breadcrumbs, appConfig)
 
-    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()):
-            this(context.userProfile,
+    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()) :
+            this(
+                    context.userProfile,
                     context.hasPermission(ReifiedPermission("reports.review", Scope.Global())),
                     context.hasPermission(ReifiedPermission("users.manage", Scope.Global())),
                     context.userProfile?.id == "guest",
-                    breadcrumbs.toList(), appConfig)
+                    breadcrumbs.toList(), appConfig
+            )
 
     override val appName = appConfig["app.name"]
     override val appUrl = appConfig["app.url"]
@@ -42,7 +53,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     {
         if (!breadcrumbs.any())
         {
-            throw Exception("All ViewModel classes must have at least one breadcrumb")
+            throw ViewModelError("All ViewModel classes must have at least one breadcrumb")
         }
     }
 }
@@ -65,4 +76,3 @@ interface AppViewModel
 
     val fineGrainedAuth: Boolean
 }
-

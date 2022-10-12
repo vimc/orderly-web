@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb
 
 import com.google.gson.reflect.TypeToken
+import org.ocpsoft.prettytime.PrettyTime
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.errors.DataError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import spark.Filter
 import spark.Request
@@ -13,15 +15,16 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.servlet.http.HttpServletResponse
-import org.ocpsoft.prettytime.PrettyTime
 import java.util.*
+import javax.servlet.http.HttpServletResponse
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
 // specific aims.
 
-fun addDefaultResponseHeaders(res: HttpServletResponse,
-                              contentType: String = "${ContentTypes.json}; charset=utf-8")
+fun addDefaultResponseHeaders(
+        res: HttpServletResponse,
+        contentType: String = "${ContentTypes.json}; charset=utf-8"
+)
 {
     if (!res.containsHeader("Content-Encoding"))
     {
@@ -30,7 +33,6 @@ fun addDefaultResponseHeaders(res: HttpServletResponse,
         // This allows cookies to be received over AJAX
         res.addHeader("Access-Control-Allow-Credentials", "true")
     }
-
 }
 
 class DefaultHeadersFilter(val contentType: String) : Filter
@@ -43,7 +45,8 @@ class DefaultHeadersFilter(val contentType: String) : Filter
 
 fun parseRouteParamToFilepath(routeParam: String): String
 {
-    return URLDecoder.decode(routeParam.replace(":", "/"), "UTF-8") //route param may include URL encoding
+    // route param may include URL encoding
+    return URLDecoder.decode(routeParam.replace(":", "/"), "UTF-8")
 }
 
 fun encodeFilename(filename: String): String
@@ -87,49 +90,57 @@ fun canRenderInBrowser(fileName: String): Boolean
     return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm", "bmp"))
 }
 
-//Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
-//Improved version of the same method in commons.io FileUtils, supporting greater precision
-//and rounding up as well as down
+// We use the enum names to render size labels so don't want to be constrained by detekt rule here
+@Suppress("EnumNaming")
 private enum class SizeSuffix
 {
     bytes, KB, MB, GB, TB, PB, EB, ZB, YB
 }
+
+// Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
+// Improved version of the same method in commons.io FileUtils, supporting greater precision
+// and rounding up as well as down
+const val KILO_DIVISOR = 1024L
 fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
 {
-    val KILO_DIVISOR = BigDecimal(1024L)
+    val kiloDivisor = BigDecimal(KILO_DIVISOR)
 
     var displaySize: String
     var bdSize = BigDecimal(size)
     var selectedSuffix = SizeSuffix.bytes
     for (sizeSuffix in SizeSuffix.values())
     {
-        if (sizeSuffix.equals(SizeSuffix.bytes))
+        if (!sizeSuffix.equals(SizeSuffix.bytes))
         {
-            continue
+            if (bdSize.setScale(0, RoundingMode.HALF_UP).toString().length <= maxChars)
+            {
+                break
+            }
+            selectedSuffix = sizeSuffix
+            bdSize = bdSize.divide(kiloDivisor)
         }
-        if (bdSize.setScale(0, RoundingMode.HALF_UP).toString().length <= maxChars)
-        {
-            break
-        }
-        selectedSuffix = sizeSuffix
-        bdSize = bdSize.divide(KILO_DIVISOR)
     }
     displaySize = bdSize.setScale(0, RoundingMode.HALF_UP).toString()
     if (displaySize.length < maxChars - 1)
     {
         displaySize = bdSize.setScale(
-                maxChars - 1 - displaySize.length, RoundingMode.HALF_UP).toString()
+                maxChars - 1 - displaySize.length, RoundingMode.HALF_UP
+        ).toString()
     }
     return displaySize + " " + selectedSuffix.toString()
 }
 
-fun Controller.downloadFile(files: FileSystem,
-                            absoluteFilePath: String,
-                            filename: String,
-                            contentType: String): Boolean
+fun Controller.downloadFile(
+        files: FileSystem,
+        absoluteFilePath: String,
+        filename: String,
+        contentType: String
+): Boolean
 {
     if (!files.fileExists(absoluteFilePath))
+    {
         throw OrderlyFileNotFoundError(filename)
+    }
 
     val response = context.getSparkResponse().raw()
 
@@ -141,23 +152,24 @@ fun Controller.downloadFile(files: FileSystem,
     return true
 }
 
+@Suppress("MagicNumber")
 fun getDateStringFromVersionId(id: String): LocalDateTime
 {
     val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
     val match = regex.matchEntire(id)
-            ?.groupValues ?: throw Exception("Badly formatted report id $id")
+            ?.groupValues ?: throw DataError("Badly formatted report id $id")
 
     return LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
 }
 
 private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
-fun getFriendlyDateTime(date: LocalDateTime) : String
+fun getFriendlyDateTime(date: LocalDateTime): String
 {
     return formatter.format(date)
 }
 
 private val prettyTime = PrettyTime()
-fun getFriendlyRelativeDateTime(date: Date) : String
+fun getFriendlyRelativeDateTime(date: Date): String
 {
     return prettyTime.format(date)
 }

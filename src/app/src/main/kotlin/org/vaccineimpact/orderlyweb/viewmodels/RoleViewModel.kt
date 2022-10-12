@@ -8,13 +8,15 @@ data class RoleViewModel(val name: String, val members: List<UserViewModel>, val
     {
         fun build(role: Role): RoleViewModel
         {
-            return RoleViewModel(role.name,
+            return RoleViewModel(
+                    role.name,
                     role.members.map {
                         UserViewModel.build(it)
                     }.sortedBy { it.displayName },
                     role.permissions.map{
                         PermissionViewModel.build(it, role.name)
-                    }.sorted())
+                    }.sorted()
+            )
         }
     }
 }

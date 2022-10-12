@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.controllers.web
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.annotations.NoCoverage
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
@@ -66,16 +67,19 @@ class WorkflowRunController(
                     },
                     paramList = report.params?.filter { defaultParams[it.key] != it.value }?.map {
                         Parameter(it.key, it.value)
-                    })
+                    }
+            )
         }
         return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
 
-    internal data class WorkflowQueuedReport(val name: String,
-                                             val key: String,
-                                             @SerializedName(value = "execution_order")
-                                             val executionOrder: Int,
-                                             val params: Map<String, String>?)
+    internal data class WorkflowQueuedReport(
+            val name: String,
+            val key: String,
+            @SerializedName(value = "execution_order")
+            val executionOrder: Int,
+            val params: Map<String, String>?
+    )
 
     internal data class WorkflowRunResponse(
             @SerializedName(value = "workflow_key")
@@ -186,7 +190,8 @@ class WorkflowRunController(
                             status.status,
                             status.version
                     )
-                })
+                }
+        )
     }
 
     fun validateWorkflow(): List<WorkflowReportWithParams>

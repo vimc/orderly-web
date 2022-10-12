@@ -25,5 +25,4 @@ class TemplateObjectWrapper : freemarker.ext.beans.BeansWrapper(Configuration.DE
         }
         return baseObjectWrapper.wrap(result)
     }
-
 }

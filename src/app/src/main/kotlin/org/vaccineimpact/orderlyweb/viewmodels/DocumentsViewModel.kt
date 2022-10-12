@@ -9,13 +9,15 @@ import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
-data class DocumentViewModel(val displayName: String,
-                             val path: String,
-                             val url: String,
-                             val isFile: Boolean,
-                             val children: List<DocumentViewModel>,
-                             val canOpen: Boolean,
-                             val external: Boolean)
+data class DocumentViewModel(
+        val displayName: String,
+        val path: String,
+        val url: String,
+        val isFile: Boolean,
+        val children: List<DocumentViewModel>,
+        val canOpen: Boolean,
+        val external: Boolean
+)
 {
     companion object
     {
@@ -32,13 +34,15 @@ data class DocumentViewModel(val displayName: String,
 
             val canOpen = doc.file && (canRenderInBrowser(doc.path) || doc.external)
 
-            val vm = DocumentViewModel(doc.displayName,
+            val vm = DocumentViewModel(
+                    doc.displayName,
                     doc.path,
                     url,
                     doc.file,
                     doc.children.map { build(it) }.filterNotNull(),
                     canOpen,
-                    doc.external)
+                    doc.external
+            )
 
             return if (vm.isFile || vm.children.any())
             {
@@ -52,10 +56,12 @@ data class DocumentViewModel(val displayName: String,
     }
 }
 
-data class DocumentsViewModel(@Serialise("documentList")
-                              val docs: List<DocumentViewModel>,
-                              val canManage: Boolean,
-                              val appViewModel: AppViewModel) : AppViewModel by appViewModel
+data class DocumentsViewModel(
+        @Serialise("documentList")
+        val docs: List<DocumentViewModel>,
+        val canManage: Boolean,
+        val appViewModel: AppViewModel
+) : AppViewModel by appViewModel
 {
     companion object
     {
@@ -65,9 +71,11 @@ data class DocumentsViewModel(@Serialise("documentList")
         {
             val docVms = buildDocs(docs)
 
-            return DocumentsViewModel(docVms,
+            return DocumentsViewModel(
+                    docVms,
                     context.hasPermission(ReifiedPermission("documents.manage", Scope.Global())),
-                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb)
+            )
         }
 
         fun buildDocs(docs: List<Document>): List<DocumentViewModel>

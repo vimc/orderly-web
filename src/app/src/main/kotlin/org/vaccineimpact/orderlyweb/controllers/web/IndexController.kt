@@ -15,7 +15,8 @@ class IndexController(
     actionContext: ActionContext,
     private val orderly: OrderlyClient,
     private val reportRepository: ReportRepository,
-    private val tagRepository: TagRepository) : Controller(actionContext)
+    private val tagRepository: TagRepository
+) : Controller(actionContext)
 {
     constructor(context: ActionContext) :
             this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())

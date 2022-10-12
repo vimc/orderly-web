@@ -5,7 +5,11 @@ abstract class OrderlyWebError(
         val problems: Iterable<org.vaccineimpact.orderlyweb.models.ErrorInfo>
 ) : Exception(formatProblemsIntoMessage(problems))
 {
-    open fun asResult() = org.vaccineimpact.orderlyweb.models.Result(org.vaccineimpact.orderlyweb.models.ResultStatus.FAILURE, null, problems)
+    open fun asResult() = org.vaccineimpact.orderlyweb.models.Result(
+            org.vaccineimpact.orderlyweb.models.ResultStatus.FAILURE,
+            null,
+            problems
+    )
 
     companion object
     {

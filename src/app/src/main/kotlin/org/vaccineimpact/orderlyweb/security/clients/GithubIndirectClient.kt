@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthentic
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 
-class GithubIndirectClient(key: String, secret: String): GitHubClient(key, secret) {
+class GithubIndirectClient(key: String, secret: String) : GitHubClient(key, secret) {
     init {
         setCallbackUrl("${AppConfig()["app.url"]}/login")
     }

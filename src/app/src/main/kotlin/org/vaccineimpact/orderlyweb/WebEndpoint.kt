@@ -65,7 +65,8 @@ data class WebEndpoint(
 
         val factory = configFactory ?: WebSecurityConfigFactory(
                 client,
-                this.requiredPermissions.toSet())
+                this.requiredPermissions.toSet()
+        )
 
         val config = factory.build()
         val filter = SecurityFilter(

@@ -7,8 +7,8 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
-import org.vaccineimpact.orderlyweb.models.ReportStatus
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
+import org.vaccineimpact.orderlyweb.models.ReportStatus
 import java.time.Instant
 
 class ReportRunController(
@@ -49,7 +49,8 @@ class ReportRunController(
         {
             val statusResponse = orderlyServerAPI.get(
                     "/v1/reports/$key/status/",
-                    mapOf("output" to "true"))
+                    mapOf("output" to "true")
+            )
             val latestStatus = statusResponse.data(ReportStatus::class.java)
             updateReportRun(latestStatus, reportRunLogRepository, key)
             log = reportRunLogRepository.getReportRun(key)

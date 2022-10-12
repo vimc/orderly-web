@@ -10,11 +10,11 @@ data class ErrorViewModel(val appViewModel: AppViewModel) : AppViewModel by appV
             this(DefaultViewModel(context, IndexViewModel.breadcrumb, Breadcrumb(pageName, null)))
 }
 
-data class ServerErrorViewModel(val errors: List<ErrorInfo>,
-                                val appViewModel: AppViewModel) :
-        AppViewModel by appViewModel
+data class ServerErrorViewModel(
+        val errors: List<ErrorInfo>,
+        val appViewModel: AppViewModel
+) : AppViewModel by appViewModel
 {
     constructor(error: OrderlyWebError, context: ActionContext) :
             this(error.problems.toList(), ErrorViewModel("Something went wrong", context))
-
 }
