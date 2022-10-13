@@ -3,13 +3,11 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
-# Make the build environment image that is shared between multiple build targets
-$here/make-build-env.sh
-
 # Create an image based on the shared build env that runs the tests
 docker build --tag orderly-web-custom-config-tests \
+    --build-arg GIT_ID=$GIT_ID \
     -f customConfigTests.Dockerfile \
-	.
+	  .
 
 # create the db
 $here/make-db.sh
