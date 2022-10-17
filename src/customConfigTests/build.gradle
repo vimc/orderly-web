@@ -47,7 +47,7 @@ test {
     testLogging {
         // remove standard output logging
         // by assigning only 'failed' and 'standard_error' events
-        events "failed", "standard_error", "standard_out"
+        events "failed", "standard_error"
     }
     afterTest {  desc ,  result  ->
         project(':app').resetOrderlyDemo()

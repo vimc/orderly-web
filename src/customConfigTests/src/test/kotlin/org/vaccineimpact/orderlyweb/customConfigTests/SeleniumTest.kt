@@ -39,7 +39,6 @@ abstract class SeleniumTest : CustomConfigTests()
     @Before
     fun setup()
     {
-        System.err.println("BASE SETUP")
         val proxy = Proxy()
         proxy.noProxy = "localhost"
         proxy.httpProxy = "localhost:" + hoverflyRule.proxyPort

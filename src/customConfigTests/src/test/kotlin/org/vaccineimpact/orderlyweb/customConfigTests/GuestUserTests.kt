@@ -23,7 +23,6 @@ class GuestUserTests: SeleniumTest() {
     @Before
     fun setUp()
     {
-        System.err.println("CLASS SETUP")
         JooqContext().use {
            it.dsl.update(Tables.ORDERLYWEB_SETTINGS)
                    .set(Tables.ORDERLYWEB_SETTINGS.AUTH_ALLOW_GUEST, true)
