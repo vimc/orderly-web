@@ -32,13 +32,6 @@ task copyTemplates(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
-task copyOrderlyDemo(type: Copy) {
-    from '../app/demo'
-    include '*/**'
-    into 'demo'
-    outputs.upToDateWhen { false }
-}
-
 test.dependsOn 'copyStatic'
 test.dependsOn 'copyTemplates'
 test.dependsOn ':app:archiveOrderlyDemo'

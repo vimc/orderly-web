@@ -15,7 +15,6 @@ class AdminPageTests : SeleniumTest()
     @Before
     fun setUp()
     {
-        System.err.println("CLASS SETUP")
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             insertUserAndGroup(it, "another.user@example.com")

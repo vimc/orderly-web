@@ -22,6 +22,5 @@ function cleanup() {
 trap cleanup EXIT
 docker run --rm \
     -v $ORDERLY_DEMO:/api/src/app/demo \
-    -v $ORDERLY_DEMO:/api/src/customConfigTests/demo \
     --network=host \
     orderly-web-custom-config-tests
