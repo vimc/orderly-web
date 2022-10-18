@@ -48,12 +48,13 @@ For all tests to pass you will need to run Montagu related dependencies with
         ./dev/run-dependencies.sh
         
 Unit and integration tests are found in `src/app/src/test`. They can be run through the IDE or on the 
-command line from the `src` directory with `./gradlew :app:test -i`
+command line from the `src` directory with `./gradlew :app:test -i`. The orderly state is shared between 
+tests, so tests should generally avoid mutating state. Tests that involve running reports can run the 
+dedicated report: "minimal-for-running"; that way, all other reports will have a determinate number of versions.
 
 Selenium tests are found in `src/customConfigTests/src/test`. They can be run through the IDE or on the 
-command line from the `src` directory with `./gradlew :customConfigTests:test`. You will have to run 
-`./gradlew :customConfigTests:copyDemo` first.
-You will also have to install chromedriver: `./scripts/install-chromedriver.sh`.
+command line from the `src` directory with `./gradlew :customConfigTests:test`. 
+You will have to install chromedriver: `./scripts/install-chromedriver.sh`.
 sl4j logging is disabled by default to make the output more legible; if needed for debugging, the log level
 can be configured by modifying `src/customConfigTests/src/test/resources/simplelogger.properties`. Also by default, 
 only `stderr` is printed to the console while running these tests; to get `stdout` as well, run in info/verbose mode 
