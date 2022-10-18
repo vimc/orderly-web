@@ -3,10 +3,6 @@ set -e
 
 here=$(dirname $0)
 $here/../buildkite/make-db.sh
-(
-	cd $here/../src
-	./gradlew :customConfigTests:copyOrderlyDemo
-)
 
 export ORDERLY_DEMO=$(realpath $here/../src/app/demo)
 
