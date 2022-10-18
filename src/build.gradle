@@ -80,17 +80,11 @@ subprojects {
 
     tasks.detekt.jvmTarget = "11"
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
         }
     }
-    compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
-    }
-
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
