@@ -11,7 +11,7 @@ rm $ORDERLY_DEMO -rf
 
 docker pull $ORDERLY_IMAGE
 docker run --rm \
-    --entrypoint 'run_orderly_demo.sh' \
+    --entrypoint 'run_orderly_demo' \
     -u $UID \
     -v $PWD:/orderly \
     -w "/orderly" \

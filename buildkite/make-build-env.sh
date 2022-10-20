@@ -9,5 +9,3 @@ docker build \
 
 # We have to push this so it's available to other build steps
 docker push $BUILD_ENV_TAG
-
-
