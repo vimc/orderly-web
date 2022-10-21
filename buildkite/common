@@ -22,9 +22,15 @@ GIT_BRANCH=$(echo $GIT_BRANCH | sed 's;/;-;g')
 
 BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 
+if [ -n "${ORDERLY_SERVER_VERSION-}" ]; then
+    MONTAGU_ORDERLY_SERVER_VERSION=$ORDERLY_SERVER_VERSION
+else
+    MONTAGU_ORDERLY_SERVER_VERSION=$(<$here/../config/orderly_server_version)
+fi
+
 # Export env vars needed for running test dependencies
 export ORG=vimc
-export MONTAGU_ORDERLY_SERVER_VERSION=$(<$here/../config/orderly_server_version)
+export MONTAGU_ORDERLY_SERVER_VERSION=$MONTAGU_ORDERLY_SERVER_VERSION
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
 export MONTAGU_ORDERLY_PATH=$PWD/git
