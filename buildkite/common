@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+ROOT=$(realpath $here/..)
+
 if [ -n "${BUILDKITE-}" ]; then
     GIT_ID=${BUILDKITE_COMMIT:0:7}
 else
@@ -25,7 +27,7 @@ BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 if [ -n "${ORDERLY_SERVER_VERSION-}" ]; then
     MONTAGU_ORDERLY_SERVER_VERSION=$ORDERLY_SERVER_VERSION
 else
-    MONTAGU_ORDERLY_SERVER_VERSION=$(<$here/../config/orderly_server_version)
+    MONTAGU_ORDERLY_SERVER_VERSION=$(<$ROOT/config/orderly_server_version)
 fi
 
 # Export env vars needed for running test dependencies
