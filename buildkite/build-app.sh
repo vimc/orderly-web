@@ -12,11 +12,12 @@ $here/make-build-env.sh
 
 # Create an image based on the build image to compile, test and package the app
 docker build \
-    --file app.Dockerfile \
-    --tag orderly-web-app-build \
-    --build-arg git_id=$GIT_ID \
-	  --build-arg git_branch=$GIT_BRANCH \
-	  .
+  --file app.Dockerfile \
+  --tag orderly-web-app-build \
+  --build-arg git_id=$GIT_ID \
+  --build-arg git_branch=$GIT_BRANCH \
+  --build-arg orderly_server_branch=$ORDERLY_SERVER_VERSION
+.
 
 # Generate orderly data and migrate for orderly web tables
 $here/make-db.sh
@@ -38,11 +39,11 @@ function cleanup() {
 }
 trap cleanup EXIT
 docker run --rm \
-    -v $PWD/demo:/api/src/app/demo \
-    -v $PWD/git:/api/src/app/git \
-    -v $PWD/reports:/api/src/app/build/reports \
-    -v $PWD/coverage:/api/src/app/coverage \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \
-    --network=host \
-    orderly-web-app-build
+  -v $PWD/demo:/api/src/app/demo \
+  -v $PWD/git:/api/src/app/git \
+  -v $PWD/reports:/api/src/app/build/reports \
+  -v $PWD/coverage:/api/src/app/coverage \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \
+  --network=host \
+  orderly-web-app-build
