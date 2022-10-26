@@ -16,8 +16,8 @@ docker build \
   --tag orderly-web-app-build \
   --build-arg git_id=$GIT_ID \
   --build-arg git_branch=$GIT_BRANCH \
-  --build-arg orderly_server_branch=$ORDERLY_SERVER_VERSION
-.
+  --build-arg orderly_server_branch=$ORDERLY_SERVER_VERSION \
+  .
 
 # Generate orderly data and migrate for orderly web tables
 $here/make-db.sh

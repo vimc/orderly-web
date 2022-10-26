@@ -17,6 +17,7 @@ docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
 docker build --tag orderly-web-cli-build \
     --build-arg git_id=$GIT_ID \
     --build-arg git_branch=$GIT_BRANCH \
+    --build-arg orderly_server_branch=$ORDERLY_SERVER_VERSION \
     -f cli.Dockerfile \
     .
 
@@ -30,4 +31,3 @@ docker run --rm \
     -v $PWD/demo:/api/src/userCLI/demo \
     --network=host \
     orderly-web-cli-build
-

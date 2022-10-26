@@ -16,6 +16,7 @@ here=$(dirname $0)
 docker build --tag orderly-web-cli-build \
     --build-arg git_id=$GIT_ID \
     --build-arg git_branch=$GIT_BRANCH \
+    --build-arg orderly_server_branch=$ORDERLY_SERVER_VERSION \
     -f cli.Dockerfile \
     .
 
@@ -24,7 +25,7 @@ $here/make-db.sh
 
 # Run the created image
 function cleanup() {
-  $here/../scripts/clear-docker.sh
+    $here/../scripts/clear-docker.sh
 }
 trap cleanup EXIT
 docker run --rm \
@@ -33,4 +34,3 @@ docker run --rm \
     -v $PWD/demo:/api/src/userCLI/demo \
     --network=host \
     orderly-web-cli-build
-
