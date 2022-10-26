@@ -28,11 +28,15 @@ if [ -n "${ORDERLY_SERVER_VERSION-}" ]; then
     MONTAGU_ORDERLY_SERVER_VERSION=$ORDERLY_SERVER_VERSION
 else
     MONTAGU_ORDERLY_SERVER_VERSION=$(<$ROOT/config/orderly_server_version)
+    ## Set ORDERLY_SERVER_VERSION to empty string to avoid unbound variable
+    ## error from scripts with -u set
+    ORDERLY_SERVER_VERSION=""
 fi
 
 # Export env vars needed for running test dependencies
 export ORG=vimc
 export MONTAGU_ORDERLY_SERVER_VERSION=$MONTAGU_ORDERLY_SERVER_VERSION
+export ORDERLY_SERVER_VERSION=$ORDERLY_SERVER_VERSION
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
 export MONTAGU_ORDERLY_PATH=$PWD/git
