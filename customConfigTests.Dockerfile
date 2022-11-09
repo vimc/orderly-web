@@ -1,4 +1,5 @@
-FROM orderly-web-build-environment
+ARG GIT_ID="UNKNOWN"
+FROM vimc/orderly-web-build-environment:$GIT_ID
 
 RUN apt-get update && apt-get install -yq \
                 default-jre \

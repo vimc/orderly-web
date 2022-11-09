@@ -22,6 +22,7 @@ src/.idea/uiDesigner.xml
 src/.idea/vcs.xml
 src/.idea/workspace.xml
 src/app/demo
+src/app/demo.zip
 src/app/git
 src/app/documents
 src/build/*
@@ -40,4 +41,4 @@ src/customConfigTests/templates
 src/customConfigTests/static
 src/app/static/coverage
 **/*/coverage
-src/app/git.tar.gz
+src/app/demo.tar.gz

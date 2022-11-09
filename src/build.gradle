@@ -21,7 +21,6 @@ version '1.0-SNAPSHOT'
 
 task run(dependsOn: ':app:run')
 task generateDatabaseInterface(dependsOn: ':generateDatabaseInterface:run')
-task generateTestData(dependsOn: ':app:generateTestData')
 
 def loadPropertiesFile(path) {
     def props = new Properties()
@@ -62,11 +61,6 @@ task loadPropertiesTask() {
     }
 }
 
-// local task to run all tests with up to date generated demo data from orderly
-task runLocalTests(dependsOn: [":app:generateTestData", ":app:test"]) {
-    finalizedBy ":app:cleanUpTestData"
-}
-
 subprojects {
 
     apply plugin: "org.jetbrains.kotlin.jvm"
@@ -86,17 +80,11 @@ subprojects {
 
     tasks.detekt.jvmTarget = "11"
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
         }
     }
-    compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
-    }
-
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
@@ -172,4 +160,9 @@ subprojects {
     }
 
     jar.dependsOn 'copyConfigToResources'
+    compileTestKotlin.dependsOn 'copyConfigToResources'
+    test.dependsOn 'copyTestDataToResources'
+    test.dependsOn 'copyTestDataToResources'
+    test.dependsOn 'copyConfigToResources'
+    test.dependsOn 'copyTestConfigToResources'
 }

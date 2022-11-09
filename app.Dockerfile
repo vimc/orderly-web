@@ -1,14 +1,15 @@
-FROM orderly-web-build-environment
+ARG GIT_ID="UNKNOWN"
+FROM vimc/orderly-web-build-environment:$GIT_ID
 
-ARG git_id='UNKNOWN'
-ARG git_branch='UNKNOWN'
-ARG registry=vimc
-ARG name=orderly-web
+ARG GIT_ID="UNKNOWN"
+ARG GIT_BRANCH='UNKNOWN'
+ARG REGISTRY=vimc
+ARG NAME=orderly-web
 
-ENV GIT_ID $git_id
-ENV APP_DOCKER_TAG $registry/$name
-ENV APP_DOCKER_COMMIT_TAG $registry/$name:$git_id
-ENV APP_DOCKER_BRANCH_TAG $registry/$name:$git_branch
+ENV GIT_ID $GIT_ID
+ENV APP_DOCKER_TAG $REGISTRY/$NAME
+ENV APP_DOCKER_COMMIT_TAG $REGISTRY/$NAME:$GIT_ID
+ENV APP_DOCKER_BRANCH_TAG $REGISTRY/$NAME:$GIT_BRANCH
 
 RUN npm run test --prefix=/api/src/app/static
 

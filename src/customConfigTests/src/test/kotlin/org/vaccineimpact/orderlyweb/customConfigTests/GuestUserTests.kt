@@ -72,7 +72,7 @@ class GuestUserTests: SeleniumTest() {
 
         // user should see reports in report table
         rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
-        assertThat(rows.count()).isEqualTo(2)
+        assertThat(rows.count()).isGreaterThan(1)
     }
 
     @Test
@@ -108,7 +108,7 @@ class GuestUserTests: SeleniumTest() {
 
         // user should see reports in report table
         rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
-        assertThat(rows.count()).isEqualTo(2)
+        assertThat(rows.count()).isGreaterThan(1)
     }
 
     @Test

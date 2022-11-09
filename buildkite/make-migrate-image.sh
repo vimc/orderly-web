@@ -16,7 +16,7 @@ docker build \
        -f migrations/Dockerfile \
        .
 
-$here//make-db.sh
+$here/make-db.sh
 
 docker push $COMMIT_TAG
 docker push $BRANCH_TAG

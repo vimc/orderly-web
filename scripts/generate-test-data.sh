@@ -3,7 +3,6 @@
 ORDERLY_IMAGE=vimc/orderly:master
 
 rm demo -rf
-rm git -rf
 
 docker pull $ORDERLY_IMAGE
 docker run --rm \
@@ -20,8 +19,4 @@ docker pull $MIGRATE_IMAGE
 
 docker run --rm \
     -v $PWD/demo:/orderly \
-    $MIGRATE_IMAGE
-
-docker run --rm \
-    -v $PWD/git:/orderly \
     $MIGRATE_IMAGE

@@ -3,19 +3,14 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
-# Make the build environment image that is shared between multiple build targets
-$here/make-build-env.sh
-
 # Create an image based on the shared build env that runs the tests
 docker build --tag orderly-web-custom-config-tests \
+    --build-arg GIT_ID=$GIT_ID \
     -f customConfigTests.Dockerfile \
-	.
+	  .
 
 # create the db
 $here/make-db.sh
-
-# Fix up git remote
-git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
 
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
@@ -26,7 +21,6 @@ function cleanup() {
 }
 trap cleanup EXIT
 docker run --rm \
-    -v $PWD/git:/api/src/app/git \
-    -v $PWD/git:/api/src/customConfigTests/git \
+    -v $ORDERLY_DEMO:/api/src/app/demo \
     --network=host \
     orderly-web-custom-config-tests

@@ -70,44 +70,11 @@ docker {
     files tasks.distTar.outputs, "app.jar"
 }
 
-// creates folder at app/demo with up to date orderly test data
+// creates folder at app/demo with fresh orderly test data
 task generateTestData() {
     doLast {
-        String image = "vimc/orderly:master"
-        def username = System.properties['user.name']
-        def uid = ["id", "-u", username].execute().text.trim()
-
-        println("Pulling " + image)
-
         exec {
-            commandLine 'docker', 'pull', image
-        }
-        exec {
-            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '--user', uid, '--env', 'HOME=/tmp', '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
-        }
-        
-        String owMigrateImage = "vimc/orderlyweb-migrate:master"
-        println("Pulling " + owMigrateImage)
-        exec {
-            commandLine 'docker', 'pull', owMigrateImage
-        }
-        exec {
-            commandLine 'docker', 'run', '--rm', '-v', "$projectDir/demo:/orderly", owMigrateImage
-        }
-        exec {
-            commandLine 'docker', 'run', '--rm', '-v', "$projectDir/git:/orderly", owMigrateImage
-        }
-    }
-}
-
-// removes the app/demo folder
-task cleanUpTestData() {
-    doLast {
-        exec {
-            commandLine "rm", "$projectDir/demo", "--recursive"
-        }
-        exec {
-            commandLine "rm", "$projectDir/git", "--recursive"
+            commandLine "$projectDir/../../buildkite/make-db.sh"
         }
     }
 }
@@ -119,17 +86,15 @@ task copySpec(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
-task archiveGitDemo() {
+task archiveOrderlyDemo() {
     doLast {
         exec {
-            commandLine "tar", "czf", "$projectDir/git.tar.gz", "-C", "$projectDir", "git"
+            commandLine "tar", "czf", "$projectDir/demo.tar.gz", "-C", "$projectDir", "demo"
         }
     }
-
 }
 
 compileTestKotlin.dependsOn 'copyConfigToResources'
-
 test.dependsOn 'copySpec'
 test.dependsOn 'copyConfigToResources'
 test.dependsOn 'copyTestConfigToResources'
@@ -145,11 +110,11 @@ task compileFrontEnd() {
     }
 }
 
-ext.resetGitDemo = {
+ext.resetOrderlyDemo = {
     exec {
-        commandLine "rm", "$projectDir/git/*", "-rf"
-        commandLine "rm", "$projectDir/git/.git", "-rf"
-        commandLine "tar", "xf", "$projectDir/git.tar.gz"
+        commandLine "rm", "$projectDir/demo/*", "-rf"
+        commandLine "rm", "$projectDir/demo/.git", "-rf"
+        commandLine "tar", "xf", "$projectDir/demo.tar.gz"
     }
 }
 

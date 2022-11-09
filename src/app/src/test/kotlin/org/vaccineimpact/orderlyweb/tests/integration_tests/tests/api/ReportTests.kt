@@ -29,7 +29,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = apiRequestHelper.post("/reports/minimal/run/",
+        val response = apiRequestHelper.post("/reports/minimal-for-running/run/",
                 mapOf("params" to mapOf<String, String>()),
                 userEmail = fakeGlobalReportReviewer())
 
@@ -44,7 +44,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `kills report`()
     {
-        val runResponse = apiRequestHelper.post("/reports/minimal/run/", mapOf(),
+        val runResponse = apiRequestHelper.post("/reports/minimal-for-running/run/", mapOf(),
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessfulWithResponseText(runResponse)
         val key = JSONValidator.getData(runResponse.text)["key"].asText()
@@ -62,7 +62,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `only report runners can run report`()
     {
-        val url = "/reports/minimal/run/"
+        val url = "/reports/minimal-for-running/run/"
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,

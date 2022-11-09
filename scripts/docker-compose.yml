@@ -15,7 +15,7 @@ services:
     ports:
       - "8321:8321"
     volumes:
-      - ${MONTAGU_ORDERLY_PATH}:/orderly
+      - ${ORDERLY_DEMO}:/orderly
     environment:
       REDIS_URL: redis://redis
     depends_on:

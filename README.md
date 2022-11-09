@@ -30,14 +30,6 @@ with username "test.user@example.com" and password "password".
 1. Follow the instructions in the CLI logs for triggering a go signal. 
 Linux users may need to create the directory from their root directory first `sudo mkdir -p /etc/orderly/web` and then add the go_signal file `sudo touch /etc/orderly/web/go_signal`
 The app will now be available on your local machine at http://127.0.0.1:8888 and the API at http://127.0.0.1:8888/api/v1
-1. If you want to manually test any functionality which requires interaction with the orderly server (e.g. publish or 
-   run report), you will need the application to use the database in the `/git` subdirectory of `/src/app`, not the 
-   default `/demo` subdirectory. This will give you access to the git test data, which only has the 'minimal' report, 
-   not the full demo test data. 
-   
-   To achieve this, make the following changes before running `/dev/run-dependencies.sh` and the app:
-   - In `/dev/cli.sh'` replace `docker run -v $PWD/src/app/demo:/orderly $image "$@"` with `docker run -v $PWD/src/app/git:/orderly $image "$@"`
-   - In `/config/default.properties` replace `orderly_root=demo/` with `orderly_root=git/`
    
 See [auth.md](/docs/auth.md) for further details about web authentication.
 
@@ -47,10 +39,8 @@ Orderly directory to develop against, run the `:app:generateTestData` gradle
 task (either from within your IDE or on the command line from within the project
 root directory with `./gradlew :app:generateTestData`).
 
-The above task will generate two Orderly directories; one at `./src/app/demo`
-and one at `./src/app/git`. The latter contains an Orderly directory which is
-also a git repo, the former contains several different types of report. These
-are used for integration tests and for running locally.
+The above task will generate an Orderly directory at `./src/app/demo` which is also a git repo. This
+is used for integration tests and for running locally.
 
 ### Run tests
 For all tests to pass you will need to run Montagu related dependencies with
@@ -58,12 +48,13 @@ For all tests to pass you will need to run Montagu related dependencies with
         ./dev/run-dependencies.sh
         
 Unit and integration tests are found in `src/app/src/test`. They can be run through the IDE or on the 
-command line from the `src` directory with `./gradlew :app:test -i`
+command line from the `src` directory with `./gradlew :app:test -i`. The orderly state is shared between 
+tests, so tests should generally avoid mutating state. Tests that involve running reports can run the 
+dedicated report: "minimal-for-running"; that way, all other reports will have a determinate number of versions.
 
 Selenium tests are found in `src/customConfigTests/src/test`. They can be run through the IDE or on the 
-command line from the `src` directory with `./gradlew :customConfigTests:test`. You will have to run 
-`./gradlew :customConfigTests:copyDemo` first.
-You will also have to install chromedriver: `./scripts/install-chromedriver.sh`.
+command line from the `src` directory with `./gradlew :customConfigTests:test`. 
+You will have to install chromedriver: `./scripts/install-chromedriver.sh`.
 sl4j logging is disabled by default to make the output more legible; if needed for debugging, the log level
 can be configured by modifying `src/customConfigTests/src/test/resources/simplelogger.properties`. Also by default, 
 only `stderr` is printed to the console while running these tests; to get `stdout` as well, run in info/verbose mode 
@@ -120,7 +111,7 @@ simply to satisfy coverage metrics. It is only intended for use with `internal d
 ```
 cd src
 # Make sure you have a fresh copy of the db
-rm -r app/demo && rm -r app/git && ./gradlew :app:generateTestData
+./gradlew :app:generateTestData
 # Generate the classes
 ./gradlew :generateDatabaseInterface
 ```

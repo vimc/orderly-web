@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
-set -ex
+set -e
+HERE=$(dirname $0)
+. $HERE/common
 
-docker build --tag orderly-web-build-environment .
+docker build \
+    -t $BUILD_ENV_TAG \
+    .
+
+# We have to push this so it's available to other build steps
+docker push $BUILD_ENV_TAG

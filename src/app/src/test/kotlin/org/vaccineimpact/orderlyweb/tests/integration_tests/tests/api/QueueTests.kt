@@ -14,7 +14,7 @@ class QueueTests : IntegrationTest()
     @Test
     fun `can get queue status`()
     {
-        apiRequestHelper.post("/reports/minimal/run/",
+        apiRequestHelper.post("/reports/minimal-for-running/run/",
                 mapOf("params" to mapOf<String, String>()),
                 userEmail = fakeGlobalReportReviewer())
 
@@ -26,14 +26,14 @@ class QueueTests : IntegrationTest()
         assertThat(tasks.count()).isEqualTo(1)
         assertThat(tasks[0]["key"].textValue()).isNotEmpty()
         assertThat(tasks[0]["status"].textValue()).isNotEmpty()
-        assertThat(tasks[0]["inputs"]["name"].textValue()).isEqualTo("minimal")
+        assertThat(tasks[0]["inputs"]["name"].textValue()).isEqualTo("minimal-for-running")
     }
 
     @Test
     fun `cannot get queue status if not authenticated`()
     {
         val headers = mapOf("Accept" to ContentTypes.json)
-        val response = HttpClient.get(apiRequestHelper.baseUrl + "/reports/minimal/run/", headers)
+        val response = HttpClient.get(apiRequestHelper.baseUrl + "/reports/minimal-for-running/run/", headers)
         assertThat(response.statusCode).isEqualTo(404)
     }
 }
