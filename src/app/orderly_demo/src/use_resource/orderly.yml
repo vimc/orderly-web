@@ -4,14 +4,10 @@ data:
 script: script.R
 resources:
   - meta/data.csv
-  - meta/"data".csv
 artefacts:
   - staticgraph:
       description: A graph of things
       filenames: mygraph.png
-  - staticgraph:
-      description: A graph of things
-      filenames: mygraph's
 author: Dr Serious
 requester: ACME
 comment: This is another comment

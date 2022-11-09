@@ -97,14 +97,14 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with quotes in name`()
     {
-        val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
+        val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
 
-        val url = "/reports/use_resource/versions/$version/artefacts/mygraph%27s"
+        val url = "/reports/spaces/versions/$version/artefacts/mygraph%27s.png"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"use_resource/$version/mygraph's\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/mygraph's.png\"")
     }
 
     @Test
