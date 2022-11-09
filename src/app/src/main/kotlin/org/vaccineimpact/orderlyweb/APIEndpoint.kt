@@ -17,7 +17,6 @@ data class APIEndpoint(
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val authenticateWithExternalProvider: Boolean = false,
-        override val allowParameterAuthentication: Boolean = false,
         override val secure: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
         val configFactory: APISecurityConfigFactory? = null
@@ -42,11 +41,6 @@ data class APIEndpoint(
 
         factory = factory.setRequiredPermissions(this.requiredPermissions.toSet())
 
-        if (allowParameterAuthentication)
-        {
-            factory = factory.allowParameterAuthentication()
-        }
-
         if (authenticateWithExternalProvider)
         {
             factory = factory.externalAuthentication()
@@ -66,11 +60,6 @@ data class APIEndpoint(
                 )
         )
     }
-}
-
-fun APIEndpoint.allowParameterAuthentication(): APIEndpoint
-{
-    return this.copy(allowParameterAuthentication = true)
 }
 
 fun APIEndpoint.secure(permissions: Set<String> = setOf()): APIEndpoint

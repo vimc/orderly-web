@@ -28,7 +28,6 @@ data class WebEndpoint(
         val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
 ) : EndpointDefinition
 {
-    override val allowParameterAuthentication = false
     override val authenticateWithExternalProvider: Boolean = true
 
     override fun additionalSetup(url: String)

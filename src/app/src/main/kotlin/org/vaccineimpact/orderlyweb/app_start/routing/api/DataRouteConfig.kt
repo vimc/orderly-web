@@ -11,11 +11,9 @@ object DataRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
             APIEndpoint("/data/csv/:id/", controller, "downloadCSV", ContentTypes.csv)
-                    .secure(readReports)
-                    .allowParameterAuthentication(),
+                    .secure(readReports),
 
             APIEndpoint("/data/rds/:id/", controller, "downloadRDS")
                     .secure(readReports)
-                    .allowParameterAuthentication()
     )
 }

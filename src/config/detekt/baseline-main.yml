@@ -20,7 +20,6 @@
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:22</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:23</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:24</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.TokenStore.kt:5</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:140</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient.kt:110</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.tests.InsertHelpers.kt:33</ID>
@@ -79,7 +78,6 @@
     <ID>EmptyDefaultConstructor:FakeSession.kt$FakeSession$()</ID>
     <ID>EmptyDefaultConstructor:OrderlyWebIndirectClient.kt$OrderlyWebIndirectClient$()</ID>
     <ID>EmptyFunctionBlock:CertificateHelper.kt$CertificateHelper.TrustAll${ }</ID>
-    <ID>EmptyFunctionBlock:InMemoryTokenStore.kt$InMemoryTokenStore${ }</ID>
     <ID>EmptyFunctionBlock:OkHttpMontaguAPIClient.kt$LocalOkHttpMontaguApiClient.&lt;no name provided&gt;${ }</ID>
     <ID>EnumNaming:Helpers.kt$SizeSuffix.bytes$bytes</ID>
     <ID>ExplicitItLambdaParameter:InsertHelpers.kt${ it -&gt; val lastId = it.dsl.select(DSL.max(REPORT_VERSION_ARTEFACT.ID)) .from(REPORT_VERSION_ARTEFACT) .fetchAnyInto(Int::class.java) ?: 0 it.dsl.insertInto(REPORT_VERSION_ARTEFACT) .set(REPORT_VERSION_ARTEFACT.DESCRIPTION, description) .set(REPORT_VERSION_ARTEFACT.FORMAT, format.toString().lowercase()) .set(REPORT_VERSION_ARTEFACT.REPORT_VERSION, reportVersionId) .set(REPORT_VERSION_ARTEFACT.ORDER, lastId + 1) .set(REPORT_VERSION_ARTEFACT.ID, lastId + 1) .execute() files.map { f -&gt; val hash = generateRandomString() it.dsl.insertInto(FILE) .set(FILE.HASH, hash) .set(FILE.SIZE, f.size) .execute() it.dsl.insertInto(FILE_ARTEFACT) .set(FILE_ARTEFACT.FILENAME, f.name) .set(FILE_ARTEFACT.ARTEFACT, lastId + 1) .set(FILE_ARTEFACT.FILE_HASH, hash) .execute() } }</ID>
@@ -116,7 +114,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.SettingsController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.UserController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.db.AmbiguousRelationBetweenTables.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.db.InMemoryTokenStore.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.db.MissingRelationBetweenTables.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.db.OrderlyClient.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:1</ID>
@@ -127,7 +124,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.BadConfigurationError.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.DuplicateKeyError.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.ExpiredToken.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.InvalidOneTimeLinkToken.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.InvalidOperationError.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.errors.OrderlyWebError.kt:1</ID>
@@ -159,7 +155,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests.ChangelogTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests.ReportTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.database_tests.RoleRepositoryTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.database_tests.UserRepositoryTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.CertificateHelper.kt:1</ID>
@@ -173,7 +168,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.MontaguAPIClientTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.MontaguAuthenticationTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web.AdminPageTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web.ErrorPageTests.kt:1</ID>
@@ -196,7 +190,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.authentication.GithubOAuthAuthenticatorTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.authentication.MontaguAuthenticatorTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.authentication.NeverInvokedAuthenticatorTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.authorization.OrderlyWebAPIAuthorizerTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.authorization.OrderlyWebAuthorizationGeneratorTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.security.clients.GithubDirectClientTests.kt:1</ID>
@@ -208,7 +201,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.APIEndpointTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.ActionResolverTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.FileTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.InMemoryTokenStoreTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.RouterTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.WebEndpointTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.ZipTests.kt:1</ID>
@@ -216,7 +208,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ArtefactControllerTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.DataControllerTests.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.OnetimeTokenControllerTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ResourceControllerTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.UserControllerTests.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.AdminControllerTests.kt:1</ID>
@@ -258,7 +249,6 @@
     <ID>ImportOrdering:org.vaccineimpact.orderlyweb.app_start.RouteConfig.kt:3</ID>
     <ID>ImportOrdering:org.vaccineimpact.orderlyweb.controllers.Controller.kt:3</ID>
     <ID>ImportOrdering:org.vaccineimpact.orderlyweb.controllers.api.DataController.kt:3</ID>
-    <ID>ImportOrdering:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:3</ID>
     <ID>ImportOrdering:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:3</ID>
     <ID>ImportOrdering:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:3</ID>
     <ID>ImportOrdering:org.vaccineimpact.orderlyweb.controllers.web.ReportRunController.kt:3</ID>
@@ -339,7 +329,6 @@
     <ID>MagicNumber:Helpers.kt$4</ID>
     <ID>MagicNumber:Helpers.kt$5</ID>
     <ID>MagicNumber:Helpers.kt$6</ID>
-    <ID>MagicNumber:InvalidOneTimeLinkToken.kt$InvalidOneTimeLinkToken$400</ID>
     <ID>MagicNumber:InvalidOperationError.kt$InvalidOperationError$400</ID>
     <ID>MagicNumber:MissingParameterError.kt$MissingParameterError$400</ID>
     <ID>MagicNumber:MissingRequiredPermissionError.kt$MissingRequiredPermissionError$403</ID>
@@ -442,7 +431,6 @@
     <ID>MaxLineLength:IntegrationTest.kt$IntegrationTest$"You do not have sufficient permissions to access this resource. Missing these permissions: report:${reportName}/reports.read"</ID>
     <ID>MaxLineLength:JWTCookieClientTests.kt$JWTCookieClientTests$assertThat(errorInfo.message).isEqualTo("Bearer token not supplied in cookie 'orderlyweb_jwt_token', or bearer token was invalid")</ID>
     <ID>MaxLineLength:JWTParameterClient.kt$JWTParameterClient$class</ID>
-    <ID>MaxLineLength:JWTParameterClient.kt$JWTParameterClient$override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")</ID>
     <ID>MaxLineLength:JoinPathTests.kt$JoinPathTests$assertThatThrownBy { REPORT.getOther(REPORT_VERSION, CHANGELOG) }.isInstanceOf(IllegalArgumentException::class.java)</ID>
     <ID>MaxLineLength:JoinPathTests.kt$JoinPathTests$assertThatThrownBy{ JoinPathStep(CHANGELOG, REPORT_VERSION) }.isInstanceOf(AmbiguousRelationBetweenTables::class.java)</ID>
     <ID>MaxLineLength:JoinPathTests.kt$JoinPathTests$assertThatThrownBy{ JoinPathStep(ORDERLYWEB_USER, REPORT) }.isInstanceOf(MissingRelationBetweenTables::class.java)</ID>
@@ -457,7 +445,6 @@
     <ID>MaxLineLength:NeverInvokedAuthenticatorTests.kt$NeverInvokedAuthenticatorTests$Assertions.assertThatThrownBy { sut.validate(mock(), mock(), mock()) }.isInstanceOf(UnsupportedOperationException::class.java)</ID>
     <ID>MaxLineLength:NeverInvokedCredentialsExtractorTests.kt$NeverInvokedCredentialsExtractorTestsTests$Assertions.assertThatThrownBy { sut.extract(mock(), mock()) }.isInstanceOf(UnsupportedOperationException::class.java)</ID>
     <ID>MaxLineLength:OkHttpMontaguAPIClient.kt$OkHttpMontaguAPIClient$throw MontaguAPIException("Response had errors ${result.errors.joinToString(",") { it.toString() }}", response.code)</ID>
-    <ID>MaxLineLength:OnetimeTokenTests.kt$OnetimeTokenTests$Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")</ID>
     <ID>MaxLineLength:Orderly.kt$Orderly$constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)</ID>
     <ID>MaxLineLength:Orderly.kt$Orderly$override</ID>
     <ID>MaxLineLength:Orderly.kt$Orderly$private</ID>
@@ -470,7 +457,7 @@
     <ID>MaxLineLength:OrderlyWebBearerTokenAuthenticatorTests.kt$OrderlyWebBearerTokenAuthenticatorTests$assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)</ID>
     <ID>MaxLineLength:OrderlyWebError.kt$OrderlyWebError$open fun asResult()</ID>
     <ID>MaxLineLength:OrderlyWebErrorTests.kt$OrderlyWebErrorTests$val sut = UnableToParseJsonError(JsonSyntaxException("com.google.gson.stream.MalformedJsonException: {\"dodgy\"}"))</ID>
-    <ID>MaxLineLength:OrderlyWebOnetimeTokenAuthenticatorTests.kt$OrderlyWebOnetimeTokenAuthenticatorTests$assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)</ID>
+
     <ID>MaxLineLength:PermissionMapper.kt$PermissionMapper$return ReifiedPermission(dbPermission[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION], mapScope(dbPermission))</ID>
     <ID>MaxLineLength:PublishReportsTests.kt$PublishReportsTests$ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date, false, mapOf(), listOf())</ID>
     <ID>MaxLineLength:PublishReportsTests.kt$PublishReportsTests$ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf())</ID>
@@ -595,8 +582,6 @@
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:40</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:70</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:98</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:40</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:57</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:105</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:106</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:52</ID>
@@ -618,10 +603,6 @@
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.NeverInvokedCredentialsExtractorTests.kt:16</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.authentication.NeverInvokedAuthenticatorTests.kt:16</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebBearerTokenAuthenticatorTests.kt:43</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:124</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:146</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:169</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:76</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.security.clients.JWTCookieClientTests.kt:38</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.unit_tests.APIEndpointTests.kt:151</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.tests.unit_tests.APIEndpointTests.kt:87</ID>
@@ -734,7 +715,6 @@
     <ID>MayBeConst:ContentTypes.kt$ContentTypes$val text = "text/plain"</ID>
     <ID>MayBeConst:ContentTypes.kt$ContentTypes$val zip = "application/zip"</ID>
     <ID>MayBeConst:SkipMethodsMatcher.kt$SkipOptionsMatcher$val name = "SkipOptions"</ID>
-    <ID>MayBeConst:TokenIssuer.kt$TokenIssuer.Companion$val oneTimeActionSubject = "onetime_link"</ID>
     <ID>NewLineAtEndOfFile:401Tests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.templates.401Tests.kt</ID>
     <ID>NewLineAtEndOfFile:500Tests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.templates.500Tests.kt</ID>
     <ID>NewLineAtEndOfFile:APIEndpoint.kt$org.vaccineimpact.orderlyweb.APIEndpoint.kt</ID>
@@ -782,10 +762,7 @@
     <ID>NewLineAtEndOfFile:Helpers.kt$org.vaccineimpact.orderlyweb.Helpers.kt</ID>
     <ID>NewLineAtEndOfFile:HomeRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.api.HomeRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:HomeTests.kt$org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.HomeTests.kt</ID>
-    <ID>NewLineAtEndOfFile:InMemoryTokenStore.kt$org.vaccineimpact.orderlyweb.db.InMemoryTokenStore.kt</ID>
-    <ID>NewLineAtEndOfFile:InMemoryTokenStoreTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.InMemoryTokenStoreTests.kt</ID>
     <ID>NewLineAtEndOfFile:InsertHelpers.kt$org.vaccineimpact.orderlyweb.tests.InsertHelpers.kt</ID>
-    <ID>NewLineAtEndOfFile:InvalidOneTimeLinkToken.kt$org.vaccineimpact.orderlyweb.errors.InvalidOneTimeLinkToken.kt</ID>
     <ID>NewLineAtEndOfFile:InvalidOperationError.kt$org.vaccineimpact.orderlyweb.errors.InvalidOperationError.kt</ID>
     <ID>NewLineAtEndOfFile:JWTCookieClientTests.kt$org.vaccineimpact.orderlyweb.tests.security.clients.JWTCookieClientTests.kt</ID>
     <ID>NewLineAtEndOfFile:JWTParameterClient.kt$org.vaccineimpact.orderlyweb.security.clients.JWTParameterClient.kt</ID>
@@ -801,8 +778,6 @@
     <ID>NewLineAtEndOfFile:MontaguIndirectClientTests.kt$org.vaccineimpact.orderlyweb.tests.security.clients.MontaguIndirectClientTests.kt</ID>
     <ID>NewLineAtEndOfFile:NeverInvokedAuthenticatorTests.kt$org.vaccineimpact.orderlyweb.tests.security.authentication.NeverInvokedAuthenticatorTests.kt</ID>
     <ID>NewLineAtEndOfFile:NeverInvokedCredentialsExtractorTests.kt$org.vaccineimpact.orderlyweb.tests.security.NeverInvokedCredentialsExtractorTests.kt</ID>
-    <ID>NewLineAtEndOfFile:OnetimeTokenControllerTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.OnetimeTokenControllerTests.kt</ID>
-    <ID>NewLineAtEndOfFile:OnetimeTokenTests.kt$org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt</ID>
     <ID>NewLineAtEndOfFile:OrderlyClient.kt$org.vaccineimpact.orderlyweb.db.OrderlyClient.kt</ID>
     <ID>NewLineAtEndOfFile:OrderlyDemoDBTests.kt$org.vaccineimpact.orderlyweb.tests.database_tests.OrderlyDemoDBTests.kt</ID>
     <ID>NewLineAtEndOfFile:OrderlyWebAPIAuthorizerTests.kt$org.vaccineimpact.orderlyweb.tests.security.authorization.OrderlyWebAPIAuthorizerTests.kt</ID>
@@ -811,7 +786,6 @@
     <ID>NewLineAtEndOfFile:OrderlyWebErrorTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.errors.OrderlyWebErrorTests.kt</ID>
     <ID>NewLineAtEndOfFile:OrderlyWebIndirectClientRedirectActionBuilderTests.kt$org.vaccineimpact.orderlyweb.tests.security.RedirectActionBuilders.OrderlyWebIndirectClientRedirectActionBuilderTests.kt</ID>
     <ID>NewLineAtEndOfFile:OrderlyWebIndirectClientTests.kt$org.vaccineimpact.orderlyweb.tests.security.clients.OrderlyWebIndirectClientTests.kt</ID>
-    <ID>NewLineAtEndOfFile:OrderlyWebOnetimeTokenAuthenticatorTests.kt$org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt</ID>
     <ID>NewLineAtEndOfFile:OrderlyWebSecurityLogicTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.security.OrderlyWebSecurityLogicTests.kt</ID>
     <ID>NewLineAtEndOfFile:PermissionChecker.kt$org.vaccineimpact.orderlyweb.tests.PermissionChecker.kt</ID>
     <ID>NewLineAtEndOfFile:PermissionController.kt$org.vaccineimpact.orderlyweb.controllers.web.PermissionController.kt</ID>
@@ -844,7 +818,6 @@
     <ID>NewLineAtEndOfFile:RoutingTests.kt$org.vaccineimpact.orderlyweb.tests.integration_tests.tests.RoutingTests.kt</ID>
     <ID>NewLineAtEndOfFile:RunReportPageTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.templates.vuex.RunReportPageTests.kt</ID>
     <ID>NewLineAtEndOfFile:RunReportViewModel.kt$org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel.kt</ID>
-    <ID>NewLineAtEndOfFile:SQLiteTokenStoreTests.kt$org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt</ID>
     <ID>NewLineAtEndOfFile:Scope.kt$org.vaccineimpact.orderlyweb.models.Scope.kt</ID>
     <ID>NewLineAtEndOfFile:ScopeRequirementTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.models.ScopeRequirementTests.kt</ID>
     <ID>NewLineAtEndOfFile:ScopeTests.kt$org.vaccineimpact.orderlyweb.tests.unit_tests.models.ScopeTests.kt</ID>
@@ -907,7 +880,6 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.web.AdminController.kt:20</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:28</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.Orderly.kt:179</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.SQLiteTokenStore.kt:44</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository.kt:20</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository.kt:17</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.RoleRepository.kt:106</ID>
@@ -954,8 +926,6 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests.VersionTests.kt:386</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.ResourceTests.kt:44</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.RoleRepositoryTests.kt:223</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:124</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:62</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.TagRepositoryTests.kt:150</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.database_tests.WorkflowRunRepositoryTests.kt:609</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper.kt:127</ID>
@@ -976,9 +946,6 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.VersionTests.kt:390</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:63</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.MontaguAPIClientTests.kt:61</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:41</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:58</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:60</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:107</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:121</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:152</ID>
@@ -993,7 +960,6 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.LogoutActionBuilders.MontaguLogoutActionBuilderTests.kt:27</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.authentication.MontaguAuthenticatorTests.kt:98</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebBearerTokenAuthenticatorTests.kt:64</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:53</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.authorization.OrderlyWebAPIAuthorizerTests.kt:130</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.clients.GithubDirectClientTests.kt:32</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.tests.security.clients.GithubIndirectClientTests.kt:36</ID>
@@ -1068,11 +1034,6 @@
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests.ReportTests.kt:304</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests.VersionTests.kt:78</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.ResourceTests.kt:80</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:111</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:116</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:70</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:85</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.SQLiteTokenStoreTests.kt:90</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.TagRepositoryTests.kt:16</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.UserRepositoryTests.kt:140</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.database_tests.UserRepositoryTests.kt:209</ID>
@@ -1082,12 +1043,10 @@
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.DataTests.kt:111</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.DemoDataTests.kt:139</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.MontaguAPIClientTests.kt:34</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:61</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.SecurityTests.kt:153</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web.WorkflowRunTests.kt:319</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.security.GithubOAuthProfileCreatorTests.kt:18</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.security.authentication.GithubOAuthAuthenticatorTests.kt:30</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:48</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.unit_tests.HelperTests.kt:130</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.unit_tests.OrderlyServerTests.kt:350</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.tests.unit_tests.OrderlyServerTests.kt:462</ID>
@@ -1169,7 +1128,6 @@
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.UserTests.kt:7</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:8</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.ZipTests.kt:9</ID>
-    <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth.OnetimeTokenTests.kt:7</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web.DocumentTests.kt:4</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web.ErrorPageTests.kt:11</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web.ReportLogsTests.kt:10</ID>
@@ -1269,7 +1227,6 @@
     <ID>PackageNaming:HelperTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests</ID>
     <ID>PackageNaming:HomeRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:HomeTests.kt$package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api</ID>
-    <ID>PackageNaming:InMemoryTokenStoreTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests</ID>
     <ID>PackageNaming:IndexControllerTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web</ID>
     <ID>PackageNaming:IndexPageTests.kt$package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web</ID>
     <ID>PackageNaming:IndexTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.templates</ID>
@@ -1283,8 +1240,6 @@
     <ID>PackageNaming:MontaguAuthenticationTests.kt$package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth</ID>
     <ID>PackageNaming:MontaguIndirectClientRedirectActionBuilderTests.kt$package org.vaccineimpact.orderlyweb.tests.security.RedirectActionBuilders</ID>
     <ID>PackageNaming:MontaguLogoutActionBuilderTests.kt$package org.vaccineimpact.orderlyweb.tests.security.LogoutActionBuilders</ID>
-    <ID>PackageNaming:OnetimeTokenControllerTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api</ID>
-    <ID>PackageNaming:OnetimeTokenTests.kt$package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth</ID>
     <ID>PackageNaming:OrderlyDemoDBTests.kt$package org.vaccineimpact.orderlyweb.tests.database_tests</ID>
     <ID>PackageNaming:OrderlyServerTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests</ID>
     <ID>PackageNaming:OrderlyTests.kt$package org.vaccineimpact.orderlyweb.tests.database_tests</ID>
@@ -1334,7 +1289,6 @@
     <ID>PackageNaming:RunReportPageTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.vuex</ID>
     <ID>PackageNaming:RunReportTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportControllerTests</ID>
     <ID>PackageNaming:RunnableReportsTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportControllerTests</ID>
-    <ID>PackageNaming:SQLiteTokenStoreTests.kt$package org.vaccineimpact.orderlyweb.tests.database_tests</ID>
     <ID>PackageNaming:ScopeRequirementTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.models</ID>
     <ID>PackageNaming:ScopeTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.models</ID>
     <ID>PackageNaming:SecurityControllerTests.kt$package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web</ID>
@@ -1525,8 +1479,6 @@
     <ID>VariableNaming:Helpers.kt$val KILO_DIVISOR = BigDecimal(1024L)</ID>
     <ID>VariableNaming:IntegrationTest.kt$IntegrationTest$val JSONValidator = JSONValidator()</ID>
     <ID>VariableNaming:RequestHelper.kt$RequestHelper$val MontaguTestUser = "test.user@example.com"</ID>
-    <ID>VariableNaming:SQLiteTokenStore.kt$SQLiteTokenStore$val ONETIME_TOKEN = table(name(tableName))</ID>
-    <ID>VariableNaming:SQLiteTokenStore.kt$SQLiteTokenStore$val TOKEN = field(name("$tableName.TOKEN"))</ID>
     <ID>VariableNaming:UserTests.kt$UserTests$private val ADDED_USER = "added.user@test.com"</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.APIEndpoint.kt:57</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.APIEndpoint.kt:62</ID>
@@ -1670,8 +1622,6 @@
     <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.DataController.kt:22</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.GitController.kt:10</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.GitController.kt:9</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:10</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:11</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:25</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:28</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportRunController.kt:41</ID>
@@ -1812,8 +1762,6 @@
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.DuplicateKeyError.kt:5</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.ExpiredToken.kt:5</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.ExpiredToken.kt:7</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.InvalidOneTimeLinkToken.kt:5</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.InvalidOneTimeLinkToken.kt:7</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.InvalidOperationError.kt:5</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.InvalidOperationError.kt:7</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError.kt:5</ID>
@@ -2334,18 +2282,6 @@
     <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.MontaguAuthenticatorTests.kt:67</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.MontaguAuthenticatorTests.kt:81</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.MontaguAuthenticatorTests.kt:82</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:120</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:122</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:143</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:144</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:166</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:167</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:49</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:50</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:73</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:74</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:96</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.security.authentication.OrderlyWebOnetimeTokenAuthenticatorTests.kt:97</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.unit_tests.APIEndpointTests.kt:131</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.unit_tests.APIEndpointTests.kt:137</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.tests.unit_tests.APIEndpointTests.kt:142</ID>

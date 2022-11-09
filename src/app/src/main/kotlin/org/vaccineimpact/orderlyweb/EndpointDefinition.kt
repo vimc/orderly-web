@@ -13,7 +13,6 @@ interface EndpointDefinition
     val contentType: String
     val transform: Boolean
     val requiredPermissions: List<PermissionRequirement>
-    val allowParameterAuthentication: Boolean
     val authenticateWithExternalProvider: Boolean
     val secure: Boolean
 

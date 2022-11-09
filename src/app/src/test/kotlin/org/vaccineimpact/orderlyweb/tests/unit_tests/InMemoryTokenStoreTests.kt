@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.InMemoryTokenStore
 
 class InMemoryTokenStoreTests
 {

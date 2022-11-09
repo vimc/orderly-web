@@ -7,7 +7,6 @@ import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.SQLiteTokenStore
 import java.io.File
 
 class SQLiteTokenStoreTests
