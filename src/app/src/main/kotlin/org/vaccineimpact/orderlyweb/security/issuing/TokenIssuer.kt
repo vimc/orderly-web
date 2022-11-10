@@ -35,13 +35,6 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         )
     }
 
-    private fun getNonce(): String
-    {
-        val bytes = ByteArray(NONCE_SIZE)
-        random.nextBytes(bytes)
-        return Base64.getEncoder().encodeToString(bytes)
-    }
-
     private fun getExpiry(duration: Duration): Date
     {
         return Date.from(Instant.now().plus(duration))

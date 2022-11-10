@@ -42,20 +42,6 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets artefact file with access token`()
-    {
-        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
-
-        val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
-
-        assertSuccessful(response)
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
-    }
-
-    @Test
     fun `gets artefact file with bearer token`()
     {
         val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
@@ -112,8 +98,7 @@ class ArtefactTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -125,11 +110,10 @@ class ArtefactTests : IntegrationTest()
     {
         val fakeartefact = "64328fyhdkjs.csv"
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
 
         insertReport("testname", "testversion")
         insertArtefact("testversion", files = listOf(FileInfo(fakeartefact, 1)))
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

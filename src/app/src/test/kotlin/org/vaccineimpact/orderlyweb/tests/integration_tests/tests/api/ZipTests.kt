@@ -21,29 +21,6 @@ import java.util.zip.ZipInputStream
 
 class ZipTests : IntegrationTest()
 {
-
-    @Test
-    fun `gets zip file with access token`()
-    {
-
-        insertReport("testname", "testversion")
-        createArchiveFolder("testname", "testversion")
-
-        try
-        {
-            val url = "/reports/testname/versions/testversion/all/"
-            val token = apiRequestHelper.generateOnetimeToken(url)
-            val response = apiRequestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
-
-            assertSuccessful(response)
-            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
-        } finally
-        {
-            deleteArchiveFolder("testname", "testversion")
-        }
-    }
-
     @Test
     fun `only report readers can get zip file`()
     {
@@ -64,7 +41,7 @@ class ZipTests : IntegrationTest()
     }
 
     @Test
-    fun `get zip returns 401 if access token is missing`()
+    fun `get zip returns 401 if bearer token is missing`()
     {
         insertReport("testname", "testversion")
         val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
