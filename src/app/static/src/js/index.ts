@@ -9,6 +9,9 @@ import tokenize2 from "tokenize2";
 treetables(window, $);
 tokenize2(window, $);
 
+declare const currentPinnedReportNames;
+declare const reportDisplayNames;
+
 export const initReportTable = (isReviewer, reports, customFields) => {
 
     const $table = $('#reports-table');
@@ -89,6 +92,10 @@ $(document).ready(() => {
             el: '#setPinnedReportsVueApp',
             components: {
                 setGlobalPinnedReports
+            },
+            data: {
+                reportDisplayNames: reportDisplayNames,
+                currentPinnedReportNames: currentPinnedReportNames
             }
         });
     }

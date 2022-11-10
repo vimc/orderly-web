@@ -1,15 +1,15 @@
 $success: #28a75e;
-@import "partials/variables";
+@import "partials/_variables";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 @import "../../node_modules/vue-select/src/scss/vue-select.scss";
 
-@import "partials/buttons";
-@import "partials/fonts";
-@import "partials/page";
-@import "partials/nav-right";
-@import "partials/nav";
-@import "partials/workflow-summary";
-@import "partials/tooltips";
+@import "partials/_buttons";
+@import "partials/_fonts";
+@import "partials/_page";
+@import "partials/_nav-right";
+@import "partials/_nav";
+@import "partials/_workflow-summary";
+@import "partials/_tooltips";
 
 html {
   overflow-y: scroll;

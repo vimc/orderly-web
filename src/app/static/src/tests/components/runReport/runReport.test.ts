@@ -37,7 +37,6 @@ describe("runReport", () => {
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
-            state: mockRunReportRootState(),
             modules: {
                 git: {
                     namespaced: true,
@@ -116,11 +115,11 @@ describe("runReport", () => {
             }
         });
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
-
         await Vue.nextTick();
 
+        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
         await wrapper.findComponent(ReportList).find("li").trigger("mousedown");
+
         expect(wrapper.vm.$data["selectedReport"]).toBe(global);
 
         await wrapper.findComponent(ReportList).find("button").trigger("click");
@@ -316,7 +315,7 @@ describe("runReport", () => {
         expect(runGroup.exists()).toBe(false);
     });
 
-    it("clicking run button sends run request and displays status on success", async (done) => {
+    it("clicking run button sends run request and displays status on success", async () => {
         const param_url = "http://app/report/test-report/config/parameters/?commit=test-commit"
         mockAxios.onGet(param_url)
             .reply(200, {"data": []});
@@ -346,56 +345,59 @@ describe("runReport", () => {
         });
 
         expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
-        setTimeout(async () => { //give the wrapper time to fetch reports
-            wrapper.setData({
-                selectedReport: {name: "test-report"},
-                selectedCommitId: "test-commit",
-                error: "test-error",
-                defaultMessage: "test-msg"
-            });
-            await Vue.nextTick()
-            wrapper.findComponent(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
-            expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
-            wrapper.setData({
-                parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
-            })
-            await Vue.nextTick()
-            wrapper.find("#run-form-group button").trigger("click");
-            setTimeout(() => {
-                expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.get.length).toBe(2);
-                expect(mockAxios.history.get[1].url).toBe(param_url);
-                expect(mockAxios.history.post[0].url).toBe(url);
-                expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
-                    {
-                        "instances": {
-                            "source": "science",
-                            "annexe": "science"
-                        },
-                        "params": {
-                            "minimal": "test",
-                            "global": "random_39id"
+        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({
+            "annexe": "a1",
+            "source": "uat"
+        })
 
-                        },
-                        changelog: null,
-                        "gitBranch": "master",
-                        "gitCommit": "test-commit"
-                    }
-                ));
-                expect(wrapper.find("#run-report-status").text()).toContain("Run started");
-                expect(wrapper.find("#run-report-status a").text()).toBe("View log");
-                expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
-                expect(wrapper.vm.$data.runningKey).toBe("test-key");
-                expect(wrapper.vm.$data.error).toBe("");
-                expect(wrapper.vm.$data.defaultMessage).toBe("");
-                done();
-            });
+        await wrapper.setData({
+            selectedReport: {name: "test-report"},
+            selectedCommitId: "test-commit",
+            error: "test-error",
+            defaultMessage: "test-msg"
         });
+        await Vue.nextTick()
+        wrapper.findComponent(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
+        expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
+        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({
+            "annexe": "a1",
+            "source": "science"
+        })
+        await wrapper.setData({
+            parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
+        })
+        await Vue.nextTick()
+        await wrapper.find("#run-form-group button").trigger("click");
+        await Vue.nextTick();
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.get.length).toBe(2);
+        expect(mockAxios.history.get[1].url).toBe(param_url);
+        expect(mockAxios.history.post[0].url).toBe(url);
+        expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+            {
+                "instances": {
+                    "source": "science",
+                    "annexe": "science"
+                },
+                "params": {
+                    "minimal": "test",
+                    "global": "random_39id"
+
+                },
+                changelog: null,
+                "gitBranch": "master",
+                "gitCommit": "test-commit"
+            }
+        ));
+        expect(wrapper.find("#run-report-status").text()).toContain("Run started");
+        expect(wrapper.find("#run-report-status a").text()).toBe("View log");
+        expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
+        expect(wrapper.vm.$data.runningKey).toBe("test-key");
+        expect(wrapper.vm.$data.error).toBe("");
+        expect(wrapper.vm.$data.defaultMessage).toBe("");
     });
 
-    it("clicking run button sends changelog with request if set", async (done) => {
+    it("clicking run button sends changelog with request if set", async () => {
         const param_url = "http://app/report/test-report/parameters/?commit=test-commit"
         mockAxios.onGet(param_url)
             .reply(200, {"data": []});
@@ -421,98 +423,89 @@ describe("runReport", () => {
                 }
             }
         });
-        setTimeout(async () => { //give the wrapper time to fetch reports
-            wrapper.setData({
-                selectedReport: {name: "test-report"}
-            });
-            await Vue.nextTick();
 
-            wrapper.setData({
-                changelog: {
-                    message: "test changelog",
-                    type: "internal"
-                }
-            });
-
-            wrapper.find("#run-form-group button").trigger("click");
-            setTimeout(() => {
-                expect(mockAxios.history.post[0].url).toBe(url);
-                expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
-                    {
-                        instances: {},
-                        params: {},
-                        changelog: {message: "test changelog", type: "internal"},
-                        gitBranch: "",
-                        gitCommit: ""
-                    }
-                ));
-                expect(wrapper.find("#run-report-status").text()).toContain("Run started");
-                expect(wrapper.vm.$data.runningKey).toBe("test-key");
-                expect(wrapper.emitted("update:key").length).toBe(1);
-                expect(wrapper.emitted("update:key")[0][0]).toBe("test-key");
-
-                done();
-            });
+        wrapper.setData({
+            selectedReport: {name: "test-report"}
         });
+        await Vue.nextTick();
+
+        wrapper.setData({
+            changelog: {
+                message: "test changelog",
+                type: "internal"
+            }
+        });
+
+        await wrapper.find("#run-form-group button").trigger("click");
+        await Vue.nextTick();
+        expect(mockAxios.history.post[0].url).toBe(url);
+        expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+            {
+                instances: {},
+                params: {},
+                changelog: {message: "test changelog", type: "internal"},
+                gitBranch: "",
+                gitCommit: ""
+            }
+        ));
+        expect(wrapper.find("#run-report-status").text()).toContain("Run started");
+        expect(wrapper.vm.$data.runningKey).toBe("test-key");
+        expect(wrapper.emitted("update:key").length).toBe(1);
+        expect(wrapper.emitted("update:key")[0][0]).toBe("test-key");
     });
 
-    it("clicking run button sends run request and sets error", async (done) => {
+    it("clicking run button sends run request and sets error", async () => {
         const url = 'http://app/report/minimal/actions/run/';
         mockAxios.onPost(url)
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper();
 
-        setTimeout(async () => { //give the wrapper time to fetch reports
-            wrapper.setData({
-                selectedReport: minimal,
-                selectedCommitId: "test-commit",
-                error: "",
-                defaultMessage: ""
-            });
-
-            await Vue.nextTick();
-            wrapper.find("#run-form-group button").trigger("click");
-
-            setTimeout(() => {
-                expect(wrapper.find("#run-report-status").exists()).toBe(false);
-                expect(wrapper.vm.$data.runningKey).toBe("");
-                expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
-                expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when running report");
-                expect(wrapper.emitted("update:key")).toBeUndefined();
-                done();
-            });
+        wrapper.setData({
+            selectedReport: minimal,
+            selectedCommitId: "test-commit",
+            error: "",
+            defaultMessage: ""
         });
+
+        await Vue.nextTick();
+
+        await wrapper.find("#run-form-group button").trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(wrapper.find("#run-report-status").exists()).toBe(false);
+        expect(wrapper.vm.$data.runningKey).toBe("");
+        expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
+        expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when running report");
+        expect(wrapper.emitted("update:key")).toBeUndefined();
     });
 
-    it("clicking 'View log' emits 'changeTab'", async (done) => {
+    it("clicking 'View log' emits 'changeTab'", async () => {
         const url = 'http://app/report/test-report/actions/status/test-key/';
         mockAxios.onGet(url)
             .reply(200, {data: {status: "test-status"}});
         const wrapper = getWrapper();
 
-        setTimeout(async () => { //give the wrapper time to fetch reports
-            wrapper.setData({
-                selectedReport: minimal,
-                error: "test-error",
-                defaultMessage: "test-msg"
-            });
-            await Vue.nextTick();
 
-            //Set data in two stages because status and key get reset by watch on selectedReport change
-            wrapper.setData({
-                runningStatus: "Run started",
-                runningKey: "test-key",
-                disableRun: true
-            });
-            await Vue.nextTick();
-
-            wrapper.find("#run-form-group a").trigger("click");
-
-            setTimeout(() => {
-                expect(wrapper.emitted("changeTab").length).toBe(1);
-                done();
-            });
+        wrapper.setData({
+            selectedReport: minimal,
+            error: "test-error",
+            defaultMessage: "test-msg"
         });
+        await Vue.nextTick();
+
+        //Set data in two stages because status and key get reset by watch on selectedReport change
+        wrapper.setData({
+            runningStatus: "Run started",
+            runningKey: "test-key",
+            disableRun: true
+        });
+        await Vue.nextTick();
+
+        await wrapper.find("#run-form-group a").trigger("click");
+        await Vue.nextTick();
+        expect(wrapper.emitted("changeTab").length).toBe(1);
     });
 
     it("changing selectedReport resets runningStatus and enables run", async () => {

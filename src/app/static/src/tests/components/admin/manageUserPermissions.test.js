@@ -150,7 +150,7 @@ describe("manage users", () => {
         expect(rendered.findComponent(PermissionList).isVisible()).toBe(true);
     });
 
-    it("can remove permission", async (done) => {
+    it("can remove permission", async () => {
         mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(200);
 
@@ -163,17 +163,16 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        rendered.find(".remove").trigger("click");
+        await rendered.find(".remove").trigger("click");
 
-        setTimeout(() => {
-            expect(mockAxios.history.delete.length).toBe(1);
-            expect(rendered.emitted().changed.length).toBe(1);
-            done();
-        })
+        await Vue.nextTick();
+        await Vue.nextTick();
 
+        expect(mockAxios.history.delete.length).toBe(1);
+        expect(rendered.emitted().changed.length).toBe(1);
     });
 
-    it("sets error if removing permission fails", async (done) => {
+    it("sets error if removing permission fails", async () => {
         mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(500);
         const rendered = mountedComponent();
@@ -185,17 +184,18 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        rendered.find(".remove").trigger("click");
+        await rendered.find(".remove").trigger("click");
 
-        setTimeout(() => {
-            expect(rendered.emitted().changed).toBeUndefined();
-            expect(rendered.find(".text-danger").text())
-                .toBe("Error: could not remove reports.read from b@example.com");
-            done();
-        });
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.emitted().changed).toBeUndefined();
+        expect(rendered.find(".text-danger").text())
+            .toBe("Error: could not remove reports.read from b@example.com");
+
     });
 
-    it("can add permission", async (done) => {
+    it("can add permission", async () => {
         mockAxios.onPost('http://app/users/b%40example.com/permissions/')
             .reply(200);
 
@@ -212,16 +212,17 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        rendered.find("button").trigger("click");
+        await rendered.find("button").trigger("click");
 
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(rendered.emitted().changed.length).toBe(1);
-            done();
-        });
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(rendered.emitted().changed.length).toBe(1);
+
     });
 
-    it("sets error if adding permission fails", async (done) => {
+    it("sets error if adding permission fails", async () => {
         mockAxios.onPost('http://app/users/b%40example.com/permissions/')
             .reply(500);
 
@@ -238,14 +239,13 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        rendered.find("button").trigger("click");
+        await rendered.find("button").trigger("click");
 
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(rendered.emitted().changed).toBeUndefined();
-            expect(rendered.find(".text-danger").text())
-                .toBe("Error: could not add reports.review to b@example.com");
-            done();
-        });
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(rendered.emitted().changed).toBeUndefined();
+        expect(rendered.find(".text-danger").text())
+            .toBe("Error: could not add reports.review to b@example.com");
     });
 });

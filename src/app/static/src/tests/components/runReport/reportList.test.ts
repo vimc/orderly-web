@@ -20,7 +20,10 @@ describe("reportList", () => {
     it("renders typeahead correctly and fires event on selection", async () => {
         const wrapper = getWrapper();
 
+        await Vue.nextTick();
+
         (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
+
         await Vue.nextTick();
 
         const reportSuggestions = wrapper.findAll("li");
@@ -41,6 +44,7 @@ describe("reportList", () => {
         (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus()
 
         await wrapper.find("input").setValue("rt2");
+        await Vue.nextTick();
         let reportSuggestions = wrapper.findAll("li");
         expect(reportSuggestions.length).toBe(1);
         expect(reportSuggestions.at(0).text()).toBe("report2 Last run: Wed Apr 21 2021, 09:10");
