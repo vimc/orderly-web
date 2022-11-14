@@ -95,6 +95,19 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
+    fun `gets artefact file with quotes in name`()
+    {
+        val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
+
+        val url = "/reports/spaces/versions/$version/artefacts/mygraph%27s.png"
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/mygraph's.png\"")
+    }
+
+    @Test
     fun `only report readers can download artefact file`()
     {
         val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
