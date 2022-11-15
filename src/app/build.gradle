@@ -105,7 +105,7 @@ jar.dependsOn 'copyConfigToResources'
 task compileFrontEnd() {
     doLast {
         exec {
-            commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+            commandLine "npm", "run", "build-prod", "--prefix=$projectDir/static/"
         }
     }
 }
