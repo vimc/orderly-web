@@ -47,7 +47,7 @@ COPY dist.Dockerfile /api/src/
 
 RUN npm install -g npm
 
-RUN npm install --prefix=/api/src/app/static
+RUN npm install --prefix=/api/src/app/static --force
 RUN ./gradlew :app:compileFrontEnd
 
 RUN npm run lint --prefix=/api/src/app/static -- --quiet
