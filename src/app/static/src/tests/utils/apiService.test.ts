@@ -148,7 +148,7 @@ describe("ApiService", () => {
         expect(mockAxios.history.post[0].headers).toStrictEqual({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-GB",
-            "Content-Type": "application/json;charset=utf-8"
+            "Content-Type": "application/json"
         })
     });
 

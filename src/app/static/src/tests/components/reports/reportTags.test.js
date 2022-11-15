@@ -26,7 +26,7 @@ describe("reportTags", () => {
             .reply(200, {"data": mockTags});
     });
 
-    it('fetches tags on mount', async (done) => {
+    it('fetches tags on mount', (done) => {
         const wrapper = shallowMount(ReportTags, {propsData: propsData});
 
         setTimeout(() => {
@@ -189,7 +189,7 @@ describe("reportTags", () => {
         expect(wrapper.vm.$data.editedReportTags).toStrictEqual(newTags);
     });
 
-    it("clicking saveChanges saves and refreshes tags", async (done) => {
+    it("clicking saveChanges saves and refreshes tags", (done) => {
         const wrapper = shallowMount(ReportTags, {propsData: {...propsData, canEdit: true}});
         wrapper.find("a").trigger("click");
 
@@ -228,7 +228,7 @@ describe("reportTags", () => {
 
     });
 
-    it("error on save displays error message", async (done) => {
+    it("error on save displays error message", (done) => {
         mockAxios.onPost('http://app/report/r1/version/v1/update-tags/')
             .reply(500, "TEST ERROR");
 
@@ -260,7 +260,7 @@ describe("reportTags", () => {
 
     });
 
-    it("error on get tags displays error message", async (done) => {
+    it("error on get tags displays error message", (done) => {
         mockAxios.onGet('http://app/report/r1/version/v1/tags/')
             .reply(500, "TEST ERROR");
 

@@ -22,7 +22,7 @@ describe("reportDependencies", () => {
         });
     };
 
-    it("fetches and renders dependencies", async (done) => {
+    it("fetches and renders dependencies", (done) => {
         const testDeps = {
           direction: "upstream",
           dependency_tree: {
@@ -59,7 +59,7 @@ describe("reportDependencies", () => {
 
     });
 
-    it("renders nothing if no child dependencies", async (done) => {
+    it("renders nothing if no child dependencies", (done) => {
         const testDeps = {
             direction: "upstream",
             dependency_tree: {
@@ -79,7 +79,7 @@ describe("reportDependencies", () => {
         });
     });
 
-    it("renders error", async (done) => {
+    it("renders error", (done) => {
         mockAxios.onGet(url)
             .reply(500, "test-error");
 

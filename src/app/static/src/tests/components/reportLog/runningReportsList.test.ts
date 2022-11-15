@@ -22,7 +22,7 @@ describe("runningReportsList", () => {
     it("renders typeahead correctly and fires event on selection", async () => {
         const wrapper = getWrapper();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus()
+        await wrapper.findComponent(VueSelect).setData({open: true});
         await Vue.nextTick();
 
         const reportSuggestions = wrapper.findAll("li");
@@ -39,7 +39,7 @@ describe("runningReportsList", () => {
     it("typeahead filters list correctly", async () => {
         const wrapper = getWrapper();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
+        await wrapper.findComponent(VueSelect).setData({open: true});
         await Vue.nextTick();
 
         (wrapper.findComponent(VueSelect).vm as any).search = "rt2";

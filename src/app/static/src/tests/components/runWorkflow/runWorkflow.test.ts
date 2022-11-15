@@ -184,7 +184,7 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
     })
 
-    it(`can start and cancel workflow wizard correctly when starting a workflow wizard from clone`, async (done) => {
+    it(`can start and cancel workflow wizard correctly when starting a workflow wizard from clone`, async () => {
         const mockSetReportsSource = jest.fn();
         session.setSelectedWorkflowReportSource = mockSetReportsSource;
 
@@ -198,130 +198,126 @@ describe(`runWorkflow`, () => {
 
         expect(wrapper.findComponent(runWorkflowCreate).vm.$data.runWorkflowMetadata)
             .toMatchObject(workflowMetadata)
-        wrapper.find("#clone").trigger("click")
+        await wrapper.find("#clone").trigger("click")
 
-        setTimeout(async () => {
-            expect(wrapper.vm.$data.workflowStarted).toBe(true)
-            expect(wrapper.findComponent(workflowWizard).exists()).toBe(true)
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.workflowStarted).toBe(true)
+        expect(wrapper.findComponent(workflowWizard).exists()).toBe(true)
 
-            // expect session workflow report mode to have been reset
-            expect(mockSetReportsSource.mock.calls.length).toBe(1);
-            expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
+        // expect session workflow report mode to have been reset
+        expect(mockSetReportsSource.mock.calls.length).toBe(1);
+        expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
 
-            expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
+        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
-            let buttons = wrapper.findAll("button")
-            expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(wrapper.find("#cancel-workflow").text()).toBe("Cancel")
-            expect(wrapper.find("#next-workflow").text()).toBe("Next")
+        let buttons = wrapper.findAll("button")
+        expect(buttons.at(0).text()).toBe("Refresh git")
+        expect(wrapper.find("#cancel-workflow").text()).toBe("Cancel")
+        expect(wrapper.find("#next-workflow").text()).toBe("Next")
 
-            //cancel workflow
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-            await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true);
-            await wrapper.find("#next-workflow").trigger("click")
-            expect(wrapper.find("#summary-header").exists()).toBe(true)
+        //cancel workflow
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
+        await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true);
+        await wrapper.find("#next-workflow").trigger("click")
+        expect(wrapper.find("#summary-header").exists()).toBe(true)
 
-            buttons = wrapper.findAll("button")
-            expect(buttons.at(0).text()).toBe("Cancel")
-            expect(buttons.at(1).text()).toBe("Back")
-            expect(buttons.at(2).text()).toBe("Next")
+        buttons = wrapper.findAll("button")
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Back")
+        expect(buttons.at(2).text()).toBe("Next")
 
-            await buttons.at(2).trigger("click")
+        await buttons.at(2).trigger("click")
 
-            expect(wrapper.find("#run-header").text()).toBe("Run workflow")
-            const runButtons = wrapper.findAll("button")
+        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
+        const runButtons = wrapper.findAll("button")
 
-            expect(wrapper.findComponent(workflowWizard).props("disableRename")).toBe(false)
-            expect(wrapper.find("#workflow-name-div input").attributes("disabled")).toBeUndefined()
+        expect(wrapper.findComponent(workflowWizard).props("disableRename")).toBe(false)
+        expect(wrapper.find("#workflow-name-div input").attributes("disabled")).toBeUndefined()
 
-            expect(runButtons.at(0).text()).toBe("Cancel")
-            expect(runButtons.at(1).text()).toBe("Back")
-            expect(runButtons.at(2).text()).toBe("Run workflow")
+        expect(runButtons.at(0).text()).toBe("Cancel")
+        expect(runButtons.at(1).text()).toBe("Back")
+        expect(runButtons.at(2).text()).toBe("Run workflow")
 
-            expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
 
-            await wrapper.find("#workflow-name-div input").setValue("interim workflow")
-            expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
+        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
-            //cancel workflow
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
+        //cancel workflow
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
 
-            await runButtons.at(0).trigger("click")
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-show")
+        await runButtons.at(0).trigger("click")
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-show")
 
-            expect(wrapper.find("#create-workflow-header").exists()).toBe(false)
-            await wrapper.find("#confirm-cancel-btn").trigger("click")
-            expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
-            done()
-        });
+        expect(wrapper.find("#create-workflow-header").exists()).toBe(false)
+        await wrapper.find("#confirm-cancel-btn").trigger("click")
+        expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
+
     })
 
-    it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`, (done) => {
+    it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`, async () => {
         const mockSetReportsSource = jest.fn();
         session.setSelectedWorkflowReportSource = mockSetReportsSource;
 
         const wrapper = getWrapper()
-        wrapper.find("#create-workflow").trigger("click")
+        await wrapper.find("#create-workflow").trigger("click")
 
-        setTimeout(async () => {
-            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-            expect(wrapper.findComponent(workflowWizard).exists()).toBe(true)
-            expect(wrapper.findComponent(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(runWorkflowMetadata);
-            expect(wrapper.vm.$data.workflowStarted).toBe(true);
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
+        expect(wrapper.findComponent(workflowWizard).exists()).toBe(true)
+        expect(wrapper.findComponent(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(runWorkflowMetadata);
+        expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
-            // expect session workflow report mode to have been reset
-            expect(mockSetReportsSource.mock.calls.length).toBe(1);
-            expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
+        // expect session workflow report mode to have been reset
+        expect(mockSetReportsSource.mock.calls.length).toBe(1);
+        expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
 
-            let buttons = wrapper.findComponent(workflowWizard).findAll("button")
+        let buttons = wrapper.findComponent(workflowWizard).findAll("button")
 
-            expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Cancel")
-            expect(buttons.at(2).text()).toBe("Next")
+        expect(buttons.at(0).text()).toBe("Refresh git")
+        expect(buttons.at(1).text()).toBe("Cancel")
+        expect(buttons.at(2).text()).toBe("Next")
 
-            await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(2).trigger("click")
-            expect(wrapper.find("#summary-header").exists()).toBe(true)
+        await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true);
+        await buttons.at(2).trigger("click")
+        expect(wrapper.find("#summary-header").exists()).toBe(true)
 
-            buttons = wrapper.findComponent(workflowWizard).findAll("button")
+        buttons = wrapper.findComponent(workflowWizard).findAll("button")
 
-            expect(buttons.at(0).text()).toBe("Cancel")
-            expect(buttons.at(1).text()).toBe("Back")
-            expect(buttons.at(2).text()).toBe("Next")
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Back")
+        expect(buttons.at(2).text()).toBe("Next")
 
-            await buttons.at(2).trigger("click")
-            expect(wrapper.find("#run-header").text()).toBe("Run workflow")
-            const runButtons = wrapper.findAll("button")
+        await buttons.at(2).trigger("click")
+        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
+        const runButtons = wrapper.findAll("button")
 
-            // When a workflow is entered from a rerun step the name input should be disabled
-            // but when entering from the create step as here it should be enabled
-            expect(wrapper.findComponent(workflowWizard).props("disableRename")).toBe(false)
-            expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBeUndefined()
+        // When a workflow is entered from a rerun step the name input should be disabled
+        // but when entering from the create step as here it should be enabled
+        expect(wrapper.findComponent(workflowWizard).props("disableRename")).toBe(false)
+        expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBeUndefined()
 
-            expect(runButtons.at(0).text()).toBe("Cancel")
-            expect(runButtons.at(1).text()).toBe("Back")
-            expect(runButtons.at(2).text()).toBe("Run workflow")
+        expect(runButtons.at(0).text()).toBe("Cancel")
+        expect(runButtons.at(1).text()).toBe("Back")
+        expect(runButtons.at(2).text()).toBe("Run workflow")
 
-            expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
-            await wrapper.find("#workflow-name-div input").setValue("interim workflow")
-            expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
-            //cancel workflow
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-            await runButtons.at(0).trigger("click")
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-show")
+        //cancel workflow
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
+        await runButtons.at(0).trigger("click")
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-show")
 
-            expect(wrapper.find("#create-workflow-header").exists()).toBe(false)
-            await wrapper.find("#confirm-cancel-btn").trigger("click")
-            expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
-
-            done();
-        });
+        expect(wrapper.find("#create-workflow-header").exists()).toBe(false)
+        await wrapper.find("#confirm-cancel-btn").trigger("click")
+        expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
     })
 
-    it(`can call workflow endpoint when on final step and generate link that emits key to workflow`, async (done) => {
+    it(`can call workflow endpoint when on final step and generate link that emits key to workflow`, async () => {
 
         const runWorkflowResponse = {
             data: {
@@ -339,21 +335,18 @@ describe(`runWorkflow`, () => {
         expect(wrapper.vm.$data.runWorkflowMetadata).toBe(workflowMetadata)
         expect(wrapper.find("#view-progress-link").exists()).toBe(false)
         await workflowWizard.vm.$emit("complete")
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
-            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(workflowMetadata));
-            expect(wrapper.vm.$data.createdWorkflowKey).toBe("workflowKey")
-            expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
-            wrapper.find("#view-progress-link > a").trigger("click")
-            setTimeout(() => {
-                expect(wrapper.emitted("view-progress")).toStrictEqual([["workflowKey"]])
-                done()
-            });
-        });
+        await Vue.nextTick()
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
+        expect(mockAxios.history.post[0].data).toBe(JSON.stringify(workflowMetadata));
+        expect(wrapper.vm.$data.createdWorkflowKey).toBe("workflowKey")
+        expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
+        await wrapper.find("#view-progress-link > a").trigger("click")
+        await Vue.nextTick()
+        expect(wrapper.emitted("view-progress")).toStrictEqual([["workflowKey"]])
     })
 
-    it(`workflow progress link clears when metadata updates`, async (done) => {
+    it(`workflow progress link clears when metadata updates`, async () => {
 
         const runWorkflowResponse = {
             data: {
@@ -368,17 +361,14 @@ describe(`runWorkflow`, () => {
         const workflowWizard = wrapper.find("workflow-wizard-stub")
         workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
         await workflowWizard.vm.$emit("complete")
-        setTimeout(() => {
-            expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
-            workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata, name: "new"})
-            setTimeout(() => {
-                expect(wrapper.find("#view-progress-link").exists()).toBe(false)
-                done()
-            });
-        });
+        await Vue.nextTick()
+        expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
+        workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata, name: "new"})
+        await Vue.nextTick()
+        expect(wrapper.find("#view-progress-link").exists()).toBe(false)
     })
 
-    it(`error response from workflow endpoint generates error message and new metadata clears error`, async (done) => {
+    it(`error response from workflow endpoint generates error message and new metadata clears error`, async () => {
         mockAxios.onPost('http://app/workflow')
             .reply(500, "TEST ERROR");
 
@@ -387,19 +377,19 @@ describe(`runWorkflow`, () => {
         const workflowWizard = wrapper.find("workflow-wizard-stub")
         workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
         await workflowWizard.vm.$emit("complete")
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(wrapper.vm.$data.createdWorkflowKey).toBe("")
-            expect(wrapper.find("#view-progress-link").exists()).toBe(false)
-            const errorMessage = wrapper.find("error-info-stub")
-            expect(errorMessage.props("defaultMessage")).toBe("An error occurred while running the workflow")
-            expect(errorMessage.props("apiError")).toBeTruthy()
-            workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata, name: "new"})
-            setTimeout(() => {
-                expect(errorMessage.props("apiError")).toBe("")
-                done()
-            });
-        });
+        await Vue.nextTick()
+        expect(mockAxios.history.post.length).toBe(1);
+        await Vue.nextTick()
+        await Vue.nextTick()
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.createdWorkflowKey).toBe("")
+        expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+        const errorMessage = wrapper.find("error-info-stub")
+        expect(errorMessage.props("defaultMessage")).toBe("An error occurred while running the workflow")
+        expect(errorMessage.props("apiError")).toBeTruthy()
+        workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata, name: "new"})
+        await Vue.nextTick()
+        expect(errorMessage.props("apiError")).toBe("")
     })
 
     it(`handles rerun if workflowToRun is set`, async () => {

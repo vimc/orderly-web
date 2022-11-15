@@ -22,8 +22,7 @@ describe("reportList", () => {
 
         await Vue.nextTick();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
-
+        await wrapper.findComponent(VueSelect).setData({open: true});
         await Vue.nextTick();
 
         const reportSuggestions = wrapper.findAll("li");
@@ -41,8 +40,8 @@ describe("reportList", () => {
     it("typeahead filters list correctly", async () => {
         const wrapper = getWrapper();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus()
-
+        await wrapper.findComponent(VueSelect).setData({open: true});
+        await Vue.nextTick();
         await wrapper.find("input").setValue("rt2");
         await Vue.nextTick();
         let reportSuggestions = wrapper.findAll("li");

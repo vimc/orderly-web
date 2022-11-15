@@ -159,7 +159,7 @@
         methods: {
             startPolling() {
                 if (!this.pollingTimer) {
-                    this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+                  this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
                 }
             },
             stopPolling() {

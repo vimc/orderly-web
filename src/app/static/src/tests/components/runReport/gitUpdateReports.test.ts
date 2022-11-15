@@ -301,6 +301,9 @@ describe("gitUpdateReports", () => {
             }
         });
 
+        await Vue.nextTick();
+        await Vue.nextTick();
+
         expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
         const button = wrapper.find("#git-refresh-btn");
 
@@ -308,21 +311,13 @@ describe("gitUpdateReports", () => {
         expect(wrapper.vm.$data.gitRefreshing).toBe(true);
         await Vue.nextTick();
         expect(button.attributes("disabled")).toBe("disabled");
-
         await Vue.nextTick();
-        await Vue.nextTick();
-        await Vue.nextTick();
-
         let getHistory = mockAxios.history.get
-
-        expect(getHistory[1].url).toBe("http://app/git/fetch/");
-        expect(getHistory[2].url).toBe("http://app/reports/runnable/?branch=master&commit=abcdef");
+        expect(getHistory[1].url).toBe("http://app/reports/runnable/?branch=master&commit=abcdef");
+        expect(getHistory[2].url).toBe("http://app/git/fetch/");
         expect(wrapper.vm.$data.gitRefreshing).toBe(false);
-        expect(button.attributes("disabled")).toBeUndefined();
-
-        getHistory = mockAxios.history.get
-        console.log(getHistory.map(h => h.url))
-
+        await Vue.nextTick();
+        expect(wrapper.find("#git-refresh-btn").attributes("disabled")).toBeUndefined();
         expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
         expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred refreshing Git");
         expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");

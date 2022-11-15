@@ -21,7 +21,7 @@ module.exports = {
         "^.+\\.ts?$": "ts-jest",
         "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     },
-    "transformIgnorePatterns": ["node_modules/(?!@bootstrap-vue)"],
+    "transformIgnorePatterns": ["node_modules/(?!bootstrap-vue)"],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [

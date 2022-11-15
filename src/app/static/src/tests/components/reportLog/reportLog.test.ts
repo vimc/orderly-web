@@ -35,7 +35,7 @@ describe("reportLog", () => {
         return mount(ReportLog, data);
     }
 
-    it("renders reportLog", async (done) => {
+    it("renders reportLog", (done) => {
         const wrapper = shallowMount(ReportLog);
 
         expect(wrapper.find("h2").text()).toBe("Running report logs");

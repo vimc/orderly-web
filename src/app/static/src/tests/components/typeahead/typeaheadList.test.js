@@ -136,19 +136,21 @@ describe('VueBootstrapTypeaheadList', () => {
         expect(wrapper.vm.activeListItem).toBe(-1)
     })
 
-    it('Hits active item on keyup.enter', async (done) => {
+    it('Hits active item on keyup.enter', (done) => {
         wrapper.setProps({
             query: 'Can'
         })
-        await Vue.nextTick();
-        wrapper.vm.$parent.$emit('keyup.down') // advance active Item
-        await Vue.nextTick();
-        wrapper.vm.$on('hit', (hitItem) => {
-            expect(hitItem).toBe(wrapper.vm.matchedItems[0])
-            done()
-        })
 
-        wrapper.vm.$parent.$emit('keyup.enter')
+        setTimeout(() => {
+            wrapper.vm.$parent.$emit('keyup.down') // advance active Item
+
+            wrapper.vm.$on('hit', (hitItem) => {
+                expect(hitItem).toBe(wrapper.vm.matchedItems[0])
+                done()
+            })
+
+            wrapper.vm.$parent.$emit('keyup.enter')
+        })
     })
 
     it('Indicates list item is active or inactive', async () => {

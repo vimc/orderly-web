@@ -44,7 +44,7 @@ describe(`runWorkflowSummary`, () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary/?commit=gitCommit');
-            expect(wrapper.find(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(workflowSummary);
+            expect(wrapper.findComponent(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(workflowSummary);
             done();
         });
     });
@@ -73,7 +73,7 @@ describe(`runWorkflowSummary`, () => {
         expect(wrapper.emitted().valid[0][0]).toBe(true);
     });
 
-    it(`error response from workflow summary endpoint generates error message`, async (done) => {
+    it(`error response from workflow summary endpoint generates error message`, (done) => {
         mockAxios.onPost('http://app/workflows/summary/?commit=gitCommit')
             .reply(500, "TEST ERROR");
 

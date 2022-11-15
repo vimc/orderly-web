@@ -15,16 +15,14 @@ describe(`runningReportDetails`, () => {
         email: "test@example.com",
         date: new Date(2021, 3, 21, 9, 26, 54).toISOString(),
         report: "minimal",
-        instances: { "source": "support", "annexe" : "annexe_1"},
-        params: {"name" : "nmin", "cologne" : "ey6"},
+        instances: {"source": "support", "annexe": "annexe_1"},
+        params: {"name": "nmin", "cologne": "ey6"},
         git_branch: "branch value",
         git_commit: "commit value",
         status: "complete",
         logs: "some logs",
         report_version: "version"
     }
-
-    const realSetTimeout = setTimeout;
 
     const getWrapper = (propsData = props, reportLog = initialReportLog) => {
         return shallowMount(runningReportsDetails,
@@ -40,13 +38,13 @@ describe(`runningReportDetails`, () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        jest.useFakeTimers();
+        jest.spyOn(global, "setTimeout");
+        jest.spyOn(global, "clearInterval");
     });
 
     afterEach(() => {
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
-    });
+        jest.resetAllMocks();
+    })
 
     it("displays report name and date as expected", () => {
         const wrapper = getWrapper();
@@ -77,39 +75,39 @@ describe(`runningReportDetails`, () => {
         expect(spans.at(1).text()).toBe("branch value")
     })
 
-    it(`displays git commit data as expected`,  () => {
-            const wrapper = getWrapper()
-            expect(wrapper.find("#report-log").find("#report-git-commit").exists()).toBeTruthy()
-            const spans = wrapper.find("#report-git-commit").findAll("span")
-            expect(spans.at(0).text()).toBe("Git commit:")
-            expect(spans.at(1).text()).toBe("commit value")
+    it(`displays git commit data as expected`, () => {
+        const wrapper = getWrapper()
+        expect(wrapper.find("#report-log").find("#report-git-commit").exists()).toBeTruthy()
+        const spans = wrapper.find("#report-git-commit").findAll("span")
+        expect(spans.at(0).text()).toBe("Git commit:")
+        expect(spans.at(1).text()).toBe("commit value")
     })
 
-    it(`displays parameter data as expected`,  () => {
-            const wrapper = getWrapper()
-            const spans = wrapper.find("#report-params").findAll("span")
-            expect(spans.at(0).text()).toBe("Parameters:")
+    it(`displays parameter data as expected`, () => {
+        const wrapper = getWrapper()
+        const spans = wrapper.find("#report-params").findAll("span")
+        expect(spans.at(0).text()).toBe("Parameters:")
 
-            const table = wrapper.find("table")
-            const rows = table.findAll("tr")
-            const keyVal1 = rows.at(0).findAll("td")
-            expect(keyVal1.at(0).text()).toBe("name")
-            expect(keyVal1.at(1).text()).toBe("nmin")
+        const table = wrapper.find("table")
+        const rows = table.findAll("tr")
+        const keyVal1 = rows.at(0).findAll("td")
+        expect(keyVal1.at(0).text()).toBe("name")
+        expect(keyVal1.at(1).text()).toBe("nmin")
 
-            const keyVal2 = rows.at(1).findAll("td")
-            expect(keyVal2.at(0).text()).toBe("cologne")
-            expect(keyVal2.at(1).text()).toBe("ey6")
+        const keyVal2 = rows.at(1).findAll("td")
+        expect(keyVal2.at(0).text()).toBe("cologne")
+        expect(keyVal2.at(1).text()).toBe("ey6")
     })
 
-    it(`displays database instances as expected`,  () => {
-            const wrapper = getWrapper();
-            const instances = wrapper.findAll("#report-database-instances .report-database-instance");
+    it(`displays database instances as expected`, () => {
+        const wrapper = getWrapper();
+        const instances = wrapper.findAll("#report-database-instances .report-database-instance");
 
-            expect(instances.length).toBe(2);
-            expect(instances.at(0).findAll("span").at(0).text()).toBe("Database \"source\":");
-            expect(instances.at(0).findAll("span").at(1).text()).toBe("support");
-            expect(instances.at(1).findAll("span").at(0).text()).toBe("Database \"annexe\":");
-            expect(instances.at(1).findAll("span").at(1).text()).toBe("annexe_1");
+        expect(instances.length).toBe(2);
+        expect(instances.at(0).findAll("span").at(0).text()).toBe("Database \"source\":");
+        expect(instances.at(0).findAll("span").at(1).text()).toBe("support");
+        expect(instances.at(1).findAll("span").at(0).text()).toBe("Database \"annexe\":");
+        expect(instances.at(1).findAll("span").at(1).text()).toBe("annexe_1");
     });
 
     it(`displays no database instance row if there are no instances`, () => {
@@ -120,24 +118,24 @@ describe(`runningReportDetails`, () => {
         expect(wrapper.find("#report-database-instances").exists()).toBe(false);
     });
 
-    it(`displays status data as expected`,  () => {
-            const wrapper = getWrapper()
-            const spans = wrapper.find("#report-status").findAll("span")
-            expect(spans.at(0).text()).toBe("Status:")
-            expect(spans.at(1).text()).toBe("complete")
+    it(`displays status data as expected`, () => {
+        const wrapper = getWrapper()
+        const spans = wrapper.find("#report-status").findAll("span")
+        expect(spans.at(0).text()).toBe("Status:")
+        expect(spans.at(1).text()).toBe("complete")
     })
 
-    it(`displays version data as expected`,  () => {
-            const wrapper = getWrapper()
-            const spans = wrapper.find("#report-version").findAll("span")
-            expect(spans.at(0).text()).toBe("Report version:")
-            expect(spans.at(1).text()).toBe("version")
+    it(`displays version data as expected`, () => {
+        const wrapper = getWrapper()
+        const spans = wrapper.find("#report-version").findAll("span")
+        expect(spans.at(0).text()).toBe("Report version:")
+        expect(spans.at(1).text()).toBe("version")
     })
 
-    it(`displays Logs data as expected`,  () => {
-            const wrapper = getWrapper()
-            const textArea = wrapper.find("#report-logs").find("textarea")
-            expect((textArea.element as HTMLTextAreaElement).value).toBe("some logs")
+    it(`displays Logs data as expected`, () => {
+        const wrapper = getWrapper()
+        const textArea = wrapper.find("#report-logs").find("textarea")
+        expect((textArea.element as HTMLTextAreaElement).value).toBe("some logs")
     })
 
     it("sets logs textarea scrollTop to scrollHeight on getLogs", async () => {
@@ -146,7 +144,7 @@ describe(`runningReportDetails`, () => {
             .reply(200, {"data": initialReportLog});
 
         const wrapper = getWrapper();
-        const mockLogsRef = { scrollTop: 0, scrollHeight: 100 };
+        const mockLogsRef = {scrollTop: 0, scrollHeight: 100};
         (wrapper.vm as any).$refs.logs = mockLogsRef;
 
         await wrapper.setProps({reportKey: key});
@@ -155,7 +153,7 @@ describe(`runningReportDetails`, () => {
         expect(mockLogsRef.scrollTop).toBe(100);
     });
 
-    it(`does not displays data when report key in not given`, async (done) => {
+    it(`does not displays data when report key in not given`, async () => {
         const key = ""
         const getWrapper = () => {
             return shallowMount(runningReportsDetails,
@@ -169,14 +167,13 @@ describe(`runningReportDetails`, () => {
 
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": initialReportLog});
-        realSetTimeout(() => {
-            expect(wrapper.find("#no-logs").exists()).toBe(true)
-            expect(wrapper.find("#no-logs").text()).toBe("There are no logs to display")
-            done()
-        })
+
+        await Vue.nextTick();
+        expect(wrapper.find("#no-logs").exists()).toBe(true)
+        expect(wrapper.find("#no-logs").text()).toBe("There are no logs to display")
     })
 
-    it(`it displays error message when report key in not valid`, (done) => {
+    it(`it displays error message when report key in not valid`, async () => {
         const key = "fakeKey"
         const getWrapper = () => {
             return shallowMount(runningReportsDetails,
@@ -186,19 +183,22 @@ describe(`runningReportDetails`, () => {
                     }
                 })
         }
-        const wrapper = getWrapper()
+
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(500, "Error");
 
-        realSetTimeout(() => {
-            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("Error")
-            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage"))
-                .toBe("An error occurred when fetching logs")
-            done()
-        })
+        const wrapper = getWrapper()
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("Error")
+        expect(wrapper.findComponent(ErrorInfo).props("defaultMessage"))
+            .toBe("An error occurred when fetching logs")
     })
 
-    const testStartsPollingOnMountWhenIncomplete = (incompleteStatus: string, workflowKey: string | null, done) => {
+    const testStartsPollingOnMountWhenIncomplete = async (incompleteStatus: string, workflowKey: string | null) => {
         const key = `fakeKey-${incompleteStatus}`;
         const workflowParam = workflowKey ? `?workflow=${workflowKey}` : "";
         const url = `http://app/running/${key}/logs/${workflowParam}`;
@@ -213,54 +213,44 @@ describe(`runningReportDetails`, () => {
                 }
             });
 
-        realSetTimeout(() => {
-            expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(1);
-            expect(wrapper.vm.$data.pollingTimer).not.toBeNull();
-            expect(setInterval).toHaveBeenCalledTimes(1);
-            expect(setInterval).toHaveBeenCalledWith((wrapper.vm as any).getLogs, 1500);
+        await Vue.nextTick();
 
-            //invoke the pending timer and expect getLogs to be invoked again - mockAxios should have been called a
-            //second time
-            jest.runOnlyPendingTimers();
-            realSetTimeout(() => {
-                expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(2);
-                done();
-            }, 500);
-        }, 500);
+        expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(1);
+        expect(wrapper.vm.$data.pollingTimer).not.toBeNull();
     };
 
-    it(`starts polling on mount when report is running`,  (done) => {
-        testStartsPollingOnMountWhenIncomplete("running", null,  done);
+    it(`starts polling on mount when report is running`, async () => {
+        await testStartsPollingOnMountWhenIncomplete("running", null);
     });
 
-    it(`starts polling on mount when report is queued`, (done) => {
-        testStartsPollingOnMountWhenIncomplete("queued", null,  done);
+    it(`starts polling on mount when report is queued`, async () => {
+        await testStartsPollingOnMountWhenIncomplete("queued", null);
     });
 
-    it("polls with workflow parametr when provided", (done) => {
-        testStartsPollingOnMountWhenIncomplete("running", "test-workflow", done);
+    it("polls with workflow parametr when provided", async () => {
+        await testStartsPollingOnMountWhenIncomplete("running", "test-workflow");
     });
 
-    it("does not start or stop polling on mount when report is complete", (done) => {
+    it("does not start or stop polling on mount when report is complete", async () => {
         const key = "fakeKey";
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": initialReportLog});
 
-        const wrapper = shallowMount(runningReportsDetails,
+        shallowMount(runningReportsDetails,
             {
                 propsData: {
                     reportKey: key
                 }
             });
 
-        realSetTimeout(() => {
-            expect(setInterval).toHaveBeenCalledTimes(0);
-            expect(clearInterval).toHaveBeenCalledTimes(0);
-            done();
-        });
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+       // expect(setInterval).toHaveBeenCalledTimes(0);
+        expect(clearInterval).toHaveBeenCalledTimes(0);
     });
 
-    it("getLogs does not start polling on incomplete report if pollingTimer is already set", (done) => {
+    it("getLogs does not start polling on incomplete report if pollingTimer is already set", async () => {
         const key = "fakeKey";
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": {...initialReportLog, status: "queued"}});
@@ -274,16 +264,15 @@ describe(`runningReportDetails`, () => {
                     return {pollingTimer: 123}
                 }
             });
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-        realSetTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
-            expect(wrapper.vm.$data.pollingTimer).toBe(123);
-            expect(setInterval).toHaveBeenCalledTimes(0);
-            done();
-        });
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(wrapper.vm.$data.pollingTimer).toBe(123);
+       // expect(setInterval).toHaveBeenCalledTimes(0);
     });
 
-    it("getLogs stops polling on complete report", (done) => {
+    it("getLogs stops polling on complete report", async () => {
         const key = "fakeKey";
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": initialReportLog});
@@ -298,17 +287,15 @@ describe(`runningReportDetails`, () => {
                 }
             });
 
-        realSetTimeout(() => {
-            expect(clearInterval).toHaveBeenCalledTimes(1);
-            expect(clearInterval).toHaveBeenCalledWith(123);
-            expect(setInterval).toHaveBeenCalledTimes(0);
-            expect(wrapper.vm.$data.pollingTimer).toBe(null);
-            done();
-        });
-
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(clearInterval).toHaveBeenCalledTimes(1);
+        expect(clearInterval).toHaveBeenCalledWith(123);
+      //  expect(setInterval).toHaveBeenCalledTimes(0);
+        expect(wrapper.vm.$data.pollingTimer).toBe(null);
     });
 
-    it("stops polling and gets logs, starts polling for new key when reportKey changes", () => {
+    it("stops polling and gets logs, starts polling for new key when reportKey changes", async () => {
         const oldKey = "fakeKey";
         const newKey = "newKakeKey";
         mockAxios.onGet(`http://app/running/${oldKey}/logs/`)
@@ -326,21 +313,17 @@ describe(`runningReportDetails`, () => {
                 }
             });
 
-        realSetTimeout(() => {
-            expect(mockAxios.history.get[0].url).toBe(`http://app/running/${oldKey}/logs/`);
-            expect(clearInterval).toHaveBeenCalledTimes(0);
-            expect(setInterval).toHaveBeenCalledTimes(0);
+        expect(mockAxios.history.get[0].url).toBe(`http://app/running/${oldKey}/logs/`);
+        expect(clearInterval).toHaveBeenCalledTimes(0);
+     //   expect(setInterval).toHaveBeenCalledTimes(0);
 
-            wrapper.setProps({reportKey: newKey});
+        await wrapper.setProps({reportKey: newKey});
 
-            realSetTimeout(() => {
-                expect(clearInterval).toHaveBeenCalledTimes(1);
-                expect(clearInterval).toHaveBeenCalledWith(123);
-                expect(mockAxios.history.get[1].url).toBe(`http://app/running/${newKey}/logs/`)
-                expect(setInterval).toHaveBeenCalledTimes(1);
-                expect(wrapper.vm.$data.pollingTimer).not.toBe(123);
-                expect(wrapper.vm.$data.pollingTimer).not.toBe(null);
-            });
-        });
+     //   expect(setInterval).toHaveBeenCalledTimes(1);
+        expect(clearInterval).toHaveBeenCalledTimes(1);
+        expect(clearInterval).toHaveBeenCalledWith(123);
+
+        expect(mockAxios.history.get[1].url).toBe(`http://app/running/${newKey}/logs/`)
+        expect(wrapper.vm.$data.pollingTimer).not.toBe(123);
     });
 });

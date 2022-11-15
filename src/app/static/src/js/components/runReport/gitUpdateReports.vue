@@ -124,7 +124,6 @@
                     });
             },
             changedCommit() {
-                console.log("changed commit", this.selectedCommitId)
                 this.$emit("commitSelected", this.selectedCommitId);
                 this.updateReports();
             },

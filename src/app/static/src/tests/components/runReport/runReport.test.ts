@@ -117,7 +117,8 @@ describe("runReport", () => {
 
         await Vue.nextTick();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
+        await wrapper.findComponent(VueSelect).setData({open: true});
+        await Vue.nextTick();
         await wrapper.findComponent(ReportList).find("li").trigger("mousedown");
 
         expect(wrapper.vm.$data["selectedReport"]).toBe(global);
