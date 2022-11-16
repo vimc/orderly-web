@@ -1,6 +1,6 @@
 <@layout>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/documents.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/documents.css"/>
     </#macro>
 
     <div id="app">

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "sass-dev": "sass --watch --update --style=expanded src/scss:public/css",
+    "sass-dev": "sass --style=expanded src/scss:public/css",
     "sass-prod": "sass --no-source-map --style=compressed src/scss:public/css",
     "webpack": "webpack",
-    "build-dev": "webpack && npm run sass-prod",
+    "build-dev": "webpack && npm run sass-dev",
     "build-prod": "NODE_ENV=production webpack && npm run sass-prod",
     "test": "TZ=utc jest -c jest.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
