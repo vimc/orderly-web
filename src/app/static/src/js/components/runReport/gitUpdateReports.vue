@@ -147,7 +147,6 @@
                 this.gitRefreshing = true;
                 api.get('/git/fetch/')
                     .then(({data}) => {
-                        console.log("finished refreshing")
                         this.gitRefreshing = false;
                         this.gitBranches = data.data.map(branch => branch.name);
 
@@ -158,7 +157,6 @@
                         this.changedBranch();
                     })
                     .catch((error) => {
-                        console.log("error refreshing")
                         this.gitRefreshing = false;
                         this.error = error;
                         this.defaultMessage = "An error occurred refreshing Git";
