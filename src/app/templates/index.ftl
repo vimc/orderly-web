@@ -5,7 +5,7 @@
 <#macro if if then else=""><#if if>${then}<#else>${else}</#if></#macro>
 <@layout>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/index.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/index.css"/>
     </#macro>
     <#include "partials/pinned-reports.ftl">
     <#macro customSvg>

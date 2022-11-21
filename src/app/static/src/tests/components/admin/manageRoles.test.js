@@ -139,7 +139,7 @@ describe("manageRoles", () => {
     });
 
 
-    it('cancelling delete role hides model and does not delete role', async (done) => {
+    it('cancelling delete role hides model and does not delete role', async () => {
         const wrapper = shallowMount(ManageRoles, {
             propsData: {
                 roles: mockRoles
@@ -151,18 +151,19 @@ describe("manageRoles", () => {
         });
         await Vue.nextTick();
 
-        wrapper.find('#cancel-delete-btn').trigger('click');
-        setTimeout(() => {
-            expect(wrapper.vm.$data.showModal).toBe(false);
-            expect(wrapper.vm.$data.roleToDelete).toBe("");
-            expect(mockAxios.history.delete.length).toBe(0);
-            expect(wrapper.emitted().deleted).toBe(undefined);
-            done();
-        })
+        await wrapper.find('#cancel-delete-btn').trigger('click');
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.showModal).toBe(false);
+        expect(wrapper.vm.$data.roleToDelete).toBe("");
+        expect(mockAxios.history.delete.length).toBe(0);
+        expect(wrapper.emitted().deleted).toBe(undefined);
+
 
     });
 
-    it('confirming delete role hides model and deletes role', async (done) => {
+    it('confirming delete role hides model and deletes role', async () => {
         const url = 'http://app/roles/Funders/';
         mockAxios.onDelete(url)
             .reply(200);
@@ -178,19 +179,19 @@ describe("manageRoles", () => {
         });
         await Vue.nextTick();
 
-        wrapper.find('#confirm-delete-btn').trigger('click');
-        setTimeout(() => {
-            expect(wrapper.vm.$data.showModal).toBe(false);
-            expect(wrapper.vm.$data.roleToDelete).toBe("");
-            expect(mockAxios.history.delete.length).toBe(1);
-            expect(mockAxios.history.delete[0].url).toBe(url);
-            expect(wrapper.emitted().changed.length).toBe(1);
-            done();
-        })
+        await wrapper.find('#confirm-delete-btn').trigger('click');
 
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(wrapper.vm.$data.showModal).toBe(false);
+        expect(wrapper.vm.$data.roleToDelete).toBe("");
+        expect(mockAxios.history.delete.length).toBe(1);
+        expect(mockAxios.history.delete[0].url).toBe(url);
+        expect(wrapper.emitted().changed.length).toBe(1);
     });
 
-    it('sets error if deleting role fails', async (done) => {
+    it('sets error if deleting role fails', async () => {
         const url = 'http://app/roles/Funders/';
         mockAxios.onDelete(url)
             .reply(500, "TEST ERROR");
@@ -206,15 +207,15 @@ describe("manageRoles", () => {
         });
         await Vue.nextTick();
 
-        wrapper.find('#confirm-delete-btn').trigger('click');
-        setTimeout(() => {
-            expect(wrapper.vm.$data.showModal).toBe(false);
-            expect(wrapper.vm.$data.roleToDelete).toBe("");
-            expect(wrapper.emitted().deleted).toBe(undefined);
-            expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
-            done();
-        })
+        await wrapper.find('#confirm-delete-btn').trigger('click');
 
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(wrapper.vm.$data.showModal).toBe(false);
+        expect(wrapper.vm.$data.roleToDelete).toBe("");
+        expect(wrapper.emitted().deleted).toBe(undefined);
+        expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
     });
 
     it('adds role when addRole emits added event', (done) => {

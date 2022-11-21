@@ -567,15 +567,13 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
-    it("can validate imported workflow reports", (done) => {
+    it("can validate imported workflow reports", async () => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
 
         const blob = new Blob(["report"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob;
-
-        const mockUpdateWorkflowReports = jest.fn()
 
         const wrapper = shallowMount(runWorkflowReport, {
             store: createStore(),
@@ -585,53 +583,50 @@ describe(`runWorkflowReport`, () => {
                         git_commit: "abc123",
                         git_branch: "branch"
                     }),
-            },
-            methods: {
-                updateWorkflowReports: mockUpdateWorkflowReports
             }
         });
 
-        wrapper.setData({validationErrors: [{message: "old error", code: "TEST"}]});
-        setTimeout(async () => {
-            await wrapper.find("input#import-from-csv").trigger("click")
+        await wrapper.setData({validationErrors: [{message: "old error", code: "TEST"}]});
 
-            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+        await wrapper.find("input#import-from-csv").setChecked();
 
-            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+        expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
-            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
+        expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            Object.defineProperty(input, "files", {
-                value: [fakeFile]
-            })
+        const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
 
-            wrapper.find("input#import-csv.custom-file-input").trigger("change")
+        Object.defineProperty(input, "files", {
+            value: [fakeFile]
+        })
 
-            setTimeout(() => {
-                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-                expect(wrapper.vm.$data.importedFile).toMatchObject({})
-                expect(mockAxios.history.post.length).toBe(1)
-                expect(mockAxios.history.post[0].url).toBe(url)
-                expect(mockAxios.history.post[0].data).toMatchObject({})
+        wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
-                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
-                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
-                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
-                expect(errorAlert.props("show")).toBe(false);
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+        expect(wrapper.vm.$data.importedFile).toMatchObject({})
+        expect(mockAxios.history.post.length).toBe(1)
+        expect(mockAxios.history.post[0].url).toBe(url)
+        expect(mockAxios.history.post[0].data).toMatchObject({})
 
-                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
-                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
-                    [
-                        {name: "minimal", params: {nmin: "5"}},
-                        {name: "global", params: {p1: "v1", p2: "v2"}}
-                    ])
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-                expect(wrapper.emitted("valid").length).toBe(1);
-                expect(wrapper.emitted("valid")[0][0]).toBe(true);
+        expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+        const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+        expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+        expect(errorAlert.props("show")).toBe(false);
 
-                done()
-            })
-        });
+        expect(wrapper.emitted("update").length).toBe(1);
+        expect(wrapper.emitted("update")[0][0]["reports"]).toEqual(
+            [
+                {name: "minimal", params: {nmin: "5"}},
+                {name: "global", params: {p1: "v1", p2: "v2"}}
+            ])
+
+        expect(wrapper.emitted("valid").length).toBe(1);
+        expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
     });
 
 
@@ -693,15 +688,13 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.isImportedReports).toBe(false)
     });
 
-    it("can display errors if workflow validation fails", (done) => {
+    it("can display errors if workflow validation fails", async () => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
         const blob = new Blob(["invalid content"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob
-
-        const mockUpdateWorkflowReports = jest.fn()
 
         const wrapper = shallowMount(runWorkflowReport, {
             store: createStore(),
@@ -714,72 +707,66 @@ describe(`runWorkflowReport`, () => {
                             {name: "test report"} as any
                         ]
                     })
-            },
-            methods: {
-                updateWorkflowReports: mockUpdateWorkflowReports
             }
         });
         wrapper.setData({
             reportsValid: [true]
         });
 
-        setTimeout(async () => {
-            await wrapper.find("input#import-from-csv").trigger("click")
+        await wrapper.find("input#import-from-csv").setChecked();
 
-            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+        expect(wrapper.find("#show-report-list").exists()).toBe(false)
+        expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+        const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
 
-            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
+        Object.defineProperty(input, "files", {
+            value: [fakeFile]
+        })
 
-            Object.defineProperty(input, "files", {
-                value: [fakeFile]
-            })
+        expect(wrapper.emitted("valid").length).toBe(1);
+        expect(wrapper.emitted("valid")[0][0]).toBe(true);
 
-            expect(wrapper.emitted("valid").length).toBe(1);
-            expect(wrapper.emitted("valid")[0][0]).toBe(true);
+        await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
-            await wrapper.find("input#import-csv.custom-file-input").trigger("change")
+        expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+        expect(wrapper.vm.$data.importedFile).toMatchObject({})
+        expect(mockAxios.history.post.length).toBe(1)
+        expect(mockAxios.history.post[0].url).toBe(url)
+        expect(mockAxios.history.post[0].data).toMatchObject({})
 
-            setTimeout(async () => {
-                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-                expect(wrapper.vm.$data.importedFile).toMatchObject({})
-                expect(mockAxios.history.post.length).toBe(1)
-                expect(mockAxios.history.post[0].url).toBe(url)
-                expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationErrors).toEqual([
-                    {code: "bad-request", message: "ERROR 1"},
-                    {code: "bad-request", message: "ERROR 2"}
-                ]);
-                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1);
-                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toStrictEqual([]);
+        await Vue.nextTick()
+        await Vue.nextTick();
 
-                expect(wrapper.emitted("valid").length).toBe(2);
-                expect(wrapper.emitted("valid")[1][0]).toBe(false);
+        expect(wrapper.vm.$data.validationErrors).toEqual([
+            {code: "bad-request", message: "ERROR 1"},
+            {code: "bad-request", message: "ERROR 2"}
+        ]);
+        expect(wrapper.emitted("update").length).toBe(1);
+        expect(wrapper.emitted("update")[0][0]["reports"]).toStrictEqual([]);
 
+        await Vue.nextTick();
+        expect(wrapper.emitted("valid").length).toBe(2);
+        expect(wrapper.emitted("valid")[1][0]).toBe(false);
 
-                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
-                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
-                expect(errorAlert.props("show")).toBe(true);
-                expect(errorAlert.text()).toContain("Failed to import from csv. The following issues were found:");
-                const errors = wrapper.findAll("li.import-validation-error");
-                expect(errors.length).toBe(2);
-                expect(errors.at(0).text()).toBe("ERROR 1");
-                expect(errors.at(1).text()).toBe("ERROR 2");
+        const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+        expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+        expect(errorAlert.props("show")).toBe(true);
+        expect(errorAlert.text()).toContain("Failed to import from csv. The following issues were found:");
+        const errors = wrapper.findAll("li.import-validation-error");
+        expect(errors.length).toBe(2);
+        expect(errors.at(0).text()).toBe("ERROR 1");
+        expect(errors.at(1).text()).toBe("ERROR 2");
 
-                //Test dismissing BAlert clears validation errors
-                errorAlert.vm.$emit("dismissed");
-                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+        //Test dismissing BAlert clears validation errors
+        errorAlert.vm.$emit("dismissed");
+        expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
 
-                await Vue.nextTick();
-                expect(errorAlert.props("show")).toBe(false);
-
-                done();
-            })
-        });
+        await Vue.nextTick();
+        expect(errorAlert.props("show")).toBe(false);
     });
 
-    it("clears file input value when clicked", (done) => {
+    it("clears file input value when clicked", async () => {
         const wrapper = shallowMount(runWorkflowReport, {
             store: createStore(),
             propsData: {
@@ -790,18 +777,18 @@ describe(`runWorkflowReport`, () => {
             }
         });
 
-        setTimeout(async () => {
-            await wrapper.find("#import-from-csv").trigger("click")
+        await wrapper.find("#import-from-csv").setChecked()
 
-            const input = wrapper.find("input#import-csv.custom-file-input");
-            const inputEl = input.element as HTMLInputElement;
+        expect(wrapper.find("#show-report-list").exists()).toBe(false)
+        expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            const spy = jest.spyOn(inputEl, 'value', 'set');
+        const input = wrapper.find("input#import-csv.custom-file-input");
+        const inputEl = input.element as HTMLInputElement;
 
-            await input.trigger("click");
-            expect(spy).toHaveBeenCalledWith(null);
-            done();
-        });
+        const spy = jest.spyOn(inputEl, 'value', 'set');
+
+        await input.trigger("click");
+        expect(spy).toHaveBeenCalledWith(null)
     });
 
     it("renders choose or import from and check default radio button", (done) => {
@@ -857,84 +844,69 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("does not show report from list component when import from csv is checked", (done) => {
+    it("does not show report from list component when import from csv is checked", async () => {
         switches.workFlowReport = true
         const wrapper = getWrapper();
+        await Vue.nextTick();
+        const fromCsvLabel = wrapper.find("#import-from-csv-label")
+        await fromCsvLabel.find("input").setChecked()
 
-        setTimeout(async () => {
-            const fromCsvLabel = wrapper.find("#import-from-csv-label")
-            fromCsvLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
-
-            await Vue.nextTick()
-            expect(wrapper.find("#show-report-list").exists()).toBe(false)
-            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
-            done();
-        });
+        expect(wrapper.find("#show-report-list").exists()).toBe(false)
+        expect(wrapper.find("#show-import-csv").exists()).toBe(true)
     });
 
-    it("shows report from list when choose from list is checked", (done) => {
+    it("shows report from list when choose from list is checked", async () => {
         switches.workFlowReport = true
         const wrapper = getWrapper();
 
-        setTimeout(() => {
-            const fromListLabel = wrapper.find("#choose-from-list-label")
-            fromListLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
-            expect(wrapper.find("#show-import-csv").exists()).toBe(false)
-            expect(wrapper.find("#show-report-list").exists()).toBe(true)
-            done();
-        });
+        const fromListLabel = wrapper.find("#choose-from-list-label")
+        await fromListLabel.find("input").setChecked()
+        expect(wrapper.vm.$data.reportsOrigin).toBe("list")
+        expect(wrapper.find("#show-import-csv").exists()).toBe(false)
+        expect(wrapper.find("#show-report-list").exists()).toBe(true)
     });
 
-    it("renders import from csv controls as expected", (done) => {
+    it("renders import from csv controls as expected", async () => {
         switches.workFlowReport = true
         const wrapper = getWrapper();
 
-        setTimeout(async () => {
-            const fromCsvLabel = wrapper.find("#import-from-csv-label")
-            fromCsvLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+        await Vue.nextTick();
+        const fromCsvLabel = wrapper.find("#import-from-csv-label")
+        await fromCsvLabel.find("input").setChecked()
 
-            await Vue.nextTick()
-            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
-            const uploadInput = wrapper.find("#show-import-csv").find("input")
-            expect(uploadInput.attributes("accept")).toBe("text/csv")
-            expect(uploadInput.attributes("lang")).toBe("en")
+        expect(wrapper.find("#show-report-list").exists()).toBe(false)
+        expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            // Should have updated session too
-            expect(mockSessionSetSelectedWorkflowReportSource).toHaveBeenCalledWith("csv");
+        const uploadInput = wrapper.find("#show-import-csv").find("input")
+        expect(uploadInput.attributes("accept")).toBe("text/csv")
+        expect(uploadInput.attributes("lang")).toBe("en")
 
-            done();
-        });
+        // Should have updated session too
+        expect(mockSessionSetSelectedWorkflowReportSource).toHaveBeenCalledWith("csv");
     });
 
-    it("can display filename", (done) => {
+    it("can display filename", async () => {
         switches.workFlowReport = true
         const wrapper = getWrapper();
 
-        setTimeout(async () => {
-            const fromCsvLabel = wrapper.find("#import-from-csv-label")
-            fromCsvLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+        await Vue.nextTick();
+        const fromCsvLabel = wrapper.find("#import-from-csv-label")
+        await fromCsvLabel.find("input").setChecked();
+        expect(wrapper.find("#show-report-list").exists()).toBe(false)
+        expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+        const fakeFile = new File(["report"], "test.csv", {type: 'text/csv'});
+        const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
 
-            await Vue.nextTick()
-            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
-            const fakeFile = new File(["report"], "test.csv", {type: 'text/csv'});
-            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+        expect(wrapper.vm.$data.importedFilename).toBe("")
+        Object.defineProperty(input, "files", {
+            value: [fakeFile]
+        })
 
-            expect(wrapper.vm.$data.importedFilename).toBe("")
-            Object.defineProperty(input, "files", {
-                value: [fakeFile]
-            })
+        wrapper.find("#show-import-csv").find("input").trigger("change")
+        await Vue.nextTick()
 
-            wrapper.find("#show-import-csv").find("input").trigger("change")
-            await Vue.nextTick()
-
-            const uploadLabel = wrapper.find("#show-import-csv").find(".custom-file-label")
-            expect(uploadLabel.text()).toBe("test.csv")
-            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-            done();
-        });
+        const uploadLabel = wrapper.find("#show-import-csv").find(".custom-file-label")
+        expect(uploadLabel.text()).toBe("test.csv")
+        expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
     });
 });

@@ -44,11 +44,15 @@ describe(`instances`, () => {
 
     it('emits selected value when an instance is selected', async() => {
         const wrapper = getWrapper()
-        const options = wrapper.find("select").findAll("option")
-        await options.at(0).setSelected()
 
         expect(wrapper.emitted().selectedValues.length).toBe(1)
         expect(wrapper.emitted().selectedValues[0][0]).toEqual({"source": "prod"})
+
+        const options = wrapper.find("select").findAll("option")
+        await options.at(0).setSelected()
+
+        expect(wrapper.emitted().selectedValues.length).toBe(2)
+        expect(wrapper.emitted().selectedValues[1][0]).toEqual({"source": "prod"})
     });
 
     it(`can set initial selected instances`, async () => {

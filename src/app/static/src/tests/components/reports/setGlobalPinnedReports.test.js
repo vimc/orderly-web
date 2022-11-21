@@ -16,8 +16,8 @@ describe("setGlobalPinnedReports", () => {
         }
     };
 
-    const getWrapper = async function(expanded = true) {
-        const result =  shallowMount(SetGlobalPinnedReports, {propsData});
+    const getWrapper = async function (expanded = true) {
+        const result = shallowMount(SetGlobalPinnedReports, {propsData});
 
         if (expanded) {
             result.setData({expanded: true});
@@ -87,7 +87,7 @@ describe("setGlobalPinnedReports", () => {
     });
 
     it("can add pinned report", async () => {
-        const wrapper =  mount(SetGlobalPinnedReports, {propsData});
+        const wrapper = mount(SetGlobalPinnedReports, {propsData});
         wrapper.setData({expanded: true});
         await Vue.nextTick();
 
@@ -109,49 +109,48 @@ describe("setGlobalPinnedReports", () => {
         expect(wrapper.find("#add-pinned-report").attributes().disabled).toBe('disabled');
     });
 
-    it("can save pinned reports", async (done) => {
+    it("can save pinned reports", async () => {
         const url = 'http://app/global-pinned-reports/';
         mockAxios.onPost(url)
             .reply(200);
         const mockReload = jest.fn();
-        window.location.reload = mockReload;
+        Object.defineProperty(window, 'location', {
+            value: { reload: mockReload }
+        });
 
         const wrapper = await getWrapper();
-        wrapper.find("#pinned-report-buttons button[type='submit']").trigger("click");
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url);
-            expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({"reports": ["r1", "r2"]});
+        await wrapper.find("#pinned-report-buttons button[type='submit']").trigger("click");
+        await Vue.nextTick();
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0].url).toBe(url);
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({"reports": ["r1", "r2"]});
 
-            expect(mockReload.mock.calls.length).toBe(1);
+        expect(mockReload.mock.calls.length).toBe(1);
 
-            expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe(null);
-            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
-
-            done();
-        });
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe(null);
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
     });
 
-    it("can display error when saving pinned reports", async (done) => {
+    it("can display error when saving pinned reports", async () => {
         const url = 'http://app/global-pinned-reports/';
         mockAxios.onPost(url)
             .reply(500, "TEST ERROR");
         const mockReload = jest.fn();
-        window.location.reload = mockReload;
+        Object.defineProperty(window, 'location', {
+            value: { reload: mockReload }
+        });
 
         const wrapper = await getWrapper();
-        wrapper.find("#pinned-report-buttons button[type='submit']").trigger("click");
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url);
-            expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({"reports": ["r1", "r2"]});
+        await wrapper.find("#pinned-report-buttons button[type='submit']").trigger("click");
 
-            expect(mockReload.mock.calls.length).toBe(0);
+        await Vue.nextTick();
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0].url).toBe(url);
+        expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({"reports": ["r1", "r2"]});
 
-            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
-            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not save pinned reports");
-
-            done();
-        });
+        await Vue.nextTick();
+        expect(mockReload.mock.calls.length).toBe(0);
+        expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not save pinned reports");
     });
 });

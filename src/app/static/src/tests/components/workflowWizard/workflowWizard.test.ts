@@ -165,7 +165,7 @@ describe(`workflowWizard`, () => {
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
-    it(`can go to previous step `, async (done) => {
+    it(`can go to previous step `, async () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 1})
 
@@ -173,10 +173,7 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(1).text()).toBe("Back")
 
         await buttons.at(1).trigger("click")
-        setTimeout(() => {
-            expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
-            done()
-        })
+        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
     })
 
     it(`can emit cancel event from report step as expected`, (done) => {

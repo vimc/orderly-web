@@ -3,7 +3,7 @@
 <#-- @ftlvariable name="initialReportName" type="String" -->
 <@layoutwide>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/report-page.css"/>
     </#macro>
         <div id="runReportTabsVueApp">
             <run-report-tabs :initial-report-name="initialReportName"></run-report-tabs>

@@ -1,6 +1,6 @@
 <@layoutwide>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/report-page.css"/>
     </#macro>
     <div id="runReportTabsVueApp">
         <run-report-tabs></run-report-tabs>

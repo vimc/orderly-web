@@ -118,7 +118,7 @@ describe("reportReadersList", () => {
         });
     });
 
-    it('refreshes data when added event is emitted', async (done) => {
+    it('refreshes data when added event is emitted', async () => {
 
         mockAxios.onPost(`http://app/users/test.user%40example.com/permissions/`)
             .reply(200);
@@ -138,21 +138,17 @@ describe("reportReadersList", () => {
 
         await Vue.nextTick();
 
-        wrapper.find("input").setValue('test.user@example.com');
-        wrapper.find('button').trigger('click');
+        await wrapper.find("input").setValue('test.user@example.com');
+        await wrapper.find('button').trigger('click');
 
-        setTimeout(() => {
-            expect(wrapper.findAll('.text-danger').length).toBe(0);
+        await Vue.nextTick();
+        expect(wrapper.findAll('.text-danger').length).toBe(0);
 
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
 
-            expectPostDataCorrect("add");
-            expectWrapperToHaveRenderedReaders(wrapper);
-
-            done();
-        });
-
+        expectPostDataCorrect("add");
+        expectWrapperToHaveRenderedReaders(wrapper);
     });
 
     it('removes user and refreshes list of readers', (done) => {

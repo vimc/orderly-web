@@ -21,4 +21,4 @@ $btn-border-radius-lg: 0;
 $btn-primary-color: $theme-primary;
 
 // optional user overrides passed during deployment
-@import "user-variables";
+@import "_user-variables";
