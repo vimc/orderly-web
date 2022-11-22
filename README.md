@@ -14,8 +14,7 @@ System requirements:
 * **Docker**
 * **Docker Compose**: Install as per: https://docs.docker.com/compose/install/
 * **Vault**: Install as per: https://learn.hashicorp.com/tutorials/vault/getting-started-install
-* **node 10**  https://nodejs.org/en/
-* **npm 7** https://www.npmjs.com/package/npm
+* **node 19**:  https://nodejs.org/en/ (ships with npm@8.19.2)
 
 1. Install Docker and add your user to the Docker group 
    (e.g. https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04.) 
@@ -118,7 +117,7 @@ cd src
 
 ### Automatic rebuilding of UI code
 
-Running `npm run watch --prefix src/app/static` starts a process that will rebuild the UI whenever a `.js`, `.ts` or
+Running `npm run watch --prefix src/app/static` starts a process that will rebuild the Javascript whenever a `.js`, `.ts` or
 `.vue` file changes. If you're just making front-end changes this avoids having to restart the whole application
 (recompiling the Kotlin code etc).
 

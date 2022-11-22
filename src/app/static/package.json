@@ -6,6 +6,7 @@
     "sass-dev": "sass --style=expanded src/scss:public/css",
     "sass-prod": "sass --no-source-map --style=compressed src/scss:public/css",
     "webpack": "webpack",
+    "watch": "webpack --watch",
     "build-dev": "webpack && npm run sass-dev",
     "build-prod": "NODE_ENV=production webpack && npm run sass-prod",
     "test": "TZ=utc jest -c jest.config.js",
