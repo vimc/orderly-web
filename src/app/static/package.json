@@ -7,8 +7,8 @@
     "sass-prod": "sass --no-source-map --style=compressed src/scss:public/css",
     "webpack": "webpack",
     "watch": "webpack --watch",
-    "build-dev": "webpack && npm run sass-dev",
-    "build-prod": "NODE_ENV=production webpack && npm run sass-prod",
+    "build": "webpack && npm run sass",
+    "sass": "if test ${NODE_ENV} = \"production\" ; then npm run sass-prod ; else npm run sass-dev ; fi",
     "test": "TZ=utc jest -c jest.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
