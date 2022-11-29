@@ -247,48 +247,47 @@ describe("gitUpdateReports", () => {
     });
 
 
-    // it("renders refresh git button if git_supported and fetches on click ", async () => {
-    //     const mockFetch = [{name: "master2"}, {name: "dev2"}]
-    //     mockAxios.onGet('http://app/git/fetch/')
-    //         .reply(200, {"data": mockFetch});
-    //
-    //     const wrapper = getWrapper();
-    //
-    //     await Vue.nextTick();
-    //     await Vue.nextTick();
-    //
-    //     expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
-    //     const button = wrapper.find("#git-refresh-btn");
-    //     expect(mockAxios.history.get.length).toBe(2);
-    //
-    //     expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
-    //
-    //     expect(wrapper.vm.$data.gitRefreshing).toBe(false);
-    //     expect(button.attributes("disabled")).toBeUndefined();
-    //     expect(button.text()).toBe("Refresh git");
-    //
-    //     await Vue.nextTick();
-    //     await button.trigger("click")
-    //     expect(wrapper.vm.$data.gitRefreshing).toBe(true);
-    //     await Vue.nextTick();
-    //     expect(button.attributes("disabled")).toBe("disabled");
-    //     expect(button.text()).toBe("Fetching...");
-    //
-    //     await Vue.nextTick();
-    //     const getHistory = mockAxios.history.get
-    //     expect(getHistory[getHistory.length - 2].url).toBe("http://app/git/fetch/");
-    //     expect(getHistory[getHistory.length - 1].url).toBe("http://app/git/branch/master2/commits/");
-    //     expect(wrapper.vm.$data.gitRefreshing).toBe(false);
-    //     expect(button.attributes("disabled")).toBeUndefined();
-    //     expect(button.text()).toBe("Refresh git");
-    //
-    //     const options = wrapper.findAll("#git-branch-form-group select option");
-    //     expect(options.length).toBe(2);
-    //     expect(options.at(0).text()).toBe("master2");
-    //     expect(options.at(0).attributes().value).toBe("master2");
-    //     expect(options.at(1).text()).toBe("dev2");
-    //     expect(options.at(1).attributes().value).toBe("dev2");
-    // });
+    it("renders refresh git button if git_supported and fetches on click ", async () => {
+        const mockFetch = [{name: "master2"}, {name: "dev2"}]
+        mockAxios.onGet('http://app/git/fetch/')
+            .reply(200, {"data": mockFetch});
+
+        const wrapper = getWrapper();
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
+        const button = wrapper.find("#git-refresh-btn");
+        expect(mockAxios.history.get.length).toBe(2);
+
+        expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
+
+        expect(wrapper.vm.$data.gitRefreshing).toBe(false);
+        expect(button.attributes("disabled")).toBeUndefined();
+        expect(button.text()).toBe("Refresh git");
+
+        await Vue.nextTick();
+        await button.trigger("click")
+        expect(wrapper.vm.$data.gitRefreshing).toBe(true);
+        expect(button.attributes("disabled")).toBe("disabled");
+        expect(button.text()).toBe("Fetching...");
+
+        await Vue.nextTick();
+        const getHistory = mockAxios.history.get
+        expect(getHistory[getHistory.length - 2].url).toBe("http://app/git/fetch/");
+        expect(getHistory[getHistory.length - 1].url).toBe("http://app/git/branch/master2/commits/");
+        expect(wrapper.vm.$data.gitRefreshing).toBe(false);
+        expect(button.attributes("disabled")).toBeUndefined();
+        expect(button.text()).toBe("Refresh git");
+
+        const options = wrapper.findAll("#git-branch-form-group select option");
+        expect(options.length).toBe(2);
+        expect(options.at(0).text()).toBe("master2");
+        expect(options.at(0).attributes().value).toBe("master2");
+        expect(options.at(1).text()).toBe("dev2");
+        expect(options.at(1).attributes().value).toBe("dev2");
+    });
 
     it("show error message if error refreshing git", async () => {
         mockAxios.onGet('http://app/git/fetch/')

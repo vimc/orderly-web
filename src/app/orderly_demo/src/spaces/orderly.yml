@@ -4,10 +4,14 @@ data:
 script: script.R
 resources:
   - a resource with spaces.csv
+  - some"data".csv
 artefacts:
-  staticgraph:
-    description: A graph of things
-    filenames: a graph with spaces.png
+  - staticgraph:
+      description: A graph of things
+      filenames: a graph with spaces.png
+  - staticgraph:
+      description: A graph of things
+      filenames: mygraph's.png
 author: Researcher McResearcherface
 requester: Funder McFunderface
 comment: This is a comment
