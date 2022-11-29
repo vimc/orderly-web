@@ -115,12 +115,13 @@ class ReportTests : IntegrationTest()
     @Test
     fun `can get latest changelog by name`()
     {
-        insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/latest/changelog/",
+        val response = apiRequestHelper.get("/reports/changelog/latest/changelog/",
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
+        val count = (JSONValidator.getData(response.text) as ArrayNode).size()
+        assertThat(count).isEqualTo(4)
     }
 
     @Test
