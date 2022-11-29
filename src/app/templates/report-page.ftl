@@ -5,7 +5,7 @@
 <#-- @ftlvariable name="fineGrainedAuth" type="Boolean" -->
 <@layoutwide>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/report-page.css"/>
     </#macro>
     <div class="row">
         <div class="col-12 col-md-4 col-xl-3">

@@ -1,8 +1,16 @@
 const path = require('path');
+const glob = require('glob');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const externals = require("./externals.config");
 
 module.exports = {
+    entry: glob.sync('./src/js/**.{js,ts}').reduce(function (obj, el) {
+        obj[path.parse(el).name] = el;
+        return obj
+    }, {}),
+    amd: false,
     module: {
         rules: [
             {
@@ -16,9 +24,6 @@ module.exports = {
                 options: {
                     appendTsSuffixTo: [/\.vue$/],
                 }
-            },
-            {
-                parser: {amd: false}
             },
             {
                 test: /\.css$/,
@@ -35,8 +40,12 @@ module.exports = {
     plugins: [
         // make sure to include the plugin!
         new VueLoaderPlugin(),
+        new CopyPlugin({
+            patterns:
+                externals.map(e => ({from: e, to: path.resolve(__dirname, 'public/js/lib')})),
+        })
         // uncomment to see analysis of bundle size
-       // new BundleAnalyzerPlugin({analyzerPort: 4000})
+        // new BundleAnalyzerPlugin({analyzerPort: 4000})
     ],
     output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
     resolve: {

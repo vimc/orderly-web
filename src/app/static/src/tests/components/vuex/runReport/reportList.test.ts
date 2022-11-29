@@ -18,7 +18,7 @@ const createStore = (reportState: Partial<ReportsState> = {}) => {
             reports: {
                 namespaced: true,
                 state: mockReportsState(reportState),
-                mutations: mockSelectReportMutation()
+                mutations: { SelectReport: mockSelectReportMutation }
             }
         }
     })
@@ -30,10 +30,14 @@ function getWrapper() {
 
 describe("vuex reportList", () => {
 
+    afterEach(() => {
+        jest.resetAllMocks();
+    })
+
     it("renders typeahead correctly and fires event on selection", async () => {
         const wrapper = getWrapper();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
+        await wrapper.findComponent(VueSelect).setData({open: true});
         await Vue.nextTick();
 
         const reportSuggestions = wrapper.findAll("li");
@@ -47,7 +51,8 @@ describe("vuex reportList", () => {
     it("typeahead filters list correctly", async () => {
         const wrapper = getWrapper();
 
-        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus()
+        await wrapper.findComponent(VueSelect).setData({open: true});
+        await Vue.nextTick();
 
         await wrapper.find("input").setValue("rt2");
         let reportSuggestions = wrapper.findAll("li");
@@ -58,7 +63,6 @@ describe("vuex reportList", () => {
         reportSuggestions = wrapper.findAll("li");
         expect(reportSuggestions.length).toBe(1);
         expect(reportSuggestions.at(0).text()).toBe("report1 Last run: never");
-        expect(mockSelectReportMutation.mock.calls.length).toBe(2)
     });
 
     it("renders error Alert correctly", async () => {

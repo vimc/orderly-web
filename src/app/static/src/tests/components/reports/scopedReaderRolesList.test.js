@@ -68,7 +68,7 @@ describe("scopedReaderRolesList", () => {
         expect(wrapper.findComponent(RoleList).props().canRemoveMembers).toBe(false);
         expect(wrapper.findComponent(RoleList).props().permission).toStrictEqual({
             name: "reports.read",
-            scope_id : "report1",
+            scope_id: "report1",
             scope_prefix: "report"
         });
 
@@ -113,7 +113,7 @@ describe("scopedReaderRolesList", () => {
 
     });
 
-    it('refreshes data when added event is emitted', async (done) => {
+    it('refreshes data when added event is emitted', async () => {
 
         mockAxios.onPost(`http://app/roles/Tech/permissions/`)
             .reply(200);
@@ -127,20 +127,17 @@ describe("scopedReaderRolesList", () => {
 
         await Vue.nextTick();
 
-        wrapper.find("input").setValue('Tech');
-        wrapper.find('button').trigger('click');
+        await wrapper.find("input").setValue('Tech');
+        await wrapper.find('button').trigger('click');
 
-        setTimeout(() => {
-            expect(wrapper.findAll('.text-danger').length).toBe(0);
+        await Vue.nextTick();
 
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
+        expect(wrapper.findAll('.text-danger').length).toBe(0);
 
-            expectPostDataCorrect("add");
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
 
-            done();
-        });
-
+        expectPostDataCorrect("add");
     });
 
     it('fetches all and current roles on mount', (done) => {
@@ -157,7 +154,7 @@ describe("scopedReaderRolesList", () => {
         });
     });
 
-    it('removes role and gets current roles when role list emits removed event', async (done) => {
+    it('removes role and gets current roles when role list emits removed event', async () => {
 
         const url = 'http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=report1';
         mockAxios.onDelete(url)
@@ -169,17 +166,16 @@ describe("scopedReaderRolesList", () => {
 
         expect(mockAxios.history.get.length).toBe(2);
 
-        wrapper.findComponent(RoleList).vm.$emit("removed", "Funders");
+        await wrapper.findComponent(RoleList).vm.$emit("removed", "Funders");
 
-        setTimeout(() => {
-            expect(mockAxios.history.delete.length).toBe(1);
-            expect(mockAxios.history.delete[0].url).toBe(url);
+        await Vue.nextTick();
 
-            //Check roles were refreshed
-            expect(mockAxios.history.get.length).toBe(3);
-            expect(mockAxios.history.get[2].url).toBe("http://app/roles/report-readers/report1/");
-            done();
-        })
+        expect(mockAxios.history.delete.length).toBe(1);
+        expect(mockAxios.history.delete[0].url).toBe(url);
+
+        //Check roles were refreshed
+        expect(mockAxios.history.get.length).toBe(3);
+        expect(mockAxios.history.get[2].url).toBe("http://app/roles/report-readers/report1/");
     });
 
     it('sets error if removing role fails', (done) => {

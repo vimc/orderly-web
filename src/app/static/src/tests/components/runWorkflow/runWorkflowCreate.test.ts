@@ -3,6 +3,7 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
 import {mockRunWorkflowMetadata} from "../../mocks";
+import Vue from "vue";
 
 describe(`runWorkflowCreate`, () => {
 
@@ -68,7 +69,7 @@ describe(`runWorkflowCreate`, () => {
             })
     }
 
-    it(`it renders page elements correctly`, () =>{
+    it(`it renders page elements correctly`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         const divs = wrapper.findAll("div")
@@ -90,74 +91,68 @@ describe(`runWorkflowCreate`, () => {
         expect(wrapper.emitted("create")[0][0]).toStrictEqual(mockRunWorkflowMetadata());
     })
 
-    it(`can emit re-run navigation step`, async (done) => {
+    it(`can emit re-run navigation step`, async () => {
         const wrapper = getWrapper()
 
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            expect(mockAxios.history.get[0].url).toBe("http://app/workflows")
-            expect(wrapper.vm.$data.error).toStrictEqual("")
-            expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
-            expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
+        await Vue.nextTick();
+        expect(wrapper.find("h2").text()).toBe("Run workflow")
+        expect(mockAxios.history.get.length).toBe(1)
+        expect(mockAxios.history.get[0].url).toBe("http://app/workflows")
+        expect(wrapper.vm.$data.error).toStrictEqual("")
+        expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
+        expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const vueSelect = wrapper.findComponent(VueSelect)
-            vueSelect.vm.$emit("input", selectedWorkflow)
-            expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-            await wrapper.find("#rerun").trigger("click")
-            expect(wrapper.emitted("rerun").length).toBe(1)
-            expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
-            done()
-        })
+        const vueSelect = wrapper.findComponent(VueSelect)
+        vueSelect.vm.$emit("input", selectedWorkflow)
+        expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
+        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+        await wrapper.find("#rerun").trigger("click")
+        expect(wrapper.emitted("rerun").length).toBe(1)
+        expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
     })
 
-    it(`can emit clone navigation step`, async (done) => {
+    it(`can emit clone navigation step`, async () => {
+        const wrapper = getWrapper()
+        await Vue.nextTick();
+        expect(wrapper.find("h2").text()).toBe("Run workflow")
+        expect(mockAxios.history.get.length).toBe(1)
+        expect(mockAxios.history.get[0].url).toBe("http://app/workflows")
+        expect(wrapper.vm.$data.error).toStrictEqual("")
+        expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
+        expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
+
+        const vueSelect = wrapper.findComponent(VueSelect)
+        vueSelect.vm.$emit("input", selectedWorkflow)
+        expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
+        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+
+        await wrapper.find("#clone").trigger("click")
+        expect(wrapper.emitted("clone").length).toBe(1)
+        expect(wrapper.emitted().clone[0]).toEqual(clonedWorkflowMetadata)
+    })
+
+    it(`does not enable buttons if workflow is not selected and metadata not populated`, async () => {
         const wrapper = getWrapper()
 
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            expect(mockAxios.history.get[0].url).toBe("http://app/workflows")
-            expect(wrapper.vm.$data.error).toStrictEqual("")
-            expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
-            expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
+        await Vue.nextTick();
 
-            const vueSelect = wrapper.findComponent(VueSelect)
-            vueSelect.vm.$emit("input", selectedWorkflow)
-            expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+        expect(wrapper.find("h2").text()).toBe("Run workflow")
+        expect(mockAxios.history.get.length).toBe(1)
+        expect(mockAxios.history.get[0].url).toBe("http://app/workflows")
+        expect(wrapper.vm.$data.error).toStrictEqual("")
+        expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
+        expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            await wrapper.find("#clone").trigger("click")
-            expect(wrapper.emitted("clone").length).toBe(1)
-            expect(wrapper.emitted().clone[0]).toEqual(clonedWorkflowMetadata)
-            done()
-        })
+        await wrapper.setData({runWorkflowMetadata: workflowMetadata, selectedWorkflow: null})
+        expect(wrapper.find("#rerun").attributes("disabled")).toStrictEqual("disabled")
+        expect(wrapper.find("#clone").attributes("disabled")).toStrictEqual("disabled")
+
+        await wrapper.setData({runWorkflowMetadata: null, selectedWorkflow: selectedWorkflow})
+        expect(wrapper.find("#rerun").attributes("disabled")).toStrictEqual("disabled")
+        expect(wrapper.find("#clone").attributes("disabled")).toStrictEqual("disabled")
     })
 
-    it(`does not enable buttons if workflow is not selected and metadata not populated`, async(done) => {
-        const wrapper = getWrapper()
-
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            expect(mockAxios.history.get[0].url).toBe("http://app/workflows")
-            expect(wrapper.vm.$data.error).toStrictEqual("")
-            expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
-            expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
-
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata, selectedWorkflow: null})
-            expect(wrapper.find("#rerun").attributes("disabled")).toStrictEqual("disabled")
-            expect(wrapper.find("#clone").attributes("disabled")).toStrictEqual("disabled")
-
-            await wrapper.setData({runWorkflowMetadata: null, selectedWorkflow: selectedWorkflow})
-            expect(wrapper.find("#rerun").attributes("disabled")).toStrictEqual("disabled")
-            expect(wrapper.find("#clone").attributes("disabled")).toStrictEqual("disabled")
-            done()
-        })
-    })
-
-    it(`does display error message if error when getting workflows`, async(done) => {
+    it(`does display error message if error when getting workflows`, (done) => {
         const url = "http://app/workflows"
         mockAxios.onGet(url)
             .reply(500, "TEST ERROR");

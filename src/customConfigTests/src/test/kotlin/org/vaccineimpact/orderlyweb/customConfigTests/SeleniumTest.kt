@@ -53,8 +53,8 @@ abstract class SeleniumTest : CustomConfigTests()
                     setProxy(proxy)
                 })
 
-        driver.manage().timeouts().implicitlyWait(12, TimeUnit.SECONDS)
-        wait = WebDriverWait(driver, 12)
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS)
+        wait = WebDriverWait(driver, 20)
         debugHelper.driver = driver
     }
 

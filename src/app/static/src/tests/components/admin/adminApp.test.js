@@ -70,7 +70,7 @@ describe("adminApp", () => {
         expect(wrapper.findAllComponents(Settings).length).toBe(1);
     });
 
-    it('fetches roles and users on mount', async (done) => {
+    it('fetches roles and users on mount', (done) => {
         const wrapper = shallowMount(AdminApp);
 
         setTimeout(() => {
@@ -81,7 +81,7 @@ describe("adminApp", () => {
         });
     });
 
-    it('refreshes roles and users when role permissions list emits changed event', async (done) => {
+    it('refreshes roles and users when role permissions list emits changed event', (done) => {
         const wrapper = shallowMount(AdminApp);
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
@@ -97,7 +97,7 @@ describe("adminApp", () => {
         });
     });
 
-    it('refreshes roles and users when manage roles emits changed event', async (done) => {
+    it('refreshes roles and users when manage roles emits changed event', (done) => {
         const wrapper = shallowMount(AdminApp);
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
@@ -113,7 +113,7 @@ describe("adminApp", () => {
         });
     });
 
-    it('refreshes users when manage users emits changed event', async (done) => {
+    it('refreshes users when manage users emits changed event', (done) => {
         const wrapper = shallowMount(AdminApp);
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);

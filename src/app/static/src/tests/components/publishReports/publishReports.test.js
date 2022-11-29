@@ -146,15 +146,15 @@ describe("publishReports", () => {
 
         rendered.findComponent(report).vm.$emit("select-draft", {id: "20190824-161244-6e9b57d4", value: true});
         expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(true);
-        rendered.findComponent(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
-        expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
+        rendered.findComponent(report).vm.$emit("select-group", {date: "Mon Jul 29 2019", value: true});
+        expect(rendered.vm.$data["selectedDates"]["Mon Jul 29 2019"]).toBe(true);
 
         rendered.find("input").setChecked(true);
 
         await Vue.nextTick();
 
         expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(false);
-        expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(false);
+        expect(rendered.vm.$data["selectedDates"]["Mon Jul 29 2019"]).toBe(false);
     });
 
     it("updates selectedIds when select-draft event with single id is emitted", async () => {

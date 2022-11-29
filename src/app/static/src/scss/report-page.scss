@@ -1,10 +1,10 @@
 @import "style";
-@import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css";
-@import "partials/sidebar";
-@import "partials/permissions";
-@import "partials/modal";
-@import "partials/changelogs";
-@import "partials/expander";
+@import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle";
+@import "partials/_sidebar";
+@import "partials/_permissions";
+@import "partials/_modal";
+@import "partials/_changelogs";
+@import "partials/_expander";
 
 .specific-read-access-label {
   margin-top: 40px;

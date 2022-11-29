@@ -8,6 +8,7 @@ import {mockGitState, mockRunWorkflowMetadata} from "../../mocks";
 import {RunWorkflowMetadata} from "../../../js/utils/types";
 import {GitState} from "../../../js/store/git/git";
 import Vuex from "vuex";
+import Vue from "vue";
 
 describe(`runWorkflowRun`, () => {
 
@@ -152,21 +153,24 @@ describe(`runWorkflowRun`, () => {
         expect((wrapper.find("#run-workflow-name").element as HTMLInputElement).value).toBe("Test Workflow");
     });
 
-    it(`shows error message if workflow name already exists`, async (done) => {
+    it(`shows error message if workflow name already exists`, async () => {
         const wrapper = getWrapper()
-        setTimeout(async () => {
-            const workflowName = wrapper.find("#workflow-name-div")
-            expect(workflowName.text()).toBe("Name")
-            const workflowNameInput = workflowName.find("input#run-workflow-name")
-            expect(workflowNameInput.exists()).toBe(true)
+        const workflowName = wrapper.find("#workflow-name-div")
+        expect(workflowName.text()).toBe("Name")
+        const workflowNameInput = workflowName.find("input#run-workflow-name")
+        expect(workflowNameInput.exists()).toBe(true)
 
-            await workflowNameInput.setValue("interim report")
-            expect(wrapper.emitted().update[wrapper.emitted().update.length-1][0])
-                .toStrictEqual({name: "interim report"});
-            expect(workflowName.find("small").text())
-                .toEqual("Workflow name already exists, please rename your workflow.")
-            done()
-        })
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        await workflowNameInput.setValue("interim report")
+        expect(wrapper.emitted().update[wrapper.emitted().update.length - 1][0])
+            .toStrictEqual({name: "interim report"});
+
+        await Vue.nextTick();
+
+        expect(workflowName.find("small").text())
+            .toEqual("Workflow name already exists, please rename your workflow.")
     })
 
     it(`can render instances elements`, (done) => {
@@ -174,7 +178,10 @@ describe(`runWorkflowRun`, () => {
 
         setTimeout(() => {
             expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annex": "one", "source": "prod"})
+            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({
+                "annex": "one",
+                "source": "prod"
+            })
 
             const label = wrapper.findAll(".instance-div label")
             expect(label.length).toBe(1)
@@ -192,7 +199,7 @@ describe(`runWorkflowRun`, () => {
         });
     })
 
-    it(`emits update event on select instance`,  (done) => {
+    it(`emits update event on select instance`, (done) => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
@@ -226,7 +233,7 @@ describe(`runWorkflowRun`, () => {
         });
     });
 
-    it(`can render workflow-changelog message elements`, async (done) => {
+    it(`can render workflow-changelog message elements`, (done) => {
         const wrapper = getWrapper()
 
         setTimeout(() => {
@@ -261,7 +268,12 @@ describe(`runWorkflowRun`, () => {
 
             await textarea.setValue("test message input")
             expect(wrapper.emitted().update.length).toBe(3)
-            expect(wrapper.emitted().update[2][0]).toStrictEqual({changelog: {message: "test message input", type: "internal"}})
+            expect(wrapper.emitted().update[2][0]).toStrictEqual({
+                changelog: {
+                    message: "test message input",
+                    type: "internal"
+                }
+            })
             done()
         })
     });
@@ -282,41 +294,7 @@ describe(`runWorkflowRun`, () => {
 
             await textarea.setValue("test message input")
             expect(wrapper.emitted().update.length).toBe(2);
-            expect(wrapper.emitted().update[1][0]).toStrictEqual({changelog: {message: "test message input", type: "public"}})
-            done()
-        })
-    });
-
-    it(`can render workflow-changelog-type`, async (done) => {
-        const wrapper = getWrapper()
-
-        setTimeout(async () => {
-            expect(mockAxios.history.get.length).toBe(1);
-            expect(mockAxios.history.get[0].url).toBe("http://app/workflows");
-            expect(wrapper.vm.$data.error).toStrictEqual("")
-            expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
-            expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
-
-            const changelogType = wrapper.find("#changelog-type")
-            expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type")
-            const options = changelogType.find("select").findAll("option")
-            expect(options.at(0).text()).toBe(changelogTypes[0]);
-            expect(options.at(1).text()).toBe(changelogTypes[1]);
-            done()
-        })
-    })
-
-    it(`emits update on changelog type change`, async (done) => {
-        const wrapper = getWrapper();
-
-        setTimeout(async() => {
-            const changelogType = wrapper.find("#changelog-type")
-            expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type");
-
-            await wrapper.find("#changelog-message").find("textarea").setValue("test message input")
-            await changelogType.find("select").setValue(changelogTypes[1])
-            expect(wrapper.emitted().update.length).toBe(4)
-            expect(wrapper.emitted().update[3][0]).toStrictEqual({
+            expect(wrapper.emitted().update[1][0]).toStrictEqual({
                 changelog: {
                     message: "test message input",
                     type: "public"
@@ -324,25 +302,61 @@ describe(`runWorkflowRun`, () => {
             })
             done()
         })
+    });
+
+    it(`can render workflow-changelog-type`, async () => {
+        const wrapper = getWrapper()
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0].url).toBe("http://app/workflows");
+        expect(wrapper.vm.$data.error).toStrictEqual("")
+        expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
+        expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
+
+        const changelogType = wrapper.find("#changelog-type")
+        expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type")
+        const options = changelogType.find("select").findAll("option")
+        expect(options.at(0).text()).toBe(changelogTypes[0]);
+        expect(options.at(1).text()).toBe(changelogTypes[1]);
     })
 
-    it(`changelog type change updates with existing changelog message`, (done) => {
+    it(`emits update on changelog type change`, async () => {
+        const wrapper = getWrapper();
+
+        const changelogType = wrapper.find("#changelog-type")
+        expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type");
+
+        await wrapper.find("#changelog-message").find("textarea").setValue("test message input")
+        await changelogType.find("select").setValue(changelogTypes[1])
+        expect(wrapper.emitted().update.length).toBe(4)
+        expect(wrapper.emitted().update[3][0]).toStrictEqual({
+            changelog: {
+                message: "test message input",
+                type: "public"
+            }
+        })
+    })
+
+    it(`changelog type change updates with existing changelog message`, async () => {
         const wrapper = getWrapper({
             changelog: {message: "existing message", type: "internal"}
         });
 
-        setTimeout(async () => {
-            // expect initial emit of default selected instances
-            expect(wrapper.emitted().update.length).toBe(1);
+        // expect initial emit of default selected instances
+        expect(wrapper.emitted().update.length).toBe(1);
 
-            const changelogType = wrapper.find("#changelog-type")
-            expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type")
-            const selectOptions = changelogType.find("select")
-            await selectOptions.setValue(changelogTypes[1]);
+        const changelogType = wrapper.find("#changelog-type")
+        expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type")
+        const selectOptions = changelogType.find("select")
+        await selectOptions.setValue(changelogTypes[1]);
 
-            expect(wrapper.emitted().update.length).toBe(2);
-            expect(wrapper.emitted().update[1][0]).toStrictEqual({changelog: {message: "existing message", type: "public"}})
-            done()
+        expect(wrapper.emitted().update.length).toBe(2);
+        expect(wrapper.emitted().update[1][0]).toStrictEqual({
+            changelog: {
+                message: "existing message",
+                type: "public"
+            }
         })
     });
 
@@ -363,10 +377,10 @@ describe(`runWorkflowRun`, () => {
         });
     });
 
-    it(`it can set and render props correctly`, async (done) => {
+    it(`it can set and render props correctly`, (done) => {
         const workflowMeta = {placeholder: "test placeholder"}
         const wrapper = getWrapper()
-        await wrapper.setProps({workflowMetadata: workflowMeta})
+        wrapper.setProps({workflowMetadata: workflowMeta})
         setTimeout(() => {
             expect(wrapper.vm.$props.workflowMetadata).toBe(workflowMeta)
             done()

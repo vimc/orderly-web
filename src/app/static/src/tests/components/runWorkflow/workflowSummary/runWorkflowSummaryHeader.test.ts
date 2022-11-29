@@ -25,7 +25,7 @@ describe(`runWorkflowSummaryHeader`, () => {
         const wrapper = getWrapper();
         expect(wrapper.find("#summary-header").text()).toBe("Summary");
         const summaryWarning = wrapper.find("#summary-warning")
-        expect(summaryWarning.find("div").find(AlertTriangleIcon).exists()).toBe(true);
+        expect(wrapper.findComponent(AlertTriangleIcon).exists()).toBe(true);
         expect(summaryWarning.findAll("div").at(2).find("span").text()).toBe("Some reports depend on the latest version of other reports that are not included in your workflow:");
         const dependencyInstances = summaryWarning.findAll(".missingDependency")
         expect(dependencyInstances.length).toBe(1);

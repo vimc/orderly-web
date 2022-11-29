@@ -1,6 +1,6 @@
 <@layout>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/admin.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/admin.css"/>
     </#macro>
     <div id="adminVueApp">
         <admin-app></admin-app>

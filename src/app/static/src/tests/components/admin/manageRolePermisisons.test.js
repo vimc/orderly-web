@@ -10,7 +10,7 @@ describe("manageRolePermissions", () => {
         mockAxios.reset();
     });
 
-    const mockRoles =  [
+    const mockRoles = [
         {
             name: "Funders",
             permissions: [
@@ -27,7 +27,7 @@ describe("manageRolePermissions", () => {
         }
     ];
 
-    const getWrapper = function() {
+    const getWrapper = function () {
         return shallowMount(ManageRolePermissions, {
             propsData: {roles: [{...mockRoles[0]}, {...mockRoles[1]}]}
         });
@@ -90,7 +90,7 @@ describe("manageRolePermissions", () => {
         expect(wrapper.vm.$data.expanded[0]).toBe(false);
     });
 
-    it('posts to api, emits event and resets errors on successful remove', async (done) => {
+    it('posts to api, emits event and resets errors on successful remove', async () => {
         const wrapper = getWrapper();
         wrapper.setData({
             error: "TEST ERROR",
@@ -103,42 +103,41 @@ describe("manageRolePermissions", () => {
             .reply(200);
 
         wrapper.findComponent(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
-        setTimeout(() => {
-            expect(mockAxios.history.delete.length).toBe(1);
-            expect(mockAxios.history.delete[0].url).toBe(url);
 
-            expect(wrapper.emitted().changed.length).toBe(1);
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-            expect(wrapper.vm.$data.error).toBe(null);
-            expect(wrapper.vm.$data.defaultMessage).toBe("Something went wrong");
+        expect(mockAxios.history.delete.length).toBe(1);
+        expect(mockAxios.history.delete[0].url).toBe(url);
 
-            done();
-        });
+        expect(wrapper.emitted().changed.length).toBe(1);
+
+        expect(wrapper.vm.$data.error).toBe(null);
+        expect(wrapper.vm.$data.defaultMessage).toBe("Something went wrong");
     });
 
 
-    it('sets errors and does not emit event on unsuccessful remove', async (done) => {
+    it('sets errors and does not emit event on unsuccessful remove', async () => {
         const wrapper = getWrapper();
 
         const url = 'http://app/roles/Funders/permissions/reports.read/';
         mockAxios.onDelete(url)
             .reply(500, "TEST API ERROR");
 
-        wrapper.findComponent(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
-        setTimeout(() => {
-            expect(mockAxios.history.delete.length).toBe(1);
-            expect(mockAxios.history.delete[0].url).toBe(url);
+        await wrapper.findComponent(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
 
-            expect(wrapper.emitted().changed).toBe(undefined);
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-            expect(wrapper.vm.$data.error.response.data).toBe("TEST API ERROR");
-            expect(wrapper.vm.$data.defaultMessage).toBe("could not remove permission from Funders");
+        expect(mockAxios.history.delete.length).toBe(1);
+        expect(mockAxios.history.delete[0].url).toBe(url);
 
-            done();
-        });
+        expect(wrapper.emitted().changed).toBe(undefined);
+        expect(wrapper.vm.$data.error.response.data).toBe("TEST API ERROR");
+        expect(wrapper.vm.$data.defaultMessage).toBe("could not remove permission from Funders");
     });
 
-    it('calls api with correct url when permission is scoped', async (done) => {
+    it('calls api with correct url when permission is scoped', async () => {
         const scopedRole = {
             name: "ScopedRole",
             permissions: [{name: "test.perm", scope_prefix: "report", scope_id: "r1"}]
@@ -148,17 +147,17 @@ describe("manageRolePermissions", () => {
             propsData: {roles: [scopedRole]}
         });
 
-        wrapper.findComponent(PermissionList).vm.$emit("removed", scopedRole.permissions[0], "ScopedRole");
-        setTimeout(() => {
-            expect(mockAxios.history.delete.length).toBe(1);
-            const url = "http://app/roles/ScopedRole/permissions/test.perm/?scopePrefix=report&scopeId=r1";
-            expect(mockAxios.history.delete[0].url).toBe(url);
+        await wrapper.findComponent(PermissionList).vm.$emit("removed", scopedRole.permissions[0], "ScopedRole");
 
-            done();
-        });
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(mockAxios.history.delete.length).toBe(1);
+        const url = "http://app/roles/ScopedRole/permissions/test.perm/?scopePrefix=report&scopeId=r1";
+        expect(mockAxios.history.delete[0].url).toBe(url);
     });
 
-    it('can add permission to role', async (done) => {
+    it('can add permission to role', async () => {
         const wrapper = getWrapper();
         wrapper.setData({
             error: "TEST ERROR",
@@ -171,17 +170,18 @@ describe("manageRolePermissions", () => {
             .reply(200);
 
         wrapper.findComponent(PermissionList).vm.$emit("added", "reports.review");
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url);
 
-            expect(wrapper.findComponent(ErrorInfo).props().apiError).toBeNull();
-            expect(wrapper.emitted().changed.length).toBe(1);
-            done();
-        });
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0].url).toBe(url);
+
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBeNull();
+        expect(wrapper.emitted().changed.length).toBe(1);
     });
 
-    it('sets error if adding permission fails', async (done) => {
+    it('sets error if adding permission fails', async () => {
         const wrapper = getWrapper();
         wrapper.setData({
             error: "TEST ERROR",
@@ -194,15 +194,17 @@ describe("manageRolePermissions", () => {
         mockAxios.onPost(url)
             .reply(500);
 
-        wrapper.findComponent(PermissionList).vm.$emit("added", "reports.review");
+        await wrapper.findComponent(PermissionList).vm.$emit("added", "reports.review");
 
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-            expect(wrapper.emitted().changed).toBeUndefined();
-            expect(wrapper.findComponent(ErrorInfo).props().apiError).not.toBeNull();
-            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add reports.review to Funders");            done();
-        });
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0].url).toBe(url);
+
+        expect(wrapper.emitted().changed).toBeUndefined();
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).not.toBeNull();
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add reports.review to Funders");
     });
 });

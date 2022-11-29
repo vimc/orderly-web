@@ -33,7 +33,7 @@ describe("addReportReader", () => {
         });
     }
 
-    it('add sets error and does not emit added event', async (done) => {
+    it('add sets error and does not emit added event', async () => {
         const testError = {test: "something"};
         mockAxios.onPost(`http://app/users/testGroup1/permissions/`)
             .reply(500, testError);
@@ -44,19 +44,18 @@ describe("addReportReader", () => {
 
         await Vue.nextTick();
 
-        wrapper.find('button').trigger('click');
+        await wrapper.find('button').trigger('click');
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post.length).toBe(1);
 
-            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add user");
-            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
-            expect(wrapper.emitted().added).toBeUndefined();
-            done();
-        });
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add user");
+        expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
+        expect(wrapper.emitted().added).toBeUndefined();
     });
 
-    it('adds permission and emits added event', async (done) => {
+    it('adds permission and emits added event', async () => {
 
         mockAxios.onPost(`http://app/users/testGroup1/permissions/`)
             .reply(200);
@@ -67,16 +66,14 @@ describe("addReportReader", () => {
 
         await Vue.nextTick();
 
-        wrapper.find('button').trigger('click');
+        await wrapper.find('button').trigger('click');
 
-        setTimeout(() => {
-            expect(wrapper.findAll('.text-danger').length).toBe(0);
-            expect(mockAxios.history.post.length).toBe(1);
-            expectPostDataCorrect();
-            expect(wrapper.vm.$data["newUserGroup"]).toBe("");
+        await Vue.nextTick();
 
-            done();
-        });
+        expect(wrapper.findAll('.text-danger').length).toBe(0);
+        expect(mockAxios.history.post.length).toBe(1);
+        expectPostDataCorrect();
+        expect(wrapper.vm.$data["newUserGroup"]).toBe("");
     });
 
     describe("add permission to user", () => {
@@ -99,7 +96,7 @@ describe("addReportReader", () => {
 
         });
 
-        it('validates that email value is an available user group', async (done) => {
+        it('validates that email value is an available user group', async () => {
 
             const wrapper = createSut("user");
 
@@ -107,13 +104,12 @@ describe("addReportReader", () => {
 
             await Vue.nextTick();
 
-            wrapper.find('button').trigger('click');
+            await wrapper.find('button').trigger('click');
 
-            setTimeout(() => {
-                expect(mockAxios.history.post.length).toBe(0);
-                expect(wrapper.find('.text-danger').text()).toBe("Error: badUserGroup is not a valid email or already has this permission");
-                done();
-            });
+            await Vue.nextTick();
+
+            expect(mockAxios.history.post.length).toBe(0);
+            expect(wrapper.find('.text-danger').text()).toBe("Error: badUserGroup is not a valid email or already has this permission");
         });
     });
 
@@ -137,7 +133,7 @@ describe("addReportReader", () => {
 
         });
 
-        it('validates that email value is an available user group', async (done) => {
+        it('validates that email value is an available user group', async () => {
 
             const wrapper = createSut("role");
 
@@ -145,13 +141,11 @@ describe("addReportReader", () => {
 
             await Vue.nextTick();
 
-            wrapper.find('button').trigger('click');
+            await wrapper.find('button').trigger('click');
 
-            setTimeout(() => {
-                expect(mockAxios.history.post.length).toBe(0);
-                expect(wrapper.find('.text-danger').text()).toBe("Error: badUserGroup is not a valid role name or already has this permission");
-                done();
-            });
+            await Vue.nextTick();
+            expect(mockAxios.history.post.length).toBe(0);
+            expect(wrapper.find('.text-danger').text()).toBe("Error: badUserGroup is not a valid role name or already has this permission");
         });
     })
 
