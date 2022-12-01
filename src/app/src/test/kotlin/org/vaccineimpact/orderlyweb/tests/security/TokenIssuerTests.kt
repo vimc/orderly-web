@@ -16,28 +16,6 @@ class TokenIssuerTests
     private val userEmail = "test@email.com"
 
     @Test
-    fun `can generate onetime token`()
-    {
-        val sut = TokenIssuer(keyPair, "testIssuer")
-
-        val result = sut.generateOnetimeActionToken(userEmail, "/test")
-
-        // Check that valid token has been generated
-        JwtAuthenticator(sut.signatureConfiguration).validateToken(result)
-
-        // Check the token has expected claims
-        val jwt = JWTParser.parse(result)
-        val claims = jwt.jwtClaimsSet.claims
-        assertThat(claims["iss"]).isEqualTo("testIssuer")
-        assertThat(claims["sub"]).isEqualTo("onetime_link")
-        assertThat(claims["url"]).isEqualTo("/test")
-        assertThat(claims["nonce"]).isNotNull()
-
-        val exp = claims["exp"] as Date
-        assertThat(exp).isInSameMinuteWindowAs(Date.from(Instant.now().plus(Duration.ofMinutes(10))))
-    }
-
-    @Test
     fun `can generate bearer token`()
     {
         val sut = TokenIssuer(keyPair, "testIssuer")

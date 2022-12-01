@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.app_start
 import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
 import spark.Spark.staticFiles
 import java.io.File
@@ -71,8 +70,6 @@ class OrderlyWeb
         }
 
         logger.info("Expecting orderly database at ${AppConfig()["db.location"]}")
-
-        TokenStore.instance.setup()
 
         val router = Router(freeMarkerConfig)
 

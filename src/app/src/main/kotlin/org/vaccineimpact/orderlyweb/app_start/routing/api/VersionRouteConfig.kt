@@ -45,7 +45,6 @@ object VersionRouteConfig : RouteConfig
                     "getZippedByNameAndVersion",
                     ContentTypes.zip
             )
-            .allowParameterAuthentication()
             .secure(readReports),
 
             APIEndpoint(
@@ -65,8 +64,7 @@ object VersionRouteConfig : RouteConfig
             )
             .json()
             .transform()
-            .secure(readReports)
-            .allowParameterAuthentication(),
+            .secure(readReports),
 
             APIEndpoint(
                     "/reports/:name/versions/:version/artefacts/",
@@ -82,8 +80,7 @@ object VersionRouteConfig : RouteConfig
                     artefactController,
                     "getFile"
             )
-            .secure(readReports)
-            .allowParameterAuthentication(),
+            .secure(readReports),
 
             APIEndpoint(
                     "/reports/:name/versions/:version/resources/",
@@ -99,8 +96,7 @@ object VersionRouteConfig : RouteConfig
                     resourceController,
                     "download"
             )
-            .secure(readReports)
-            .allowParameterAuthentication(),
+            .secure(readReports),
 
             APIEndpoint(
                     "/reports/:name/versions/:version/data/",
@@ -116,8 +112,7 @@ object VersionRouteConfig : RouteConfig
                     dataController,
                     "downloadData"
             )
-            .secure(readReports)
-            .allowParameterAuthentication(),
+            .secure(readReports),
 
             APIEndpoint(
                     "/reports/:name/versions/:version/data/:data/",
@@ -125,8 +120,7 @@ object VersionRouteConfig : RouteConfig
                     "downloadData",
                     contentType = ContentTypes.csv
             )
-            .secure(readReports)
-            .allowParameterAuthentication(),
+            .secure(readReports),
 
             APIEndpoint(
                     "/reports/:name/versions/:version/run-meta/",
@@ -135,6 +129,5 @@ object VersionRouteConfig : RouteConfig
                     contentType = ContentTypes.binarydata
             )
             .secure(readReports)
-            .allowParameterAuthentication()
     )
 }

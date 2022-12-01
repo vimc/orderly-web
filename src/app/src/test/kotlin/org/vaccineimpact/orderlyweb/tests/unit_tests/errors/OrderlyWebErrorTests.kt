@@ -10,15 +10,6 @@ import org.vaccineimpact.orderlyweb.models.ResultStatus
 
 class OrderlyWebErrorTests
 {
-
-    @Test
-    fun `can create InvalidOneTimeLinkToken`()
-    {
-        val sut = InvalidOneTimeLinkToken("testCode", "testMessage")
-        assertExpectedOrderlyWebError(sut, 400,
-                "testMessage", "invalid-token-testCode" )
-    }
-
     @Test
     fun `can create MissingParameterError`()
     {

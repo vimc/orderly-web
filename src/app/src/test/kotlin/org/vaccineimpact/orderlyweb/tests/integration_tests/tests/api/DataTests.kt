@@ -82,8 +82,7 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakedata = "hf647sa674yh3basrhj"
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url,  ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -99,9 +98,7 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion")
         insertData("testversion", fakedata, "SELECT * FROM thing", "testdb", fakehash)
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -119,8 +116,7 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoRDS)
 
         val url = "/reports/testname/versions/testversion/data/testdata/?type=rds"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url&access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -137,8 +133,7 @@ class DataTests : IntegrationTest()
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         val url = "/data/csv/$demoCSV/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.csv)
+        val response = apiRequestHelper.get(url, ContentTypes.csv)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
@@ -155,8 +150,7 @@ class DataTests : IntegrationTest()
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
         val url = "/data/rds/$demoRDS/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")

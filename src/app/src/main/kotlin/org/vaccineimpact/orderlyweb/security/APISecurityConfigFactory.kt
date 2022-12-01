@@ -5,21 +5,18 @@ import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.APIActionAdaptor
 import org.vaccineimpact.orderlyweb.security.clients.JWTHeaderClient
-import org.vaccineimpact.orderlyweb.security.clients.JWTParameterClient
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebTokenCredentialClient
 
 interface APISecurityConfigFactory : ConfigFactory
 {
     fun allClients(): String
     fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>): APISecurityConfigFactory
-    fun allowParameterAuthentication(): APISecurityConfigFactory
     fun externalAuthentication(): APISecurityConfigFactory
 }
 
@@ -30,7 +27,6 @@ class APISecurityClientsConfigFactory(
     companion object
     {
         val headerClient = JWTHeaderClient(WebTokenHelper.instance.verifier)
-        val parameterClient = JWTParameterClient(WebTokenHelper.instance.verifier, TokenStore.instance)
     }
 
     private val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient)
@@ -63,12 +59,6 @@ class APISecurityClientsConfigFactory(
     override fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>): APISecurityConfigFactory
     {
         this.requiredPermissions = requiredPermissions
-        return this
-    }
-
-    override fun allowParameterAuthentication(): APISecurityConfigFactory
-    {
-        allClients.add(APISecurityClientsConfigFactory.parameterClient)
         return this
     }
 

@@ -36,21 +36,6 @@ class ResourceTests : IntegrationTest()
     }
 
     @Test
-    fun `gets resource file with access token`()
-    {
-        val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
-
-        val resourceEncoded = "meta:data.csv"
-        val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
-
-        assertSuccessful(response)
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"use_resource/$version/meta/data.csv\"")
-    }
-
-    @Test
     fun `gets resource file with space in name`()
     {
         val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
@@ -95,8 +80,7 @@ class ResourceTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
         val url = "/reports/testname/versions/testversion/resources/$fakeresource/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -110,8 +94,7 @@ class ResourceTests : IntegrationTest()
         insertFileInput("testversion", "resource.csv", FilePurpose.RESOURCE)
 
         val url = "/reports/testname/versions/testversion/resources/resource.csv/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

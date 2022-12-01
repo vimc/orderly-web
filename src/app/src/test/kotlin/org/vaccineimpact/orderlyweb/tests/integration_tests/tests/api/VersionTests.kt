@@ -353,27 +353,6 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `can get report run metadata with access token`()
-    {
-        val publishedVersion = JooqContext().use {
-            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
-                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
-                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED)
-                    .fetchAny()
-        }
-        val versionId = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
-        val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
-        val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
-        val token = apiRequestHelper.generateOnetimeToken(url)
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
-
-        assertSuccessful(response)
-        assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        assertThat(response.headers["content-disposition"])
-                .isEqualTo("attachment; filename=\"$reportName/$versionId/orderly_run.rds\"")
-    }
-
-    @Test
     fun `only report readers can get report run metadata`()
     {
         val publishedVersion = JooqContext().use {

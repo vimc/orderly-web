@@ -83,17 +83,6 @@ class APIRequestHelper : RequestHelper()
         return HttpClient.post(baseUrl + url, headers, json = body)
     }
 
-    fun generateOnetimeToken(url: String, userEmail: String = fakeGlobalReportReader()): String
-    {
-        val response = get("/onetime_token/?url=/api/v1$url", userEmail = userEmail)
-        val json = parser.parse(response.text)
-        if (json["status"].asString != "success")
-        {
-            Assertions.fail("Failed to get onetime token. Result from API was:" + response.text)
-        }
-        return json["data"].asString
-    }
-
     fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response
     {
         val token = "faketoken"

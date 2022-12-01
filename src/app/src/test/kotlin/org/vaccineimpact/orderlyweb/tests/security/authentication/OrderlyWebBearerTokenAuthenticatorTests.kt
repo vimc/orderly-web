@@ -17,7 +17,6 @@ class OrderlyWebBearerTokenAuthenticatorTests
 {
     lateinit var helper: WebTokenHelper
     val fakeUserEmail = "user@email.com"
-
     val tokenIssuer = "tokenissuer"
 
     @Before
@@ -30,7 +29,7 @@ class OrderlyWebBearerTokenAuthenticatorTests
     fun `token is invalid if issuer is not expected`()
     {
         val url = "testurl"
-        val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
+        val token = helper.issuer.generateBearerToken(fakeUserEmail)
 
         val credentials = TokenCredentials(token)
 
@@ -47,7 +46,7 @@ class OrderlyWebBearerTokenAuthenticatorTests
     fun `global * attribute is added to user profile`()
     {
         val url = "testurl"
-        val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
+        val token = helper.issuer.generateBearerToken(fakeUserEmail)
 
         val credentials = TokenCredentials(token)
 

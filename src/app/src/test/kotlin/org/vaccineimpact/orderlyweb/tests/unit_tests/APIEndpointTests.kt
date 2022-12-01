@@ -62,7 +62,6 @@ class APIEndpointTests
         }
 
         whenever(mockConfigFactory.setRequiredPermissions(any())).doReturn(mockConfigFactory)
-        whenever(mockConfigFactory.allowParameterAuthentication()).doReturn(mockConfigFactory)
         whenever(mockConfigFactory.externalAuthentication()).doReturn(mockConfigFactory)
 
         val permissionRequirement = PermissionRequirement.parse("*/testperm")
@@ -107,7 +106,6 @@ class APIEndpointTests
         Assertions.assertThat(matchers).isEqualTo("SkipOptions")
 
         //Should not have called these methods
-        verify(mockConfigFactory, times(0)).allowParameterAuthentication()
         verify(mockConfigFactory, times(0)).externalAuthentication()
     }
 
@@ -124,14 +122,12 @@ class APIEndpointTests
         }
 
         whenever(mockConfigFactory.setRequiredPermissions(any())).doReturn(mockConfigFactory)
-        whenever(mockConfigFactory.allowParameterAuthentication()).doReturn(mockConfigFactory)
         whenever(mockConfigFactory.externalAuthentication()).doReturn(mockConfigFactory)
 
         val permissionRequirement = PermissionRequirement.parse("*/testperm")
         val sut = APIEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
                 contentType = ContentTypes.binarydata, secure = true,
                 requiredPermissions = listOf(permissionRequirement),
-                allowParameterAuthentication = true,
                 authenticateWithExternalProvider = true,
                 spark = mockSpark,
                 configFactory = mockConfigFactory)
@@ -157,7 +153,6 @@ class APIEndpointTests
         val config = field.get(securityFilterArg.value)
         assertThat(config).isEqualTo(mockConfig)
 
-        verify(mockConfigFactory).allowParameterAuthentication()
         verify(mockConfigFactory).externalAuthentication()
     }
 
@@ -171,17 +166,6 @@ class APIEndpointTests
         sut.additionalSetup("/test")
 
         verify(mockSpark, times(0)).before(any(),any(), any(), any())
-    }
-
-    @Test
-    fun `can set allowParameterAuthentication`()
-    {
-        val sut = APIEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class)
-
-        assertThat(sut.allowParameterAuthentication).isFalse()
-
-        val result = sut.allowParameterAuthentication()
-        assertThat(result.allowParameterAuthentication).isTrue()
     }
 
     @Test

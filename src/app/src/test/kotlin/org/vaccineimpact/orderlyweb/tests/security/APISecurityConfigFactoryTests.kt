@@ -39,19 +39,6 @@ class APISecurityClientsConfigFactoryTests
     }
 
     @Test
-    fun `allows parameter authentication`()
-    {
-        val sut = APISecurityClientsConfigFactory()
-        val result = sut.allowParameterAuthentication()
-
-        assertThat(result).isEqualTo(sut)
-        val allClients = result.allClients().split(", ")
-        assertThat(allClients.count()).isEqualTo(2)
-        assertThat(allClients[0]).isEqualTo("JWTHeaderClient")
-        assertThat(allClients[1]).isEqualTo("JWTParameterClient")
-    }
-
-    @Test
     fun `allows external authentication with Montagu if configured auth provider`()
     {
         val mockAuthConfig = mock<AuthenticationConfig> () {
@@ -85,15 +72,13 @@ class APISecurityClientsConfigFactoryTests
     fun `builds expected config`()
     {
         val sut = APISecurityClientsConfigFactory()
-        sut.allowParameterAuthentication()
         val requiredPermissions = setOf(PermissionRequirement.parse("*/testperm"))
         sut.setRequiredPermissions(requiredPermissions)
 
         val result = sut.build()
 
-        assertThat(result.clients.clients.count()).isEqualTo(2)
+        assertThat(result.clients.clients.count()).isEqualTo(1)
         assertThat(result.clients.clients[0] is JWTHeaderClient).isTrue()
-        assertThat(result.clients.clients[1] is JWTParameterClient).isTrue()
 
         assertThat(result.matchers.count()).isEqualTo(1)
         assertThat(result.matchers.entries.first().key).isEqualTo("SkipOptions")
