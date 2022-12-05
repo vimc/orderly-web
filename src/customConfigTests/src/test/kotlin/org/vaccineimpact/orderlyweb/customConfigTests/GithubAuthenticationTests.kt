@@ -2,24 +2,21 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
 import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 
+@ExtendWith(DebugHelper::class)
 class GithubAuthenticationTests : CustomConfigTests()
 {
     private val JSONValidator = JSONValidator()
 
-    @get:Rule
-    val debugHelper = DebugHelper()
-
     // Token with read:org and user:email scope, for a test user who only has access to a test org with no
     // repos. Token reversed so GitHub doesn't spot it and invalidate it
     private val testUserPAT = "dyw4x210375dauDALEtMVdvjypgs8RuGcY8H_phg".reversed()
-
     @Test
     fun `authentication fails without Auth header`()
     {

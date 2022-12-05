@@ -5,7 +5,7 @@ import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -15,7 +15,6 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 class IndexPageTests : IntegrationTest()
 {
     private val readOther = setOf(ReifiedPermission("reports.read", Scope.Specific("report", "other")))
-
     @Test
     fun `all authenticated users can get index page`()
     {

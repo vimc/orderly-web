@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.security
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.exception.CredentialsException
 import org.kohsuke.github.*
 import org.vaccineimpact.orderlyweb.db.Config

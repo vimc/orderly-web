@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -19,8 +19,10 @@ class DemoDataTests : IntegrationTest()
     @Test
     fun `can get demo report data`()
     {
-        val response = apiRequestHelper.get("/reports/$MINIMAL_REPORT_NAME",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/$MINIMAL_REPORT_NAME",
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -38,8 +40,10 @@ class DemoDataTests : IntegrationTest()
     {
         val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
 
-        val response = apiRequestHelper.get("/reports/$OTHER_REPORT_NAME/versions/$reportVersion/",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/$OTHER_REPORT_NAME/versions/$reportVersion/",
+                userEmail = fakeGlobalReportReviewer()
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         val data = JSONValidator.getData(response.text)
@@ -83,8 +87,10 @@ class DemoDataTests : IntegrationTest()
     fun `can get demo changelog data`()
     {
         val reportVersion = getLatestReportVersion(CHANGELOG_REPORT_NAME)
-        val response = apiRequestHelper.get("/reports/$CHANGELOG_REPORT_NAME/versions/$reportVersion/changelog/",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/$CHANGELOG_REPORT_NAME/versions/$reportVersion/changelog/",
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -118,7 +124,7 @@ class DemoDataTests : IntegrationTest()
 
     }
 
-    private fun assertExpectedOtherReportVersionProperties(dataObj : ObjectNode, reportVersion : String)
+    private fun assertExpectedOtherReportVersionProperties(dataObj: ObjectNode, reportVersion: String)
     {
         assertThat(dataObj.get("name").asText()).isEqualTo(OTHER_REPORT_NAME)
         assertThat(dataObj.get("id").asText()).isEqualTo(reportVersion)
@@ -127,14 +133,14 @@ class DemoDataTests : IntegrationTest()
 
     }
 
-    private fun getLatestReportVersion(report: String) : String
+    private fun getLatestReportVersion(report: String): String
     {
         //report versions are different every time the data is generated, so fetch whatever is there at the moment
-        val response = apiRequestHelper.get("/reports/$report",  userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get("/reports/$report", userEmail = fakeGlobalReportReviewer())
 
         val data = JSONValidator.getData(response.text)
         val dataArray = data as ArrayNode
-        return dataArray[dataArray.size()-1].asText()
+        return dataArray[dataArray.size() - 1].asText()
 
 
     }

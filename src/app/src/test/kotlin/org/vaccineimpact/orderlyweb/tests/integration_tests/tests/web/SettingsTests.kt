@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.AssertionsForClassTypes
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -13,7 +13,6 @@ import spark.route.HttpMethod
 class SettingsTests : IntegrationTest()
 {
     private val allowGuestUrl = "/settings/auth-allow-guest/"
-
     @Test
     fun `only user managers can get auth allow guest`()
     {

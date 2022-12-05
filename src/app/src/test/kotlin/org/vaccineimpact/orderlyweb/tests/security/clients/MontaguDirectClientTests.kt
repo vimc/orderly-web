@@ -1,11 +1,10 @@
 package org.vaccineimpact.orderlyweb.tests.security.clients
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
 import org.pac4j.core.credentials.extractor.HeaderExtractor
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.MontaguDirectClient

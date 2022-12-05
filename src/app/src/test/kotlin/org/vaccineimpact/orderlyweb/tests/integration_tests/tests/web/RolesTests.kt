@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -130,8 +130,7 @@ class RolesTests : IntegrationTest()
         val url = "/roles/Funder/users/test.user@example.com"
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.delete, contentType = ContentTypes.json)
-    }
-    @Test
+    }    @Test
     fun `only user managers can add permission`()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))

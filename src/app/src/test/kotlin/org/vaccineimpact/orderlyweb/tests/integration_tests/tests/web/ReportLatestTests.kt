@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat
 import java.sql.Timestamp
 
 class ReportLatestTests : IntegrationTest()
-{
-    @Test
+{    @Test
     fun `reviewer can get latest unpublished version`()
     {
         val reportName = "test"

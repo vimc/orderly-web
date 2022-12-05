@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.userCLI.tests
 
 import org.assertj.core.api.Assertions.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -44,7 +44,6 @@ class AddPermissionTests : CleanDatabaseTests()
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
         assertThat(permissions.count()).isEqualTo(0)
     }
-
 
     @Test
     fun `addPermissionsToGroup does nothing if permission does not exist or is badly formatted`()

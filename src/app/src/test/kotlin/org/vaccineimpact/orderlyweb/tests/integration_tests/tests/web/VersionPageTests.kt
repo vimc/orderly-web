@@ -2,12 +2,10 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
-import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -21,16 +19,20 @@ class VersionPageTests : IntegrationTest()
     fun `only report readers can see report version page`()
     {
         val (report, url) = getAnyReportPageUrl()
-        assertWebUrlSecured(url,
-                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))))
+        assertWebUrlSecured(
+                url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report)))
+        )
     }
 
     @Test
     fun `only report readers can see report latest version page`()
     {
         val (report, url) = getAnyReportPageUrl(true)
-        assertWebUrlSecured(url,
-                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))))
+        assertWebUrlSecured(
+                url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report)))
+        )
     }
 
     @Test
@@ -43,9 +45,11 @@ class VersionPageTests : IntegrationTest()
 
         val firstArtefactHref = page.selectFirst("#artefacts a").attr("href")
 
-        assertWebUrlSecured(firstArtefactHref,
+        assertWebUrlSecured(
+                firstArtefactHref,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
-                ContentTypes.binarydata)
+                ContentTypes.binarydata
+        )
     }
 
     @Test
@@ -58,9 +62,11 @@ class VersionPageTests : IntegrationTest()
 
         val firstDataHref = page.selectFirst("#data-links a").attr("href")
 
-        assertWebUrlSecured(firstDataHref,
+        assertWebUrlSecured(
+                firstDataHref,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
-                contentType = ContentTypes.binarydata)
+                contentType = ContentTypes.binarydata
+        )
     }
 
     @Test
@@ -73,9 +79,11 @@ class VersionPageTests : IntegrationTest()
 
         val firstResourceHref = page.selectFirst("#resources a").attr("href")
 
-        assertWebUrlSecured(firstResourceHref,
+        assertWebUrlSecured(
+                firstResourceHref,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
-                contentType = ContentTypes.binarydata)
+                contentType = ContentTypes.binarydata
+        )
     }
 
     @Test

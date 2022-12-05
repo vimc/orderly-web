@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.authorization.authorizer.Authorizer
@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.pac4j.sparkjava.SecurityFilter
 import org.pac4j.core.config.Config
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import spark.Filter
@@ -19,7 +18,6 @@ import spark.route.HttpMethod
 class APIEndpointTests
 {
     private class TestController(actionContext: ActionContext) : Controller(actionContext)
-
     @Test
     fun `adds headers filter if content type is json`()
     {

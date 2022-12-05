@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -35,14 +35,17 @@ class ChangelogTests : CleanDatabaseTests()
                         "public",
                         "did something great",
                         true,
-                        1),
+                        1
+                ),
                 InsertableChangelog(
                         "id2",
                         "version1",
                         "internal",
                         "did something awful",
                         false,
-                        2))
+                        2
+                )
+        )
 
         val sut = createSut(true)
 
@@ -67,7 +70,8 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something great",
                         true,
                         1,
-                        "version1"),
+                        "version1"
+                ),
                 InsertableChangelog(
                         "id2",
                         "version1",
@@ -75,7 +79,9 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something awful",
                         false,
                         2,
-                        "version1"))
+                        "version1"
+                )
+        )
 
         val sut = createSut(false)
 
@@ -146,14 +152,17 @@ class ChangelogTests : CleanDatabaseTests()
                         "public",
                         "did something great v1",
                         true,
-                        7),
+                        7
+                ),
                 InsertableChangelog(
                         "id8",
                         "anotherversion1",
                         "internal",
                         "did something awful v1",
                         false,
-                        8))
+                        8
+                )
+        )
 
         val sut = createSut(true)
 
@@ -175,14 +184,17 @@ class ChangelogTests : CleanDatabaseTests()
                         "public",
                         "did something great v1",
                         true,
-                        7),
+                        7
+                ),
                 InsertableChangelog(
                         "id8",
                         "anotherversion1",
                         "internal",
                         "did something awful v1",
                         false,
-                        8))
+                        8
+                )
+        )
 
         val sut = createSut(false)
 
@@ -236,7 +248,8 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something great v1",
                         true,
                         1,
-                        null),
+                        null
+                ),
                 InsertableChangelog(
                         "id2",
                         "version1",
@@ -244,7 +257,9 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something awful v1",
                         false,
                         2,
-                        null))
+                        null
+                )
+        )
 
         insertChangelog(
                 InsertableChangelog(
@@ -254,7 +269,9 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something great v2",
                         true,
                         3,
-                        "version3"))
+                        "version3"
+                )
+        )
 
         insertChangelog(
                 InsertableChangelog(
@@ -264,7 +281,8 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something great v3",
                         true,
                         4,
-                        "version3"),
+                        "version3"
+                ),
                 InsertableChangelog(
                         "id5",
                         "version3",
@@ -272,7 +290,8 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something awful v3",
                         false,
                         5,
-                        "version3"),
+                        "version3"
+                ),
                 InsertableChangelog(
                         "id6",
                         "version3",
@@ -280,7 +299,9 @@ class ChangelogTests : CleanDatabaseTests()
                         "everything is broken",
                         false,
                         6,
-                        "version3"))
+                        "version3"
+                )
+        )
 
     }
 
@@ -347,12 +368,14 @@ class ChangelogTests : CleanDatabaseTests()
         }
     }
 
-    private fun assertChangelogValuesMatch(changelog: Changelog,
-                                           report_version: String,
-                                           label: String,
-                                           value: String,
-                                           fromFile: Boolean,
-                                           public: Boolean)
+    private fun assertChangelogValuesMatch(
+            changelog: Changelog,
+            report_version: String,
+            label: String,
+            value: String,
+            fromFile: Boolean,
+            public: Boolean
+    )
     {
         Assertions.assertThat(changelog.reportVersion).isEqualTo(report_version)
         Assertions.assertThat(changelog.fromFile).isEqualTo(fromFile)

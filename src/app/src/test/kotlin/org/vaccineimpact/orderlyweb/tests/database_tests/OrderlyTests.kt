@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
@@ -33,7 +33,8 @@ class OrderlyTests : CleanDatabaseTests()
                     true,
                     now,
                     "vz",
-                    "descripion")
+                    "descripion"
+            )
 
     private val basicReportVersionElapsed =
             ReportVersionWithDescLatestElapsed(
@@ -46,7 +47,8 @@ class OrderlyTests : CleanDatabaseTests()
                     "descripion",
                     1.5,
                     "master",
-                    "abc123")
+                    "abc123"
+            )
 
     private val mockReportRepo = mock<ReportRepository> {
         on { getReportVersion("test", "v1") } doReturn basicReportVersionElapsed
@@ -78,8 +80,10 @@ class OrderlyTests : CleanDatabaseTests()
 
         insertData("v1", "dat", "some sql", "testdb", "somehash", 9876, 7654)
 
-        insertArtefact("v1", "some artefact",
-                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
+        insertArtefact(
+                "v1", "some artefact",
+                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234))
+        )
 
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "v1")
@@ -97,8 +101,12 @@ class OrderlyTests : CleanDatabaseTests()
 
         // these come from the db
         assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))
-        assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
-                "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
+        assertThat(result.artefacts).containsExactly(
+                Artefact(
+                        ArtefactFormat.DATA,
+                        "some artefact", listOf(FileInfo("artefactfile.csv", 1234))
+                )
+        )
         assertThat(result.dataInfo).hasSameElementsAs(listOf(DataInfo("dat", 9876, 7654)))
     }
 
@@ -116,11 +124,13 @@ class OrderlyTests : CleanDatabaseTests()
                     mapOf("v1" to listOf("c-tag"), "v2" to listOf("aa"))
         }
 
-        val sut = Orderly(isReviewer = true,
+        val sut = Orderly(
+                isReviewer = true,
                 isGlobalReader = true,
                 reportReadingScopes = listOf(),
                 reportRepository = mock(),
-                tagRepository = mockTagRepo)
+                tagRepository = mockTagRepo
+        )
 
         val result = sut.getReportVersionTags("test", "v1")
         assertThat(result.versionTags).containsExactlyElementsOf(listOf("a-tag", "b-tag"))
@@ -135,11 +145,13 @@ class OrderlyTests : CleanDatabaseTests()
             on { getReportVersion("test", "v1") } doThrow UnknownObjectError("report", "test")
         }
 
-        val sut = Orderly(isReviewer = true,
+        val sut = Orderly(
+                isReviewer = true,
                 isGlobalReader = true,
                 reportReadingScopes = listOf(),
                 reportRepository = mockReportRepo,
-                tagRepository = mock())
+                tagRepository = mock()
+        )
 
         assertThatThrownBy { sut.getReportVersionTags("test", "v1") }
                 .isInstanceOf(UnknownObjectError::class.java)
@@ -149,8 +161,10 @@ class OrderlyTests : CleanDatabaseTests()
     @Test
     fun `getAllReportVersions returns version, report and orderly tags`()
     {
-        val basicReportVersion = ReportVersionWithDescLatest("report", "display name", "v1", true,
-                Instant.now(), "v3", "description")
+        val basicReportVersion = ReportVersionWithDescLatest(
+                "report", "display name", "v1", true,
+                Instant.now(), "v3", "description"
+        )
 
         val mockTagRepo = mock<TagRepository> {
             on { getVersionTags(listOf("v1", "v2", "v3")) } doReturn
@@ -169,11 +183,13 @@ class OrderlyTests : CleanDatabaseTests()
             )
         }
 
-        val sut = Orderly(isReviewer = true,
+        val sut = Orderly(
+                isReviewer = true,
                 isGlobalReader = true,
                 reportReadingScopes = listOf(),
                 reportRepository = mockReportRepo,
-                tagRepository = mockTagRepo)
+                tagRepository = mockTagRepo
+        )
 
         val results = sut.getAllReportVersions()
 
@@ -196,20 +212,25 @@ class OrderlyTests : CleanDatabaseTests()
         val mockReportRepo = mock<ReportRepository> {
             on { getAllReportVersions() } doReturn listOf(
                     basicReportVersion,
-                    basicReportVersion.copy(id = "v2"))
+                    basicReportVersion.copy(id = "v2")
+            )
             on { getAllCustomFields() } doReturn
                     mapOf("author" to null, "requester" to null)
             on { getCustomFieldsForVersions(versionIds) } doReturn
                     mapOf("v1" to mapOf("author" to "author authorson"))
             on { getParametersForVersions(versionIds) } doReturn
-                    mapOf("v1" to mapOf("p1" to "param1"),
-                            "v2" to mapOf("p2" to "param2"))
+                    mapOf(
+                            "v1" to mapOf("p1" to "param1"),
+                            "v2" to mapOf("p2" to "param2")
+                    )
         }
 
-        val sut = Orderly(isReviewer = true,
+        val sut = Orderly(
+                isReviewer = true,
                 isGlobalReader = true,
                 reportReadingScopes = listOf(),
-                reportRepository = mockReportRepo)
+                reportRepository = mockReportRepo
+        )
 
         val results = sut.getAllReportVersions()
 

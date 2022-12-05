@@ -1,12 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.toJsonArray
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
@@ -22,13 +21,13 @@ class DocumentTests : IntegrationTest()
     private val readDocuments = setOf(ReifiedPermission("documents.read", Scope.Global()))
     private val manageDocuments = setOf(ReifiedPermission("documents.manage", Scope.Global()))
 
-    @After
+    @AfterEach
     fun cleanup()
     {
         File("documents").deleteRecursively()
     }
 
-    @Before
+    @BeforeEach
     fun setup() {
         File("documents/some/path").mkdirs()
         File("documents/some/path/file.csv").createNewFile()

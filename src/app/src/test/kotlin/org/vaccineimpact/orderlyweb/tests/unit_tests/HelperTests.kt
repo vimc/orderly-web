@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import java.time.LocalDateTime

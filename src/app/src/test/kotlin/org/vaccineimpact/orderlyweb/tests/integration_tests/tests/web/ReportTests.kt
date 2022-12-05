@@ -1,11 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import com.github.fge.jsonschema.main.JsonValidator
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -14,8 +11,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 import spark.route.HttpMethod
 
 class ReportTests : IntegrationTest()
-{
-    @Test
+{    @Test
     fun `only report runners can run report`()
     {
         val url = "/report/minimal/actions/run"

@@ -1,17 +1,18 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions
-import org.junit.After
-import org.junit.Before
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
+
 
 abstract class CustomConfigTests
 {
@@ -36,17 +37,18 @@ abstract class CustomConfigTests
         Thread.sleep(500)
     }
 
-    @Before
+    @BeforeEach
     fun createDatabase()
     {
         val db = AppConfig()["db.location"]
-        while (!isDBAvailable(db)) {
+        while (!isDBAvailable(db))
+        {
             Thread.sleep(500)
             System.err.println("db not available yet at $db")
         }
     }
 
-    @After
+    @AfterEach
     fun cleanup()
     {
         spark.Spark.stop()

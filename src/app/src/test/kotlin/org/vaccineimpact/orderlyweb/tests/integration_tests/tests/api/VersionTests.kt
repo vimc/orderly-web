@@ -2,9 +2,9 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.FixMethodOrder
-import org.junit.Test
-import org.junit.runners.MethodSorters
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
@@ -21,8 +21,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalRe
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
-
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+    @TestMethodOrder(MethodOrderer.MethodName::class)
 class VersionTests : IntegrationTest()
 {
     @Test // method name prefixed with A so runs first
@@ -39,9 +38,9 @@ class VersionTests : IntegrationTest()
         val reportName = unpublishedVersion[REPORT_VERSION.REPORT]
 
         val response = apiRequestHelper.post(
-            "/reports/$reportName/versions/$versionId/publish/",
-            mapOf("value" to true),
-            userEmail = fakeGlobalReportReviewer()
+                "/reports/$reportName/versions/$versionId/publish/",
+                mapOf("value" to true),
+                userEmail = fakeGlobalReportReviewer()
         )
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -77,8 +76,10 @@ class VersionTests : IntegrationTest()
         val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
 
         // now unpublish
-        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/?value=false", mapOf(),
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post(
+                "/reports/$reportName/versions/$versionId/publish/?value=false", mapOf(),
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -114,10 +115,12 @@ class VersionTests : IntegrationTest()
 
         val url = "/reports/$reportName/versions/$versionId/publish/"
 
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
                 method = HttpMethod.post,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -137,23 +140,27 @@ class VersionTests : IntegrationTest()
             it.get("name").asText()
         }
         assertThat(names.sorted())
-                .containsExactlyElementsOf(listOf(
-                        "html",
-                        "minimal",
-                        "multi-artefact",
-                        "multifile-artefact",
-                        "other",
-                        "other",
-                        "testname",
-                        "use_resource"
-                ))
+                .containsExactlyElementsOf(
+                        listOf(
+                                "html",
+                                "minimal",
+                                "multi-artefact",
+                                "multifile-artefact",
+                                "other",
+                                "other",
+                                "testname",
+                                "use_resource"
+                        )
+                )
     }
 
     @Test
     fun `can get all versions with specific report reading permissions`()
     {
-        val response = apiRequestHelper.get("/versions/",
-                userEmail = fakeReportReader("html", addReport = false))
+        val response = apiRequestHelper.get(
+                "/versions/",
+                userEmail = fakeReportReader("html", addReport = false)
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -188,11 +195,15 @@ class VersionTests : IntegrationTest()
         insertFileInput("testversion", "file.csv", FilePurpose.RESOURCE, 2345)
         insertFileInput("testversion", "graph.png", FilePurpose.RESOURCE, 3456)
         insertData("testversion", "dat", "some sql", "testdb", "somehash", 9876, 7654)
-        insertArtefact("testversion", "some artefact",
-                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
+        insertArtefact(
+                "testversion", "some artefact",
+                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234))
+        )
 
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion",
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion",
+                userEmail = fakeGlobalReportReader()
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "VersionDetails")
@@ -203,17 +214,21 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion"
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
     fun `reviewer can get unpublished report by name and version`()
     {
         insertReport("testname", "testversion", published = false)
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion",
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -224,8 +239,10 @@ class VersionTests : IntegrationTest()
     fun `non report reviewers cannot get unpublished report by name and version`()
     {
         insertReport("testname", "testversion", published = false)
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion",
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion",
+                userEmail = fakeGlobalReportReader()
+        )
         assertJsonContentType(response)
         // can't use the permission checker here because some security checking
         // happens inside the controller logic rather than the routing logic and
@@ -257,17 +274,22 @@ class VersionTests : IntegrationTest()
                         "internal",
                         "did something awful",
                         false,
-                        1),
+                        1
+                ),
                 InsertableChangelog(
                         "id2",
                         "testversion",
                         "public",
                         "did something great",
                         true,
-                        2))
+                        2
+                )
+        )
 
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog/",
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion/changelog/",
+                userEmail = fakeGlobalReportReader()
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -277,8 +299,10 @@ class VersionTests : IntegrationTest()
     fun `can get empty version changelog by name and version`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog/",
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion/changelog/",
+                userEmail = fakeGlobalReportReader()
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -291,9 +315,11 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/changelog/"
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -307,21 +333,28 @@ class VersionTests : IntegrationTest()
                         "internal",
                         "did something awful",
                         false,
-                        1),
+                        1
+                ),
                 InsertableChangelog(
                         "id2",
                         "testversion",
                         "public",
                         "did something great",
                         true,
-                        2))
+                        2
+                )
+        )
 
-        val response = apiRequestHelper.get("/reports/testname/versions/notatestversion/changelog",
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/notatestversion/changelog",
+                userEmail = fakeGlobalReportReader()
+        )
 
         assertThat(response.statusCode).isEqualTo(404)
-        JSONValidator.validateError(response.text, "unknown-report-version",
-                "Unknown report-version")
+        JSONValidator.validateError(
+                response.text, "unknown-report-version",
+                "Unknown report-version"
+        )
     }
 
     @Test
@@ -335,21 +368,28 @@ class VersionTests : IntegrationTest()
                         "internal",
                         "did something awful",
                         false,
-                        1),
+                        1
+                ),
                 InsertableChangelog(
                         "id2",
                         "testversion",
                         "public",
                         "did something great",
                         true,
-                        2))
+                        2
+                )
+        )
 
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog",
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion/changelog",
+                userEmail = fakeGlobalReportReader()
+        )
 
         assertThat(response.statusCode).isEqualTo(404)
-        JSONValidator.validateError(response.text, "unknown-report-version",
-                "Unknown report-version")
+        JSONValidator.validateError(
+                response.text, "unknown-report-version",
+                "Unknown report-version"
+        )
     }
 
     @Test
@@ -365,9 +405,11 @@ class VersionTests : IntegrationTest()
         val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
 
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", reportName))),
-                contentType = ContentTypes.binarydata)
+                contentType = ContentTypes.binarydata
+        )
     }
 
 }

@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.security.authentication
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.kohsuke.github.GHUser
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
@@ -27,7 +27,6 @@ class GithubAuthenticatorTests
     }
 
     private val mockUserData = mock<UserRepository>()
-
     @Test
     fun `token validation fails if credentials are not supplied`()
     {

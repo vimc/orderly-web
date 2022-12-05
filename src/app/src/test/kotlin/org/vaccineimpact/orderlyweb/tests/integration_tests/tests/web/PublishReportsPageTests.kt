@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 class PublishReportsPageTests : IntegrationTest()
 {
     private val reviewReports = setOf(ReifiedPermission("reports.review", Scope.Global()))
-
     @Test
     fun `only report reviewers can see the page`()
     {

@@ -1,12 +1,10 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -23,8 +21,10 @@ class ArtefactTests : IntegrationTest()
     fun `report readers can get dict of artefact names to hashes`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                userEmail = fakeReportReader("testname"))
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion/artefacts/",
+                userEmail = fakeReportReader("testname")
+        )
 
 
         assertJsonContentType(response)
@@ -36,9 +36,11 @@ class ArtefactTests : IntegrationTest()
     fun `only report readers can get artefacts dict`()
     {
         insertReport("testname", "testversion")
-        assertAPIUrlSecured("/reports/testname/versions/testversion/artefacts/",
+        assertAPIUrlSecured(
+                "/reports/testname/versions/testversion/artefacts/",
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
-                ContentTypes.json)
+                ContentTypes.json
+        )
     }
 
     @Test
@@ -100,9 +102,11 @@ class ArtefactTests : IntegrationTest()
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
 
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "other"))),
-                ContentTypes.binarydata)
+                ContentTypes.binarydata
+        )
     }
 
     @Test

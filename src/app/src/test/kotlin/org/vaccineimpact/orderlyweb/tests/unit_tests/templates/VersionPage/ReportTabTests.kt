@@ -1,14 +1,15 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.FreeMarkerTest
 
-class ReportTabTests: BaseVersionPageTests()
+class ReportTabTests: FreeMarkerTest("report-page.ftl")
 {
     @Test
     fun `renders report tab correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
         val tab = jsoupDoc.select("#report-tab")
 
         Assertions.assertThat(tab.select("h1").text()).isEqualToIgnoringWhitespace("r1 display")
@@ -26,7 +27,7 @@ class ReportTabTests: BaseVersionPageTests()
     @Test
     fun `renders report tags correctly`()
     {
-        val readerDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val readerDoc = jsoupDocFor(VersionPageTestData.testModel)
 
         var tagsDiv = readerDoc.select("#reportTagsVueApp")
         var tagsEl = tagsDiv.select("report-tags")
@@ -35,7 +36,7 @@ class ReportTabTests: BaseVersionPageTests()
 
         val appViewModel = VersionPageTestData.testDefaultModel.copy(isReviewer = true)
         val model = VersionPageTestData.testModel.copy(appViewModel = appViewModel)
-        val reviewerDoc = template.jsoupDocFor(model)
+        val reviewerDoc = jsoupDocFor(model)
 
         tagsDiv = reviewerDoc.select("#reportTagsVueApp")
         tagsEl = tagsDiv.select("report-tags")
@@ -49,7 +50,7 @@ class ReportTabTests: BaseVersionPageTests()
         val basicReport = VersionPageTestData.testBasicReportVersion.copy(displayName = "r1")
         val report = VersionPageTestData.testModel.copy(report = basicReport)
 
-        val jsoupDoc = template.jsoupDocFor(report)
+        val jsoupDoc = jsoupDocFor(report)
         val name = jsoupDoc.select("#report-tab #report-name")
         Assertions.assertThat(name.count()).isEqualTo(0)
     }
@@ -60,7 +61,7 @@ class ReportTabTests: BaseVersionPageTests()
         val basicReport = VersionPageTestData.testBasicReportVersion.copy(description = null)
         val report = VersionPageTestData.testModel.copy(report = basicReport)
 
-        val jsoupDoc = template.jsoupDocFor(report)
+        val jsoupDoc = jsoupDocFor(report)
         val desc = jsoupDoc.select("#report-tab #report-description")
         Assertions.assertThat(desc.count()).isEqualTo(0)
     }

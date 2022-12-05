@@ -1,23 +1,20 @@
 package org.vaccineimpact.orderlyweb.customConfigTests.vuex
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.customConfigTests.RequestHelper
 import org.vaccineimpact.orderlyweb.customConfigTests.SeleniumTest
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 
 class RunReportPageTests : SeleniumTest()
 {
-    @Before
+    @BeforeEach
     fun setUp()
     {
         JooqContext().use {

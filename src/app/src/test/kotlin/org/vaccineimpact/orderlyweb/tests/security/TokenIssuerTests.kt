@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import com.nimbusds.jwt.JWTParser
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper

@@ -4,21 +4,12 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.ClassRule
-import org.junit.Test
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 import org.xmlmatchers.XmlMatchers.hasXPath
 
-class _401Tests
+class _401Tests: FreeMarkerTest("401.ftl")
 {
-    companion object
-    {
-        @ClassRule
-        @JvmField
-        val template = FreemarkerTestRule("401.ftl")
-    }
-
     @Test
     fun `renders correctly for Montagu auth`()
     {
@@ -31,7 +22,7 @@ class _401Tests
 
         }
 
-        val xmlResponse = template.xmlResponseFor(mockModel)
+        val xmlResponse = xmlResponseFor(mockModel)
 
         assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Login failed")))
         assertThat(xmlResponse, hasXPath("//p/text()",
@@ -48,7 +39,7 @@ class _401Tests
             on { appUrl } doReturn "http://app"
         }
 
-        val xmlResponse = template.xmlResponseFor(mockModel)
+        val xmlResponse = xmlResponseFor(mockModel)
 
         assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Login failed")))
         assertThat(xmlResponse, hasXPath("//p/text()",

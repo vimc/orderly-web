@@ -2,23 +2,14 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.junit.ClassRule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 
-class WorkflowRunPageTests
+class WorkflowRunPageTests: FreeMarkerTest("run-workflow-page.ftl")
 {
-    companion object
-    {
-        @ClassRule
-        @JvmField
-        val template = FreemarkerTestRule("run-workflow-page.ftl")
-    }
-
     private val testModel = WorkflowRunViewModel(mock<ActionContext>())
-    private val doc = template.jsoupDocFor(testModel)
+    private val doc = jsoupDocFor(testModel)
 
     @Test
     fun `renders page`()

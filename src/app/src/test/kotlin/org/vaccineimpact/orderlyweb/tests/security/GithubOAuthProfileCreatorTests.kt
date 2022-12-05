@@ -4,7 +4,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.oauth.OAuth20Service
 import com.github.scribejava.core.model.Response
 import com.nhaarman.mockito_kotlin.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.kohsuke.github.GHUser
 import org.pac4j.oauth.config.OAuth20Configuration
 import org.pac4j.oauth.credentials.OAuth20Credentials

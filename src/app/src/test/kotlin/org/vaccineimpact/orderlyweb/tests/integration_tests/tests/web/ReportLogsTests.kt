@@ -1,20 +1,13 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.assertj.core.api.Assertions
-import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
-import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
-import spark.route.HttpMethod
 import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.sun.mail.handlers.text_plain
-import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 
 class ReportLogsTests : IntegrationTest()

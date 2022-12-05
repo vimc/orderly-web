@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import java.nio.file.Files
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
 
 class RunWorkflowTests : SeleniumTest()
 {
-    @Before
+    @BeforeEach
     fun setUp()
     {
         JooqContext().use {

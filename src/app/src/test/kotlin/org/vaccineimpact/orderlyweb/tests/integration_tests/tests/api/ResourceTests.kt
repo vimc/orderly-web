@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -20,8 +20,10 @@ class ResourceTests : IntegrationTest()
     fun `gets dict of resource names to hashes with scoped report reading permission`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/resources",
-                userEmail = fakeReportReader("testname"))
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion/resources",
+                userEmail = fakeReportReader("testname")
+        )
 
         assertJsonContentType(response)
     }
@@ -30,9 +32,11 @@ class ResourceTests : IntegrationTest()
     fun `only report readers can get dict of resource names to hashes`()
     {
         insertReport("testname", "testversion")
-        assertAPIUrlSecured("/reports/testname/versions/testversion/resources",
+        assertAPIUrlSecured(
+                "/reports/testname/versions/testversion/resources",
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -43,7 +47,7 @@ class ResourceTests : IntegrationTest()
         val resourceEncoded = "a+resource+with+spaces.csv"
         val url = "/reports/spaces/versions/$version/resources/$resourceEncoded/"
 
-        val response = apiRequestHelper.get(url,  ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -70,8 +74,10 @@ class ResourceTests : IntegrationTest()
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
 
-        assertAPIUrlSecured(url,
-                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "use_resource"))))
+        assertAPIUrlSecured(
+                url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "use_resource")))
+        )
     }
 
     @Test

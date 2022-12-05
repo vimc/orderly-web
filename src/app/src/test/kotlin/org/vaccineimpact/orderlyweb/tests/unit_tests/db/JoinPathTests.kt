@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.db
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.jooq.JoinType
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import java.lang.IllegalArgumentException
@@ -13,13 +13,13 @@ class JoinPathTests
     @Test
     fun `JoinPathStep throws MissingRelationsBetweenTables when no immediate relationship`()
     {
-        assertThatThrownBy{ JoinPathStep(ORDERLYWEB_USER, REPORT) }.isInstanceOf(MissingRelationBetweenTables::class.java)
+        assertThatThrownBy { JoinPathStep(ORDERLYWEB_USER, REPORT) }.isInstanceOf(MissingRelationBetweenTables::class.java)
     }
 
     @Test
     fun `JoinPathStep throws AmbiguousRelationsBetweenTables when multiple immediate relationships`()
     {
-        assertThatThrownBy{ JoinPathStep(CHANGELOG, REPORT_VERSION) }.isInstanceOf(AmbiguousRelationBetweenTables::class.java)
+        assertThatThrownBy { JoinPathStep(CHANGELOG, REPORT_VERSION) }.isInstanceOf(AmbiguousRelationBetweenTables::class.java)
     }
 
     @Test

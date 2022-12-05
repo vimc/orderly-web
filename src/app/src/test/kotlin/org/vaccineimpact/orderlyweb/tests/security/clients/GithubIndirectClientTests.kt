@@ -2,9 +2,8 @@ package org.vaccineimpact.orderlyweb.tests.security.clients
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator

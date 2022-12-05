@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class AccessibilityPageTests : IntegrationTest()

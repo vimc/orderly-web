@@ -1,14 +1,14 @@
 package org.vaccineimpact.orderlyweb.test_helpers
 
 import org.jooq.Table
-import org.junit.Before
+import org.junit.jupiter.api.BeforeEach
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 
 abstract class CleanDatabaseTests : DatabaseTests()
 {
-    @Before
-    fun createDatabase()
+    @BeforeEach
+    fun clearDatabase()
     {
         val tables = Tables::class.java
 

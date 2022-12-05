@@ -1,9 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.security.clients
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.pac4j.core.client.BaseClient
-import org.pac4j.core.client.IndirectClient
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.NeverInvokedCredentialsExtractor
 import org.vaccineimpact.orderlyweb.security.clients.NeverInvokedAuthenticator

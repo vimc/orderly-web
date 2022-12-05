@@ -2,21 +2,13 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.ClassRule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
-class RunReportPageTests
+class RunReportPageTests: FreeMarkerTest("run-report-page.ftl")
 {
-    companion object
-    {
-        @ClassRule
-        @JvmField
-        val template = FreemarkerTestRule("run-report-page.ftl")
-    }
 
     private val testModel = RunReportViewModel(mock(),
             RunReportMetadata(true, true,
@@ -25,7 +17,7 @@ class RunReportPageTests
             listOf("master", "dev"),
     "minimal")
 
-    private val doc = template.jsoupDocFor(testModel)
+    private val doc = jsoupDocFor(testModel)
 
     @Test
     fun `renders breadcrumbs correctly`()

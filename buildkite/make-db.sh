@@ -3,7 +3,7 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
-ORDERLY_IMAGE=$ORG/orderly:mrc-3665
+ORDERLY_IMAGE=$ORG/orderly:master
 MIGRATE_IMAGE=$ORG/orderlyweb-migrate:$GIT_ID
 ORDERLY_DEMO_SRC_PATH=$here/../src/app/orderly_demo
 

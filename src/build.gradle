@@ -88,6 +88,13 @@ subprojects {
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
+
+        testImplementation "org.junit.jupiter:junit-jupiter-params:5.9.0"
+        testImplementation "org.junit.jupiter:junit-jupiter:5.9.0"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     jacoco {

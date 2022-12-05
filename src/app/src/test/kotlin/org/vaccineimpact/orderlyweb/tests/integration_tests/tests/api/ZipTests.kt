@@ -1,12 +1,10 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
-import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
@@ -29,10 +27,12 @@ class ZipTests : IntegrationTest()
 
         try
         {
-            val url ="/reports/testname/versions/testversion/all/"
-            assertAPIUrlSecured(url,
+            val url = "/reports/testname/versions/testversion/all/"
+            assertAPIUrlSecured(
+                    url,
                     setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
-                    contentType = ContentTypes.zip)
+                    contentType = ContentTypes.zip
+            )
         } finally
         {
             deleteArchiveFolder("testname", "testversion")
@@ -53,12 +53,16 @@ class ZipTests : IntegrationTest()
     @Test
     fun `get zip returns 404 if report version does not exist`()
     {
-        val response = apiRequestHelper.get("/reports/notaname/versions/notareport/all",
-                contentType = ContentTypes.zip)
+        val response = apiRequestHelper.get(
+                "/reports/notaname/versions/notareport/all",
+                contentType = ContentTypes.zip
+        )
 
         assertThat(response.statusCode).isEqualTo(404)
-        JSONValidator.validateError(response.text, "unknown-report-version",
-                "Unknown report-version")
+        JSONValidator.validateError(
+                response.text, "unknown-report-version",
+                "Unknown report-version"
+        )
     }
 
     @Test
@@ -72,8 +76,10 @@ class ZipTests : IntegrationTest()
                     .fetchInto(String::class.java)
                     .first()
         }
-        val response = apiRequestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
-                userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.get(
+                "/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
+                userEmail = fakeGlobalReportReader()
+        )
 
         val entries = getZipEntries(response)
         assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv", "$version/README.md")
@@ -89,9 +95,11 @@ class ZipTests : IntegrationTest()
                     .fetchInto(String::class.java)
                     .first()
         }
-        val response = apiRequestHelper.get("/reports/use_resource/versions/$version/all/",
+        val response = apiRequestHelper.get(
+                "/reports/use_resource/versions/$version/all/",
                 contentType = ContentTypes.zip,
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         val entries = getZipEntries(response)
 
@@ -102,7 +110,8 @@ class ZipTests : IntegrationTest()
                 "$version/orderly_published.yml",
                 "$version/orderly_run.rds",
                 "$version/script.R",
-                "$version/README.md")
+                "$version/README.md"
+        )
     }
 
     private fun getZipEntries(response: Response): MutableList<String>

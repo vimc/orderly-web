@@ -2,9 +2,8 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeUserManager
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import org.vaccineimpact.orderlyweb.db.JooqContext

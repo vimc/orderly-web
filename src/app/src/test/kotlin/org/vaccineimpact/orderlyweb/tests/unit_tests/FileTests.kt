@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -12,14 +12,13 @@ import java.net.URL
 class FileTests
 {
 
-    @After
+    @AfterEach
     fun cleanup()
     {
         File("documents").deleteRecursively()
     }
 
     private val useResourceDir = File("${AppConfig()["orderly.root"]}archive/use_resource/").absolutePath
-
     @Test
     fun `can getListOfFiles`()
     {

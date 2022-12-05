@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.userCLI.tests
 
 import org.assertj.core.api.Assertions.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
@@ -18,9 +18,11 @@ class AddUserGroupTests : CleanDatabaseTests()
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP).fetch()
         }
 
-        assertThat(result).isEqualTo("""Saved user group 'funders' to the database
+        assertThat(result).isEqualTo(
+                """Saved user group 'funders' to the database
             |Saved user group 'admin' to the database
-        """.trimMargin())
+        """.trimMargin()
+        )
         assertThat(groups.count()).isEqualTo(2)
         assertThat(groups.first()[ORDERLYWEB_USER_GROUP.ID]).isEqualTo("funders")
         assertThat(groups.last()[ORDERLYWEB_USER_GROUP.ID]).isEqualTo("admin")
@@ -31,9 +33,11 @@ class AddUserGroupTests : CleanDatabaseTests()
     {
         val result = addUserGroups(mapOf("<name>" to listOf("[funders]", "[funders]")))
 
-        assertThat(result).isEqualTo("""Saved user group 'funders' to the database
+        assertThat(result).isEqualTo(
+                """Saved user group 'funders' to the database
             |User group 'funders' already exists; no changes made
-        """.trimMargin())
+        """.trimMargin()
+        )
 
         val groups = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP).fetch()

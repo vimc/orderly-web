@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
 import com.nhaarman.mockito_kotlin.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
 import spark.Request
 import spark.Response

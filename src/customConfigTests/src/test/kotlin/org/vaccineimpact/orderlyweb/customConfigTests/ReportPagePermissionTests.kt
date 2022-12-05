@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -77,7 +77,7 @@ class ReportPagePermissionTests : SeleniumTest()
         assertThat(listItems.count()).isEqualTo(0)
     }
 
-    @Before
+    @BeforeEach
     fun setupPage()
     {
         startApp("auth.provider=montagu")

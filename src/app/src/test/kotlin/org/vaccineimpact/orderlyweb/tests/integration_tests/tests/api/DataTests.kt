@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -13,8 +13,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 import java.io.File
 
 class DataTests : IntegrationTest()
-{
-    @Test
+{    @Test
     fun `gets dict of data names to hashes`()
     {
         insertReport("testname", "testversion")
@@ -104,7 +103,6 @@ class DataTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "file-not-found", "File with name '$fakehash.csv' does not exist")
     }
-
 
     @Test
     fun `gets rds data file`()

@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -18,8 +18,10 @@ class UsersTests : IntegrationTest()
     {
         val url = "/users/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -29,9 +31,11 @@ class UsersTests : IntegrationTest()
         insertUser("b.user", "B user")
 
         val url = "/users/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
-                ContentTypes.json)
+                ContentTypes.json
+        )
 
         JSONValidator.validateAgainstSchema(response.text, "Users")
     }
@@ -41,8 +45,10 @@ class UsersTests : IntegrationTest()
     {
         val url = "/users/report-readers/minimal"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -50,8 +56,10 @@ class UsersTests : IntegrationTest()
     {
         val url = "/users/test.user%40example.com/permissions/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "users.manage"))
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "users.manage")
+        )
     }
 
     @Test
@@ -61,8 +69,10 @@ class UsersTests : IntegrationTest()
         giveUserGroupPermission("a.user", "reports.read", Scope.Global())
         val url = "/users/a.user/permissions/reports.read"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.delete, postData = mapOf("name" to "users.manage"))
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.delete, postData = mapOf("name" to "users.manage")
+        )
     }
 
     @Test
@@ -76,10 +86,12 @@ class UsersTests : IntegrationTest()
 
         val url = "/users/a.user/permissions/reports.read/"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.delete,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         perms = OrderlyAuthorizationRepository().getPermissionsForGroup("a.user")
         Assertions.assertThat(perms.count()).isEqualTo(0)
@@ -96,10 +108,12 @@ class UsersTests : IntegrationTest()
 
         val url = "/users/a.user/permissions/reports.read/?scopePrefix=report&scopeId=minimal"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.delete,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         perms = OrderlyAuthorizationRepository().getPermissionsForGroup("a.user")
         Assertions.assertThat(perms.count()).isEqualTo(0)
@@ -115,10 +129,12 @@ class UsersTests : IntegrationTest()
 
         val url = "/users/a.user/permissions/"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.post, postData = mapOf("name" to "users.manage"),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         perms = OrderlyAuthorizationRepository().getPermissionsForGroup("a.user")
         Assertions.assertThat(perms.count()).isEqualTo(1)

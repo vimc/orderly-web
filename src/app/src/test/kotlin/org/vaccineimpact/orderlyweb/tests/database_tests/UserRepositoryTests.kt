@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -240,12 +240,16 @@ class UserRepositoryTests : CleanDatabaseTests()
         insertUser("global.reader@email.com", "global.reader.name")
         giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
         //it shouldn't matter if the global read also has scoped permission
-        giveUserGroupPermission("global.reader@email.com", "reports.read",
-                Scope.Specific("report", "report1"))
+        giveUserGroupPermission(
+                "global.reader@email.com", "reports.read",
+                Scope.Specific("report", "report1")
+        )
 
         insertUser("scoped.identity.reader@email.com", "scoped.identity.reader.name")
-        giveUserGroupPermission("scoped.identity.reader@email.com", "reports.read",
-                Scope.Specific("report", "report1"))
+        giveUserGroupPermission(
+                "scoped.identity.reader@email.com", "reports.read",
+                Scope.Specific("report", "report1")
+        )
 
         val report1Read = ReifiedPermission("reports.read", Scope.Specific("report", "report1"))
         createGroup("report1.readers", report1Read)

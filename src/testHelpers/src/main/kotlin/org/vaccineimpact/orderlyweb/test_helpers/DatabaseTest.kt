@@ -1,17 +1,15 @@
 package org.vaccineimpact.orderlyweb.test_helpers
 
-import org.junit.AfterClass
-import org.junit.BeforeClass
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.io.File
 
 abstract class DatabaseTests
 {
-
     companion object
     {
-
-        @BeforeClass
+        @BeforeAll
         @JvmStatic
         fun createDatabase()
         {
@@ -24,14 +22,11 @@ abstract class DatabaseTests
             source.copyTo(newDbFile, true)
         }
 
-        @AfterClass
+        @AfterAll
         @JvmStatic
         fun dropDatabase()
         {
             File(AppConfig()["db.location"]).delete()
         }
-
     }
-
-
 }

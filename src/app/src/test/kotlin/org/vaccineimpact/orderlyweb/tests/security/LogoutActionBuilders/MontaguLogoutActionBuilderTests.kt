@@ -2,9 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.security.LogoutActionBuilders
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.pac4j.core.context.Cookie
+import org.junit.jupiter.api.Test
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.exception.http.FoundAction
 import org.vaccineimpact.orderlyweb.security.clients.MontaguLogoutActionBuilder

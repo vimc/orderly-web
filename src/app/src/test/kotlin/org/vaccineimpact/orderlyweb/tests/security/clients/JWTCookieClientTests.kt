@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.security.clients
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.jwt.config.signature.AbstractSignatureConfiguration
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier

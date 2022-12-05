@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.security
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.authorization.authorizer.AbstractRequireElementAuthorizer
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityClientsConfigFactory
@@ -41,7 +41,7 @@ class APISecurityClientsConfigFactoryTests
     @Test
     fun `allows external authentication with Montagu if configured auth provider`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig> () {
+        val mockAuthConfig = mock<AuthenticationConfig>() {
             on { getAuthenticationDirectClient() } doReturn MontaguDirectClient()
         }
         val sut = APISecurityClientsConfigFactory(mockAuthConfig)
@@ -56,7 +56,7 @@ class APISecurityClientsConfigFactoryTests
     @Test
     fun `allows external authentication with GitHub if configured auth provider`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig> () {
+        val mockAuthConfig = mock<AuthenticationConfig>() {
             on { getAuthenticationDirectClient() } doReturn GitHubDirectClient()
         }
         val sut = APISecurityClientsConfigFactory(mockAuthConfig)

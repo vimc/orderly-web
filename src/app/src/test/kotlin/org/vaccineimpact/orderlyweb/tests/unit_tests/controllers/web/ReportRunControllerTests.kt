@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
@@ -20,6 +20,7 @@ import java.time.Instant
 class ReportRunControllerTests
 {
     private val startTime = Instant.now().epochSecond
+
     @Test
     fun `gets all running reports`()
     {

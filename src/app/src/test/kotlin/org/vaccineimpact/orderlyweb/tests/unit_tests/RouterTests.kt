@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.CallbackRoute
 import org.pac4j.sparkjava.LogoutRoute

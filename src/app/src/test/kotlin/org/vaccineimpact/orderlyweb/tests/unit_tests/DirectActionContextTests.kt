@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 import com.nhaarman.mockito_kotlin.*
 import org.apache.commons.io.IOUtils
 import org.assertj.core.api.Assertions.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager

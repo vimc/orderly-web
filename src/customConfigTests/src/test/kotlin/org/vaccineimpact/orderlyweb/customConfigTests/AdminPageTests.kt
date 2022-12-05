@@ -1,10 +1,10 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.junit.Test
-import org.junit.Before
+import org.junit.jupiter.api.BeforeEach
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertRole
 
 class AdminPageTests : SeleniumTest()
 {
-    @Before
+    @BeforeEach
     fun setUp()
     {
         JooqContext().use {

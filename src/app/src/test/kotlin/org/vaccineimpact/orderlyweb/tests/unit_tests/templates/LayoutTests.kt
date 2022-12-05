@@ -6,29 +6,20 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
 import org.jsoup.nodes.Document
-import org.junit.ClassRule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.xmlmatchers.XmlMatchers
 import javax.xml.transform.Source
 
-class LayoutTests
+class LayoutTests : FreeMarkerTest("index.ftl")
 {
-    companion object
-    {
-        @ClassRule
-        @JvmField
-        //test the layout part of the home page
-        val template = FreemarkerTestRule("index.ftl")
-    }
 
     private fun testModel(): IndexViewModel
     {
@@ -49,9 +40,9 @@ class LayoutTests
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
-        val xml = template.xmlResponseFor(testModel)
+        val xml = xmlResponseFor(testModel)
 
         assertHeaderRenderedCorrectly(doc, xml)
 
@@ -65,8 +56,8 @@ class LayoutTests
     fun `renders correctly when logged in`()
     {
         val testModel = testModel()
-        val doc = template.jsoupDocFor(testModel)
-        val xml = template.xmlResponseFor(testModel)
+        val doc = jsoupDocFor(testModel)
+        val xml = xmlResponseFor(testModel)
 
         assertHeaderRenderedCorrectly(doc, xml)
 
@@ -94,7 +85,7 @@ class LayoutTests
 
         val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
         assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Manage access")
@@ -105,7 +96,7 @@ class LayoutTests
     fun `non admins cannot see admin link`()
     {
         val testModel = testModel()
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(1)
         assertThat(doc.selectFirst(".nav-right #logged-in").text()).isEqualTo("Logged in as test.user")
@@ -133,14 +124,15 @@ class LayoutTests
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
         assertThat(doc.selectFirst(".nav-right #logged-in").text()).isEqualTo("Logged in as test.user")
     }
 
     @Test
-    fun `reviewers can see publish link`() {
+    fun `reviewers can see publish link`()
+    {
         val mockContext = mock<ActionContext> {
             on { userProfile } doReturn CommonProfile().apply {
                 id = "test.user"
@@ -152,7 +144,7 @@ class LayoutTests
 
         val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
         assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Publish reports")
@@ -160,7 +152,8 @@ class LayoutTests
     }
 
     @Test
-    fun `non reviewers can see publish link if fine grained auth is turned off`() {
+    fun `non reviewers can see publish link if fine grained auth is turned off`()
+    {
         val mockContext = mock<ActionContext> {
             on { userProfile } doReturn CommonProfile().apply {
                 id = "test.user"
@@ -181,7 +174,7 @@ class LayoutTests
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
         assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Publish reports")
@@ -189,7 +182,8 @@ class LayoutTests
     }
 
     @Test
-    fun `non reviewers cannot see publish link if fine grained auth is turned on`() {
+    fun `non reviewers cannot see publish link if fine grained auth is turned on`()
+    {
         val mockContext = mock<ActionContext> {
             on { userProfile } doReturn CommonProfile().apply {
                 id = "test.user"
@@ -201,7 +195,7 @@ class LayoutTests
 
         val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(1)
         assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Logout")
@@ -211,11 +205,15 @@ class LayoutTests
     {
         val appName = AppConfig()["app.name"]
 
-        org.hamcrest.MatcherAssert.assertThat(xml,
-                XmlMatchers.hasXPath("//link[@rel='icon']/@href", Matchers.equalTo("http://localhost:8888/favicon.ico")))
+        org.hamcrest.MatcherAssert.assertThat(
+                xml,
+                XmlMatchers.hasXPath("//link[@rel='icon']/@href", Matchers.equalTo("http://localhost:8888/favicon.ico"))
+        )
 
-        org.hamcrest.MatcherAssert.assertThat(xml,
-                XmlMatchers.hasXPath("//link[@rel='shortcut icon']/@href", Matchers.equalTo("http://localhost:8888/favicon.ico")))
+        org.hamcrest.MatcherAssert.assertThat(
+                xml,
+                XmlMatchers.hasXPath("//link[@rel='shortcut icon']/@href", Matchers.equalTo("http://localhost:8888/favicon.ico"))
+        )
 
         assertThat(doc.select("title").text()).isEqualTo(appName)
         assertThat(doc.select("header a").attr("href")).isEqualTo("/")
