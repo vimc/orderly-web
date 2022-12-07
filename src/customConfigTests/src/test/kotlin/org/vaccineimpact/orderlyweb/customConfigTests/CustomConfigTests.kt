@@ -58,12 +58,11 @@ abstract class CustomConfigTests
 
         if (oldConfig.remote!!["main"]?.default_branch_only != defaultBranchOnly)
         {
-            // only reload if config has changed
             val newRemote = oldConfig.remote!!["main"]!!.copy(default_branch_only = defaultBranchOnly)
             val newConfig = oldConfig.copy(remote = linkedMapOf("main" to newRemote))
             configFile.writeText(mapper.writeValueAsString(newConfig))
-            HttpClient.post("http://localhost:8321/v1/reload/")
         }
+        HttpClient.post("http://localhost:8321/v1/reload/")
     }
 
     @BeforeEach
