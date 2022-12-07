@@ -11,12 +11,15 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 import spark.route.HttpMethod
 
 class ReportTests : IntegrationTest()
-{    @Test
+{
+    @Test
     fun `only report runners can run report`()
     {
         val url = "/report/minimal/actions/run"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
-                method = HttpMethod.post, contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.post, contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -32,8 +35,10 @@ class ReportTests : IntegrationTest()
     {
         val url = "/global-pinned-reports/"
         val requiredPermissions = setOf(ReifiedPermission("pinned-reports.manage", Scope.Global()))
-        assertWebUrlSecured(url, requiredPermissions, method = HttpMethod.post, contentType = ContentTypes.json,
-                postData = mapOf("reports" to listOf<String>()))
+        assertWebUrlSecured(
+                url, requiredPermissions, method = HttpMethod.post, contentType = ContentTypes.json,
+                postData = mapOf("reports" to listOf<String>())
+        )
     }
 
     @Test
@@ -41,11 +46,13 @@ class ReportTests : IntegrationTest()
     {
         val url = "/global-pinned-reports/"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("pinned-reports.manage", Scope.Global())),
                 method = HttpMethod.post,
                 postData = mapOf("reports" to listOf("html")),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         val pinnedReports = OrderlyReportRepository(true, true).getGlobalPinnedReports()
         assertThat(pinnedReports.count()).isEqualTo(1)
@@ -56,18 +63,22 @@ class ReportTests : IntegrationTest()
     fun `only report reviewers can get report drafts`()
     {
         val url = "/report-drafts/"
-        assertWebUrlSecured(url,
+        assertWebUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
     fun `report reviewers can get report drafts`()
     {
         val url = "/report-drafts/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         val data = JSONValidator.getData(response.text)
         assertThat(data.isArray).isTrue()
@@ -79,11 +90,13 @@ class ReportTests : IntegrationTest()
     fun `only report reviewers can publish reports`()
     {
         val url = "/bulk-publish/"
-        assertWebUrlSecured(url,
+        assertWebUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
                 method = HttpMethod.post,
                 contentType = ContentTypes.json,
-                postData = mapOf("ids" to listOf("v1")))
+                postData = mapOf("ids" to listOf("v1"))
+        )
     }
 
     @Test
@@ -93,11 +106,13 @@ class ReportTests : IntegrationTest()
         insertReport("report", "v2", published = false)
 
         val url = "/bulk-publish/"
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
                 method = HttpMethod.post,
                 postData = mapOf("ids" to listOf("v1", "v2")),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         val repo = OrderlyReportRepository(true, true)
 
@@ -109,20 +124,24 @@ class ReportTests : IntegrationTest()
     fun `only report readers can get report dependencies`()
     {
         val url = "/report/minimal/dependencies/"
-        assertWebUrlSecured(url,
+        assertWebUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Global())),
                 method = HttpMethod.get,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
     fun `report readers can get dependencies`()
     {
         val url = "/report/minimal/dependencies/?direction=upstream"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Global())),
                 method = HttpMethod.get,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -135,11 +154,13 @@ class ReportTests : IntegrationTest()
     @Test
     fun `report runners can get report run metadata`()
     {
-        val url="/report/run-metadata"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val url = "/report/run-metadata"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.get,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         val responseData = JSONValidator.getData(response.text)
@@ -155,9 +176,11 @@ class ReportTests : IntegrationTest()
     fun `only report runners can get report run metadata`()
     {
         val url = "/report/run-metadata"
-        assertWebUrlSecured(url,
+        assertWebUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.get,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 }

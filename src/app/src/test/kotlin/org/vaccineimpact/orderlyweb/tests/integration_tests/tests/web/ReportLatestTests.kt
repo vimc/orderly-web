@@ -12,7 +12,8 @@ import java.text.SimpleDateFormat
 import java.sql.Timestamp
 
 class ReportLatestTests : IntegrationTest()
-{    @Test
+{
+    @Test
     fun `reviewer can get latest unpublished version`()
     {
         val reportName = "test"
@@ -23,8 +24,8 @@ class ReportLatestTests : IntegrationTest()
 
         val url = "/report/$reportName/latest"
         val permissions = setOf(
-            ReifiedPermission("reports.review", Scope.Global()), 
-            ReifiedPermission("reports.read", Scope.Global())
+                ReifiedPermission("reports.review", Scope.Global()),
+                ReifiedPermission("reports.read", Scope.Global())
         )
         val checker = WebPermissionChecker(url, permissions)
         val response = checker.requestWithPermissions(permissions)
@@ -45,7 +46,7 @@ class ReportLatestTests : IntegrationTest()
 
         val url = "/report/$reportName/latest"
         val permissions = setOf(
-            ReifiedPermission("reports.read", Scope.Global())
+                ReifiedPermission("reports.read", Scope.Global())
         )
         val checker = WebPermissionChecker(url, permissions)
         val response = checker.requestWithPermissions(permissions)

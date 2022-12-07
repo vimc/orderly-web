@@ -18,8 +18,10 @@ class RolesTests : IntegrationTest()
     {
         val url = "/roles/report-readers/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -29,9 +31,11 @@ class RolesTests : IntegrationTest()
         addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
 
         val url = "/roles/report-readers/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
-                ContentTypes.json)
+                ContentTypes.json
+        )
 
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
@@ -41,8 +45,10 @@ class RolesTests : IntegrationTest()
     {
         val url = "/roles/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -53,9 +59,11 @@ class RolesTests : IntegrationTest()
         createGroup("Reviewer", ReifiedPermission("reports.review", Scope.Global()))
 
         val url = "/roles/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
-                ContentTypes.json)
+                ContentTypes.json
+        )
 
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
@@ -67,10 +75,14 @@ class RolesTests : IntegrationTest()
         addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
 
         val url = "/roles/report-readers/minimal/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("users.manage", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Global())),
-                ContentTypes.json)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
+                setOf(
+                        ReifiedPermission("users.manage", Scope.Global()),
+                        ReifiedPermission("reports.read", Scope.Global())
+                ),
+                ContentTypes.json
+        )
 
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
@@ -80,8 +92,10 @@ class RolesTests : IntegrationTest()
     {
         val url = "/typeahead/roles/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -89,8 +103,10 @@ class RolesTests : IntegrationTest()
     {
         val url = "/roles/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "NEWGROUP"))
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "NEWGROUP")
+        )
     }
 
     @Test
@@ -98,8 +114,10 @@ class RolesTests : IntegrationTest()
     {
         val url = "/typeahead/emails/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -107,8 +125,10 @@ class RolesTests : IntegrationTest()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         val url = "/roles/Funder/"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.delete)
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.delete
+        )
     }
 
     @Test
@@ -117,9 +137,11 @@ class RolesTests : IntegrationTest()
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         val url = "/roles/Funder/users/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json, method = HttpMethod.post,
-                postData = mapOf("email" to "test.user@example.com"))
+                postData = mapOf("email" to "test.user@example.com")
+        )
     }
 
     @Test
@@ -128,16 +150,22 @@ class RolesTests : IntegrationTest()
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         addMembers("Funder", "test.user@example.com")
         val url = "/roles/Funder/users/test.user@example.com"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                method = HttpMethod.delete, contentType = ContentTypes.json)
-    }    @Test
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                method = HttpMethod.delete, contentType = ContentTypes.json
+        )
+    }
+
+    @Test
     fun `only user managers can add permission`()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         val url = "/roles/Funder/permissions/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "users.manage"))
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "users.manage")
+        )
     }
 
     @Test
@@ -146,8 +174,10 @@ class RolesTests : IntegrationTest()
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         val url = "/roles/Funder/permissions/reports.read/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.delete, postData = mapOf("name" to "users.manage"))
+        assertWebUrlSecured(
+                url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.delete, postData = mapOf("name" to "users.manage")
+        )
     }
 
     @Test
@@ -160,10 +190,12 @@ class RolesTests : IntegrationTest()
 
         val url = "/roles/Funder/permissions/reports.read/"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.delete,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         perms = OrderlyAuthorizationRepository().getPermissionsForGroup("Funder")
         assertThat(perms.count()).isEqualTo(0)
@@ -179,10 +211,12 @@ class RolesTests : IntegrationTest()
 
         val url = "/roles/Funder/permissions/reports.read/?scopePrefix=report&scopeId=minimal"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.delete,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         perms = OrderlyAuthorizationRepository().getPermissionsForGroup("Funder")
         assertThat(perms.count()).isEqualTo(0)
@@ -198,10 +232,12 @@ class RolesTests : IntegrationTest()
 
         val url = "/roles/Funder/permissions/"
 
-        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 method = HttpMethod.post, postData = mapOf("name" to "users.manage"),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         perms = OrderlyAuthorizationRepository().getPermissionsForGroup("Funder")
         assertThat(perms.count()).isEqualTo(2)
