@@ -18,6 +18,7 @@ services:
       - ${ORDERLY_DEMO}:/orderly
     environment:
       REDIS_URL: redis://redis
+      ORDERLY_API_SERVER_IDENTITY: main
     depends_on:
       - "redis"
   api:

@@ -55,12 +55,20 @@ class RunReportPageTests : SeleniumTest()
         assertThat(matches.size).isEqualTo(1)
     }
 
-    @Test
-    fun `can view git commits`()
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
+    fun `can view git commits`(configType: ConfigType)
     {
-        val commitsSelect = Select(driver.findElement(By.id("git-commit")))
-        assertThat(commitsSelect.options.size).isEqualTo(2)
-        assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
+        if (configType == ConfigType.GIT_ALLOWED)
+        {
+            val commitsSelect = Select(driver.findElement(By.id("git-commit")))
+            assertThat(commitsSelect.options.size).isEqualTo(2)
+            assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
+        }
+        else
+        {
+            assertThat(driver.findElements(By.id("git-commit"))).isEmpty()
+        }
     }
 
     @Test

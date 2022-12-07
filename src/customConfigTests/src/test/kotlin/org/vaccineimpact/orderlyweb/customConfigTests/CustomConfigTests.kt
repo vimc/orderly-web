@@ -1,18 +1,21 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.TestInfo
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
 import org.vaccineimpact.orderlyweb.db.getResource
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
-
 
 abstract class CustomConfigTests
 {
@@ -37,8 +40,7 @@ abstract class CustomConfigTests
         Thread.sleep(500)
     }
 
-    @BeforeEach
-    fun createDatabase()
+    private fun createDatabase()
     {
         val db = AppConfig()["db.location"]
         while (!isDBAvailable(db))
@@ -46,6 +48,30 @@ abstract class CustomConfigTests
             Thread.sleep(500)
             System.err.println("db not available yet at $db")
         }
+    }
+
+    private fun changeConfig(defaultBranchOnly: Boolean)
+    {
+        val mapper = ObjectMapper(YAMLFactory())
+        val configFile = File("${AppConfig()["orderly.root"]}/orderly_config.yml")
+        val oldConfig = mapper.readValue(configFile, OrderlyConfig::class.java)
+
+        if (oldConfig.remote!!["main"]?.default_branch_only != defaultBranchOnly)
+        {
+            // only reload if config has changed
+            val newRemote = oldConfig.remote!!["main"]!!.copy(default_branch_only = defaultBranchOnly)
+            val newConfig = oldConfig.copy(remote = linkedMapOf("main" to newRemote))
+            configFile.writeText(mapper.writeValueAsString(newConfig))
+            HttpClient.post("http://localhost:8321/v1/reload/")
+        }
+    }
+
+    @BeforeEach
+    fun beforeEach(info: TestInfo)
+    {
+        createDatabase()
+        val defaultBranchOnly = info.displayName.contains("DEFAULT_BRANCH_ONLY")
+        changeConfig(defaultBranchOnly)
     }
 
     @AfterEach
