@@ -1,14 +1,15 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.FreeMarkerTest
 
-class DownloadsTabTests: BaseVersionPageTests()
+class DownloadsTabTests: FreeMarkerTest("report-page.ftl")
 {
     @Test
     fun `renders download tab title correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
         val title = jsoupDoc.select("#downloads-tab h1")
         assertThat(title.text()).isEqualToIgnoringWhitespace("r1 display")
     }
@@ -16,7 +17,7 @@ class DownloadsTabTests: BaseVersionPageTests()
     @Test
     fun `renders download tab artefacts correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
 
         val artefactsEl = jsoupDoc.select("#artefacts")
         val artefactCards = artefactsEl.select(".card")
@@ -59,7 +60,7 @@ class DownloadsTabTests: BaseVersionPageTests()
     @Test
     fun `renders download tab data links correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
 
         val linksEl = jsoupDoc.select("#data-links")
         assertThat(linksEl.select(".card-header").text()).isEqualTo("Input data to the report")
@@ -99,7 +100,7 @@ class DownloadsTabTests: BaseVersionPageTests()
     {
         val testModel = VersionPageTestData.testModel.copy(dataLinks = listOf())
 
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
 
         val linksEl = jsoupDoc.select("#data-links")
         assertThat(linksEl.count()).isEqualTo(0)
@@ -108,7 +109,7 @@ class DownloadsTabTests: BaseVersionPageTests()
     @Test
     fun `renders resources correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
         assertThat(resourcesEl.select(".card-header").text()).isEqualTo("Resources")
@@ -133,7 +134,7 @@ class DownloadsTabTests: BaseVersionPageTests()
     @Test
     fun `renders zipfile correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
 
         val zipFileEl = jsoupDoc.select("#zip-file")
         val zipFileLink = zipFileEl.select("a")
@@ -148,7 +149,7 @@ class DownloadsTabTests: BaseVersionPageTests()
     fun `does not render download tab resources if none in model`()
     {
         val testModel = VersionPageTestData.testModel.copy(resources = listOf())
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
         assertThat(resourcesEl.count()).isEqualTo(0)

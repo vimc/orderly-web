@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
@@ -14,9 +14,11 @@ class QueueTests : IntegrationTest()
     @Test
     fun `can get queue status`()
     {
-        apiRequestHelper.post("/reports/minimal-for-running/run/",
+        apiRequestHelper.post(
+                "/reports/minimal-for-running/run/",
                 mapOf("params" to mapOf<String, String>()),
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         val response = apiRequestHelper.get("/queue/status", userEmail = fakeGlobalReportReader())
 

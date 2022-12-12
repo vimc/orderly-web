@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository

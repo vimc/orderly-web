@@ -4,8 +4,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
@@ -19,7 +19,7 @@ class OrderlyWebBearerTokenAuthenticatorTests
     val fakeUserEmail = "user@email.com"
     val tokenIssuer = "tokenissuer"
 
-    @Before
+    @BeforeEach
     fun createHelper()
     {
         helper = WebTokenHelper(KeyHelper.generateKeyPair(), tokenIssuer)

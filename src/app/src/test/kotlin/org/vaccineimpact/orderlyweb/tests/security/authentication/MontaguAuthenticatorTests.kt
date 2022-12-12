@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.repositories.UserRepository

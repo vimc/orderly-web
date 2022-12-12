@@ -1,20 +1,21 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.junit.Test
-import org.junit.Before
+import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
-import java.time.Duration
 
 class RunReportPageTests : SeleniumTest()
 {
-    @Before
+    @BeforeEach
     fun setUp()
     {
         JooqContext().use {
@@ -146,14 +147,14 @@ class RunReportPageTests : SeleniumTest()
         driver.findElement(By.id("logs-link")).click()
 
         val tab = driver.findElement(By.id("logs-tab"))
-        wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
+        wait.until(ExpectedConditions.attributeToBe(tab, "display", "block"))
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
         assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("No reports have been run yet")
     }
 
     //TODO: This test case should be revisited as soon as test data is updated.
     @Test
-    @Ignore
+    @Disabled
     fun `can fill parameter textField`()
     {
         val gitBranch = Select(driver.findElement(By.id("git-branch")))

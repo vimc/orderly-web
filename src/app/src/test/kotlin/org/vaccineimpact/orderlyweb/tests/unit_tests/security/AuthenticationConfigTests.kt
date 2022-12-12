@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.SettingsRepository
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig

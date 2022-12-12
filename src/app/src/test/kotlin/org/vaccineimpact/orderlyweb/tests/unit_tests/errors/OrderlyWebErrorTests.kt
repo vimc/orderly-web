@@ -2,8 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.errors
 
 import com.google.gson.JsonSyntaxException
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.annotations.TestOnly
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.errors.*
 import org.vaccineimpact.orderlyweb.models.ResultStatus
 
@@ -14,8 +13,10 @@ class OrderlyWebErrorTests
     fun `can create MissingParameterError`()
     {
         val sut = MissingParameterError("testParam")
-        assertExpectedOrderlyWebError(sut, 400,
-                "Missing parameter 'testParam'", "bad-request" )
+        assertExpectedOrderlyWebError(
+                sut, 400,
+                "Missing parameter 'testParam'", "bad-request"
+        )
     }
 
     @Test
@@ -23,9 +24,11 @@ class OrderlyWebErrorTests
     {
         val sut = UnableToConnectToDatabaseError("https://test")
 
-        assertExpectedOrderlyWebError(sut, 500,
+        assertExpectedOrderlyWebError(
+                sut, 500,
                 "Unable to establish connection to the database at https://test",
-                "database-connection-error")
+                "database-connection-error"
+        )
     }
 
     @Test
@@ -33,9 +36,11 @@ class OrderlyWebErrorTests
     {
         val sut = UnableToParseJsonError(JsonSyntaxException("com.google.gson.stream.MalformedJsonException: {\"dodgy\"}"))
 
-        assertExpectedOrderlyWebError(sut, 400,
+        assertExpectedOrderlyWebError(
+                sut, 400,
                 "Unable to parse supplied JSON: {\"dodgy\"}",
-                "bad-json")
+                "bad-json"
+        )
     }
 
     @Test
@@ -43,8 +48,10 @@ class OrderlyWebErrorTests
     {
         val sut = UnknownObjectError("123", org.vaccineimpact.orderlyweb.models.Report::class)
 
-        assertExpectedOrderlyWebError(sut, 404,
-                "Unknown report : '123'", "unknown-report" )
+        assertExpectedOrderlyWebError(
+                sut, 404,
+                "Unknown report : '123'", "unknown-report"
+        )
     }
 
     @Test
@@ -61,12 +68,15 @@ class OrderlyWebErrorTests
         assertExpectedOrderlyWebError(sut, 500, "Invalid data", "data-error")
     }
 
-    private fun assertExpectedOrderlyWebError(sut: OrderlyWebError, expectedHttpStatus: Int, expectedMessage: String,
-                                              expectedResultCode: String)
+    private fun assertExpectedOrderlyWebError(
+            sut: OrderlyWebError, expectedHttpStatus: Int, expectedMessage: String,
+            expectedResultCode: String
+    )
     {
         assertThat(sut.httpStatus).isEqualTo(expectedHttpStatus)
         assertThat(sut.message).isEqualTo(
-                "the following problems occurred:\n" + expectedMessage)
+                "the following problems occurred:\n$expectedMessage"
+        )
 
         val result = sut.asResult()
         assertThat(result.status).isEqualTo(ResultStatus.FAILURE)

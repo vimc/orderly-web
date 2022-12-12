@@ -3,9 +3,9 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.junit.After
-import org.junit.Before
-import org.junit.BeforeClass
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.BeforeAll
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.app_start.main
@@ -32,7 +32,7 @@ abstract class IntegrationTest
     {
         var appStarted: Boolean = false
 
-        @BeforeClass
+        @BeforeAll
         @JvmStatic
         fun startApp()
         {
@@ -44,7 +44,7 @@ abstract class IntegrationTest
         }
     }
 
-    @Before
+    @BeforeEach
     fun createDatabase()
     {
         println("Copying database from: ${AppConfig()["db.template"]}")
@@ -56,7 +56,7 @@ abstract class IntegrationTest
         Thread.sleep(1000)
     }
 
-    @After
+    @AfterEach
     fun deleteDatabases()
     {
         File(AppConfig()["db.location"]).delete()

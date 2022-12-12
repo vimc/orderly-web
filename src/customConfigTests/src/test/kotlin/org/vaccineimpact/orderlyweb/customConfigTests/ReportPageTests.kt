@@ -1,20 +1,18 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
-import java.util.regex.Pattern
 
 class ReportPageTests : SeleniumTest()
 {

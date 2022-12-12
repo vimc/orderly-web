@@ -6,7 +6,7 @@ import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.Serializer
@@ -150,6 +150,7 @@ class WorkflowRunTests : IntegrationTest()
                 sessionCookie,
                 ContentTypes.json
         )
+        val text = response.text
         assertSuccessful(response)
         assertJsonContentType(response)
         val workflowRunStatus = Serializer.instance.gson.fromJson(
@@ -281,8 +282,10 @@ class WorkflowRunTests : IntegrationTest()
                 HttpMethod.get
         )
         assertThat(logsResponse.statusCode).isEqualTo(400)
-        JSONValidator.validateError(logsResponse.text, "bad-request",
-                "Report with key $reportKey does not belong to workflow with key wrongWorkflowKey")
+        JSONValidator.validateError(
+                logsResponse.text, "bad-request",
+                "Report with key $reportKey does not belong to workflow with key wrongWorkflowKey"
+        )
 
     }
 

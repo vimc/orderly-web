@@ -3,20 +3,18 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
 import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 
+@ExtendWith(DebugHelper::class)
 class FineGrainedPermissionTests : CustomConfigTests()
 {
     val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
     val url = "$apiBaseUrl/login/"
 
-    @get:Rule
-    val debugHelper = DebugHelper()
-    
     @Test
     fun `can login when fine-grained permissions are turned off`()
     {

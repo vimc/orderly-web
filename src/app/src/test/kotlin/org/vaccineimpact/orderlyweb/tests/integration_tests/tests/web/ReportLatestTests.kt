@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -24,8 +24,8 @@ class ReportLatestTests : IntegrationTest()
 
         val url = "/report/$reportName/latest"
         val permissions = setOf(
-            ReifiedPermission("reports.review", Scope.Global()), 
-            ReifiedPermission("reports.read", Scope.Global())
+                ReifiedPermission("reports.review", Scope.Global()),
+                ReifiedPermission("reports.read", Scope.Global())
         )
         val checker = WebPermissionChecker(url, permissions)
         val response = checker.requestWithPermissions(permissions)
@@ -46,7 +46,7 @@ class ReportLatestTests : IntegrationTest()
 
         val url = "/report/$reportName/latest"
         val permissions = setOf(
-            ReifiedPermission("reports.read", Scope.Global())
+                ReifiedPermission("reports.read", Scope.Global())
         )
         val checker = WebPermissionChecker(url, permissions)
         val response = checker.requestWithPermissions(permissions)

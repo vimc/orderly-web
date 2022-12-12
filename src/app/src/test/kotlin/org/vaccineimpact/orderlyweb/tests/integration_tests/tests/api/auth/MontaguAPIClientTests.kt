@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
@@ -46,7 +46,7 @@ class MontaguAPIClientTests
     @Test
     fun `okhttpMontaguAPIClient can get user details not allowing localhost`()
     {
-        val mockConfig = mock<Config>{
+        val mockConfig = mock<Config> {
             on { getBool("allow.localhost") } doReturn false
             on { get("montagu.api_url") } doReturn AppConfig()["montagu.api_url"]
         }

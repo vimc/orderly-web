@@ -13,11 +13,11 @@ export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml
 
-docker-compose -f $COMPOSE_FILE pull || true
-docker-compose -f $COMPOSE_FILE --project-name montagu up -d
+docker-compose --compatibility -f $COMPOSE_FILE pull || true
+docker-compose --compatibility -f $COMPOSE_FILE --project-name montagu up -d
 
 function cleanup() {
-    docker-compose -f $COMPOSE_FILE  --project-name montagu down
+    docker-compose --compatibility -f $COMPOSE_FILE  --project-name montagu down
 }
 
 trap cleanup ERR

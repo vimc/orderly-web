@@ -4,20 +4,21 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.FreeMarkerTest
 import org.vaccineimpact.orderlyweb.viewmodels.*
 
 //This will also test the partials which the report-page template includes
 
-class VersionPageTests: BaseVersionPageTests()
+class VersionPageTests: FreeMarkerTest("report-page.ftl")
 {
     @Test
     fun `renders outline correctly`()
     {
-        val doc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val doc = jsoupDocFor(VersionPageTestData.testModel)
 
         assertThat(doc.select(".nav-item")[0].text()).isEqualTo("Report")
         assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Metadata")
@@ -33,7 +34,7 @@ class VersionPageTests: BaseVersionPageTests()
     @Test
     fun `renders breadcrumbs correctly`()
     {
-        val doc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val doc = jsoupDocFor(VersionPageTestData.testModel)
         val breadcrumbs = doc.select(".crumb-item")
 
         assertThat(breadcrumbs.count()).isEqualTo(1)
@@ -47,7 +48,7 @@ class VersionPageTests: BaseVersionPageTests()
         val fakeVersions = listOf(VersionPickerViewModel("/", "Tue Jan 03 2017, 14:30", false),
                 VersionPickerViewModel("/", "Mon Jan 02 2017, 12:30", true))
 
-        val doc = template.jsoupDocFor(VersionPageTestData.testModel.copy(versions = fakeVersions))
+        val doc = jsoupDocFor(VersionPageTestData.testModel.copy(versions = fakeVersions))
         val options = doc.select("#report-version-switcher option")
 
         assertThat(options.count()).isEqualTo(2)
@@ -60,7 +61,7 @@ class VersionPageTests: BaseVersionPageTests()
     {
         val appViewModel = VersionPageTestData.testDefaultModel.copy(isReviewer = true)
         val mockModel = VersionPageTestData.testModel.copy(appViewModel = appViewModel)
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
         assertThat(publishSwitch).isNotNull()
@@ -71,7 +72,7 @@ class VersionPageTests: BaseVersionPageTests()
     {
         val appViewModel = VersionPageTestData.testDefaultModel.copy(isReviewer = false)
         val mockModel = VersionPageTestData.testModel.copy(appViewModel = appViewModel)
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
         assertThat(publishSwitch).isNull()
@@ -99,7 +100,7 @@ class VersionPageTests: BaseVersionPageTests()
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
         val mockModel = VersionPageTestData.testModel.copy(appViewModel = defaultModel)
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
         assertThat(publishSwitch).isNotNull()
@@ -109,7 +110,7 @@ class VersionPageTests: BaseVersionPageTests()
     fun `runners see run report`()
     {
         val mockModel = VersionPageTestData.testModel.copy(isRunner = true)
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val runReport = htmlResponse.getElementById("runReportVueApp")
         assertThat(runReport).isNotNull()
@@ -120,7 +121,7 @@ class VersionPageTests: BaseVersionPageTests()
     {
         val mockModel = VersionPageTestData.testModel.copy(isRunner = false)
 
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val runReport = htmlResponse.getElementById("runReportVueApp")
         assertThat(runReport).isNull()
@@ -149,7 +150,7 @@ class VersionPageTests: BaseVersionPageTests()
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
         val mockModel = VersionPageTestData.testModel.copy(isRunner=false, appViewModel = defaultModel)
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val runReport = htmlResponse.getElementById("runReportVueApp")
         assertThat(runReport).isNotNull()
@@ -161,8 +162,8 @@ class VersionPageTests: BaseVersionPageTests()
         val appViewModel = VersionPageTestData.testDefaultModel.copy(isAdmin = true)
         val mockModel = VersionPageTestData.testModel.copy(appViewModel = appViewModel)
 
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
-        val doc = template.jsoupDocFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
+        val doc = jsoupDocFor(mockModel)
 
         val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
         assertThat(reportReaders).isNotNull()
@@ -178,7 +179,7 @@ class VersionPageTests: BaseVersionPageTests()
         val appViewModel = VersionPageTestData.testDefaultModel.copy(isAdmin = false)
         val mockModel = VersionPageTestData.testModel.copy(appViewModel = appViewModel)
 
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
         assertThat(reportReaders).isNull()
@@ -206,7 +207,7 @@ class VersionPageTests: BaseVersionPageTests()
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
         val mockModel = VersionPageTestData.testModel.copy(appViewModel = defaultModel)
-        val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val htmlResponse = htmlPageResponseFor(mockModel)
 
         val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
         assertThat(reportReaders).isNull()

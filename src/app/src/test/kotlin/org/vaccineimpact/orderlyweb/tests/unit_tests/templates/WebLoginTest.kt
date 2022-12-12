@@ -2,24 +2,15 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.junit.ClassRule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.WebloginViewModel
 
-class WebLoginTest
+class WebLoginTest : FreeMarkerTest("weblogin.ftl")
 {
-    companion object
-    {
-        @ClassRule
-        @JvmField
-        val template = FreemarkerTestRule("weblogin.ftl")
-    }
-
     private val testModel = WebloginViewModel(mock<ActionContext>(), "/fakepath")
-    private val doc = template.jsoupDocFor(testModel)
+    private val doc = jsoupDocFor(testModel)
 
     @Test
     fun `renders page`()
@@ -46,7 +37,7 @@ class WebLoginTest
 
         Assertions.assertThat(link.count()).isEqualTo(1)
         Assertions.assertThat(link.attr("href"))
-            .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
+                .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
 
         Assertions.assertThat(link.text()).isEqualToIgnoringCase("Log in with ${AppConfig()["auth.provider"]}")
     }

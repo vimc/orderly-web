@@ -8,7 +8,7 @@ import freemarker.template.SimpleHash
 import freemarker.template.SimpleSequence
 import freemarker.template.TemplateBooleanModel
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer

@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import org.junit.Test
-import org.junit.Ignore
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Disabled
 import org.assertj.core.api.Assertions.assertThat
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -38,7 +38,7 @@ class OrderlyDemoDBTests : DatabaseTests()
                     .orderBy(ARTEFACT_FORMAT.NAME.asc())
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("staticgraph")).isTrue()
             assertThat(names.contains("interactivegraph")).isTrue()
             assertThat(names.contains("data")).isTrue()
@@ -188,7 +188,7 @@ class OrderlyDemoDBTests : DatabaseTests()
             val result = it.dsl.selectFrom(FILE_PURPOSE)
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("source")).isTrue()
             assertThat(names.contains("script")).isTrue()
             assertThat(names.contains("resource")).isTrue()
@@ -198,7 +198,7 @@ class OrderlyDemoDBTests : DatabaseTests()
     }
 
     @Test
-    @Ignore //This fails at the moment because created Timestamp is stored as a number, which Jooq can't deal with
+    @Disabled //This fails at the moment because created Timestamp is stored as a number, which Jooq can't deal with
     fun `has populated orderly schema`()
     {
         JooqContext().use {
@@ -219,7 +219,7 @@ class OrderlyDemoDBTests : DatabaseTests()
             val result = it.dsl.selectFrom(ORDERLY_SCHEMA_TABLES)
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("artefact_format")).isTrue()
             assertThat(names.contains("changelog")).isTrue()
             assertThat(names.contains("changelog_label")).isTrue()
@@ -249,7 +249,7 @@ class OrderlyDemoDBTests : DatabaseTests()
                     .orderBy(REPORT.NAME.asc())
                     .fetch()
 
-            val names = result.map({it.name})
+            val names = result.map({ it.name })
             assertThat(names.contains("changelog")).isTrue()
             assertThat(names.contains("connection")).isTrue()
             assertThat(names.contains("html")).isTrue()
@@ -281,8 +281,8 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.connection).isNotNull()
                 assertThat(r.published).isNotNull()
 
-                if (r.displayname?.isNotBlank()?:false) atLeastOneDisplayName = true
-                if (r.description?.isNotBlank()?:false) atLeastOneDescription = true
+                if (r.displayname?.isNotBlank() ?: false) atLeastOneDisplayName = true
+                if (r.description?.isNotBlank() ?: false) atLeastOneDescription = true
             }
 
             assertThat(atLeastOneDisplayName)

@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.models
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.viewmodels.PermissionViewModel
 

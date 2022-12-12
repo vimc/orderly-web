@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.app_start
 import com.google.gson.JsonSyntaxException
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.app_start.ErrorHandler
 import org.vaccineimpact.orderlyweb.app_start.ResponseErrorHandler

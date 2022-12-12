@@ -1,13 +1,10 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
-import org.vaccineimpact.orderlyweb.ContentTypes
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.time.Instant
 import java.util.*

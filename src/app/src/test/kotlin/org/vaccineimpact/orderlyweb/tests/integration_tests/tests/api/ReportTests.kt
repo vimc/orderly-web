@@ -2,13 +2,12 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
@@ -29,9 +28,11 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = apiRequestHelper.post("/reports/minimal-for-running/run/",
+        val response = apiRequestHelper.post(
+                "/reports/minimal-for-running/run/",
                 mapOf("params" to mapOf<String, String>()),
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -44,8 +45,10 @@ class ReportTests : IntegrationTest()
     @Test
     fun `kills report`()
     {
-        val runResponse = apiRequestHelper.post("/reports/minimal-for-running/run/", mapOf(),
-                userEmail = fakeGlobalReportReviewer())
+        val runResponse = apiRequestHelper.post(
+                "/reports/slow1/run/", mapOf(),
+                userEmail = fakeGlobalReportReviewer()
+        )
         assertSuccessfulWithResponseText(runResponse)
         val key = JSONValidator.getData(runResponse.text)["key"].asText()
 
@@ -53,8 +56,10 @@ class ReportTests : IntegrationTest()
         //spuriously returns a 400 when successful. So here do not test response, but check status to see if kill worked
         apiRequestHelper.delete("/reports/$key/kill/", userEmail = fakeGlobalReportReviewer())
 
-        val statusResponse = apiRequestHelper.get("/reports/$key/status",
-                userEmail = fakeGlobalReportReviewer())
+        val statusResponse = apiRequestHelper.get(
+                "/reports/$key/status",
+                userEmail = fakeGlobalReportReviewer()
+        )
         val status = JSONValidator.getData(statusResponse.text)["status"].asText()
         assertThat(status).isEqualTo("interrupted")
     }
@@ -63,10 +68,12 @@ class ReportTests : IntegrationTest()
     fun `only report runners can run report`()
     {
         val url = "/reports/minimal-for-running/run/"
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -74,7 +81,7 @@ class ReportTests : IntegrationTest()
     {
         val url = "/reports/agronomic_seahorse/kill/"
 
-        val deniedChecker =  APIPermissionChecker(url, setOf(), ContentTypes.json, HttpMethod.delete)
+        val deniedChecker = APIPermissionChecker(url, setOf(), ContentTypes.json, HttpMethod.delete)
         var response = deniedChecker.requestWithPermissions(setOf())
         assertThat(response.statusCode).isEqualTo(403)
 
@@ -87,8 +94,10 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
-        val response = apiRequestHelper.get("/reports/agronomic_seahorse/status",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/agronomic_seahorse/status",
+                userEmail = fakeGlobalReportReviewer()
+        )
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Status")
@@ -115,8 +124,10 @@ class ReportTests : IntegrationTest()
     @Test
     fun `can get latest changelog by name`()
     {
-        val response = apiRequestHelper.get("/reports/changelog/latest/changelog/",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/changelog/latest/changelog/",
+                userEmail = fakeGlobalReportReviewer()
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -128,8 +139,10 @@ class ReportTests : IntegrationTest()
     fun `can get empty latest changelog by name`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/latest/changelog/",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/testname/latest/changelog/",
+                userEmail = fakeGlobalReportReviewer()
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -141,8 +154,10 @@ class ReportTests : IntegrationTest()
     fun `can get latest changelog if reader permissions only`()
     {
         //This report has been published so we should be able to see it, though it has no log items
-        val response = apiRequestHelper.get("/reports/other/latest/changelog",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/other/latest/changelog",
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -155,12 +170,16 @@ class ReportTests : IntegrationTest()
     @Test
     fun `get latest changelog returns 404 if report does not exist`()
     {
-        val response = apiRequestHelper.get("/reports/testname/latest/changelog",
-                userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(
+                "/reports/testname/latest/changelog",
+                userEmail = fakeGlobalReportReviewer()
+        )
 
         assertThat(response.statusCode).isEqualTo(404)
-        JSONValidator.validateError(response.text, "unknown-report",
-                "Unknown report")
+        JSONValidator.validateError(
+                response.text, "unknown-report",
+                "Unknown report"
+        )
     }
 
 }

@@ -1,9 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.errors
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.errors.*
-import java.security.Permission
 
 class ExceptionTests
 {

@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -65,14 +65,17 @@ class ReportDraftTests : CleanDatabaseTests()
                         "public",
                         "did something great",
                         true,
-                        0),
+                        0
+                ),
                 InsertableChangelog(
                         "id2",
                         "v1",
                         "internal",
                         "did something internal",
                         true,
-                        1))
+                        1
+                )
+        )
 
         val sut = OrderlyReportRepository(true, true, listOf())
         val result = sut.getDrafts()

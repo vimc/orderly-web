@@ -4,7 +4,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.oauth.OAuth20Service
 import com.nhaarman.mockito_kotlin.*
 import org.pac4j.oauth.credentials.OAuth20Credentials
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.oauth.config.OAuth20Configuration
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper

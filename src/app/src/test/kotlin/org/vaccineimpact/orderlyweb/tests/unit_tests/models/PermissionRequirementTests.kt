@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.models
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.models.ScopeRequirement

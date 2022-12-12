@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.After
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
 import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Files
@@ -22,7 +22,7 @@ import java.io.File
 
 class DocumentControllerTests : ControllerTest()
 {
-    @After
+    @AfterEach
     fun cleanup()
     {
         File("documents").deleteRecursively()

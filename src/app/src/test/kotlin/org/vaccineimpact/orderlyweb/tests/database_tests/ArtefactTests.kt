@@ -2,9 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.Orderly
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError

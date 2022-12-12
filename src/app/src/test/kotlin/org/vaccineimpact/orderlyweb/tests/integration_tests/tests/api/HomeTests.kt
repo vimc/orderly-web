@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 

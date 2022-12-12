@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.userCLI.tests
 
 import org.assertj.core.api.Assertions.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP_USER
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests

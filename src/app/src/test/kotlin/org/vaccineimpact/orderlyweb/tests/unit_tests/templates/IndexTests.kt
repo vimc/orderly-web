@@ -2,23 +2,14 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.ClassRule
-import org.junit.Test
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 
-class IndexTests
+class IndexTests: FreeMarkerTest("index.ftl")
 {
-    companion object
-    {
-        @ClassRule
-        @JvmField
-        val template = FreemarkerTestRule("index.ftl")
-    }
-
     private fun testModelLink(isRunner: Boolean): IndexViewModel
     {
         return IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false, false, null, isRunner)
@@ -29,7 +20,7 @@ class IndexTests
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
         assertThat(breadcrumbs.count()).isEqualTo(1)
         assertThat(breadcrumbs.first().selectFirst("a").text()).isEqualTo("Main menu")
@@ -43,7 +34,7 @@ class IndexTests
     fun `renders link to project docs if user has permission to see them`()
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
         val docsLink = doc.selectFirst(".btn-link")
         assertThat(docsLink.selectFirst("a").text()).isEqualTo("View project documentation")
         assertThat(docsLink.selectFirst("a").attr("href")).isEqualTo("http://localhost:8888/project-docs")
@@ -53,7 +44,7 @@ class IndexTests
     fun `does not render link to project docs if user does not have permission to see them`()
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false, false, null, false)
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
     }
@@ -62,7 +53,7 @@ class IndexTests
     fun `it does not render run workflow and run report links if user does not have permission to see them`()
     {
         val testModel = testModelLink(false)
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
     }
@@ -71,7 +62,7 @@ class IndexTests
     fun `it renders run report link if user has permission to see it`()
     {
         val testModel = testModelLink(true)
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
         val docsLink = doc.selectFirst(".btn-link")
         assertThat(docsLink.selectFirst("a").text()).isEqualTo("Run a report")
         assertThat(docsLink.selectFirst("a").attr("href")).isEqualTo("http://localhost:8888/run-report")
@@ -87,7 +78,7 @@ class IndexTests
                         DownloadableFileViewModel("zip file 2", "zip file url 2", 1))
         ), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         val header = doc.select("h1.pinned-reports")
         assertThat(header.count()).isEqualTo(1)
@@ -120,7 +111,7 @@ class IndexTests
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
 
         val header = doc.select("h1.pinned-reports")
         assertThat(header.count()).isEqualTo(0)
@@ -142,7 +133,7 @@ class IndexTests
         )
 
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
-        val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
+        val header = jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(7)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
@@ -161,7 +152,7 @@ class IndexTests
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
 
-        val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
+        val header = jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(6)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
@@ -181,7 +172,7 @@ class IndexTests
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
                 true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel, false)
 
-        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[4].html()
+        val scriptEl = jsoupDocFor(testModel).getElementsByTag("script")[4].html()
         assertThat(scriptEl.indexOf("var reportDisplayNames = {\n" +
                 "  \"r1\": \"r1 display\",\n" +
                 "  \"r2\": \"r2 display\"\n" +
@@ -196,7 +187,7 @@ class IndexTests
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
                 false, null, defaultModel, false)
 
-        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
+        val scriptEl = jsoupDocFor(testModel).getElementsByTag("script")[2].html()
         assertThat(scriptEl.indexOf("var reportDisplayNames")).isEqualTo(-1);
     }
 
@@ -208,7 +199,7 @@ class IndexTests
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
                 true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel, false)
 
-        val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
+        val component = jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
         assertThat(component.count()).isEqualTo(1)
         assertThat(component.attr(":current")).isEqualTo("currentPinnedReportNames")
         assertThat(component.attr(":available")).isEqualTo("reportDisplayNames")
@@ -222,7 +213,7 @@ class IndexTests
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
                 false, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel, false)
 
-        val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
+        val component = jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
         assertThat(component.count()).isEqualTo(0)
     }
 
@@ -233,7 +224,7 @@ class IndexTests
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
 
-        val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
+        val filters = jsoupDocFor(testModel).select("thead tr")[1]
 
         assertThat(filters.select("th").count()).isEqualTo(7)
         assertThat(filters.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
@@ -251,7 +242,7 @@ class IndexTests
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
-        val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
+        val filters = jsoupDocFor(testModel).select("thead tr")[1]
 
         val filterSelect = filters.select("th")[3].selectFirst("select")
         assertThat(filterSelect.id()).isEqualTo("tags-filter")
@@ -265,7 +256,7 @@ class IndexTests
     fun `it renders run workflow link if user has permission to see it`()
     {
         val testModel = testModelLink(true)
-        val doc = template.jsoupDocFor(testModel)
+        val doc = jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(2)
 

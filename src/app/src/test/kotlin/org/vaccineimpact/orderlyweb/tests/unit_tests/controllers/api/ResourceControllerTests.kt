@@ -4,8 +4,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.junit.Test
 import com.nhaarman.mockito_kotlin.verify
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.api.ResourceController
@@ -37,9 +37,11 @@ class ResourceControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = ResourceController(actionContext,
+        val sut = ResourceController(
+                actionContext,
                 orderly, mock<FileSystem>(),
-                mockConfig)
+                mockConfig
+        )
 
         Assertions.assertThat(sut.get()).isEqualTo(resources)
     }

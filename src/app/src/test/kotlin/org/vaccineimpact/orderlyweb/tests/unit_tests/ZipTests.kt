@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.Zip
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -9,7 +9,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.util.zip.ZipFile
 
 class ZipTests : DatabaseTests()
 {

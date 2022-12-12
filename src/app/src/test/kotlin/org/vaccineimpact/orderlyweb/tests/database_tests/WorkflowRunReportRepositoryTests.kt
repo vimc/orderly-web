@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunReportRepository
@@ -20,14 +20,18 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
 {
     private val startTime = Instant.ofEpochMilli(1655378424228)
 
-    @Before
+    @BeforeEach
     fun createWorkflow()
     {
         insertUser("test@email.com", "Test User")
-        insertWorkflow("test@email.com", "test_wf_key", "test_wf_name", Timestamp.from(Instant.now()),
-            mapOf("source" to "dev"), "main", "abc123")
-        insertWorkflowRunReport("test_wf_key", "test_report_key", "test_report_name",
-            mapOf("param1" to "value1"))
+        insertWorkflow(
+                "test@email.com", "test_wf_key", "test_wf_name", Timestamp.from(Instant.now()),
+                mapOf("source" to "dev"), "main", "abc123"
+        )
+        insertWorkflowRunReport(
+                "test_wf_key", "test_report_key", "test_report_name",
+                mapOf("param1" to "value1")
+        )
     }
 
     @Test
@@ -40,8 +44,8 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
         sut.checkReportIsInWorkflow("test_report_key", "test_wf_key")
 
         assertThatThrownBy { sut.checkReportIsInWorkflow("test_report_key", "another_wf_key") }
-            .isInstanceOf(BadRequest::class.java)
-            .hasMessageContaining("Report with key test_report_key does not belong to workflow with key another_wf_key")
+                .isInstanceOf(BadRequest::class.java)
+                .hasMessageContaining("Report with key test_report_key does not belong to workflow with key another_wf_key")
     }
 
     @Test
@@ -52,14 +56,14 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
 
         JooqContext().use {
             val result = it.dsl.select(
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
             )
-            .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-            .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
-            .fetchOne()
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
+                    .fetchOne()
 
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("test_report_name")
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo("success")
@@ -74,15 +78,15 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunReportRepository()
         sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"), startTime)
         sut.updateReportRun("test_report_key", "success", "report_version_1", listOf("log1", "log2"), null)
-            JooqContext().use {
-                val result = it.dsl.select(
+        JooqContext().use {
+            val result = it.dsl.select(
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE
-                )
+            )
                     .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
                     .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
                     .fetchOne()
 
-                assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE].toInstant()).isEqualTo(startTime)
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE].toInstant()).isEqualTo(startTime)
         }
     }
 
@@ -93,14 +97,14 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
         sut.updateReportRun("test_report_key", "error", null, null, startTime)
         JooqContext().use {
             val result = it.dsl.select(
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
             )
-                .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-                .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
-                .fetchOne()
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
+                    .fetchOne()
 
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("test_report_name")
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo("error")
@@ -116,14 +120,14 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
         sut.updateReportRun("test_report_key", "running", "report_version_1", listOf("log1", "log2"), startTime)
         JooqContext().use {
             val result = it.dsl.select(
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE
             )
-            .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-            .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
-            .fetchOne()
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
+                    .fetchOne()
 
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]).isNull()
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo("running")
@@ -155,8 +159,10 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     fun `can get report run when date is not null`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
-        insertWorkflowRunReport("test_wf_key", "report_with_date_key", "report_with_date_name",
-            mapOf(), startTime)
+        insertWorkflowRunReport(
+                "test_wf_key", "report_with_date_key", "report_with_date_name",
+                mapOf(), startTime
+        )
         val result = sut.getReportRun("report_with_date_key")
         assertThat(result.date).isEqualTo(startTime)
     }
@@ -165,7 +171,7 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     fun `get report run throws exception if report is unknown`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
-        assertThatThrownBy{ sut.getReportRun("nonexistent_key") }
-            .isInstanceOf(UnknownObjectError::class.java)
+        assertThatThrownBy { sut.getReportRun("nonexistent_key") }
+                .isInstanceOf(UnknownObjectError::class.java)
     }
 }

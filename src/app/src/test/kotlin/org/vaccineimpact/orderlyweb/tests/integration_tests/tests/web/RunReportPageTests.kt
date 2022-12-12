@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -42,8 +42,10 @@ class RunReportPageTests : IntegrationTest()
     fun `does not get running report details if user is not a report runner`()
     {
         val url = "/running/frightened_rabbit/logs"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("reports.read", Scope.Global())))
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
+                setOf(ReifiedPermission("reports.read", Scope.Global()))
+        )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND_404)
     }
@@ -51,13 +53,15 @@ class RunReportPageTests : IntegrationTest()
     @Test
     fun `can return parameter data`()
     {
-        val branch = "master"
+        val branch = "other"
         val commit = getGitBranchCommit(branch)
         val url = "/report/minimal/config/parameters/?commit=$commit"
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK_200)
         assertJsonContentType(response)
@@ -89,11 +93,13 @@ class RunReportPageTests : IntegrationTest()
     @Test
     fun `fetches git branches`()
     {
-        val controller = ReportController(mock(),
+        val controller = ReportController(
+                mock(),
                 mock(),
                 OrderlyServer(AppConfig()),
                 mock(),
-                OrderlyWebTagRepository())
+                OrderlyWebTagRepository()
+        )
 
         val result = controller.getRunReport()
         assertThat(result.gitBranches).containsExactly("master", "other")
@@ -139,10 +145,12 @@ class RunReportPageTests : IntegrationTest()
         )
 
         val url = "/running/frightened_rabbit/logs"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.get,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
 
         assertSuccessful(response)
         assertJsonContentType(response)

@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext

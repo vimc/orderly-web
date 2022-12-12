@@ -1,7 +1,8 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules
+package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.gargoylesoftware.htmlunit.StringWebResponse
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.WebWindow
 import com.gargoylesoftware.htmlunit.html.HTMLParser
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import freemarker.template.Configuration
@@ -9,9 +10,8 @@ import freemarker.template.Template
 import freemarker.template.TemplateExceptionHandler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.junit.rules.TestRule
-import org.junit.runner.Description
-import org.junit.runners.model.Statement
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.vaccineimpact.orderlyweb.app_start.buildFreemarkerConfig
 import org.xmlmatchers.transform.XmlConverters.the
 import java.io.File
@@ -20,16 +20,14 @@ import java.io.Writer
 import java.net.URL
 import javax.xml.transform.Source
 
-
 //This is a simplified kotlinised version of this: https://github.com/Todderz/freemarker-unit-test
-
-class FreemarkerTestRule(val templateName: String, val templatePath: String = "templates") : TestRule
+open class FreeMarkerTest(val templateName: String, val templatePath: String = "templates")
 {
     companion object
     {
         const val anyUrl = "http://localhost"
 
-        fun getWebClient(): WebClient
+        private fun getWebClient(): WebClient
         {
             val client = WebClient()
             client.isThrowExceptionOnFailingStatusCode = false
@@ -37,34 +35,16 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
             return client
         }
 
-        val anyWindow = getWebClient().currentWindow
-
+        val anyWindow: WebWindow = getWebClient().currentWindow
     }
 
-    private var template: Template? = null
+    private val template: Template
 
-    override fun apply(base: Statement, description: Description): Statement
-    {
-        return object : Statement() {
-            override fun evaluate() {
-
-                loadTemplate()
-                //execute the test
-                base.evaluate()
-            }
-        }
-    }
-
-    private fun getTemplate() : Template
-    {
-        return template ?: throw IllegalStateException()
-    }
-
-    private fun loadTemplate()
-    {
+    init {
         val config = configureTemplateLoader()
         template = config.getTemplate(templateName)
     }
+
 
     private fun configureTemplateLoader(): Configuration
     {
@@ -82,7 +62,7 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
     fun writerResponseFor(dataModel: Any): Writer
     {
         val writer = StringWriter()
-        getTemplate().process(dataModel, writer)
+        template.process(dataModel, writer)
         return writer
     }
 

@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -24,9 +24,11 @@ class GitTests : IntegrationTest()
     fun `only report runners can get git status`()
     {
         val url = "/git/status/"
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -43,16 +45,18 @@ class GitTests : IntegrationTest()
     fun `only report runners can pull`()
     {
         val url = "/git/pull/"
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
     fun fetches()
     {
-        val response = apiRequestHelper.post("/git/fetch/", mapOf(),  userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/git/fetch/", mapOf(), userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -63,9 +67,11 @@ class GitTests : IntegrationTest()
     fun `only report runners can fetch`()
     {
         val url = "/git/fetch/"
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 }

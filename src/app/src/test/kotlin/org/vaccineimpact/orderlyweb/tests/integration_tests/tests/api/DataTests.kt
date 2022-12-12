@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -19,8 +19,10 @@ class DataTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", "123456")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/data/",
-                userEmail = fakeReportReader("testname"))
+        val response = apiRequestHelper.get(
+                "/reports/testname/versions/testversion/data/",
+                userEmail = fakeReportReader("testname")
+        )
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -37,9 +39,11 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/data/"
 
-        assertAPIUrlSecured(url,
+        assertAPIUrlSecured(
+                url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
-                contentType = ContentTypes.json)
+                contentType = ContentTypes.json
+        )
     }
 
     @Test
@@ -52,8 +56,10 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val response = apiRequestHelper.get(url, ContentTypes.csv,
-                userEmail = fakeReportReader("testname"))
+        val response = apiRequestHelper.get(
+                url, ContentTypes.csv,
+                userEmail = fakeReportReader("testname")
+        )
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
@@ -71,8 +77,10 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        assertAPIUrlSecured(url,
-                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))))
+        assertAPIUrlSecured(
+                url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname")))
+        )
     }
 
     @Test
@@ -82,7 +90,7 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakedata = "hf647sa674yh3basrhj"
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
-        val response = apiRequestHelper.get(url,  ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -104,7 +112,6 @@ class DataTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "file-not-found", "File with name '$fakehash.csv' does not exist")
     }
-
 
     @Test
     fun `gets rds data file`()

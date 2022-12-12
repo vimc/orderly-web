@@ -1,5 +1,4 @@
 dependencies {
-    implementation "junit:junit:4.12"
     implementation "org.jooq:jooq:3.13.5"
     implementation "org.jooq:jooq-meta:3.13.5"
     implementation "org.json:json:20201115"
@@ -10,4 +9,5 @@ dependencies {
     implementation "com.google.code.gson:gson:2.2.4"
 
     implementation project(":databaseInterface")
+    implementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 }

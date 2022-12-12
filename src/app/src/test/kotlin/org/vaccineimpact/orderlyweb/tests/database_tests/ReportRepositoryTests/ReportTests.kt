@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL
@@ -341,13 +341,15 @@ class ReportTests : CleanDatabaseTests()
         insertReport("test2", "v4", date = Timestamp.from(now))
 
         val sut = createSut()
-        val result = sut.getLatestReportVersions(listOf(
-            "test1",
-            "test2"
-        ))
+        val result = sut.getLatestReportVersions(
+                listOf(
+                        "test1",
+                        "test2"
+                )
+        )
         assertThat(result).containsExactly(
-            ReportWithDate("test1", now),
-            ReportWithDate("test2", now)
+                ReportWithDate("test1", now),
+                ReportWithDate("test2", now)
         )
     }
 }

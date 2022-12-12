@@ -4,12 +4,11 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.security
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
-import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope

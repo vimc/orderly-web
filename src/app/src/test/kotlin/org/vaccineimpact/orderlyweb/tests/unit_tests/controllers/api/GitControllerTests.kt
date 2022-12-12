@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.OrderlyServerResponse
@@ -16,7 +16,7 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `status gets status from orderly`()
     {
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderly = mock<OrderlyServerAPI> {
             on { it.get("/v1/reports/git/status/", mockContext) } doReturn mockResponse
         }
 
@@ -29,7 +29,7 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `fetch gets response from orderly`()
     {
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderly = mock<OrderlyServerAPI> {
             on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
         }
 
@@ -42,7 +42,7 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `pull gets response from orderly`()
     {
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderly = mock<OrderlyServerAPI> {
             on { it.post("/v1/reports/git/pull/", mockContext) } doReturn mockResponse
         }
 

@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -22,9 +22,11 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     {
         val sut = OrderlyAuthorizationRepository()
         val result = sut.getPermissionNames()
-        assertThat(result).containsExactly("documents.manage", "documents.read",
+        assertThat(result).containsExactly(
+                "documents.manage", "documents.read",
                 "pinned-reports.manage", "reports.read", "reports.review", "reports.run",
-                "tags.manage", "users.manage")
+                "tags.manage", "users.manage"
+        )
     }
 
     @Test
@@ -63,10 +65,14 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.review", Scope.Global()).toString(),
-                        ReifiedPermission("reports.read", Scope.Global()).toString(),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "r1")).toString(),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "r2")).toString()))
+                .hasSameElementsAs(
+                        listOf(
+                                ReifiedPermission("reports.review", Scope.Global()).toString(),
+                                ReifiedPermission("reports.read", Scope.Global()).toString(),
+                                ReifiedPermission("reports.read", Scope.Specific("report", "r1")).toString(),
+                                ReifiedPermission("reports.read", Scope.Specific("report", "r2")).toString()
+                        )
+                )
     }
 
     @Test
@@ -89,8 +95,12 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getDirectPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "r1"))))
+                .hasSameElementsAs(
+                        listOf(
+                                ReifiedPermission("reports.read", Scope.Global()),
+                                ReifiedPermission("reports.read", Scope.Specific("report", "r1"))
+                        )
+                )
     }
 
     @Test
@@ -105,9 +115,11 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             val sut = OrderlyAuthorizationRepository()
             val result = sut.getPermissionsForGroup("Funders")
             assertThat(result)
-                    .hasSameElementsAs(listOf(
-                            ReifiedPermission("reports.read", Scope.Global()),
-                            ReifiedPermission("reports.review", Scope.Specific("version", "v1")))
+                    .hasSameElementsAs(
+                            listOf(
+                                    ReifiedPermission("reports.read", Scope.Global()),
+                                    ReifiedPermission("reports.review", Scope.Specific("version", "v1"))
+                            )
                     )
         }
     }
@@ -206,21 +218,31 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyAuthorizationRepository()
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Global()))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Global())
+        )
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport"))
+        )
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v1"))
+        )
 
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()).toString(),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")).toString(),
-                        ReifiedPermission("reports.read", Scope.Specific("version", "v1")).toString()))
+                .hasSameElementsAs(
+                        listOf(
+                                ReifiedPermission("reports.read", Scope.Global()).toString(),
+                                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")).toString(),
+                                ReifiedPermission("reports.read", Scope.Specific("version", "v1")).toString()
+                        )
+                )
     }
 
     @Test
@@ -233,8 +255,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyAuthorizationRepository()
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Global()))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Global())
+        )
 
         val result = sut.getPermissionsForUser("user@email.com")
 
@@ -252,8 +276,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
 
         assertThatThrownBy {
-            sut.ensureUserGroupHasPermission("user@email.com",
-                    ReifiedPermission("nonexistent.permission", Scope.Global()))
+            sut.ensureUserGroupHasPermission(
+                    "user@email.com",
+                    ReifiedPermission("nonexistent.permission", Scope.Global())
+            )
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown permission : 'nonexistent.permission'")
     }
@@ -264,8 +290,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
 
         assertThatThrownBy {
-            sut.ensureUserGroupHasPermission("nonsense",
-                    ReifiedPermission("reports.read", Scope.Global()))
+            sut.ensureUserGroupHasPermission(
+                    "nonsense",
+                    ReifiedPermission("reports.read", Scope.Global())
+            )
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown user-group : 'nonsense'")
     }
@@ -282,37 +310,57 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
 
         //Add permissions - as tested above
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.review", Scope.Global()))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.review", Scope.Global())
+        )
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Global()))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Global())
+        )
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport"))
+        )
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v1"))
+        )
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("version", "v2")))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v2"))
+        )
 
         //..then remove some
-        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
-                ReifiedPermission("reports.review", Scope.Global()))
+        sut.ensureUserGroupDoesNotHavePermission(
+                "user@email.com",
+                ReifiedPermission("reports.review", Scope.Global())
+        )
 
-        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")))
+        sut.ensureUserGroupDoesNotHavePermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport"))
+        )
 
-        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
+        sut.ensureUserGroupDoesNotHavePermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v1"))
+        )
 
 
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()).toString(),
-                        ReifiedPermission("reports.read", Scope.Specific("version", "v2")).toString()))
+                .hasSameElementsAs(
+                        listOf(
+                                ReifiedPermission("reports.read", Scope.Global()).toString(),
+                                ReifiedPermission("reports.read", Scope.Specific("version", "v2")).toString()
+                        )
+                )
     }
 
     @Test
@@ -325,11 +373,15 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyAuthorizationRepository()
 
-        sut.ensureUserGroupHasPermission("user@email.com",
-                ReifiedPermission("reports.read", Scope.Global()))
+        sut.ensureUserGroupHasPermission(
+                "user@email.com",
+                ReifiedPermission("reports.read", Scope.Global())
+        )
 
-        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
-                ReifiedPermission("reports.review", Scope.Global()))
+        sut.ensureUserGroupDoesNotHavePermission(
+                "user@email.com",
+                ReifiedPermission("reports.review", Scope.Global())
+        )
 
         val result = sut.getPermissionsForUser("user@email.com")
 
@@ -347,8 +399,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
 
         assertThatThrownBy {
-            sut.ensureUserGroupDoesNotHavePermission("user@email.com",
-                    ReifiedPermission("nonexistent.permission", Scope.Global()))
+            sut.ensureUserGroupDoesNotHavePermission(
+                    "user@email.com",
+                    ReifiedPermission("nonexistent.permission", Scope.Global())
+            )
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown permission : 'nonexistent.permission'")
     }
@@ -359,8 +413,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
 
         assertThatThrownBy {
-            sut.ensureUserGroupDoesNotHavePermission("nonsense",
-                    ReifiedPermission("reports.read", Scope.Global()))
+            sut.ensureUserGroupDoesNotHavePermission(
+                    "nonsense",
+                    ReifiedPermission("reports.read", Scope.Global())
+            )
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown user-group : 'nonsense'")
     }
@@ -375,8 +431,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
 
         assertThatThrownBy {
-            sut.ensureUserGroupHasPermission("user@email.com",
-                    ReifiedPermission("reports.read", Scope.Specific("nonsense", "r1")))
+            sut.ensureUserGroupHasPermission(
+                    "user@email.com",
+                    ReifiedPermission("reports.read", Scope.Specific("nonsense", "r1"))
+            )
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown permission-scope : 'nonsense'")
     }
@@ -443,8 +501,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         val userGroupUser = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
-                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("some-group")
-                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq("user@email.com")))
+                    .where(
+                            ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("some-group")
+                                    .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq("user@email.com"))
+                    )
                     .fetch()
         }
         assertThat(userGroupUser.count()).isEqualTo(0)

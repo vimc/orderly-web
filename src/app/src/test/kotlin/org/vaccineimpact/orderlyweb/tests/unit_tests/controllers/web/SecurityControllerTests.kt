@@ -4,11 +4,10 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import spark.Response
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.SecurityController
-import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 

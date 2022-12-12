@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
@@ -61,9 +61,11 @@ class TagRepositoryTests : CleanDatabaseTests()
         insertReportTags("r1", "old-report-tag")
         insertVersionTags("v1", "old-version-tag")
         val sut = OrderlyWebTagRepository()
-        val reportVersionTags = ReportVersionTags(listOf("test-version-tag"),
+        val reportVersionTags = ReportVersionTags(
+                listOf("test-version-tag"),
                 listOf("test-report-tag"),
-                listOf("test-orderly-tag"))
+                listOf("test-orderly-tag")
+        )
 
         sut.updateTags("r1", "v1", reportVersionTags)
 

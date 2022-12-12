@@ -2,12 +2,10 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.OrderlyServerResponse
-import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.GitController
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest

@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.security.RedirectActionBuilders
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.credentials.TokenCredentials
@@ -37,7 +37,7 @@ class MontaguIndirectClientRedirectActionBuilderTests
         }
 
         val mockMontaguAPIClient = mock<MontaguAPIClient> {
-            on {getUserDetails("token")} doThrow MontaguAPIException("some error", 401)
+            on { getUserDetails("token") } doThrow MontaguAPIException("some error", 401)
         }
 
         val sut = MontaguIndirectClientRedirectActionBuilder(mockMontaguAPIClient, mockCookieExtractor)

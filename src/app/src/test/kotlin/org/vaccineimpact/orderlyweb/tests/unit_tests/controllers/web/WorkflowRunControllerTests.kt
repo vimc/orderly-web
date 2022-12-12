@@ -5,7 +5,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
@@ -72,17 +72,20 @@ class WorkflowRunControllerTests
 
         val mockSummary = Result(
                 status = ResultStatus.SUCCESS,
-                data = WorkflowSummary(listOf(
-                        WorkflowReportWithDependencies(
-                                name = "r1",
-                                instance = "testInstance",
-                                params = mapOf("nmin" to "1000", "disease" to "YF"),
-                                defaultParamList = null,
-                                paramList = null,
-                                dependsOn = listOf("dep")
-                        )),
+                data = WorkflowSummary(
+                        listOf(
+                                WorkflowReportWithDependencies(
+                                        name = "r1",
+                                        instance = "testInstance",
+                                        params = mapOf("nmin" to "1000", "disease" to "YF"),
+                                        defaultParamList = null,
+                                        paramList = null,
+                                        dependsOn = listOf("dep")
+                                )
+                        ),
                         ref = "1234",
-                        missingDependencies = mapOf("r1" to listOf("example"))),
+                        missingDependencies = mapOf("r1" to listOf("example"))
+                ),
                 errors = listOf()
         )
 
@@ -90,8 +93,10 @@ class WorkflowRunControllerTests
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
-            on { getReportParameters(eq("r1"), eq(mapOf("commit" to "1234"))) } doReturn listOf(Parameter("nmin", "100"),
-                    Parameter("disease", "YF"))
+            on { getReportParameters(eq("r1"), eq(mapOf("commit" to "1234"))) } doReturn listOf(
+                    Parameter("nmin", "100"),
+                    Parameter("disease", "YF")
+            )
         }
 
         val repo = mock<WorkflowRunRepository>()
@@ -99,14 +104,16 @@ class WorkflowRunControllerTests
         val result = sut.getWorkflowSummary()
 
         assertThat(result.ref).isEqualTo("1234")
-        assertThat(result.reports.first()).isEqualToComparingFieldByField(WorkflowReportWithDependencies(
-                name = "r1",
-                instance = "testInstance",
-                params = mapOf("nmin" to "1000", "disease" to "YF"),
-                defaultParamList = listOf(Parameter("disease", "YF")),
-                paramList = listOf(Parameter("nmin", "1000")),
-                dependsOn = listOf("dep")
-        ))
+        assertThat(result.reports.first()).isEqualToComparingFieldByField(
+                WorkflowReportWithDependencies(
+                        name = "r1",
+                        instance = "testInstance",
+                        params = mapOf("nmin" to "1000", "disease" to "YF"),
+                        defaultParamList = listOf(Parameter("disease", "YF")),
+                        paramList = listOf(Parameter("nmin", "1000")),
+                        dependsOn = listOf("dep")
+                )
+        )
         assertThat(result.missingDependencies["r1"]).containsExactly("example")
     }
 
@@ -122,17 +129,20 @@ class WorkflowRunControllerTests
 
         val mockSummary = Result(
                 status = ResultStatus.SUCCESS,
-                data = WorkflowSummary(listOf(
-                        WorkflowReportWithDependencies(
-                                name = "r1",
-                                instance = "testInstance",
-                                params = mapOf("nmin" to "1000", "disease" to "YF"),
-                                defaultParamList = null,
-                                paramList = null,
-                                dependsOn = listOf("dep")
-                        )),
+                data = WorkflowSummary(
+                        listOf(
+                                WorkflowReportWithDependencies(
+                                        name = "r1",
+                                        instance = "testInstance",
+                                        params = mapOf("nmin" to "1000", "disease" to "YF"),
+                                        defaultParamList = null,
+                                        paramList = null,
+                                        dependsOn = listOf("dep")
+                                )
+                        ),
                         ref = null,
-                        missingDependencies = mapOf("r1" to listOf("example"))),
+                        missingDependencies = mapOf("r1" to listOf("example"))
+                ),
                 errors = listOf()
         )
 
@@ -140,8 +150,10 @@ class WorkflowRunControllerTests
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
-            on { getReportParameters(eq("r1"), eq(mapOf())) } doReturn listOf(Parameter("nmin", "100"),
-                    Parameter("disease", "YF"))
+            on { getReportParameters(eq("r1"), eq(mapOf())) } doReturn listOf(
+                    Parameter("nmin", "100"),
+                    Parameter("disease", "YF")
+            )
         }
 
         val repo = mock<WorkflowRunRepository>()
@@ -150,7 +162,6 @@ class WorkflowRunControllerTests
 
         assertThat(result.ref).isEqualTo(null)
     }
-
 
     @Test
     fun `can get workflow details`()
@@ -324,11 +335,18 @@ class WorkflowRunControllerTests
                         WorkflowRunController.WorkflowRunResponse::class.java
                 )
         ).isEqualTo(
-                WorkflowRunController.WorkflowRunResponse("workflow_key1",
-                        listOf(WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[0].name,
-                                "report_key1", 1, workflowRunRequest.reports[0].params),
-                                WorkflowRunController.WorkflowQueuedReport(workflowRunRequest.reports[1].name,
-                                        "report_key2", 2, null))
+                WorkflowRunController.WorkflowRunResponse(
+                        "workflow_key1",
+                        listOf(
+                                WorkflowRunController.WorkflowQueuedReport(
+                                        workflowRunRequest.reports[0].name,
+                                        "report_key1", 1, workflowRunRequest.reports[0].params
+                                ),
+                                WorkflowRunController.WorkflowQueuedReport(
+                                        workflowRunRequest.reports[1].name,
+                                        "report_key2", 2, null
+                                )
+                        )
                 )
         )
 

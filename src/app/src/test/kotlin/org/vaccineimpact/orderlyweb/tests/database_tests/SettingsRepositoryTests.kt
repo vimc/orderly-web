@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlySettingsRepository
@@ -11,7 +11,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 
 class SettingsRepositoryTests : CleanDatabaseTests()
 {
-    @Before
+    @BeforeEach
     fun addDefaultSettings()
     {
         //Settings table has been cleaned by base class

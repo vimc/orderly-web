@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.APIEndpoint
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.app_start.ActionResolver
@@ -56,7 +56,7 @@ class ActionResolverTests
     {
         val sut = ActionResolver(mockTemplateEngine)
         val endpoint = APIEndpoint("/url", FakeController::class, "nonexistentAction")
-        assertThatThrownBy{sut.invokeControllerAction(endpoint, mock())}.isInstanceOf(NoSuchMethodException::class.java)
+        assertThatThrownBy { sut.invokeControllerAction(endpoint, mock()) }.isInstanceOf(NoSuchMethodException::class.java)
 
     }
 }

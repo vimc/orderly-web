@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
@@ -301,7 +301,6 @@ class RoleControllerTests
         assertThatThrownBy{ sut.addPermission() }.isInstanceOf(InvalidOperationError::class.java)
                 .hasMessageContaining("You cannot add permissions to the Admin role")
     }
-
 
     @Test
     fun `adds new role`()

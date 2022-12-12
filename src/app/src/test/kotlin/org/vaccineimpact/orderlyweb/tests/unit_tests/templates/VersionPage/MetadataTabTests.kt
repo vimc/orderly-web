@@ -1,14 +1,15 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.FreeMarkerTest
 
-class MetadataTabTests: BaseVersionPageTests()
+class MetadataTabTests: FreeMarkerTest("report-page.ftl")
 {
     @Test
     fun `renders metadata tab title correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
         val title = jsoupDoc.select("#metadata-tab h1")
         assertThat(title.text()).isEqualToIgnoringWhitespace("r1 display")
     }
@@ -16,7 +17,7 @@ class MetadataTabTests: BaseVersionPageTests()
     @Test
     fun `renders metadata tab content correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
         val content = jsoupDoc.select("#metadata-tab .container")
 
         assertThat(content.select("#started-label").text()).isEqualTo("Started:")
@@ -37,7 +38,7 @@ class MetadataTabTests: BaseVersionPageTests()
         val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = null, gitCommit = null)
         val testModel = VersionPageTestData.testModel.copy(basicReportVersion)
 
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
         val content = jsoupDoc.select("#metadata-tab .container")
         assertThat(content.select("#git-hr").count()).isEqualTo(0)
         assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
@@ -51,7 +52,7 @@ class MetadataTabTests: BaseVersionPageTests()
         val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = "master", gitCommit = null)
         val testModel = VersionPageTestData.testModel.copy(basicReportVersion)
 
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
         val content = jsoupDoc.select("#metadata-tab .container")
         assertThat(content.select("#git-hr").count()).isEqualTo(1)
         assertThat(content.select("#git-branch-label").text()).isEqualTo("Git branch:")
@@ -65,7 +66,7 @@ class MetadataTabTests: BaseVersionPageTests()
         val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = null, gitCommit = "abc123")
         val testModel = VersionPageTestData.testModel.copy(basicReportVersion)
 
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
         val content = jsoupDoc.select("#metadata-tab .container")
         assertThat(content.select("#git-hr").count()).isEqualTo(1)
         assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
@@ -78,7 +79,7 @@ class MetadataTabTests: BaseVersionPageTests()
     {
         val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = "master", gitCommit = "abc123")
         val testModel = VersionPageTestData.testModel.copy(basicReportVersion, instances = mapOf("p1" to "v1", "p2" to "v2"))
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
 
         val content = jsoupDoc.select("#metadata-tab .container")
         assertThat(content.select("#git-hr").count()).isEqualTo(1)
@@ -99,7 +100,7 @@ class MetadataTabTests: BaseVersionPageTests()
     {
         val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = null, gitCommit = null)
         val testModel = VersionPageTestData.testModel.copy(basicReportVersion, instances = mapOf("p1" to "v1", "p2" to "v2"))
-        val jsoupDoc = template.jsoupDocFor(testModel)
+        val jsoupDoc = jsoupDocFor(testModel)
 
         val content = jsoupDoc.select("#metadata-tab .container")
         assertThat(content.select("#git-hr").count()).isEqualTo(1)
@@ -116,7 +117,7 @@ class MetadataTabTests: BaseVersionPageTests()
     @Test
     fun `renders dependencies component`()
     {
-        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
         val app = jsoupDoc.select("#reportDependenciesVueApp")
         assertThat(app.select("report-dependencies").count()).isEqualTo(1)
         assertThat(app.select("report-dependencies").attr(":report")).isEqualTo("report")

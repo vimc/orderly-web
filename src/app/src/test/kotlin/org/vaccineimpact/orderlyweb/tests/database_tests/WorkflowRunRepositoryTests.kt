@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
@@ -16,8 +16,8 @@ import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
 
 class WorkflowRunRepositoryTests : CleanDatabaseTests()
-{   
-    
+{
+
     private val now = Instant.ofEpochMilli(1655378424228)
 
     @Test

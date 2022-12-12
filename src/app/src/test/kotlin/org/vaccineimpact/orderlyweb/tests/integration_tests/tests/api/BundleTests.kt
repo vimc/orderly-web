@@ -5,9 +5,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
@@ -41,9 +41,11 @@ class BundlePackTests : IntegrationTest()
     @Test
     fun `packs report fails without required permission`()
     {
-        assertAPIUrlSecured("/bundle/pack/minimal/",
+        assertAPIUrlSecured(
+                "/bundle/pack/minimal/",
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
-                ContentTypes.zip, HttpMethod.post)
+                ContentTypes.zip, HttpMethod.post
+        )
     }
 
     private fun getZipEntries(response: Response): MutableList<String>
@@ -70,7 +72,7 @@ class BundleImportTests : IntegrationTest()
     private var dbPath: Path by Delegates.notNull()
     private var dbContent: ByteArray by Delegates.notNull()
 
-    @Before
+    @BeforeEach
     fun `backup orderly state`()
     {
         dbPath = Paths.get("${AppConfig()["orderly.root"]}/orderly.sqlite")
@@ -91,7 +93,7 @@ class BundleImportTests : IntegrationTest()
         assertThat(response.code).isEqualTo(200)
     }
 
-    @After
+    @AfterEach
     fun `restore orderly state`()
     {
         Files.write(dbPath, dbContent)

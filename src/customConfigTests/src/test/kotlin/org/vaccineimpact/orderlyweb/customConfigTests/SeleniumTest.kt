@@ -1,10 +1,12 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
-import io.specto.hoverfly.junit.rule.HoverflyRule
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
+import io.specto.hoverfly.junit.core.Hoverfly
+import io.specto.hoverfly.junit.core.SimulationSource
+import io.specto.hoverfly.junit5.HoverflyExtension
+import io.specto.hoverfly.junit5.api.HoverflyConfig
+import io.specto.hoverfly.junit5.api.HoverflySimulate
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtendWith
 import org.openqa.selenium.By
 import org.openqa.selenium.Proxy
 import org.openqa.selenium.WebDriver
@@ -20,42 +22,35 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
+@ExtendWith(SeleniumDebugHelper::class)
+@ExtendWith(HoverflyExtension::class)
 abstract class SeleniumTest : CustomConfigTests()
 {
-    protected lateinit var driver: WebDriver
+    lateinit var driver: WebDriver
     protected lateinit var wait: WebDriverWait
 
-    @get:Rule
-    val debugHelper = SeleniumDebugHelper()
-
-    companion object
+    @BeforeEach
+    fun setup(hoverfly: Hoverfly)
     {
-        @JvmField
-        @ClassRule
-        var hoverflyRule = HoverflyRule.inCaptureOrSimulationMode("github-oauth2-login.json",
-                localConfigs().captureAllHeaders())
-    }
-
-    @Before
-    fun setup()
-    {
+        hoverfly.simulate(SimulationSource.defaultPath("github-oauth2-login.json"))
         val proxy = Proxy()
         proxy.noProxy = "localhost"
-        proxy.httpProxy = "localhost:" + hoverflyRule.proxyPort
-        proxy.sslProxy = "localhost:" + hoverflyRule.proxyPort
+        proxy.httpProxy = "localhost:" + hoverfly.hoverflyConfig.proxyPort
+        proxy.sslProxy = "localhost:" + hoverfly.hoverflyConfig.proxyPort
         System.setProperty("webdriver.chrome.whitelistedIps", "")
         val chromeDriverService = ChromeDriverService.createDefaultService()
         chromeDriverService.sendOutputTo(FileOutputStream("/dev/null"))
         driver = ChromeDriver(chromeDriverService, ChromeOptions()
                 .apply {
-                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox",
-                            "--disable-dev-shm-usage")
+                    addArguments(
+                            "--ignore-certificate-errors", "--no-sandbox",
+                            "--disable-dev-shm-usage", "--headless"
+                    )
                     setProxy(proxy)
                 })
 
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS)
         wait = WebDriverWait(driver, 20)
-        debugHelper.driver = driver
     }
 
     protected fun clickOnLandingPageLink()
@@ -131,7 +126,7 @@ abstract class SeleniumTest : CustomConfigTests()
         authRepo.createUserGroup(userGroupId)
         members.forEach { authRepo.ensureGroupHasMember(userGroupId, it) }
 
-        permissions.forEach{ authRepo.ensureUserGroupHasPermission(userGroupId, it) }
+        permissions.forEach { authRepo.ensureUserGroupHasPermission(userGroupId, it) }
 
     }
 

@@ -8,7 +8,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
@@ -26,7 +26,6 @@ class OrderlyServerTests
     }
 
     private val standardHeaders = mapOf("Accept" to ContentTypes.json)
-
     @Test
     fun `passes through query string to GET`()
     {
