@@ -8,8 +8,6 @@ import org.openqa.selenium.logging.LogType
 
 class SeleniumDebugHelper: TestWatcher
 {
-    lateinit var driver: WebDriver
-
     override fun testFailed(context: ExtensionContext, cause: Throwable)
     {
         val driver = (context.testInstance.get() as SeleniumTest).driver
