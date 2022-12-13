@@ -57,7 +57,7 @@ class RunReportPageTests : SeleniumTest()
 
     @ParameterizedTest
     @EnumSource(ConfigType::class)
-    fun `can view git commits`(configType: ConfigType)
+    fun `can view git commits only when git allowed`(configType: ConfigType)
     {
         if (configType == ConfigType.GIT_ALLOWED)
         {
