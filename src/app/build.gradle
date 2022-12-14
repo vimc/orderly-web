@@ -110,6 +110,7 @@ task compileFrontEnd() {
 
 ext.resetOrderlyDemo = {
     exec {
+        commandLine "echo", "'resetting demo'"
         commandLine "rm", "$projectDir/demo/*", "-rf"
         commandLine "rm", "$projectDir/demo/.git", "-rf"
         commandLine "tar", "xf", "$projectDir/demo.tar.gz"

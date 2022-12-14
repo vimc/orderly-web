@@ -61,6 +61,9 @@ class RunReportPageTests : SeleniumTest()
     {
         if (configType == ConfigType.GIT_ALLOWED)
         {
+            val tab = driver.findElement(By.id("run-tab"))
+            val selectBranch = Select(tab.findElement(By.tagName("select")))
+            assertThat(selectBranch.firstSelectedOption.text).isEqualTo("master")
             val commitsSelect = Select(driver.findElement(By.id("git-commit")))
             assertThat(commitsSelect.options.size).isEqualTo(2)
             assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
