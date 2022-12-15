@@ -65,6 +65,10 @@ abstract class CustomConfigTests
         HttpClient.post("http://localhost:8321/v1/reload/")
     }
 
+
+    // We could probably do something fiddly with reflection to get the enum for parameterized tests
+    // here, but it would be fairly complicated, so for now just relying on the displayName which will
+    // contain the enum value
     @BeforeEach
     fun beforeEach(info: TestInfo)
     {
