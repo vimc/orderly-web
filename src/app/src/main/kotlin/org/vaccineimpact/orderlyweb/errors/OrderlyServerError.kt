@@ -1,8 +1,9 @@
 package org.vaccineimpact.orderlyweb.errors
 
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-class OrderlyServerError(url: String, statusCode: Int) : OrderlyWebError(
-    statusCode,
-    listOf(ErrorInfo("orderly-server-error", "Orderly server request failed for url $url"))
+class PorcelainError(url: String, statusCode: Int, instanceName: String): OrderlyWebError(
+        statusCode,
+        listOf(ErrorInfo("${Serializer.instance.convertFieldName(instanceName)}-error", "$instanceName request failed for url $url"))
 )
