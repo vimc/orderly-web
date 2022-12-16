@@ -27,3 +27,11 @@ tags:
 
 global_resources:
   global
+
+remote:
+  main:
+    driver: "orderly::orderly_remote_path"
+    primary: false
+    default_branch_only: false
+    args:
+      path: "/orderly"
