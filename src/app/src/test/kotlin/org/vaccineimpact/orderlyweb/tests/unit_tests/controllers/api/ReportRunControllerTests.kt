@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.controllers.api.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
-import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import java.time.Instant
 
 class ReportRunControllerTests : ControllerTest()
@@ -43,7 +43,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponseText =
             """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
-        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
 
         val expectedQs = mapOf(
                 "ref" to "abc123",
@@ -90,7 +90,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponseText =
             """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
-        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
 
         val expectedBody = """{"params":{}}"""
         val apiClient: OrderlyServerAPI = mock {
@@ -125,7 +125,7 @@ class ReportRunControllerTests : ControllerTest()
         val url = "/v1/reports/$reportName/run/"
         val expectedBody = "{\"params\":{}}"
         val apiClient: OrderlyServerAPI = mock {
-            on { post(url, expectedBody, mapOf()) } doThrow OrderlyServerError(url, 500)
+            on { post(url, expectedBody, mapOf()) } doThrow PorcelainError(url, 500, "Orderly server")
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -133,8 +133,8 @@ class ReportRunControllerTests : ControllerTest()
         val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
 
         assertThatThrownBy { sut.run() }
-            .isInstanceOf(OrderlyServerError::class.java)
-            .matches { (it as OrderlyServerError).httpStatus == 500 }
+            .isInstanceOf(PorcelainError::class.java)
+            .matches { (it as PorcelainError).httpStatus == 500 }
         verifyZeroInteractions(mockReportRunRepo)
     }
 
@@ -145,7 +145,7 @@ class ReportRunControllerTests : ControllerTest()
             on { params(":key") } doReturn reportKey
         }
 
-        val mockAPIResponse = OrderlyServerResponse("""{"status": "running"}""", 200)
+        val mockAPIResponse = PorcelainResponse("""{"status": "running"}""", 200)
 
         val apiClient: OrderlyServerAPI = mock {
             on { get("/v1/reports/$reportKey/status/", actionContext) } doReturn mockAPIResponse
@@ -164,7 +164,7 @@ class ReportRunControllerTests : ControllerTest()
             on { params(":key") } doReturn reportKey
         }
 
-        val mockAPIResponse = OrderlyServerResponse("okayresponse", 200)
+        val mockAPIResponse = PorcelainResponse("okayresponse", 200)
 
         val apiClient: OrderlyServerAPI = mock {
             on { delete("/v1/reports/$reportKey/kill/", actionContext) } doReturn mockAPIResponse

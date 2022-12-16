@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunReportRepository
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
@@ -92,9 +92,9 @@ class ReportRunControllerTests
 
         val mockWorkflowRepo = mock<WorkflowRunReportRepository>()
 
-        val mockOrderlyServerResponse = OrderlyServerResponse(Serializer.instance.toResult(testReportStatus), 200)
+        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200)
         val mockAPI = mock<OrderlyServerAPI>{
-            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockOrderlyServerResponse
+            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
         }
 
         val sut = ReportRunController(context, mockReportRepo, mockWorkflowRepo, mockAPI)
@@ -144,9 +144,9 @@ class ReportRunControllerTests
             on { this.getReportRun("testReportKey") } doReturn testReportRunLog
         }
 
-        val mockOrderlyServerResponse = OrderlyServerResponse(Serializer.instance.toResult(testReportStatus), 200)
+        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200)
         val mockAPI = mock<OrderlyServerAPI>{
-            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockOrderlyServerResponse
+            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
         }
 
         val sut = ReportRunController(context, mock(), mockWorkflowRepo, mockAPI)

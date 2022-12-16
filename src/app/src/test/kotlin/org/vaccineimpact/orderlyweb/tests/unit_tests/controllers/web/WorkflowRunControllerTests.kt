@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
-import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.logic.WorkflowLogic
 import org.vaccineimpact.orderlyweb.models.*
@@ -89,7 +89,7 @@ class WorkflowRunControllerTests
                 errors = listOf()
         )
 
-        val mockAPIResponse = OrderlyServerResponse(Serializer.instance.gson.toJson(mockSummary), 200)
+        val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200)
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
@@ -146,7 +146,7 @@ class WorkflowRunControllerTests
                 errors = listOf()
         )
 
-        val mockAPIResponse = OrderlyServerResponse(Serializer.instance.gson.toJson(mockSummary), 200)
+        val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200)
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
@@ -293,7 +293,7 @@ class WorkflowRunControllerTests
                  }]
              }}""".trimIndent()
 
-        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
@@ -421,7 +421,7 @@ class WorkflowRunControllerTests
         val mockResponse = """{"status": "failure", "data": null, "errors": []}"""
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
+            on { post(any(), any<String>(), any()) } doReturn PorcelainResponse(
                     mockResponse,
                     400
             )
@@ -451,7 +451,7 @@ class WorkflowRunControllerTests
         }
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
+            on { post(any(), any<String>(), any()) } doReturn PorcelainResponse(
                     """{"data": {"workflow_key": "workflow_key1",
                         | "reports": [{"key": "report_key1", "execution_order": 1,
                         |  "name": "report1", "params": {"key": "value"}}]}}""".trimMargin(),
@@ -539,7 +539,7 @@ class WorkflowRunControllerTests
           }
         }
         """.trimIndent()
-        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
         val apiClient = mock<OrderlyServerAPI> {
             on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
         }
@@ -640,7 +640,7 @@ class WorkflowRunControllerTests
           }
         }
         """.trimIndent()
-        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
         val apiClient = mock<OrderlyServerAPI> {
             on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
         }
@@ -688,14 +688,14 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
         val apiClient = mock<OrderlyServerAPI> {
-            on { get(any(), any<Map<String, String>>()) } doThrow OrderlyServerError("", 400)
+            on { get(any(), any<Map<String, String>>()) } doThrow PorcelainError("", 400, "Orderly server")
         }
         val apiClientWithError = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn apiClient
         }
 
         val sut = WorkflowRunController(context, mock(), apiClientWithError, mock())
-        assertThatThrownBy { sut.getWorkflowRunStatus() }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { sut.getWorkflowRunStatus() }.isInstanceOf(PorcelainError::class.java)
     }
 
     @Test

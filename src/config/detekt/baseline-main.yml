@@ -451,8 +451,8 @@
     <ID>MaxLineLength:Orderly.kt$Orderly$val reportRepository: ReportRepository = OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes)</ID>
     <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$assertThat(it.url.toString()).isEqualTo("http://orderly/reports/report1/parameters?commit=testCommit")</ID>
     <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$assertThat(it.url.toString()).isEqualTo("http://orderly/reports/source?branch=testBranch&amp;commit=testCommit")</ID>
-    <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)</ID>
-    <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$assertThatThrownBy { orderlyServerAPI.get("/some/path/", context = mock()) }.isInstanceOf(OrderlyServerError::class.java)</ID>
+    <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(PorcelainError::class.java)</ID>
+    <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$assertThatThrownBy { orderlyServerAPI.get("/some/path/", context = mock()) }.isInstanceOf(PorcelainError::class.java)</ID>
     <ID>MaxLineLength:OrderlyServerTests.kt$OrderlyServerTests$errors</ID>
     <ID>MaxLineLength:OrderlyWebBearerTokenAuthenticatorTests.kt$OrderlyWebBearerTokenAuthenticatorTests$assertThatThrownBy { sut.validate(credentials, fakeContext, mock()) }.isInstanceOf(CredentialsException::class.java)</ID>
     <ID>MaxLineLength:OrderlyWebError.kt$OrderlyWebError$open fun asResult()</ID>
@@ -481,7 +481,7 @@
     <ID>MaxLineLength:ReportLatestTests.kt$ReportLatestTests$insertReport(reportName, unpublishedVersionId, false, Timestamp(SimpleDateFormat("dd-MM-yyyy").parse("15-02-2018").time))</ID>
     <ID>MaxLineLength:ReportRepository.kt$OrderlyReportRepository$.</ID>
     <ID>MaxLineLength:ReportRepository.kt$OrderlyReportRepository$constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)</ID>
-    <ID>MaxLineLength:ReportRunControllerTests.kt$ReportRunControllerTests$on { this.get(eq("/v1/reports/testReportKey/status/"), any&lt;Map&lt;String, String&gt;&gt;()) } doReturn mockOrderlyServerResponse</ID>
+    <ID>MaxLineLength:ReportRunControllerTests.kt$ReportRunControllerTests$on { this.get(eq("/v1/reports/testReportKey/status/"), any&lt;Map&lt;String, String&gt;&gt;()) } doReturn mockPorcelainResponse</ID>
     <ID>MaxLineLength:ReportRunControllerTests.kt$ReportRunControllerTests$verify(mockReportRepo).updateReportRun("testReportKey", "success", "version1", testOutput, Instant.ofEpochSecond(startTime))</ID>
     <ID>MaxLineLength:ReportRunControllerTests.kt$ReportRunControllerTests$verify(mockWorkflowRepo).updateReportRun("testReportKey", "success", "version1", testOutput, Instant.ofEpochSecond(startTime))</ID>
     <ID>MaxLineLength:ReportTabTests.kt$ReportTabTests$Assertions.assertThat(tab.select("div.text-right a").attr("href")).isEqualToIgnoringWhitespace("/testFocalArtefactUrl")</ID>
@@ -1464,7 +1464,7 @@
     <ID>TooGenericExceptionThrown:AppViewModel.kt$DefaultViewModel$throw Exception("All ViewModel classes must have at least one breadcrumb")</ID>
     <ID>TooGenericExceptionThrown:Helpers.kt$throw Exception("Badly formatted report id $id")</ID>
     <ID>TooGenericExceptionThrown:WorkflowRunTests.kt$WorkflowRunTests$throw Exception("Workflow timeout")</ID>
-    <ID>UnusedPrivateMember:GitControllerTests.kt$GitControllerTests$private val mockResponse = OrderlyServerResponse("testResponse", 200)</ID>
+    <ID>UnusedPrivateMember:GitControllerTests.kt$GitControllerTests$private val mockResponse = PorcelainResponse("testResponse", 200)</ID>
     <ID>UnusedPrivateMember:OrderlyWebSecurityLogicTests.kt$OrderlyWebSecurityLogicTests$val t = e.message</ID>
     <ID>UnusedPrivateMember:ReportControllerTests.kt$ReportControllerTests$private val reportKey = "123"</ID>
     <ID>UnusedPrivateMember:RunReportPageTests.kt$RunReportPageTests$val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)</ID>
@@ -1770,8 +1770,8 @@
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError.kt:8</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError.kt:5</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError.kt:7</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.OrderlyServerError.kt:5</ID>
-    <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.OrderlyServerError.kt:7</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.PorcelainError.kt:5</ID>
+    <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.PorcelainError.kt:7</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException.kt:4</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException.kt:6</ID>
     <ID>Wrapping:org.vaccineimpact.orderlyweb.errors.ReifiedPermissionParseException.kt:4</ID>

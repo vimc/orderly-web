@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.controllers.api.QueueController
 
 class QueueControllerTests : ControllerTest()
@@ -15,7 +15,7 @@ class QueueControllerTests : ControllerTest()
     fun `getStatus fetches queue status from orderly server`()
     {
         val mockContext = mock<ActionContext>()
-        val mockResponse = OrderlyServerResponse("testResponse", 200)
+        val mockResponse = PorcelainResponse("testResponse", 200)
         val mockOrderly = mock<OrderlyServerAPI>{
             on { it.get("/v1/queue/status/", mockContext) } doReturn mockResponse
         }

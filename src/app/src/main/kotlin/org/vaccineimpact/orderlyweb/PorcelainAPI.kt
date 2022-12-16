@@ -95,7 +95,7 @@ open class PorcelainAPIServer(
                 .headers(standardHeaders.toHeaders())
                 .build()
 
-        return client.newCall(request).execute().use {
+        client.newCall(request).execute().use {
             if (!it.isSuccessful && throwOnError)
             {
                 throw PorcelainError(url, it.code, instanceName)
@@ -118,7 +118,7 @@ open class PorcelainAPIServer(
                 .headers(standardHeaders.toHeaders())
                 .build()
 
-        return client.newCall(request).execute().use {
+        client.newCall(request).execute().use {
             if (!it.isSuccessful && throwOnError)
             {
                 throw PorcelainError(url, it.code, instanceName)
@@ -176,7 +176,7 @@ open class PorcelainAPIServer(
                 .headers((if (transformResponse) standardHeaders else emptyMap()).toHeaders())
                 .post(body)
                 .build()
-        return client.newCall(request).execute().use {
+        client.newCall(request).execute().use {
             if (!it.isSuccessful && throwOnError)
             {
                 throw PorcelainError(url.toString(), it.code, instanceName)
@@ -199,7 +199,7 @@ open class PorcelainAPIServer(
                 .headers(standardHeaders.toHeaders())
                 .delete()
                 .build()
-        return client.newCall(request).execute().use {
+        client.newCall(request).execute().use {
             if (!it.isSuccessful && throwOnError)
             {
                 throw PorcelainError(url, it.code, instanceName)

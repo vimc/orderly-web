@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 
 class MetadataTests
@@ -18,7 +18,7 @@ class MetadataTests
         val mockContext = mock<ActionContext>{
             on { params(":name") } doReturn "testName"
         }
-        val mockOrderlyResponse = OrderlyServerResponse("testResponse", 200)
+        val mockOrderlyResponse = PorcelainResponse("testResponse", 200)
         val mockOrderlyServer = mock<OrderlyServerAPI>{
             on { get("/v1/reports/testName/dependencies/", mockContext) } doReturn mockOrderlyResponse
         }

@@ -5,13 +5,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.controllers.api.GitController
 
 class GitControllerTests : ControllerTest()
 {
     private val mockContext = mock<ActionContext>()
-    private val mockResponse = OrderlyServerResponse("testResponse", 200)
+    private val mockResponse = PorcelainResponse("testResponse", 200)
 
     @Test
     fun `status gets status from orderly`()

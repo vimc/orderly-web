@@ -9,7 +9,7 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
-import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import java.time.Instant
@@ -42,9 +42,9 @@ class RunReportTests
         val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", queryParams) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
             on { get("/run-metadata", queryParams) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
@@ -67,9 +67,9 @@ class RunReportTests
     {
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/run-metadata", mapOf()) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
             on { get("/git/branches", mapOf()) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
@@ -84,14 +84,14 @@ class RunReportTests
     fun `getRunReport throws if orderly server returns an error`()
     {
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mapOf()) } doThrow OrderlyServerError("/run-metadata", 400)
+            on { get("/run-metadata", mapOf()) } doThrow PorcelainError("/run-metadata", 400, "Orderly server")
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
         }
         val sut = ReportController(mock(), mock(), mockOrderlyServer, mock(), mock())
         assertThatThrownBy { sut.getRunReport() }
-                .isInstanceOf(OrderlyServerError::class.java)
+                .isInstanceOf(PorcelainError::class.java)
     }
 
     @Test
@@ -99,9 +99,9 @@ class RunReportTests
     {
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", mapOf()) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
             on { get("/run-metadata", mapOf()) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
@@ -224,7 +224,7 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val mockOrderlyResponse = OrderlyServerResponse("""{"data": $testStatusJson}""",200)
+        val mockOrderlyResponse = PorcelainResponse("""{"data": $testStatusJson}""",200)
 
         val mockAPI = mock<OrderlyServerAPI> {
             on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn  mockOrderlyResponse

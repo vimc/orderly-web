@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServerClient
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.PorcelainResponse
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.models.Parameter
 
@@ -184,9 +184,9 @@ class OrderlyServerClientTests
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text, 500)
         val orderlyServerAPI = OrderlyServerClient(mockConfig, client).throwOnError()
-        assertThatThrownBy { orderlyServerAPI.get("/some/path/", context = mock()) }.isInstanceOf(OrderlyServerError::class.java)
-        assertThatThrownBy { orderlyServerAPI.post("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
-        assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { orderlyServerAPI.get("/some/path/", context = mock()) }.isInstanceOf(PorcelainError::class.java)
+        assertThatThrownBy { orderlyServerAPI.post("/some/path/", mock()) }.isInstanceOf(PorcelainError::class.java)
+        assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(PorcelainError::class.java)
     }
 
     @Test
@@ -270,9 +270,9 @@ class OrderlyServerClientTests
                 .throwOnError()
 
         assertThatThrownBy { sut.get("/whatever", context = mock()) }
-                .isInstanceOf(OrderlyServerError::class.java)
+                .isInstanceOf(PorcelainError::class.java)
                 .hasMessageContaining("Orderly server request failed for url /whatever")
-                .matches { (it as OrderlyServerError).httpStatus == 400 }
+                .matches { (it as PorcelainError).httpStatus == 400 }
     }
 
     @Test
@@ -287,16 +287,16 @@ class OrderlyServerClientTests
         val key = "report-name"
         val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
         assertThatThrownBy { sut.get("/whatever", queryParams) }
-                .isInstanceOf(OrderlyServerError::class.java)
+                .isInstanceOf(PorcelainError::class.java)
                 .hasMessageContaining("Orderly server request failed for url /whatever")
-                .matches { (it as OrderlyServerError).httpStatus == 400 }
+                .matches { (it as PorcelainError).httpStatus == 400 }
     }
 
     @Test
     fun `can parse primitive data`()
     {
         val text = """{"status": "success", "data": 10, "errors": []}"""
-        val response = OrderlyServerResponse(text, 200)
+        val response = PorcelainResponse(text, 200)
         val data = response.data(Int::class.java)
         assertThat(data).isEqualTo(10)
     }
@@ -306,7 +306,7 @@ class OrderlyServerClientTests
     {
         val text = """{"status": "success", "data": {"id": "12345", "date_time": "2019-03-29 16:25:48",
             |"age": 3600}, "errors": []}""".trimMargin()
-        val response = OrderlyServerResponse(text, 200)
+        val response = PorcelainResponse(text, 200)
         val data = response.data(GitCommit::class.java)
         assertThat(data.dateTime).isEqualTo("2019-03-29 16:25:48")
         assertThat(data.age).isEqualTo(3600)
@@ -318,7 +318,7 @@ class OrderlyServerClientTests
     {
         val text = """{"status": "success", "data": [{"id": "12345", "date_time": "2019-03-29 16:25:48",
             |"age": 3600}], "errors": []}""".trimMargin()
-        val response = OrderlyServerResponse(text, 200)
+        val response = PorcelainResponse(text, 200)
         val data = response.listData(GitCommit::class.java)
         assertThat(data[0].id).isEqualTo("12345")
         assertThat(data[0].dateTime).isEqualTo("2019-03-29 16:25:48")
@@ -391,7 +391,7 @@ class OrderlyServerClientTests
                 "null",
                 emptyMap()
             )
-        }.isInstanceOf(OrderlyServerError::class.java)
+        }.isInstanceOf(PorcelainError::class.java)
     }
 
     @Test
