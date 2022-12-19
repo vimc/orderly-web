@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.logic
 
 import com.opencsv.CSVReader
-import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.Parameter
