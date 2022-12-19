@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.PorcelainError
 
-class OutpackServerTests
+class OutpackServerClientTests
 {
 
     private val mockConfig = mock<Config> {
@@ -20,8 +20,8 @@ class OutpackServerTests
     @Test
     fun `configures correct url and instance name`()
     {
-        val client = getHttpClient(responseCode = 500)
-        val sut = OutpackServer(mockConfig, client)
+        val httpclient = getHttpClient(responseCode = 500)
+        val sut = OutpackServerClient(mockConfig, httpclient)
 
         assertThat(sut is PorcelainAPI)
         assertThatThrownBy {
@@ -30,7 +30,7 @@ class OutpackServerTests
         }.isInstanceOf(PorcelainError::class.java)
                 .hasMessageContaining("Outpack server request failed")
 
-        verify(client).newCall(
+        verify(httpclient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://outpack/some/path/")
                 }
@@ -43,7 +43,7 @@ class OutpackServerTests
     ): OkHttpClient
     {
         val response = Response.Builder()
-                .request(Request.Builder().url("http://orderly").build())
+                .request(Request.Builder().url("http://outpack").build())
                 .protocol(Protocol.HTTP_1_1)
                 .code(responseCode)
                 .header("Content-Type", ContentTypes.json)

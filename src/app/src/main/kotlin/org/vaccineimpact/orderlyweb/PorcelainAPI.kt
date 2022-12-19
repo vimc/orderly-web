@@ -71,7 +71,7 @@ class PorcelainResponse(val bytes: ByteArray, val statusCode: Int)
     }
 }
 
-open class PorcelainAPIServer(
+open class PorcelainAPIClient(
         private val instanceName: String,
         private val urlBase: String,
         private val client: OkHttpClient = OkHttpClient()

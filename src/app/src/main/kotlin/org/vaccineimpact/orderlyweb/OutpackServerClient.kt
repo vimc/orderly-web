@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb
 import okhttp3.OkHttpClient
 import org.vaccineimpact.orderlyweb.db.Config
 
-class OutpackServer(
+class OutpackServerClient(
         config: Config,
         client: OkHttpClient = OkHttpClient()
-) : PorcelainAPIServer("Outpack server", config["outpack.server"], client)
+) : PorcelainAPIClient("Outpack server", config["outpack.server"], client)

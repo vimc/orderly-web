@@ -19,11 +19,11 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `gets commits for branch`()
     {
-        val mockOrderlyServer = mock<OrderlyServerAPI> {
+        val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
             on { get("/git/commits?branch=master", mockContext) } doReturn
                     PorcelainResponse(Serializer.instance.toResult(listOf(1, 2, 3)), 200)
         }
-        val sut = GitController(mockContext, mockOrderlyServer)
+        val sut = GitController(mockContext, mockOrderlyServerAPI)
         val result = sut.getCommits()
         assertThat(result).isEqualTo(Serializer.instance.toResult(listOf(1, 2, 3)))
     }
@@ -34,12 +34,12 @@ class GitControllerTests : ControllerTest()
         val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 200)
         val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 200)
 
-        val mockOrderlyServer = mock<OrderlyServerAPI>{
+        val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn fetchResponse
             on { it.get("/git/branches", mockContext) } doReturn branchesResponse
         }
 
-        val sut = GitController(mockContext, mockOrderlyServer)
+        val sut = GitController(mockContext, mockOrderlyServerAPI)
         val response = sut.fetch()
 
         assertThat(response).isEqualTo(Serializer.instance.toResult("branchesResponse"))
@@ -52,17 +52,17 @@ class GitControllerTests : ControllerTest()
         val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 500)
         val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 200)
 
-        val mockOrderlyServer = mock<OrderlyServerAPI>{
+        val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext2) } doReturn fetchResponse
             on { it.get("/git/branches", mockContext2) } doReturn branchesResponse
         }
 
-        val sut = GitController(mockContext2, mockOrderlyServer)
+        val sut = GitController(mockContext2, mockOrderlyServerAPI)
         val response = sut.fetch()
 
         assertThat(response).isEqualTo(Serializer.instance.toResult("fetchResponse"))
         verify(mockContext2).setStatusCode(500)
-        verify(mockOrderlyServer, times(0)).get(any(), context = any())
+        verify(mockOrderlyServerAPI, times(0)).get(any(), context = any())
     }
 
     @Test
@@ -72,12 +72,12 @@ class GitControllerTests : ControllerTest()
         val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 200)
         val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 500)
 
-        val mockOrderlyServer = mock<OrderlyServerAPI>{
+        val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext2) } doReturn fetchResponse
             on { it.get("/git/branches", mockContext2) } doReturn branchesResponse
         }
 
-        val sut = GitController(mockContext2, mockOrderlyServer)
+        val sut = GitController(mockContext2, mockOrderlyServerAPI)
         val response = sut.fetch()
         
         assertThat(response).isEqualTo(Serializer.instance.toResult("branchesResponse"))

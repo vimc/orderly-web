@@ -13,10 +13,10 @@ import org.vaccineimpact.orderlyweb.models.ReportRun
 import java.time.Instant
 
 class ReportRunController(
-    context: ActionContext,
-    private val reportRunRepository: ReportRunRepository,
-    private val orderlyServerAPI: OrderlyServerAPI,
-    config: Config
+        context: ActionContext,
+        private val reportRunRepository: ReportRunRepository,
+        private val orderlyServerAPI: OrderlyServerAPI,
+        config: Config
 ) : Controller(context, config)
 {
     constructor(context: ActionContext) :

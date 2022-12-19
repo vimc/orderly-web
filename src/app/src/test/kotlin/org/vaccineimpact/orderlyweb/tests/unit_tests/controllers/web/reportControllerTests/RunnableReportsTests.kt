@@ -23,7 +23,7 @@ class RunnableReportsTests
             "report1",
             "report2"
         )
-        val mockOrderlyServer: OrderlyServerAPI = mock {
+        val mockOrderlyServerAPI: OrderlyServerAPI = mock {
             on { getRunnableReportNames(mockQueryParams) } doReturn reports
         }
         val date1 = Instant.now()
@@ -35,7 +35,7 @@ class RunnableReportsTests
                     ReportWithDate("report2", date2)
                 )
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mockReportRepo, mock())
+        val sut = ReportController(mockContext, mock(), mockOrderlyServerAPI, mockReportRepo, mock())
         val result = sut.getRunnableReports()
         assertThat(result).isEqualTo(
             listOf(
@@ -56,7 +56,7 @@ class RunnableReportsTests
             "report_that_has_been_run",
             "report_that_has_not_been_run"
         )
-        val mockOrderlyServer: OrderlyServerAPI = mock {
+        val mockOrderlyServerAPI: OrderlyServerAPI = mock {
             on { getRunnableReportNames(mockQueryParams) } doReturn reports
         }
         val now = Instant.now()
@@ -66,7 +66,7 @@ class RunnableReportsTests
                     ReportWithDate("report_that_has_been_run", now)
                 )
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mockReportRepo, mock())
+        val sut = ReportController(mockContext, mock(), mockOrderlyServerAPI, mockReportRepo, mock())
         val result = sut.getRunnableReports()
         assertThat(result).isEqualTo(
             listOf(

@@ -19,10 +19,10 @@ class MetadataTests
             on { params(":name") } doReturn "testName"
         }
         val mockOrderlyResponse = PorcelainResponse("testResponse", 200)
-        val mockOrderlyServer = mock<OrderlyServerAPI>{
+        val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { get("/v1/reports/testName/dependencies/", mockContext) } doReturn mockOrderlyResponse
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val sut = ReportController(mockContext, mock(), mockOrderlyServerAPI, mock(), mock())
         val result = sut.getDependencies()
         assertThat(result).isEqualTo("testResponse")
         verify(mockContext).setStatusCode(200)

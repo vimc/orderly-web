@@ -5,11 +5,13 @@ import okhttp3.*
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import org.vaccineimpact.orderlyweb.models.Parameter
 
 class OrderlyServerClientTests
@@ -24,10 +26,17 @@ class OrderlyServerClientTests
     @Test
     fun `configures correct url and instance name`()
     {
-        val client = getHttpClient()
-        OrderlyServerClient(mockConfig, client).get("/some/path/", emptyMap() )
+        val httpClient = getHttpClient(responseCode = 500)
+        val sut = OrderlyServerClient(mockConfig, httpClient)
 
-        verify(client).newCall(
+        assertThat(sut is PorcelainAPI)
+        assertThatThrownBy {
+            sut.throwOnError()
+                    .get("/some/path/", context = mock())
+        }.isInstanceOf(PorcelainError::class.java)
+                .hasMessageContaining("Orderly server request failed")
+
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.encodedPath).isEqualTo("/some/path/")
                 }
@@ -61,14 +70,16 @@ class OrderlyServerClientTests
             "errors": null, "status": "success"}""".trimMargin()
 
         val mockQueryParams = mapOf("commit" to "testCommit")
-        val client = getHttpClient(mockResponse)
-        val result = OrderlyServerClient(mockConfig, client).getReportParameters("report1", mockQueryParams)
-        assertThat(result).hasSameElementsAs(listOf(
-            Parameter("param1", "1"),
-            Parameter("param2", "2")
-        ))
+        val httpClient = getHttpClient(mockResponse)
+        val result = OrderlyServerClient(mockConfig, httpClient).getReportParameters("report1", mockQueryParams)
+        assertThat(result).hasSameElementsAs(
+                listOf(
+                        Parameter("param1", "1"),
+                        Parameter("param2", "2")
+                )
+        )
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://orderly/reports/report1/parameters?commit=testCommit")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())

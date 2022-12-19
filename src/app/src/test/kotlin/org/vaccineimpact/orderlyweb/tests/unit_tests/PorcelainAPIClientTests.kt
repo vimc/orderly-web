@@ -13,7 +13,7 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import org.vaccineimpact.orderlyweb.models.GitCommit
 
-class PorcelainAPIServerTests
+class PorcelainAPIClientTests
 {
 
     private val standardHeaders = mapOf("Accept" to ContentTypes.json)
@@ -24,11 +24,11 @@ class PorcelainAPIServerTests
         val mockContext = mock<ActionContext> {
             on { this.queryString() } doReturn "key1=val1"
         }
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .get("/some/path/", mockContext)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/?key1=val1")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -39,11 +39,11 @@ class PorcelainAPIServerTests
     @Test
     fun `passes invalid query string using overloaded GET method`()
     {
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .get("/some/path/", emptyMap())
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.encodedPath).isEqualTo("/some/path/")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -54,14 +54,14 @@ class PorcelainAPIServerTests
     @Test
     fun `passes valid query String using overloaded GET method`()
     {
-        val client = getHttpClient()
+        val httpClient = getHttpClient()
         val key = "report"
         val nullKey = "emptyVal"
         val queryParams: Map<String, String> = mapOf(key to "minimal", nullKey to "")
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .get("/some/path/", queryParams)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/?report=minimal&emptyVal=")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -72,11 +72,11 @@ class PorcelainAPIServerTests
     @Test
     fun `passes query parameters from URL`()
     {
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .get("/some/path?key1=val1", context = mock())
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path?key1=val1")
                 }
@@ -89,11 +89,11 @@ class PorcelainAPIServerTests
         val mockContext = mock<ActionContext> {
             on { this.postData<String>() } doReturn mapOf("key1" to "val1")
         }
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .post("/some/path/", mockContext)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -111,11 +111,11 @@ class PorcelainAPIServerTests
         val mockContext = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn text.toByteArray()
         }
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .post("/some/path/", mockContext, true)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -130,11 +130,11 @@ class PorcelainAPIServerTests
     fun `disabling response transformation works for POST`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val client = getHttpClient(text)
-        val response = PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient(text)
+        val response = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .post("/some/path/", mock(), transformResponse = false)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/")
                     assertThat(it.headers).isEqualTo(emptyMap<String, String>().toHeaders())
@@ -149,11 +149,11 @@ class PorcelainAPIServerTests
         val mockContext = mock<ActionContext> {
             on { this.queryString() } doReturn "key1=val1"
         }
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .post("/some/path/", mockContext)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/?key1=val1")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -167,11 +167,11 @@ class PorcelainAPIServerTests
         val mockContext = mock<ActionContext> {
             on { this.queryString() } doReturn "key1=val1"
         }
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .delete("/some/path/", mockContext)
 
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/?key1=val1")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -183,8 +183,8 @@ class PorcelainAPIServerTests
     fun `throws error on failure with throwsOnError`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val client = getHttpClient(text, 500)
-        val sut = PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val httpClient = getHttpClient(text, 500)
+        val sut = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .throwOnError()
         assertThatThrownBy { sut.get("/some/path/", context = mock()) }.isInstanceOf(PorcelainError::class.java)
         assertThatThrownBy { sut.post("/some/path/", mock()) }.isInstanceOf(PorcelainError::class.java)
@@ -194,11 +194,11 @@ class PorcelainAPIServerTests
     @Test
     fun `does not throw error on failure without throwsOnError`()
     {
-        val client = getHttpClient(
+        val httpClient = getHttpClient(
                 """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}""",
                 500
         )
-        val response = PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val response = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
                 .get("/some/path/", context = mock())
         assertThat(response.statusCode).isEqualTo(500)
         assertThat(response.text).isEqualTo(
@@ -267,9 +267,9 @@ class PorcelainAPIServerTests
     fun `throws on failure if specified`()
     {
         val text = """{"status": "failure", "data": null, "errors": []}"""
-        val client = getHttpClient(text, 400)
+        val httpClient = getHttpClient(text, 400)
 
-        val sut = PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val sut = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
 
                 .throwOnError()
 
@@ -283,9 +283,9 @@ class PorcelainAPIServerTests
     fun `throws on failure if specified for overloaded`()
     {
         val text = """{"status": "failure", "data": null, "errors": []}"""
-        val client = getHttpClient(text, 400)
+        val httpClient = getHttpClient(text, 400)
 
-        val sut = PorcelainAPIServer("Fake instance", "http://url-base", client)
+        val sut = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
 
                 .throwOnError()
 
@@ -335,19 +335,19 @@ class PorcelainAPIServerTests
         val mapper = ObjectMapper()
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
 
-        val sut1 = PorcelainAPIServer("Fake instance", "http://url-base",
+        val sut1 = PorcelainAPIClient("Fake instance", "http://url-base",
                 getHttpClient(rawResponse, 400))
         val getResult = sut1.get("anyUrl", context = mock())
         assertThat(mapper.readTree(getResult.text)).isEqualTo(expectedJson)
         assertThat(getResult.statusCode).isEqualTo(400)
 
-        val sut2 = PorcelainAPIServer("Fake instance", "http://url-base",
+        val sut2 = PorcelainAPIClient("Fake instance", "http://url-base",
                 getHttpClient(rawResponse, 400))
         val postResult = sut2.post("anyUrl", mock())
         assertThat(mapper.readTree(postResult.text)).isEqualTo(expectedJson)
         assertThat(postResult.statusCode).isEqualTo(400)
 
-        val sut3 = PorcelainAPIServer("Fake instance", "http://url-base",
+        val sut3 = PorcelainAPIClient("Fake instance", "http://url-base",
                 getHttpClient(rawResponse, 400))
         val deleteResult = sut3.delete("anyUrl", mock())
         assertThat(mapper.readTree(deleteResult.text)).isEqualTo(expectedJson)
@@ -358,15 +358,15 @@ class PorcelainAPIServerTests
     @Test
     fun `makes direct POST request`()
     {
-        val client = getHttpClient()
-        PorcelainAPIServer("Fake instance", "http://url-base", client).post(
+        val httpClient = getHttpClient()
+        PorcelainAPIClient("Fake instance", "http://url-base", httpClient).post(
                 "/some/path",
                 """{"key1": "val1"}""",
                 mapOf(
                         "key2" to "val2"
                 )
         )
-        verify(client).newCall(
+        verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path?key2=val2")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
@@ -382,7 +382,7 @@ class PorcelainAPIServerTests
     {
         val rawResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val translatedResponse = """{"status":"failure","errors":[{"error":"FOO","message":"bar"}],"data":null}"""
-        val response = PorcelainAPIServer("Fake instance", "http://url-base",
+        val response = PorcelainAPIClient("Fake instance", "http://url-base",
                 getHttpClient(rawResponse, 400)).post("anyUrl", mock())
         assertThat(ObjectMapper().readTree(response.text)).isEqualTo(ObjectMapper().readTree(translatedResponse))
         assertThat(response.statusCode).isEqualTo(400)
@@ -392,8 +392,8 @@ class PorcelainAPIServerTests
     fun `direct POST request throws on error`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val client = getHttpClient(text, 500)
-        val sut = PorcelainAPIServer("Fake instance", "http://url-base", client).throwOnError()
+        val httpClient = getHttpClient(text, 500)
+        val sut = PorcelainAPIClient("Fake instance", "http://url-base", httpClient).throwOnError()
         assertThatThrownBy {
             sut.post(
                     "/some/path/",

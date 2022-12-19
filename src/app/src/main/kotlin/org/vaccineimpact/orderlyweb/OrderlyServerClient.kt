@@ -19,7 +19,7 @@ interface OrderlyServerAPI : PorcelainAPI
 class OrderlyServerClient(
         config: Config,
         client: OkHttpClient = OkHttpClient()
-) : OrderlyServerAPI, PorcelainAPIServer("Orderly server", config["orderly.server"], client)
+) : OrderlyServerAPI, PorcelainAPIClient("Orderly server", config["orderly.server"], client)
 {
     override fun getRunnableReportNames(queryParams: Map<String, String>): List<String>
     {
