@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -29,7 +29,7 @@ class ReportController(
     constructor(context: ActionContext) : this(
             context,
             Orderly(context),
-            OrderlyServer(AppConfig()),
+            OrderlyServerClient(AppConfig()),
             OrderlyReportRepository(context),
             OrderlyWebTagRepository()
     )
