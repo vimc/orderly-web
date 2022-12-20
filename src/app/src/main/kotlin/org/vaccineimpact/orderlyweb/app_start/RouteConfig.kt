@@ -21,6 +21,7 @@ object APIRouteConfig : RouteConfig
                     .plus(UserRouteConfig.endpoints)
                     .plus(BundleRouteConfig.endpoints)
                     .plus(QueueRouteConfig.endpoints)
+                    .plus(OutpackRouteConfig.endpoints)
 }
 
 object WebRouteConfig : RouteConfig

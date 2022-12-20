@@ -29,7 +29,7 @@ class OrderlyServerClientTests
         val httpClient = getHttpClient(responseCode = 500)
         val sut = OrderlyServerClient(mockConfig, httpClient)
 
-        assertThat(sut is PorcelainAPI)
+        assertThat(sut is PorcelainAPIClient)
         assertThatThrownBy {
             sut.throwOnError()
                     .get("/some/path/", context = mock())

@@ -3,9 +3,9 @@ services:
   proxy:
     image: vimc/montagu-reverse-proxy-minimal:master
     ports:
-    - 80:80
+      - 80:80
     depends_on:
-    - api
+      - api
     logging:
       driver: syslog
   orderly_server:
@@ -24,12 +24,18 @@ services:
   api:
     image: vimc/montagu-api:master
     ports:
-    - "8080:8080"
+      - "8080:8080"
     depends_on:
-    - db
+      - db
   db:
     image: vimc/montagu-db:master
     ports:
-    - "5432:5432"
+      - "5432:5432"
   redis:
     image: redis
+  outpack.server:
+    image: mrcide/outpack_server:main
+    volumes:
+      - $OUTPACK_DEMO/demo:/outpack
+    ports:
+      - "8000:8000"

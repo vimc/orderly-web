@@ -9,7 +9,10 @@ git --git-dir=$ORDERLY_DEMO/.git remote set-url origin /orderly/upstream
 
 config_path=$(realpath $here/../config)
 export ORDERLY_DEMO=$(realpath $ORDERLY_DEMO)
+export OUTPACK_DEMO=$(realpath $here/../src/app/outpack)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
+
+docker run -v $ORDERLY_DEMO:/orderly -v $OUTPACK_DEMO:/outpack mrcide/outpack.orderly:e9175e5 orderly outpack/demo
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml
 

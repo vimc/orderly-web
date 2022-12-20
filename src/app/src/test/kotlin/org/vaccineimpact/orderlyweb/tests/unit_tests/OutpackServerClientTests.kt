@@ -23,7 +23,7 @@ class OutpackServerClientTests
         val httpclient = getHttpClient(responseCode = 500)
         val sut = OutpackServerClient(mockConfig, httpclient)
 
-        assertThat(sut is PorcelainAPI)
+        assertThat(sut is OutpackServerClient)
         assertThatThrownBy {
             sut.throwOnError()
                     .get("/some/path/", context = mock())

@@ -4,13 +4,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import okhttp3.*
 import okhttp3.Headers.Companion.toHeaders
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -34,7 +31,7 @@ interface PorcelainAPI
     ): PorcelainResponse
 
     @Throws(PorcelainError::class)
-    fun get(url: String, context: ActionContext): PorcelainResponse
+    fun get(url: String, context: ActionContext, transformResponse: Boolean = true): PorcelainResponse
 
     @Throws(PorcelainError::class)
     fun get(url: String, queryParams: Map<String, String>): PorcelainResponse
@@ -88,7 +85,7 @@ open class PorcelainAPIClient(
         }
     }
 
-    override fun get(url: String, context: ActionContext): PorcelainResponse
+    override fun get(url: String, context: ActionContext, transformResponse: Boolean): PorcelainResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
@@ -100,7 +97,14 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return transformResponse(it.code, it.body!!.string())
+            return if (transformResponse)
+            {
+                transformResponse(it.code, it.body!!.string())
+            }
+            else
+            {
+                PorcelainResponse(it.body!!.bytes(), it.code)
+            }
         }
     }
 
