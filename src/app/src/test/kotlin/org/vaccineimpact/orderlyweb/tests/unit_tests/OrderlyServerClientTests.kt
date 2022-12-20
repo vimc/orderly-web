@@ -11,14 +11,14 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.models.Parameter
 
-class OrderlyServerTests
+class OrderlyServerClientTests
 {
 
     private val mockConfig = mock<Config> {
@@ -33,7 +33,7 @@ class OrderlyServerTests
             on { this.queryString() } doReturn "key1=val1"
         }
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path/", mockContext)
+        OrderlyServerClient(mockConfig, client).get("/some/path/", mockContext)
 
         verify(client).newCall(
                 check {
@@ -47,7 +47,7 @@ class OrderlyServerTests
     fun `passes invalid query string using overloaded GET method`()
     {
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path/", emptyMap() )
+        OrderlyServerClient(mockConfig, client).get("/some/path/", emptyMap() )
 
         verify(client).newCall(
                 check {
@@ -64,7 +64,7 @@ class OrderlyServerTests
         val key = "report"
         val nullKey = "emptyVal"
         val queryParams: Map<String, String> = mapOf(key to "minimal", nullKey to "")
-        OrderlyServer(mockConfig, client).get("/some/path/", queryParams )
+        OrderlyServerClient(mockConfig, client).get("/some/path/", queryParams )
 
         verify(client).newCall(
                 check {
@@ -78,7 +78,7 @@ class OrderlyServerTests
     fun `passes query parameters from URL`()
     {
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path?key1=val1", context = mock())
+        OrderlyServerClient(mockConfig, client).get("/some/path?key1=val1", context = mock())
 
         verify(client).newCall(
             check {
@@ -94,7 +94,7 @@ class OrderlyServerTests
             on { this.postData<String>() } doReturn mapOf("key1" to "val1")
         }
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).post("/some/path/", mockContext)
+        OrderlyServerClient(mockConfig, client).post("/some/path/", mockContext)
 
         verify(client).newCall(
                 check {
@@ -115,7 +115,7 @@ class OrderlyServerTests
             on { getRequestBodyAsBytes() } doReturn text.toByteArray()
         }
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).post("/some/path/", mockContext, true)
+        OrderlyServerClient(mockConfig, client).post("/some/path/", mockContext, true)
 
         verify(client).newCall(
                 check {
@@ -133,7 +133,7 @@ class OrderlyServerTests
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text)
-        val response = OrderlyServer(mockConfig, client).post("/some/path/", mock(), transformResponse = false)
+        val response = OrderlyServerClient(mockConfig, client).post("/some/path/", mock(), transformResponse = false)
 
         verify(client).newCall(
                 check {
@@ -151,7 +151,7 @@ class OrderlyServerTests
             on { this.queryString() } doReturn "key1=val1"
         }
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).post("/some/path/", mockContext)
+        OrderlyServerClient(mockConfig, client).post("/some/path/", mockContext)
 
         verify(client).newCall(
                 check {
@@ -168,7 +168,7 @@ class OrderlyServerTests
             on { this.queryString() } doReturn "key1=val1"
         }
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).delete("/some/path/", mockContext)
+        OrderlyServerClient(mockConfig, client).delete("/some/path/", mockContext)
 
         verify(client).newCall(
                 check {
@@ -183,7 +183,7 @@ class OrderlyServerTests
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text, 500)
-        val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
+        val orderlyServerAPI = OrderlyServerClient(mockConfig, client).throwOnError()
         assertThatThrownBy { orderlyServerAPI.get("/some/path/", context = mock()) }.isInstanceOf(OrderlyServerError::class.java)
         assertThatThrownBy { orderlyServerAPI.post("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
         assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
@@ -196,7 +196,7 @@ class OrderlyServerTests
                 """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}""",
                 500
         )
-        val response = OrderlyServer(mockConfig, client).get("/some/path/", context = mock())
+        val response = OrderlyServerClient(mockConfig, client).get("/some/path/", context = mock())
         assertThat(response.statusCode).isEqualTo(500)
         assertThat(response.text).isEqualTo(
                 """{"data":null,"errors":[{"error":"FOO","message":"bar"}],"status":"failure"}"""
@@ -266,7 +266,7 @@ class OrderlyServerTests
         val text = """{"status": "failure", "data": null, "errors": []}"""
         val client = getHttpClient(text, 400)
 
-        val sut = OrderlyServer(mockConfig, client)
+        val sut = OrderlyServerClient(mockConfig, client)
                 .throwOnError()
 
         assertThatThrownBy { sut.get("/whatever", context = mock()) }
@@ -281,7 +281,7 @@ class OrderlyServerTests
         val text = """{"status": "failure", "data": null, "errors": []}"""
         val client = getHttpClient(text, 400)
 
-        val sut = OrderlyServer(mockConfig, client)
+        val sut = OrderlyServerClient(mockConfig, client)
                 .throwOnError()
 
         val key = "report-name"
@@ -330,17 +330,17 @@ class OrderlyServerTests
         val mapper = ObjectMapper()
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
 
-        val sut1 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
+        val sut1 = OrderlyServerClient(mockConfig, getHttpClient(rawResponse, 400))
         val getResult = sut1.get("anyUrl", context = mock())
         assertThat(mapper.readTree(getResult.text)).isEqualTo(expectedJson)
         assertThat(getResult.statusCode).isEqualTo(400)
 
-        val sut2 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
+        val sut2 = OrderlyServerClient(mockConfig, getHttpClient(rawResponse, 400))
         val postResult = sut2.post("anyUrl", mock())
         assertThat(mapper.readTree(postResult.text)).isEqualTo(expectedJson)
         assertThat(postResult.statusCode).isEqualTo(400)
 
-        val sut3 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
+        val sut3 = OrderlyServerClient(mockConfig, getHttpClient(rawResponse, 400))
         val deleteResult = sut3.delete("anyUrl", mock())
         assertThat(mapper.readTree(deleteResult.text)).isEqualTo(expectedJson)
         assertThat(deleteResult.statusCode).isEqualTo(400)
@@ -351,7 +351,7 @@ class OrderlyServerTests
     fun `makes direct POST request`()
     {
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).post(
+        OrderlyServerClient(mockConfig, client).post(
             "/some/path",
             """{"key1": "val1"}""",
             mapOf(
@@ -374,7 +374,7 @@ class OrderlyServerTests
     {
         val rawResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val translatedResponse = """{"status":"failure","errors":[{"error":"FOO","message":"bar"}],"data":null}"""
-        val response = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400)).post("anyUrl", mock())
+        val response = OrderlyServerClient(mockConfig, getHttpClient(rawResponse, 400)).post("anyUrl", mock())
         assertThat(ObjectMapper().readTree(response.text)).isEqualTo(ObjectMapper().readTree(translatedResponse))
         assertThat(response.statusCode).isEqualTo(400)
     }
@@ -384,7 +384,7 @@ class OrderlyServerTests
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text, 500)
-        val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
+        val orderlyServerAPI = OrderlyServerClient(mockConfig, client).throwOnError()
         assertThatThrownBy {
             orderlyServerAPI.post(
                 "/some/path/",
@@ -400,7 +400,7 @@ class OrderlyServerTests
         val mockResponse = """{"data": ["report1", "report2"], "errors": null, "status": "success"}"""
         val mockQueryParams = mapOf("branch" to "testBranch", "commit" to "testCommit")
         val client = getHttpClient(mockResponse)
-        val result = OrderlyServer(mockConfig, client).getRunnableReportNames(mockQueryParams)
+        val result = OrderlyServerClient(mockConfig, client).getRunnableReportNames(mockQueryParams)
         assertThat(result).hasSameElementsAs(listOf("report1", "report2"))
 
         verify(client).newCall(
@@ -422,7 +422,7 @@ class OrderlyServerTests
 
         val mockQueryParams = mapOf("commit" to "testCommit")
         val client = getHttpClient(mockResponse)
-        val result = OrderlyServer(mockConfig, client).getReportParameters("report1", mockQueryParams)
+        val result = OrderlyServerClient(mockConfig, client).getReportParameters("report1", mockQueryParams)
         assertThat(result).hasSameElementsAs(listOf(
             Parameter("param1", "1"),
             Parameter("param2", "2")

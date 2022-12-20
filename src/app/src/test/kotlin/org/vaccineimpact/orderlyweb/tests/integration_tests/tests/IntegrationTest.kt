@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.BeforeAll
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.GitCommit
@@ -131,7 +131,7 @@ abstract class IntegrationTest
 
     protected fun getGitBranchCommit(branch: String): String
     {
-        val commits = OrderlyServer(AppConfig()).get(
+        val commits = OrderlyServerClient(AppConfig()).get(
                 "/git/commits",
                 context = mock {
                     on { queryString() } doReturn "branch=$branch"

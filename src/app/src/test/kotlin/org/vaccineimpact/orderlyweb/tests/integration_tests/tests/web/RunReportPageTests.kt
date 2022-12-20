@@ -96,7 +96,7 @@ class RunReportPageTests : IntegrationTest()
         val controller = ReportController(
                 mock(),
                 mock(),
-                OrderlyServer(AppConfig()),
+                OrderlyServerClient(AppConfig()),
                 mock(),
                 OrderlyWebTagRepository()
         )
@@ -116,7 +116,7 @@ class RunReportPageTests : IntegrationTest()
                     on { queryString() } doReturn "branch=$branch&commit=$commit"
                 },
                 mock(),
-                OrderlyServer(AppConfig()),
+                OrderlyServerClient(AppConfig()),
                 repo,
                 mock()
         )

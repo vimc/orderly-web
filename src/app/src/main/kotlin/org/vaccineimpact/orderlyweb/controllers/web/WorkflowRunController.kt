@@ -26,7 +26,7 @@ class WorkflowRunController(
     constructor(context: ActionContext) : this(
             context,
             OrderlyWebWorkflowRunRepository(),
-            OrderlyServer(AppConfig()).throwOnError(),
+            OrderlyServerClient(AppConfig()).throwOnError(),
             OrderlyWebWorkflowLogic()
     )
 

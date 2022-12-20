@@ -8,7 +8,7 @@ import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -159,7 +159,7 @@ class WorkflowRunTests : IntegrationTest()
         )
 
         val orderlyServerResponse =
-                OrderlyServer(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
+                OrderlyServerClient(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
         val orderlyWorkflowRunStatusResponse =
                 orderlyServerResponse.data(WorkflowRunController.WorkflowRunStatusResponse::class.java)
 
@@ -615,7 +615,7 @@ class WorkflowRunTests : IntegrationTest()
     {
         for (i in 0..9)
         {
-            val response = OrderlyServer(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
+            val response = OrderlyServerClient(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
             val status = JSONValidator.getData(response.text)["status"].textValue()
             if (status in listOf("success", "error", "cancelled"))
             {

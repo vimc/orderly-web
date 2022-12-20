@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.logic
 
 import com.opencsv.CSVReader
-import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.Parameter
@@ -20,7 +20,7 @@ interface WorkflowLogic
 
 class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowLogic
 {
-    constructor() : this(OrderlyServer(AppConfig()).throwOnError())
+    constructor() : this(OrderlyServerClient(AppConfig()).throwOnError())
 
     override fun parseAndValidateWorkflowCSV(
             reader: Reader,

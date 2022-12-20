@@ -79,7 +79,7 @@ class OrderlyServerResponse(val bytes: ByteArray, val statusCode: Int)
     }
 }
 
-class OrderlyServer(
+class OrderlyServerClient(
     config: Config,
     private val client: OkHttpClient = OkHttpClient()
 ) : OrderlyServerAPI
