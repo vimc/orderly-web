@@ -12,7 +12,8 @@ export ORDERLY_DEMO=$(realpath $ORDERLY_DEMO)
 export OUTPACK_DEMO=$(realpath $here/../src/app/outpack)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
-docker run -v $ORDERLY_DEMO:/orderly -v $OUTPACK_DEMO:/outpack mrcide/outpack.orderly:e9175e5 orderly outpack/demo
+mkdir -p $OUTPACK_DEMO
+docker run -v $ORDERLY_DEMO:/orderly:ro -v $OUTPACK_DEMO:/outpack -u $UID mrcide/outpack.orderly:mrc-3901 /orderly /outpack --once
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml
 

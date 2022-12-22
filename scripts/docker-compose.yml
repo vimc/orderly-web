@@ -36,6 +36,6 @@ services:
   outpack.server:
     image: mrcide/outpack_server:main
     volumes:
-      - $OUTPACK_DEMO/demo:/outpack
+      - $OUTPACK_DEMO:/outpack
     ports:
       - "8000:8000"
