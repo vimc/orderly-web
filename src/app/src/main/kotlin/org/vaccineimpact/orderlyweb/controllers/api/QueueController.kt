@@ -8,9 +8,9 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 
 class QueueController(
-    context: ActionContext,
-    config: Config,
-    private val orderlyServerAPI: OrderlyServerAPI
+        context: ActionContext,
+        config: Config,
+        private val orderlyServerAPI: OrderlyServerAPI
 ) : Controller(context, config)
 {
     @Suppress("unused")

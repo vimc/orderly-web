@@ -150,7 +150,6 @@ class WorkflowRunTests : IntegrationTest()
                 sessionCookie,
                 ContentTypes.json
         )
-        val text = response.text
         assertSuccessful(response)
         assertJsonContentType(response)
         val workflowRunStatus = Serializer.instance.gson.fromJson(

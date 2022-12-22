@@ -18,7 +18,7 @@ import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.controllers.api.BundleController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
-import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.PorcelainError
 
 class BundleControllerTests : ControllerTest()
 {
@@ -78,7 +78,7 @@ class BundleControllerTests : ControllerTest()
         val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}", responseCode = 500, responseMessage = "Internal Server Error")
         val controller = BundleController(context, config, OrderlyServerClient(config, httpClient).throwOnError())
 
-        assertThatThrownBy { controller.pack() }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { controller.pack() }.isInstanceOf(PorcelainError::class.java)
     }
 
     @Test
@@ -113,7 +113,7 @@ class BundleControllerTests : ControllerTest()
         val httpClient = getHttpClient("/v1/bundle/import", responseCode = 500, responseMessage = "Internal Server Error")
         val controller = BundleController(context, config, OrderlyServerClient(config, httpClient).throwOnError())
 
-        assertThatThrownBy { controller.import() }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { controller.import() }.isInstanceOf(PorcelainError::class.java)
     }
 
     private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient

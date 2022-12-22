@@ -13,18 +13,18 @@ import org.vaccineimpact.orderlyweb.models.ReportRun
 import java.time.Instant
 
 class ReportRunController(
-    context: ActionContext,
-    private val reportRunRepository: ReportRunRepository,
-    private val orderlyServerAPI: OrderlyServerAPI,
-    config: Config
+        context: ActionContext,
+        private val reportRunRepository: ReportRunRepository,
+        private val orderlyServerAPI: OrderlyServerAPI,
+        config: Config
 ) : Controller(context, config)
 {
     constructor(context: ActionContext) :
             this(
-                context,
-                OrderlyWebReportRunRepository(),
-                OrderlyServerClient(AppConfig()).throwOnError(),
-                AppConfig()
+                    context,
+                    OrderlyWebReportRunRepository(),
+                    OrderlyServerClient(AppConfig()).throwOnError(),
+                    AppConfig()
             )
 
     fun run(): String
@@ -45,27 +45,28 @@ class ReportRunController(
                 )
         )
         val response =
-            orderlyServerAPI.post(
-                "/v1/reports/$name/run/",
-                body,
-                listOf(
-                    "ref" to gitCommit,
-                    // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
-                    "instance" to instances.values.elementAtOrNull(0),
-                    "timeout" to timeout
-                ).filter { it.second != null }.toMap()
-            )
+                orderlyServerAPI.post(
+                        "/v1/reports/$name/run/",
+                        body,
+                        listOf(
+                                "ref" to gitCommit,
+                                // TODO remove this in favour of passing instances itself to orderly.server
+                                // see VIMC-4561
+                                "instance" to instances.values.elementAtOrNull(0),
+                                "timeout" to timeout
+                        ).filter { it.second != null }.toMap()
+                )
         val reportRun = response.data(ReportRun::class.java)
         reportRunRepository.addReportRun(
-            reportRun.key,
-            @Suppress("UnsafeCallOnNullableType")
-            context.userProfile!!.id,
-            Instant.now(),
-            reportRun.name,
-            instances,
-            params,
-            gitBranch,
-            gitCommit
+                reportRun.key,
+                @Suppress("UnsafeCallOnNullableType")
+                context.userProfile!!.id,
+                Instant.now(),
+                reportRun.name,
+                instances,
+                params,
+                gitBranch,
+                gitCommit
         )
         return passThroughResponse(response)
     }
