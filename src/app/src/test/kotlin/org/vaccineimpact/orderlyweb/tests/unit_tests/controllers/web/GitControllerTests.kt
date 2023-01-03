@@ -62,7 +62,7 @@ class GitControllerTests : ControllerTest()
 
         assertThat(response).isEqualTo(Serializer.instance.toResult("fetchResponse"))
         verify(mockContext2).setStatusCode(500)
-        verify(mockOrderlyServerAPI, times(0)).get(any(), context = any())
+        verify(mockOrderlyServerAPI, times(0)).get(any(), context = any(), transformResponse = any())
     }
 
     @Test
