@@ -2,12 +2,13 @@ package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OutpackServerClient
+import org.vaccineimpact.orderlyweb.PorcelainAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class OutpackController(
         context: ActionContext,
-        private val outpackServerClient: OutpackServerClient
+        private val outpackServerClient: PorcelainAPI
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(

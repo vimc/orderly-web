@@ -31,7 +31,7 @@ interface PorcelainAPI
     ): PorcelainResponse
 
     @Throws(PorcelainError::class)
-    fun get(url: String, context: ActionContext, transformResponse: Boolean = true): PorcelainResponse
+    fun get(url: String, context: ActionContext): PorcelainResponse
 
     @Throws(PorcelainError::class)
     fun get(url: String, queryParams: Map<String, String>): PorcelainResponse
@@ -85,7 +85,7 @@ open class PorcelainAPIClient(
         }
     }
 
-    override fun get(url: String, context: ActionContext, transformResponse: Boolean): PorcelainResponse
+    override fun get(url: String, context: ActionContext): PorcelainResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
@@ -97,14 +97,7 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return if (transformResponse)
-            {
-                transformResponse(it.code, it.body!!.string())
-            }
-            else
-            {
-                PorcelainResponse(it.body!!.bytes(), it.code)
-            }
+            return transformResponse(it.code, it.body!!.string())
         }
     }
 
