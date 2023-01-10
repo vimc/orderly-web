@@ -18,7 +18,7 @@ class ArtefactControllerTests : ControllerTest() {
     fun `fetch index from outpack`()
     {
         val mockOutpack = mock<PorcelainAPI> {
-            on { it.get("/v1/outpack/", mockContext) } doReturn mockResponse
+            on { it.get("/", mockContext) } doReturn mockResponse
         }
 
         val sut = OutpackController(mockContext, mockOutpack)
