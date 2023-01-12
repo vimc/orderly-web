@@ -80,7 +80,7 @@ class OutpackTests : IntegrationTest()
         )
 
         assertJsonContentType(response)
-        println(response.text)
+        System.err.println(response.text)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
     }
 }
