@@ -425,7 +425,7 @@ class WorkflowRunControllerTests
             on { post(any(), any<String>(), any()) } doReturn PorcelainResponse(
                     mockResponse,
                     400,
-                    mock()
+                    Headers.headersOf()
             )
         }
 
@@ -457,7 +457,7 @@ class WorkflowRunControllerTests
                     """{"data": {"workflow_key": "workflow_key1",
                         | "reports": [{"key": "report_key1", "execution_order": 1,
                         |  "name": "report1", "params": {"key": "value"}}]}}""".trimMargin(),
-                    200, mock()
+                    200, Headers.headersOf()
             )
         }
 
