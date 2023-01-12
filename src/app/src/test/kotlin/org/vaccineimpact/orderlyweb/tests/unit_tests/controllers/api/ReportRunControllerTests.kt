@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.*
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -43,7 +44,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponseText =
             """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
 
         val expectedQs = mapOf(
                 "ref" to "abc123",
@@ -90,7 +91,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponseText =
             """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
 
         val expectedBody = """{"params":{}}"""
         val apiClient: OrderlyServerAPI = mock {
@@ -145,7 +146,7 @@ class ReportRunControllerTests : ControllerTest()
             on { params(":key") } doReturn reportKey
         }
 
-        val mockAPIResponse = PorcelainResponse("""{"status": "running"}""", 200, mock())
+        val mockAPIResponse = PorcelainResponse("""{"status": "running"}""", 200, Headers.headersOf())
 
         val apiClient: OrderlyServerAPI = mock {
             on { get("/v1/reports/$reportKey/status/", actionContext) } doReturn mockAPIResponse
@@ -164,7 +165,7 @@ class ReportRunControllerTests : ControllerTest()
             on { params(":key") } doReturn reportKey
         }
 
-        val mockAPIResponse = PorcelainResponse("okayresponse", 200, mock())
+        val mockAPIResponse = PorcelainResponse("okayresponse", 200, Headers.headersOf())
 
         val apiClient: OrderlyServerAPI = mock {
             on { delete("/v1/reports/$reportKey/kill/", actionContext) } doReturn mockAPIResponse

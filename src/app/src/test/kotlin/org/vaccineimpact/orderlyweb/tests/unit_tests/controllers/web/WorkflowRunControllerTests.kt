@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 import com.github.fge.jackson.JsonLoader
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.nhaarman.mockito_kotlin.*
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -89,7 +90,7 @@ class WorkflowRunControllerTests
                 errors = listOf()
         )
 
-        val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200, mock())
+        val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200, Headers.headersOf())
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
@@ -146,7 +147,7 @@ class WorkflowRunControllerTests
                 errors = listOf()
         )
 
-        val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200, mock())
+        val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200, Headers.headersOf())
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
@@ -293,7 +294,7 @@ class WorkflowRunControllerTests
                  }]
              }}""".trimIndent()
 
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
@@ -540,7 +541,7 @@ class WorkflowRunControllerTests
           }
         }
         """.trimIndent()
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
         val apiClient = mock<OrderlyServerAPI> {
             on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
         }
@@ -641,7 +642,7 @@ class WorkflowRunControllerTests
           }
         }
         """.trimIndent()
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
         val apiClient = mock<OrderlyServerAPI> {
             on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
         }

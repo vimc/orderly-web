@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -92,7 +93,7 @@ class ReportRunControllerTests
 
         val mockWorkflowRepo = mock<WorkflowRunReportRepository>()
 
-        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, mock())
+        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, Headers.headersOf())
         val mockAPI = mock<OrderlyServerAPI>{
             on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
         }
@@ -144,7 +145,7 @@ class ReportRunControllerTests
             on { this.getReportRun("testReportKey") } doReturn testReportRunLog
         }
 
-        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, mock())
+        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, Headers.headersOf())
         val mockAPI = mock<OrderlyServerAPI>{
             on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
         }

@@ -1,5 +1,6 @@
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -16,7 +17,7 @@ class ArtefactControllerTests : ControllerTest()
     {
         val mockContext = mock<ActionContext>()
         val mockOutpack = mock<PorcelainAPI> {
-            on { it.get("/", mockContext) } doReturn PorcelainResponse("index", 200, mock())
+            on { it.get("/", mockContext) } doReturn PorcelainResponse("index", 200, Headers.headersOf())
         }
 
         val sut = OutpackController(mockContext, mockOutpack)
@@ -32,7 +33,7 @@ class ArtefactControllerTests : ControllerTest()
             on { it.splat() } doReturn arrayOf("some/route")
         }
         val mockOutpack = mock<PorcelainAPI> {
-            on { it.get("/some/route", mockContext) } doReturn PorcelainResponse("route", 200, mock())
+            on { it.get("/some/route", mockContext) } doReturn PorcelainResponse("route", 200, Headers.headersOf())
         }
 
         val sut = OutpackController(mockContext, mockOutpack)

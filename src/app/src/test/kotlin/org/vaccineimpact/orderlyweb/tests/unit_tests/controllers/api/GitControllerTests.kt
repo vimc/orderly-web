@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.nhaarman.mockito_kotlin.*
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -11,7 +12,7 @@ import org.vaccineimpact.orderlyweb.controllers.api.GitController
 class GitControllerTests : ControllerTest()
 {
     private val mockContext = mock<ActionContext>()
-    private val mockResponse = PorcelainResponse("testResponse", 200, mock())
+    private val mockResponse = PorcelainResponse("testResponse", 200, Headers.headersOf())
 
     @Test
     fun `status gets status from orderly`()

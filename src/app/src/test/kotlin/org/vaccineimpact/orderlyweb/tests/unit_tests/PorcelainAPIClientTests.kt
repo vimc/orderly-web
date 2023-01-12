@@ -301,7 +301,7 @@ class PorcelainAPIClientTests
     fun `can parse primitive data`()
     {
         val text = """{"status": "success", "data": 10, "errors": []}"""
-        val response = PorcelainResponse(text, 200, mock())
+        val response = PorcelainResponse(text, 200, Headers.headersOf())
         val data = response.data(Int::class.java)
         assertThat(data).isEqualTo(10)
     }
@@ -311,7 +311,7 @@ class PorcelainAPIClientTests
     {
         val text = """{"status": "success", "data": {"id": "12345", "date_time": "2019-03-29 16:25:48",
             |"age": 3600}, "errors": []}""".trimMargin()
-        val response = PorcelainResponse(text, 200, mock())
+        val response = PorcelainResponse(text, 200, Headers.headersOf())
         val data = response.data(GitCommit::class.java)
         assertThat(data.dateTime).isEqualTo("2019-03-29 16:25:48")
         assertThat(data.age).isEqualTo(3600)
@@ -323,7 +323,7 @@ class PorcelainAPIClientTests
     {
         val text = """{"status": "success", "data": [{"id": "12345", "date_time": "2019-03-29 16:25:48",
             |"age": 3600}], "errors": []}""".trimMargin()
-        val response = PorcelainResponse(text, 200, mock())
+        val response = PorcelainResponse(text, 200, Headers.headersOf())
         val data = response.listData(GitCommit::class.java)
         assertThat(data[0].id).isEqualTo("12345")
         assertThat(data[0].dateTime).isEqualTo("2019-03-29 16:25:48")
