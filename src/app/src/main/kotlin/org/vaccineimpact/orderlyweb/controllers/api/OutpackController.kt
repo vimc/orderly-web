@@ -35,9 +35,8 @@ class OutpackController(
     {
         val url = "/file/${context.params(":hash")}"
         val response = outpackServerClient
-              //  .throwOnError()
-                .get(url, context,
-                        transformResponse = false)
+                .throwOnError()
+                .get(url, context, transformResponse = false)
         val servletResponse = context.getSparkResponse().raw()
         servletResponse.contentType = ContentTypes.binarydata
         servletResponse.setContentLength(response.headers["content-length"]!!.toInt())
