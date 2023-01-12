@@ -42,9 +42,9 @@ class RunReportTests
         val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
         val mockOrderlyServerAPIWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", queryParams) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200, mock())
             on { get("/run-metadata", queryParams) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata), 200, mock())
         }
         val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerAPIWithError
@@ -67,9 +67,9 @@ class RunReportTests
     {
         val mockOrderlyServerAPIWithError = mock<OrderlyServerAPI> {
             on { get("/run-metadata", mapOf()) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200, mock())
             on { get("/git/branches", mapOf()) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200, mock())
         }
         val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerAPIWithError
@@ -99,9 +99,9 @@ class RunReportTests
     {
         val mockOrderlyServerAPIWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", mapOf()) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeBranchResponse), 200, mock())
             on { get("/run-metadata", mapOf()) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata), 200)
+                    PorcelainResponse(Serializer.instance.toResult(fakeMetadata), 200, mock())
         }
         val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerAPIWithError
@@ -224,7 +224,7 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val mockOrderlyResponse = PorcelainResponse("""{"data": $testStatusJson}""",200)
+        val mockOrderlyResponse = PorcelainResponse("""{"data": $testStatusJson}""",200, mock())
 
         val mockAPI = mock<OrderlyServerAPI> {
             on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn  mockOrderlyResponse

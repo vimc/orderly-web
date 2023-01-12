@@ -11,7 +11,7 @@ import org.vaccineimpact.orderlyweb.controllers.api.GitController
 class GitControllerTests : ControllerTest()
 {
     private val mockContext = mock<ActionContext>()
-    private val mockResponse = PorcelainResponse("testResponse", 200)
+    private val mockResponse = PorcelainResponse("testResponse", 200, mock())
 
     @Test
     fun `status gets status from orderly`()

@@ -43,7 +43,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponseText =
             """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
 
         val expectedQs = mapOf(
                 "ref" to "abc123",
@@ -90,7 +90,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponseText =
             """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
-        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200)
+        val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, mock())
 
         val expectedBody = """{"params":{}}"""
         val apiClient: OrderlyServerAPI = mock {
@@ -145,7 +145,7 @@ class ReportRunControllerTests : ControllerTest()
             on { params(":key") } doReturn reportKey
         }
 
-        val mockAPIResponse = PorcelainResponse("""{"status": "running"}""", 200)
+        val mockAPIResponse = PorcelainResponse("""{"status": "running"}""", 200, mock())
 
         val apiClient: OrderlyServerAPI = mock {
             on { get("/v1/reports/$reportKey/status/", actionContext) } doReturn mockAPIResponse
@@ -164,7 +164,7 @@ class ReportRunControllerTests : ControllerTest()
             on { params(":key") } doReturn reportKey
         }
 
-        val mockAPIResponse = PorcelainResponse("okayresponse", 200)
+        val mockAPIResponse = PorcelainResponse("okayresponse", 200, mock())
 
         val apiClient: OrderlyServerAPI = mock {
             on { delete("/v1/reports/$reportKey/kill/", actionContext) } doReturn mockAPIResponse

@@ -10,7 +10,9 @@ object OutpackRouteConfig : RouteConfig
     private val controller = OutpackController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
-            APIEndpoint("/outpack/", controller, "index")
+            APIEndpoint("/outpack/file/:hash/", controller, "getFile")
+                    .secure(readReports),
+            APIEndpoint("/outpack/*/", controller, "get")
                     .json()
                     .secure(readReports)
     )

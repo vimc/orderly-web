@@ -18,7 +18,7 @@ class MetadataTests
         val mockContext = mock<ActionContext>{
             on { params(":name") } doReturn "testName"
         }
-        val mockOrderlyResponse = PorcelainResponse("testResponse", 200)
+        val mockOrderlyResponse = PorcelainResponse("testResponse", 200, mock())
         val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { get("/v1/reports/testName/dependencies/", mockContext) } doReturn mockOrderlyResponse
         }

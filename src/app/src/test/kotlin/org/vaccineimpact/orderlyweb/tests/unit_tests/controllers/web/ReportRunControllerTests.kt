@@ -92,7 +92,7 @@ class ReportRunControllerTests
 
         val mockWorkflowRepo = mock<WorkflowRunReportRepository>()
 
-        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200)
+        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, mock())
         val mockAPI = mock<OrderlyServerAPI>{
             on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
         }
@@ -144,7 +144,7 @@ class ReportRunControllerTests
             on { this.getReportRun("testReportKey") } doReturn testReportRunLog
         }
 
-        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200)
+        val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, mock())
         val mockAPI = mock<OrderlyServerAPI>{
             on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
         }

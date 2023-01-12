@@ -15,7 +15,7 @@ class QueueControllerTests : ControllerTest()
     fun `getStatus fetches queue status from orderly server`()
     {
         val mockContext = mock<ActionContext>()
-        val mockResponse = PorcelainResponse("testResponse", 200)
+        val mockResponse = PorcelainResponse("testResponse", 200, mock())
         val mockOrderly = mock<OrderlyServerAPI>{
             on { it.get("/v1/queue/status/", mockContext) } doReturn mockResponse
         }
