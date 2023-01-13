@@ -72,15 +72,19 @@ class OutpackTests : IntegrationTest()
     }
 
     @Test
-    fun `can get json errors for outpack file`()
+    fun `can get outpack errors for outpack file`()
     {
         val response = apiRequestHelper.get(
-                "/outpack/file/12345",
+                "/outpack/file/sha256:4251454256143561",
+                contentType = ContentTypes.binarydata,
                 userEmail = fakeGlobalReportReader()
         )
 
         assertJsonContentType(response)
-        System.err.println(response.text)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
+
+        // TODO it would be better if this just passed through the error response from outpack
+        // but should be addressed as part of mrc-3916
+        Assertions.assertThat(response.text).contains("outpack-server-error")
     }
 }

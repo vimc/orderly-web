@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 set -ex
 
@@ -39,4 +40,5 @@ export GIT_BRANCH=$GIT_BRANCH
 export ORDERLY_SERVER_USER_ID=$UID
 export ORDERLY_DEMO_PATH=$HERE/../src/app/demo
 export ORDERLY_DEMO=$(realpath $ORDERLY_DEMO_PATH)
+export OUTPACK_DEMO=$(realpath $HERE/../src/app/outpack)
 export BUILD_ENV_TAG=$ORG/orderly-web-build-environment:$GIT_ID
