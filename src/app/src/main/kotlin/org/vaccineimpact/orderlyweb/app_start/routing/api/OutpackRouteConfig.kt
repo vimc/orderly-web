@@ -12,6 +12,7 @@ object OutpackRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
             APIEndpoint("/outpack/file/:hash/", controller, "getFile")
                     .secure(readReports),
+            // default route for all not otherwise specified outpack GET requests
             APIEndpoint("/outpack/*/", controller, "get")
                     .json()
                     .secure(readReports)
