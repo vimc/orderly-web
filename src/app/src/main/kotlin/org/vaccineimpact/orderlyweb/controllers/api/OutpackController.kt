@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OutpackServerClient
 import org.vaccineimpact.orderlyweb.PorcelainAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -39,9 +38,7 @@ class OutpackController(
                 .get(url, context, transformResponse = false)
 
         val servletResponse = context.getSparkResponse().raw()
-        servletResponse.contentType = ContentTypes.binarydata
-        servletResponse.setContentLength(response.headers["content-length"]!!.toInt())
-        servletResponse.setHeader("content-disposition", response.headers["content-disposition"])
+        response.headers.map { servletResponse.setHeader(it.first, it.second) }
         servletResponse.outputStream.write(response.bytes)
         return true
     }
