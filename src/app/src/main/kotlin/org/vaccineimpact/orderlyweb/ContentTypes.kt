@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb
 
 object ContentTypes
 {
+    const val any = "*/*"
     const val csv = "text/csv"
     const val json = "application/json"
     const val binarydata = "application/octet-stream"
