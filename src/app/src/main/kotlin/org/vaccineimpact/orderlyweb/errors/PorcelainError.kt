@@ -7,8 +7,7 @@ class PorcelainError(url: String, statusCode: Int, instanceName: String) : Order
         statusCode,
         listOf(
                 ErrorInfo(
-                        "${Serializer.instance.convertFieldName(instanceName)
-                                .split(" ").joinToString("-")}-error",
+                        "${Serializer.instance.convertFieldName(instanceName, '-')}-error",
                         "$instanceName request failed for url $url"
                 )
         )
