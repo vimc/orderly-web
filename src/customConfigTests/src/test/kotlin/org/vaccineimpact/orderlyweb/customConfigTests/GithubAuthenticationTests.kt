@@ -141,7 +141,7 @@ class GithubAuthenticationTests : CustomConfigTests()
             assertThat(result.statusCode).isEqualTo(401)
             JSONValidator.validateError(
                     result.text,
-                    expectedErrorCode = "github-token-invalid",
+                    expectedError = "github-token-invalid",
                     expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid"
             )
         }

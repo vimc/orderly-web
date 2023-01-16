@@ -81,6 +81,6 @@ class OrderlyWebErrorTests
         val result = sut.asResult()
         assertThat(result.status).isEqualTo(ResultStatus.FAILURE)
         assertThat(result.errors.count()).isEqualTo(1)
-        assertThat(result.errors[0].code).isEqualTo(expectedResultCode)
+        assertThat(result.errors[0].error).isEqualTo(expectedResultCode)
     }
 }

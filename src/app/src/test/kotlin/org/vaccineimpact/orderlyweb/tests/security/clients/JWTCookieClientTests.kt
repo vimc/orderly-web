@@ -34,8 +34,8 @@ class JWTCookieClientTests
     {
         val sut = JWTCookieClient(mockTokenVerifier)
         val errorInfo = sut.errorInfo
-        assertThat(errorInfo.code).isEqualTo("cookie-bearer-token-invalid")
-        assertThat(errorInfo.message).isEqualTo("Bearer token not supplied in cookie 'orderlyweb_jwt_token', or bearer token was invalid")
+        assertThat(errorInfo.error).isEqualTo("cookie-bearer-token-invalid")
+        assertThat(errorInfo.detail).isEqualTo("Bearer token not supplied in cookie 'orderlyweb_jwt_token', or bearer token was invalid")
     }
 
 }

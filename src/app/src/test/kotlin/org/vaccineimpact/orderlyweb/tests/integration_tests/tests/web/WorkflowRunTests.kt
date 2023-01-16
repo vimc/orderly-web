@@ -424,12 +424,12 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(400)
         val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
         assertThat(errors.count()).isEqualTo(3)
-        assertThat(errors[0]["message"].asText()).isEqualTo("Row 4: row should contain 2 values, 3 values found")
-        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
-        assertThat(errors[1]["message"].asText()).isEqualTo("Row 3, column 2: required parameter 'nmin' was not provided for report 'other'")
-        assertThat(errors[1]["code"].asText()).isEqualTo("bad-request")
-        assertThat(errors[2]["message"].asText()).isEqualTo("Row 5, column 1: report 'nonexistent' not found in Orderly")
-        assertThat(errors[2]["code"].asText()).isEqualTo("bad-request")
+        assertThat(errors[0]["detail"].asText()).isEqualTo("Row 4: row should contain 2 values, 3 values found")
+        assertThat(errors[0]["error"].asText()).isEqualTo("bad-request")
+        assertThat(errors[1]["detail"].asText()).isEqualTo("Row 3, column 2: required parameter 'nmin' was not provided for report 'other'")
+        assertThat(errors[1]["error"].asText()).isEqualTo("bad-request")
+        assertThat(errors[2]["detail"].asText()).isEqualTo("Row 5, column 1: report 'nonexistent' not found in Orderly")
+        assertThat(errors[2]["error"].asText()).isEqualTo("bad-request")
     }
 
     @Test
@@ -454,8 +454,8 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(400)
         val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
         assertThat(errors.count()).isEqualTo(1)
-        assertThat(errors[0]["message"].asText()).isEqualTo("File contains no rows")
-        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
+        assertThat(errors[0]["detail"].asText()).isEqualTo("File contains no rows")
+        assertThat(errors[0]["error"].asText()).isEqualTo("bad-request")
     }
 
     @Test
@@ -473,8 +473,8 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(400)
         val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
         assertThat(errors.count()).isEqualTo(1)
-        assertThat(errors[0]["message"].asText()).isEqualTo("No data provided")
-        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
+        assertThat(errors[0]["detail"].asText()).isEqualTo("No data provided")
+        assertThat(errors[0]["error"].asText()).isEqualTo("bad-request")
     }
 
     @Test

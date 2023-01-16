@@ -19,7 +19,7 @@ import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class APIRequestHelper : RequestHelper()
 {
-    override val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
+    override val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v2"
     val authRepo = OrderlyAuthorizationRepository()
     val userRepo = OrderlyUserRepository()
 

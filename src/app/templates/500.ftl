@@ -3,7 +3,7 @@
     <h1>Something went wrong</h1>
    <ul>
     <#list errors as error>
-        <li>${error.message}</li>
+        <li>${error.detail}</li>
     </#list>
    </ul>
 </@layout>
