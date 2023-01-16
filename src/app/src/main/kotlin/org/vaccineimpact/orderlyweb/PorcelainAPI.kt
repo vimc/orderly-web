@@ -31,7 +31,7 @@ interface PorcelainAPI
     ): PorcelainResponse
 
     @Throws(PorcelainError::class)
-    fun get(url: String, context: ActionContext): PorcelainResponse
+    fun get(url: String, context: ActionContext, transformResponse: Boolean = true): PorcelainResponse
 
     @Throws(PorcelainError::class)
     fun get(url: String, queryParams: Map<String, String>): PorcelainResponse
@@ -42,9 +42,9 @@ interface PorcelainAPI
     fun throwOnError(): PorcelainAPI
 }
 
-class PorcelainResponse(val bytes: ByteArray, val statusCode: Int)
+class PorcelainResponse(val bytes: ByteArray, val statusCode: Int, val headers: Headers)
 {
-    constructor(text: String, statusCode: Int) : this(text.toByteArray(), statusCode)
+    constructor(text: String, statusCode: Int, headers: Headers) : this(text.toByteArray(), statusCode, headers)
 
     val text get() = String(bytes)
 
@@ -85,11 +85,11 @@ open class PorcelainAPIClient(
         }
     }
 
-    override fun get(url: String, context: ActionContext): PorcelainResponse
+    override fun get(url: String, context: ActionContext, transformResponse: Boolean): PorcelainResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
-                .headers(standardHeaders.toHeaders())
+                .headers((if (transformResponse) standardHeaders else emptyMap()).toHeaders())
                 .build()
 
         client.newCall(request).execute().use {
@@ -97,7 +97,14 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return transformResponse(it.code, it.body!!.string())
+            return if (transformResponse)
+            {
+                transformResponse(it.code, it.body!!.string(), it.headers)
+            }
+            else
+            {
+                PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
+            }
         }
     }
 
@@ -120,7 +127,7 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return transformResponse(it.code, it.body!!.string())
+            return transformResponse(it.code, it.body!!.string(), it.headers)
         }
     }
 
@@ -180,11 +187,11 @@ open class PorcelainAPIClient(
             }
             return if (transformResponse)
             {
-                transformResponse(it.code, it.body!!.string())
+                transformResponse(it.code, it.body!!.string(), it.headers)
             }
             else
             {
-                PorcelainResponse(it.body!!.bytes(), it.code)
+                PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
             }
         }
     }
@@ -201,11 +208,11 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return transformResponse(it.code, it.body!!.string())
+            return transformResponse(it.code, it.body!!.string(), it.headers)
         }
     }
 
-    private fun transformResponse(code: Int, text: String): PorcelainResponse
+    private fun transformResponse(code: Int, text: String, headers: Headers): PorcelainResponse
     {
         val errorsKey = "errors"
         val messageKey = "message"
@@ -241,7 +248,7 @@ open class PorcelainAPIClient(
         }
         json.put("errors", newErrors)
 
-        return PorcelainResponse(json.toString(), code)
+        return PorcelainResponse(json.toString(), code, headers)
     }
 
     private fun buildFullUrl(url: String, queryString: String?): String

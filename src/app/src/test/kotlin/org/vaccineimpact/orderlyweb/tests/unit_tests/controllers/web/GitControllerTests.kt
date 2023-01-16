@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -15,13 +16,13 @@ class GitControllerTests : ControllerTest()
     private val mockContext = mock<ActionContext>() {
             on { params(":branch") } doReturn "master"
         }
-    private val mockResponse = PorcelainResponse("testResponse", 200)
+    private val mockResponse = PorcelainResponse("testResponse", 200, Headers.headersOf())
     @Test
     fun `gets commits for branch`()
     {
         val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
             on { get("/git/commits?branch=master", mockContext) } doReturn
-                    PorcelainResponse(Serializer.instance.toResult(listOf(1, 2, 3)), 200)
+                    PorcelainResponse(Serializer.instance.toResult(listOf(1, 2, 3)), 200, Headers.headersOf())
         }
         val sut = GitController(mockContext, mockOrderlyServerAPI)
         val result = sut.getCommits()
@@ -31,8 +32,8 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `fetch receives successful fetch response from orderly, and returns git successful branches response`()
     {   
-        val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 200)
-        val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 200)
+        val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 200, Headers.headersOf())
+        val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 200, Headers.headersOf())
 
         val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn fetchResponse
@@ -49,8 +50,8 @@ class GitControllerTests : ControllerTest()
     fun `fetch receives and returns failed fetch response from orderly, and does not call git branches`()
     {   
         val mockContext2 = mock<ActionContext>()
-        val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 500)
-        val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 200)
+        val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 500, Headers.headersOf())
+        val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 200, Headers.headersOf())
 
         val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext2) } doReturn fetchResponse
@@ -62,15 +63,15 @@ class GitControllerTests : ControllerTest()
 
         assertThat(response).isEqualTo(Serializer.instance.toResult("fetchResponse"))
         verify(mockContext2).setStatusCode(500)
-        verify(mockOrderlyServerAPI, times(0)).get(any(), context = any())
+        verify(mockOrderlyServerAPI, times(0)).get(any(), context = any(), transformResponse = any())
     }
 
     @Test
     fun `fetch receives successful fetch response but failed git branches response from orderly, and returns failed git branches response`()
     {   
         val mockContext2 = mock<ActionContext>()
-        val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 200)
-        val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 500)
+        val fetchResponse = PorcelainResponse(Serializer.instance.toResult("fetchResponse"), 200, Headers.headersOf())
+        val branchesResponse = PorcelainResponse(Serializer.instance.toResult("branchesResponse"), 500, Headers.headersOf())
 
         val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext2) } doReturn fetchResponse

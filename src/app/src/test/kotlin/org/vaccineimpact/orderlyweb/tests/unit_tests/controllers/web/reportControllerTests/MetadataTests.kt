@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportCont
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.verify
+import okhttp3.Headers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -18,7 +19,7 @@ class MetadataTests
         val mockContext = mock<ActionContext>{
             on { params(":name") } doReturn "testName"
         }
-        val mockOrderlyResponse = PorcelainResponse("testResponse", 200)
+        val mockOrderlyResponse = PorcelainResponse("testResponse", 200, Headers.headersOf())
         val mockOrderlyServerAPI = mock<OrderlyServerAPI>{
             on { get("/v1/reports/testName/dependencies/", mockContext) } doReturn mockOrderlyResponse
         }

@@ -32,6 +32,7 @@ function cleanup() {
 trap cleanup EXIT
 docker run --rm \
     -v $ORDERLY_DEMO:/api/src/app/demo \
+    -v $OUTPACK_DEMO:/api/src/app/outpack \
     -v $PWD/reports:/api/src/app/build/reports \
     -v $PWD/coverage:/api/src/app/coverage \
     -v /var/run/docker.sock:/var/run/docker.sock \

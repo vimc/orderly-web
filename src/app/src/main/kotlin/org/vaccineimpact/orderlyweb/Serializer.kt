@@ -37,21 +37,25 @@ open class Serializer
 
     open fun toJson(result: Result): String = gson.toJson(result)
 
-    fun convertFieldName(name: String): String
+    fun convertFieldName(name: String, separator: Char = '_'): String
     {
         val builder = StringBuilder()
         for (char in name)
         {
             if (char.isUpperCase())
             {
-                builder.append("_" + char.lowercase())
+                builder.append(separator + char.lowercase())
+            }
+            else if (char.isWhitespace())
+            {
+                builder.append(separator)
             }
             else
             {
                 builder.append(char)
             }
         }
-        return builder.toString().trim('_')
+        return builder.toString().trim(separator)
     }
 
     fun serializeEnum(value: Any) = value.toString().lowercase().replace('_', '-')

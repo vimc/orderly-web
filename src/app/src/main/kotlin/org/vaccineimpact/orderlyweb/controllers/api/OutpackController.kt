@@ -16,8 +16,30 @@ class OutpackController(
             OutpackServerClient(AppConfig())
     )
 
-    fun index(): String
+    fun get(): String
     {
-        return passThroughResponse(outpackServerClient.get("/", context))
+        val splat = context.splat()
+        val url = if (splat?.isNotEmpty() == true)
+        {
+            "/${splat[0]}"
+        }
+        else
+        {
+            "/"
+        }
+        return passThroughResponse(outpackServerClient.get(url, context))
+    }
+
+    fun getFile(): Boolean
+    {
+        val url = "/file/${context.params(":hash")}"
+        val response = outpackServerClient
+                .throwOnError()
+                .get(url, context, transformResponse = false)
+
+        val servletResponse = context.getSparkResponse().raw()
+        response.headers.map { servletResponse.setHeader(it.first, it.second) }
+        servletResponse.outputStream.write(response.bytes)
+        return true
     }
 }
