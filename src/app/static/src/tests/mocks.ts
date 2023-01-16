@@ -119,7 +119,7 @@ export const mockFailure = (errorMsg: any) => {
     return {
         data: {},
         status: "failure",
-        errors: [{code: "ERROR", message: errorMsg}]
+        errors: [{error: "ERROR", detail: errorMsg}]
     }
 }
 

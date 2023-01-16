@@ -101,7 +101,7 @@ class BundleControllerTests : ControllerTest()
         }
         val httpClient = getHttpClient("/v1/bundle/import", """{"status":"success","errors":null,"data":true}""".toByteArray())
         val controller = BundleController(context, config, OrderlyServerClient(config, httpClient))
-        assertThat(controller.import()).isEqualTo("""{"data":true,"errors":[],"status":"success"}""")
+        assertThat(controller.import()).isEqualTo("""{"status":"success","errors":null,"data":true}""")
     }
 
     @Test

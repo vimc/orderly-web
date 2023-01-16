@@ -22,7 +22,7 @@
         },
         computed: {
             message: function () {
-                return this.error.message ? this.error.message : this.error.code
+                return this.error.detail ? this.error.detail : this.error.error
             }
         }
     });

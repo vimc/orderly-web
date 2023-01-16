@@ -36,7 +36,7 @@ describe("ApiService", () => {
             .get("/reports");
 
         expect(committedType).toBe("TEST_TYPE");
-        expect(committedPayload["message"]).toBe("some error");
+        expect(committedPayload["detail"]).toBe("some error");
     });
 
     it("throws could not parse error if API response errors are empty", async () => {
@@ -163,8 +163,8 @@ async function expectCouldNotParseAPIResponseError() {
     expect(commit.mock.calls[0][0]).toStrictEqual({
         type: `errors/ErrorAdded`,
         payload: {
-            code: "MALFORMED_RESPONSE",
-            message: "Could not parse API response. Please contact support."
+            error: "MALFORMED_RESPONSE",
+            detail: "Could not parse API response. Please contact support."
         }
     });
     expect(commit.mock.calls[0][1]).toStrictEqual({root: true});

@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 @ExtendWith(DebugHelper::class)
 class FineGrainedPermissionTests : CustomConfigTests()
 {
-    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
+    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v2"
     val url = "$apiBaseUrl/login/"
 
     @Test

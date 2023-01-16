@@ -67,8 +67,8 @@ describe("vuex reportList", () => {
 
     it("renders error Alert correctly", async () => {
         const error = {
-            code: "ERROR",
-            message: "ERROR MSG"
+            error: "ERROR",
+            detail: "ERROR MSG"
         }
 
         const store = createStore({reportsError: error})

@@ -24,7 +24,7 @@
                 response.data &&
                 response.data.errors &&
                 response.data.errors[0] &&
-                response.data.errors[0].message
+                response.data.errors[0].detail
         }
     })
 </script>

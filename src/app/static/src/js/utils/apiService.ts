@@ -92,8 +92,8 @@ export class ApiService<S extends string, T extends string> implements API<S, T>
 
     private static createError() {
         return {
-            code: "MALFORMED_RESPONSE",
-            message: "Could not parse API response. Please contact support."
+            error: "MALFORMED_RESPONSE",
+            detail: "Could not parse API response. Please contact support."
         }
     }
 

@@ -159,7 +159,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
         assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
                 "The following items are not present in this git commit and have been removed from the workflow:\n" +
-                "Report 'other'")
+                        "Report 'other'"
+        )
     }
 
     @Test
@@ -294,14 +295,14 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(table.text).contains("Reports")
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(3)
-        val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
+        val minimalRow = rows.find { it.text.startsWith("minimal") }!!
         val minimalRowStatus = minimalRow.findElement(By.cssSelector("td:nth-child(2)"))
         assertThat(minimalRowStatus.text).isIn(listOf("Queued", "Running"))
-        val globalRow = rows.find{ it.text.startsWith("global") }!!
+        val globalRow = rows.find { it.text.startsWith("global") }!!
         val globalRowStatus = globalRow.findElement(By.cssSelector("td:nth-child(2)"))
         assertThat(globalRowStatus.text).isIn(listOf("Queued", "Running"))
-        wait.until(ExpectedConditions.textToBePresentInElement(minimalRowStatus,"Complete"))
-        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRowStatus, "Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow, "Complete"))
 
         // view report log
         val viewLogLink = minimalRow.findElement(By.cssSelector("a.report-log-link"))
@@ -419,7 +420,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val backButton = driver.findElement(By.id("previous-workflow"))
         backButton.click()
-        
+
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-1")))
         val removeReportBtns = driver.findElements(By.cssSelector(".remove-report-button"))
         removeReportBtns[1].click()
@@ -473,8 +474,8 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.visibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Hide defaults...")
 
-        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).getAttribute("innerHTML")).isEqualTo("disease: HepB")
-        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
+        assertThat(defaultParams.findElements(By.className("default-params-collapse")).map { it.getAttribute("innerHTML") })
+                .contains("disease: HepB", "nmin: 0.5")
 
         showDefault.click()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
@@ -535,8 +536,9 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.visibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Hide defaults...")
 
-        assertThat(defaultParams.findElements(By.className("default-params-collapse"))[0].getAttribute("innerHTML")).isEqualTo("disease: HepB")
-        assertThat(defaultParams.findElements(By.className("default-params-collapse"))[1].getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
+        assertThat(defaultParams.findElements(By.className("default-params-collapse"))
+                .map { it.getAttribute("innerHTML") })
+                .contains("disease: HepB", "nmin: 0.5")
 
         showDefault.click()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))

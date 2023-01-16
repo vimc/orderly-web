@@ -8,7 +8,7 @@ describe("errorInfo", () => {
         const wrapper = mount(ErrorInfo, {
             propsData: {
                 apiError: {
-                    response: {data: {"errors": [{"message": "test error message"}]}}
+                    response: {data: {"errors": [{"detail": "test error message"}]}}
                 },
                 defaultMessage: "test default"
             }

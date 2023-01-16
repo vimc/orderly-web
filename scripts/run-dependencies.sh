@@ -14,7 +14,7 @@ export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
 mkdir -p $OUTPACK_DEMO
 docker pull mrcide/outpack.orderly:mrc-3914
-docker run -v $ORDERLY_DEMO:/orderly:ro -v $OUTPACK_DEMO:/outpack --env USER_ID=$UID mrcide/outpack.orderly:mrc-3914 /orderly /outpack --once
+docker run -v $ORDERLY_DEMO:/orderly:ro -v $OUTPACK_DEMO:/outpack -u $UID mrcide/outpack.orderly:mrc-3914 /orderly /outpack --once
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml
 
