@@ -31,7 +31,7 @@ docker exec orderly-web touch /etc/orderly/web/go_signal
 sleep 3
 
  # Hit the index page and check it works
-response=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8888/api/v1)
+response=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8888/api/v2)
 
 if [[ $response -ne 200 ]]; then exit 1; fi;
 
