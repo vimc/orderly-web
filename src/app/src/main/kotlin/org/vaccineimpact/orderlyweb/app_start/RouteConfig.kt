@@ -26,6 +26,12 @@ object APIRouteConfig : RouteConfig
 
 object WebRouteConfig : RouteConfig
 {
+    private val legacyEndpoint = WebEndpoint(
+            "/api/v1/*/",
+            IndexController::class,
+            "legacy"
+    ).json().transform()
+
     private val metricsEndpoint = WebEndpoint(
             "/metrics/",
             IndexController::class,
@@ -35,16 +41,16 @@ object WebRouteConfig : RouteConfig
 
     private val accessibilityEndpoint = WebEndpoint(
             "/accessibility/",
-            IndexController:: class,
+            IndexController::class,
             "accessibility"
     )
 
     private val adminEndpoint = WebEndpoint(
             "/manage-access/",
-            AdminController:: class,
+            AdminController::class,
             "admin"
     )
-    .secure(setOf("*/users.manage"))
+            .secure(setOf("*/users.manage"))
 
     override val endpoints: List<EndpointDefinition> =
             WebAuthRouteConfig.endpoints +
@@ -57,5 +63,6 @@ object WebRouteConfig : RouteConfig
                     WebPermissionRouteConfig.endpoints +
                     WebRoleRouteConfig.endpoints +
                     WebSettingsRouteConfig.endpoints +
-                    WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint + accessibilityEndpoint
+                    WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint +
+                    accessibilityEndpoint + legacyEndpoint
 }
