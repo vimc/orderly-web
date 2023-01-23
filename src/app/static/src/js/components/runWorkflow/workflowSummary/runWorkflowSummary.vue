@@ -2,8 +2,7 @@
     <div id="summary-header">
         <run-workflow-summary-header :workflow-summary="workflowSummary"></run-workflow-summary-header>
         <div v-if="hasDependenciesLength">
-            <workflow-summary-reports :workflow-summary="workflowSummary"
-                                      :git-commit="workflowMetadata.git_commit"/>
+            <workflow-summary-reports :workflow-summary="workflowSummary"/>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>

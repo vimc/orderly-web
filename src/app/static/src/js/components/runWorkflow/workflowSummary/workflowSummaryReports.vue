@@ -59,7 +59,6 @@
 
     interface Props {
         workflowSummary: WorkflowSummaryResponse
-        gitCommit: string
     }
 
     interface Methods {
@@ -78,11 +77,7 @@
             workflowSummary: {
                 required: true,
                 type: Object
-            },
-            gitCommit: {
-                required: true,
-                type: String
-            },
+            }
         },
         methods: {
             reportInfo(reportName) {

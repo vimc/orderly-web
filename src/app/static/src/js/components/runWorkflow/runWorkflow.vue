@@ -18,7 +18,7 @@
             <a href="#" @click.prevent="$emit('view-progress', createdWorkflowKey)">View workflow progress</a>
         </div>
         <div class="pt-4 col-sm-6">
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+            <error-info default-message="An error occurred while running the workflow" :api-error="error"></error-info>
         </div>
     </div>
 </template>
@@ -123,7 +123,6 @@
                     })
                     .catch((error) => {
                         this.error = error;
-                        this.defaultMessage = "An error occurred while running the workflow";
                     });
             },
             updateRunWorkflowMetadata: function (update) {
