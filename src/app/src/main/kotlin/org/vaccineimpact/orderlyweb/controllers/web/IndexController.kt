@@ -13,10 +13,10 @@ import org.vaccineimpact.orderlyweb.viewmodels.AccessibilityViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class IndexController(
-    actionContext: ActionContext,
-    private val orderly: OrderlyClient,
-    private val reportRepository: ReportRepository,
-    private val tagRepository: TagRepository
+        actionContext: ActionContext,
+        private val orderly: OrderlyClient,
+        private val reportRepository: ReportRepository,
+        private val tagRepository: TagRepository
 ) : Controller(actionContext)
 {
     constructor(context: ActionContext) :
@@ -47,6 +47,9 @@ class IndexController(
 
     fun legacy(): String
     {
-        throw BadRequest("OrderlyWeb has been upgraded. Please update your R package to a version > 0.1.15. See https://github.com/vimc/orderlyweb/#installation")
+        throw BadRequest(
+                "OrderlyWeb has been upgraded. Please update your R package to a version > 0.1.15. " +
+                        "See https://github.com/vimc/orderlyweb/#installation"
+        )
     }
 }
