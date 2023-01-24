@@ -85,7 +85,7 @@ class RunReportTests
     fun `getRunReport throws if orderly server returns an error`()
     {
         val mockOrderlyServerAPIWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mapOf()) } doThrow PorcelainError("/run-metadata", 400, "Orderly server")
+            on { get("/run-metadata", mapOf()) } doThrow PorcelainError("/run-metadata", 400, "Orderly server", listOf())
         }
         val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerAPIWithError

@@ -13,6 +13,15 @@ abstract class Controller(val context: ActionContext, val appConfig: Config = Ap
         return response.text
     }
 
+    protected fun writeResponseToOutputStream(response: PorcelainResponse): Boolean
+    {
+        context.setStatusCode(response.statusCode)
+        val servletResponse = context.getSparkResponse().raw()
+        response.headers.map { servletResponse.setHeader(it.first, it.second) }
+        servletResponse.outputStream.write(response.bytes)
+        return true
+    }
+
     protected fun okayResponse() = "OK"
 
     protected fun canReadReports(): Boolean

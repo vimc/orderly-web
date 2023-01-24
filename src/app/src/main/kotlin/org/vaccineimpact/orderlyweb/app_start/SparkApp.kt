@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.app_start
 
 import freemarker.template.Configuration
+import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
@@ -40,6 +41,7 @@ class OrderlyWeb
         val urls: MutableList<String> = mutableListOf()
         const val WAIT_TIME_MS = 2000L
         const val PORT_ATTEMPTS = 5
+        val httpClient = OkHttpClient()
     }
 
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)

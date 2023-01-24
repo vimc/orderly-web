@@ -1,7 +1,7 @@
 {
     "id": "Error",
     "properties": {
-        "error": { "$ref": "ErrorCode.schema.json" },
+        "error": { "type": "string" },
         "detail": { "type": [ "string", "null" ] }
     },
     "additionalProperties": false,

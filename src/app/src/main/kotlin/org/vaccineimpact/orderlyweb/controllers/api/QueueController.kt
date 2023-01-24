@@ -18,7 +18,7 @@ class QueueController(
             this(
                     context,
                     AppConfig(),
-                    OrderlyServerClient(AppConfig()).throwOnError()
+                    OrderlyServerClient(AppConfig())
             )
 
     fun getStatus(): String

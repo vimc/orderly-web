@@ -19,23 +19,20 @@ class BundleController(
             this(
                     context,
                     AppConfig(),
-                    OrderlyServerClient(AppConfig()).throwOnError()
+                    OrderlyServerClient(AppConfig())//.throwOnError()
             )
 
     fun pack(): Boolean
     {
         val url = "/v1/bundle/pack/${context.params(":name")}"
         val response = orderlyServerAPI.post(url, context, accept = ContentTypes.any)
-        val servletResponse = context.getSparkResponse().raw()
-        servletResponse.contentType = "application/zip" // TODO content type to be passed through after VIMC-4388
-        servletResponse.outputStream.write(response.bytes)
-        return true
+        return writeResponseToOutputStream(response)
     }
 
     fun import(): String
     {
         val url = "/v1/bundle/import"
         val response = orderlyServerAPI.post(url, context, rawRequest = true)
-        return response.text
+        return passThroughResponse(response)
     }
 }

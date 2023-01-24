@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
 import okhttp3.OkHttpClient
+import org.vaccineimpact.orderlyweb.app_start.OrderlyWeb.Companion.httpClient
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.PorcelainError
 import org.vaccineimpact.orderlyweb.models.Parameter
@@ -18,7 +19,7 @@ interface OrderlyServerAPI : PorcelainAPI
 
 class OrderlyServerClient(
         config: Config,
-        client: OkHttpClient = OkHttpClient()
+        client: OkHttpClient = httpClient
 ) : OrderlyServerAPI, PorcelainAPIClient("Orderly server", config["orderly.server"], client)
 {
     override fun getRunnableReportNames(queryParams: Map<String, String>): List<String>

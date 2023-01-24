@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import com.github.salomonbrys.kotson.toJsonArray
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -82,9 +81,6 @@ class OutpackTests : IntegrationTest()
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
-
-        // TODO it would be better if this just passed through the error response from outpack
-        // but should be addressed as part of mrc-3916
-        Assertions.assertThat(response.text).contains("outpack-server-error")
+        JSONValidator.validateError(response.text, "entity not found", "hash 'sha256:4251454256143561' not found")
     }
 }
