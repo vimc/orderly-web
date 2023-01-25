@@ -31,7 +31,8 @@ class RunReportPageTests : SeleniumTest()
         driver.get(url)
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can view run tab`()
     {
         val tab = driver.findElement(By.id("run-tab"))
@@ -41,7 +42,8 @@ class RunReportPageTests : SeleniumTest()
         assertThat(select.firstSelectedOption.text).isEqualTo("master")
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can view run tab with querystring`()
     {
         val url = RequestHelper.webBaseUrl + "/run-report?report-name=minimal"
@@ -71,10 +73,12 @@ class RunReportPageTests : SeleniumTest()
         else
         {
             assertThat(driver.findElements(By.id("git-commit"))).isEmpty()
+            assertThat(driver.findElements(By.id("git-header"))).isEmpty()
         }
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can view and select reports`()
     {
         val typeahead = driver.findElement(By.id("report"))
@@ -87,27 +91,36 @@ class RunReportPageTests : SeleniumTest()
         assertThat(matches[0].text).startsWith("minimal")
     }
 
-    @Test
-    fun `can change git branch to non-master and see changed reports only`()
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
+    fun `can change git branch to non-master and see changed reports iff git enabled`(configType: ConfigType)
     {
-        val gitBranch = driver.findElement(By.id("git-branch"))
-        val gitCommit = driver.findElement(By.id("git-commit"))
-        val oldCommit = gitCommit.getAttribute("value")
+        if (configType == ConfigType.GIT_ALLOWED)
+        {
+            val gitBranch = driver.findElement(By.id("git-branch"))
+            val gitCommit = driver.findElement(By.id("git-commit"))
+            val oldCommit = gitCommit.getAttribute("value")
 
-        Select(gitBranch).selectByIndex(1)
-        wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(gitCommit, "value", oldCommit)))
-        assertThat(gitBranch.getAttribute("value")).isEqualTo("other")
-        val commitValue = gitCommit.getAttribute("value")
-        assertThat(commitValue).isNotBlank()
+            Select(gitBranch).selectByIndex(1)
+            wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(gitCommit, "value", oldCommit)))
+            assertThat(gitBranch.getAttribute("value")).isEqualTo("other")
+            val commitValue = gitCommit.getAttribute("value")
+            assertThat(commitValue).isNotBlank()
 
-        // 'minimal' and 'global' reports from master should not be included, 'other' and 'view' should be
-        assertThat(reportIsAvailable("minimal")).isFalse()
-        assertThat(reportIsAvailable("global")).isFalse()
-        assertThat(reportIsAvailable("other")).isTrue()
-        assertThat(reportIsAvailable("view")).isTrue()
+            // 'minimal' and 'global' reports from master should not be included, 'other' and 'view' should be
+            assertThat(reportIsAvailable("minimal")).isFalse()
+            assertThat(reportIsAvailable("global")).isFalse()
+            assertThat(reportIsAvailable("other")).isTrue()
+            assertThat(reportIsAvailable("view")).isTrue()
+        }
+        else
+        {
+            assertThat(driver.findElements(By.id("git-branch"))).isEmpty()
+        }
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can run a report and follow view log link to logs`()
     {
         val typeahead = driver.findElement(By.id("report"))
@@ -129,7 +142,8 @@ class RunReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h2"), "Running report logs"))
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can run a report and view logs`()
     {
         val typeahead = driver.findElement(By.id("report"))
@@ -152,7 +166,8 @@ class RunReportPageTests : SeleniumTest()
         assertThat(driver.findElement(By.cssSelector("#logs")).text).startsWith("minimal")
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can view logs tab`()
     {
         driver.findElement(By.id("logs-link")).click()
@@ -187,7 +202,8 @@ class RunReportPageTests : SeleniumTest()
         assertThat(paramInput[0].text).isEqualTo("new value")
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can add change message and type values`()
     {
         val typeahead = driver.findElement(By.id("report"))
