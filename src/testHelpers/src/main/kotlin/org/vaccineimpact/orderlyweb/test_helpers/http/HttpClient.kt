@@ -29,7 +29,9 @@ object HttpClient
             .url(url)
             .headers(headers.toHeaders())
             .build()
-        return Response(client.newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it)
+        }
     }
 
     fun post(url: String, data: Map<String, String>, auth: Authorization): Response
@@ -43,7 +45,9 @@ object HttpClient
                 }.build()
             )
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it)
+        }
     }
 
     fun post(url: String, headers: Map<String, String>, json: Map<String, Any>?): Response
@@ -53,7 +57,9 @@ object HttpClient
             .headers(headers.toHeaders())
             .post((if (json == null) "" else JSONObject(json).toString()).toRequestBody("application/json".toMediaType()))
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it)
+        }
     }
 
     fun post(url: String) = post(url, emptyMap(), "")
@@ -65,7 +71,9 @@ object HttpClient
             .headers(headers.toHeaders())
             .post((data ?: "").toRequestBody())
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it)
+        }
     }
 
     fun delete(url: String, headers: Map<String, String>): Response
@@ -75,7 +83,9 @@ object HttpClient
             .headers(headers.toHeaders())
             .delete()
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it)
+        }
     }
 
     fun options(url: String): Response
@@ -84,7 +94,9 @@ object HttpClient
             .url(url)
             .method("OPTIONS", null)
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it)
+        }
     }
 }
 
