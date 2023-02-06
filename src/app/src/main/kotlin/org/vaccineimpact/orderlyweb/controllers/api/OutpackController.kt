@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OutpackServerClient
 import org.vaccineimpact.orderlyweb.PorcelainAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -30,5 +29,4 @@ class OutpackController(
         }
         return writeResponseToOutputStream(outpackServerClient.get(url, context))
     }
-
 }

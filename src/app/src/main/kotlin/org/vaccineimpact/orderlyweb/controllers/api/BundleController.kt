@@ -19,7 +19,7 @@ class BundleController(
             this(
                     context,
                     AppConfig(),
-                    OrderlyServerClient(AppConfig())//.throwOnError()
+                    OrderlyServerClient(AppConfig())
             )
 
     fun pack(): Boolean
