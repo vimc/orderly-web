@@ -31,16 +31,4 @@ class OutpackController(
         return writeResponseToOutputStream(outpackServerClient.get(url, context))
     }
 
-//    fun getFile(): Boolean
-//    {
-//        val url = "/file/${context.params(":hash")}"
-//        val response = outpackServerClient
-//                .get(url, context, accept = ContentTypes.any)
-//        return passThroughResponse(response)
-////        context.setStatusCode(response.statusCode)
-////        val servletResponse = context.getSparkResponse().raw()
-////        response.headers.map { servletResponse.setHeader(it.first, it.second) }
-////        servletResponse.outputStream.write(response.bytes)
-////        return true
-//    }
 }
