@@ -18,7 +18,7 @@
         </h2>
         <div v-if="isReady">
             <div class="pb-4">
-                <h3 id="git-header">
+                <h3 id="git-header" v-if="runReportMetadata && runReportMetadata.git_supported">
                     Git
                 </h3>
                 <div>
