@@ -127,17 +127,34 @@ class PorcelainAPIClientTests
     }
 
     @Test
-    fun `disabling response transformation works for POST`()
+    fun `custom accept header works for POST`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val httpClient = getHttpClient(text)
         val response = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
-                .post("/some/path/", mock(), transformResponse = false)
+                .post("/some/path/", mock(), accept = "any")
 
         verify(httpClient).newCall(
                 check {
                     assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/")
-                    assertThat(it.headers).isEqualTo(emptyMap<String, String>().toHeaders())
+                    assertThat(it.headers).isEqualTo(mapOf("Accept" to "any").toHeaders())
+                }
+        )
+        assertThat(response.text).isEqualTo(text)
+    }
+
+    @Test
+    fun `custom accept header works for GET`()
+    {
+        val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
+        val httpClient = getHttpClient(text)
+        val response = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
+                .get("/some/path/", mapOf(), accept = eq("any"))
+
+        verify(httpClient).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://url-base/some/path/")
+                    assertThat(it.headers).isEqualTo(mapOf("Accept" to "any").toHeaders())
                 }
         )
         assertThat(response.text).isEqualTo(text)
@@ -202,7 +219,7 @@ class PorcelainAPIClientTests
                 .get("/some/path/", context = mock())
         assertThat(response.statusCode).isEqualTo(500)
         assertThat(response.text).isEqualTo(
-                """{"data":null,"errors":[{"error":"FOO","message":"bar"}],"status":"failure"}"""
+                """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         )
     }
 
@@ -210,57 +227,11 @@ class PorcelainAPIClientTests
     fun `passes through response json and status code`()
     {
         val json = """{"status": "success", "data": ["some data"], "errors": []}"""
-        testTranslatedResponse(json, json)
-    }
-
-    @Test
-    fun `translates response with null errors to empty array`()
-    {
-        val raw = """{"status": "success", "data": ["some data"], "errors": null}"""
-        val expected = """{"status": "success", "data": ["some data"], "errors": []}"""
-        testTranslatedResponse(raw, expected)
-    }
-
-    @Test
-    fun `translates response error detail to error message`()
-    {
-        val raw = """{"status": "success", "data": ["some data"],
-                           "errors": [{"code": "TEST1", "detail": "msg1"}, {"code": "TEST2", "detail": "msg2"}]}"""
-
-        val expected = """{"status": "success", "data": ["some data"],
-                            "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": "msg2"}]}"""
-
-        testTranslatedResponse(raw, expected)
-    }
-
-    @Test
-    fun `translates response null error detail to empty string error message`()
-    {
-        val raw = """{"status": "success", "data": ["some data"],
-                                  "errors": [{"code": "TEST1", "detail": "msg1"}, {"code": "TEST2", "detail": null}]}"""
-
-        val expected = """{"status": "success", "data": ["some data"],
-                                  "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
-
-        testTranslatedResponse(raw, expected)
-    }
-
-    @Test
-    fun `translate ignores errors which are not objects`()
-    {
-        val raw = """{"status": "success", "data": ["some data"], "errors": ["err1", "err2"]}"""
-
-        val expected = """{"status": "success", "data": ["some data"], "errors": []}"""
-
-        testTranslatedResponse(raw, expected)
-    }
-
-    @Test
-    fun `passes response errors through unchanged if no detail key`()
-    {
-        val json = """{"status": "success", "data": ["some data"],
-                                  "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
-        testTranslatedResponse(json, json)
+        val httpClient = getHttpClient(json, 401)
+        val response = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
+                .get("/some/path/", context = mock())
+        assertThat(response.statusCode).isEqualTo(401)
+        assertThat(response.text).isEqualTo(json)
     }
 
     @Test
@@ -330,31 +301,6 @@ class PorcelainAPIClientTests
         assertThat(data[0].age).isEqualTo(3600)
     }
 
-    private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String)
-    {
-        val mapper = ObjectMapper()
-        val expectedJson = mapper.readTree(expectedTranslatedResponse)
-
-        val sut1 = PorcelainAPIClient("Fake instance", "http://url-base",
-                getHttpClient(rawResponse, 400))
-        val getResult = sut1.get("anyUrl", context = mock())
-        assertThat(mapper.readTree(getResult.text)).isEqualTo(expectedJson)
-        assertThat(getResult.statusCode).isEqualTo(400)
-
-        val sut2 = PorcelainAPIClient("Fake instance", "http://url-base",
-                getHttpClient(rawResponse, 400))
-        val postResult = sut2.post("anyUrl", mock())
-        assertThat(mapper.readTree(postResult.text)).isEqualTo(expectedJson)
-        assertThat(postResult.statusCode).isEqualTo(400)
-
-        val sut3 = PorcelainAPIClient("Fake instance", "http://url-base",
-                getHttpClient(rawResponse, 400))
-        val deleteResult = sut3.delete("anyUrl", mock())
-        assertThat(mapper.readTree(deleteResult.text)).isEqualTo(expectedJson)
-        assertThat(deleteResult.statusCode).isEqualTo(400)
-    }
-
-
     @Test
     fun `makes direct POST request`()
     {
@@ -381,7 +327,7 @@ class PorcelainAPIClientTests
     fun `direct POST request passes through error`()
     {
         val rawResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val translatedResponse = """{"status":"failure","errors":[{"error":"FOO","message":"bar"}],"data":null}"""
+        val translatedResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val response = PorcelainAPIClient("Fake instance", "http://url-base",
                 getHttpClient(rawResponse, 400)).post("anyUrl", mock())
         assertThat(ObjectMapper().readTree(response.text)).isEqualTo(ObjectMapper().readTree(translatedResponse))

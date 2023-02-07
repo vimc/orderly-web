@@ -55,7 +55,7 @@ class SettingsTests : IntegrationTest()
 
         assertThat(response.statusCode).isEqualTo(400)
         val json = JsonLoader.fromString(response.text)
-        AssertionsForClassTypes.assertThat(json["errors"][0]["code"].asText())
+        AssertionsForClassTypes.assertThat(json["errors"][0]["error"].asText())
                 .isEqualTo("invalid-operation-error")
 
     }

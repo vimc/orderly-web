@@ -23,7 +23,7 @@ class ErrorHandlerTests
     private val mockResponse = mock<Response>()
 
     private val mockApiRequest = mock<Request> {
-        on { this.pathInfo() } doReturn "/api/v1/test/"
+        on { this.pathInfo() } doReturn "/api/v2/test/"
         on { this.headers("Accept") } doReturn "anything"
     }
 

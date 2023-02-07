@@ -95,7 +95,7 @@ class ReportRunControllerTests
 
         val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, Headers.headersOf())
         val mockAPI = mock<OrderlyServerAPI>{
-            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
+            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>(), any()) } doReturn mockPorcelainResponse
         }
 
         val sut = ReportRunController(context, mockReportRepo, mockWorkflowRepo, mockAPI)
@@ -129,7 +129,7 @@ class ReportRunControllerTests
         verify(mockWorkflowRepo, never()).checkReportIsInWorkflow(any(), any())
         verify(mockReportRepo, never()).updateReportRun(any(), any(), any(), any(), any())
         verify(mockReportRepo, times(1)).getReportRun("testReportKey")
-        verify(mockAPI, never()).get(any(), any<Map<String,String>>())
+        verify(mockAPI, never()).get(any(), any<Map<String,String>>(), any())
         assertThat(result).isSameAs(testReportRunLogFinished)
     }
 
@@ -147,7 +147,7 @@ class ReportRunControllerTests
 
         val mockPorcelainResponse = PorcelainResponse(Serializer.instance.toResult(testReportStatus), 200, Headers.headersOf())
         val mockAPI = mock<OrderlyServerAPI>{
-            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>()) } doReturn mockPorcelainResponse
+            on { this.get(eq("/v1/reports/testReportKey/status/"), any<Map<String, String>>(), any()) } doReturn mockPorcelainResponse
         }
 
         val sut = ReportRunController(context, mock(), mockWorkflowRepo, mockAPI)
@@ -178,7 +178,7 @@ class ReportRunControllerTests
 
         verify(mockWorkflowRepo).checkReportIsInWorkflow("testReportKey", "testWorkflow")
         verify(mockWorkflowRepo, never()).updateReportRun(any(), any(), any(), any(), any())
-        verify(mockAPI, never()).get(any(), any<Map<String,String>>())
+        verify(mockAPI, never()).get(any(), any<Map<String,String>>(), any())
         verify(mockWorkflowRepo, times(1)).getReportRun("testReportKey")
         assertThat(result).isSameAs(testReportRunLogFinished)
     }

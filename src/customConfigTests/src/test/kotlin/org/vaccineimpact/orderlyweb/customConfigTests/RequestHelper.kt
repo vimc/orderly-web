@@ -13,7 +13,7 @@ class RequestHelper
 {
     companion object
     {
-        val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
+        val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v2"
         val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
     }
 

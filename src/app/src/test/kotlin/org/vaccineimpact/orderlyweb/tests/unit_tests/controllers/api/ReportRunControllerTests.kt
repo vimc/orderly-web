@@ -26,23 +26,24 @@ class ReportRunControllerTests : ControllerTest()
         val params = mapOf("param" to "p1")
         val changelog = mapOf(
                 "message" to "test message",
-                "type" to "test type")
+                "type" to "test type"
+        )
 
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
             on { postData<Any>() } doReturn mapOf(
-                "instances" to mapOf("instance" to "i1"),
-                "params" to params,
-                "changelog" to changelog,
-                "gitBranch" to "branch1",
-                "gitCommit" to "abc123"
+                    "instances" to mapOf("instance" to "i1"),
+                    "params" to params,
+                    "changelog" to changelog,
+                    "gitBranch" to "branch1",
+                    "gitCommit" to "abc123"
             )
             on { queryParams("timeout") } doReturn "600"
             on { userProfile } doReturn CommonProfile().apply { id = "a@b.com" }
         }
 
         val mockAPIResponseText =
-            """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
+                """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
         val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
 
@@ -52,13 +53,21 @@ class ReportRunControllerTests : ControllerTest()
                 "timeout" to "600"
         )
         val apiClient: OrderlyServerAPI = mock {
-            on { post(
-                    eq("/v1/reports/$reportName/run/"),
-                    eq(Gson().toJson(mapOf(
-                            "params" to params,
-                            "changelog" to changelog
-                    ))),
-                    eq(expectedQs)) } doReturn mockAPIResponse
+            on {
+                post(
+                        eq("/v1/reports/$reportName/run/"),
+                        eq(
+                                Gson().toJson(
+                                        mapOf(
+                                                "params" to params,
+                                                "changelog" to changelog
+                                        )
+                                )
+                        ),
+                        eq(expectedQs),
+                        any()
+                )
+            } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -69,14 +78,14 @@ class ReportRunControllerTests : ControllerTest()
         assertThat(result).isEqualTo(mockAPIResponseText)
 
         verify(mockReportRunRepo).addReportRun(
-            eq(reportKey),
-            eq("a@b.com"),
-            any<Instant>(),
-            eq(reportName),
-            eq(mapOf("instance" to "i1")),
-            eq(params),
-            eq("branch1"),
-            eq("abc123")
+                eq(reportKey),
+                eq("a@b.com"),
+                any<Instant>(),
+                eq(reportName),
+                eq(mapOf("instance" to "i1")),
+                eq(params),
+                eq("branch1"),
+                eq("abc123")
         )
     }
 
@@ -89,7 +98,7 @@ class ReportRunControllerTests : ControllerTest()
         }
 
         val mockAPIResponseText =
-            """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
+                """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
 
         val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
 
@@ -105,14 +114,14 @@ class ReportRunControllerTests : ControllerTest()
 
         assertThat(result).isEqualTo(mockAPIResponseText)
         verify(mockReportRunRepo).addReportRun(
-            eq(reportKey),
-            eq("a@b.com"),
-            any<Instant>(),
-            eq(reportName),
-            eq(mapOf()),
-            eq(mapOf()),
-            eq(null),
-            eq(null)
+                eq(reportKey),
+                eq("a@b.com"),
+                any<Instant>(),
+                eq(reportName),
+                eq(mapOf()),
+                eq(mapOf()),
+                eq(null),
+                eq(null)
         )
     }
 
@@ -126,7 +135,7 @@ class ReportRunControllerTests : ControllerTest()
         val url = "/v1/reports/$reportName/run/"
         val expectedBody = "{\"params\":{}}"
         val apiClient: OrderlyServerAPI = mock {
-            on { post(url, expectedBody, mapOf()) } doThrow PorcelainError(url, 500,"Orderly server")
+            on { post(url, expectedBody, mapOf()) } doThrow PorcelainError(url, 500, "Orderly server")
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -134,8 +143,8 @@ class ReportRunControllerTests : ControllerTest()
         val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
 
         assertThatThrownBy { sut.run() }
-            .isInstanceOf(PorcelainError::class.java)
-            .matches { (it as PorcelainError).httpStatus == 500 }
+                .isInstanceOf(PorcelainError::class.java)
+                .matches { (it as PorcelainError).httpStatus == 500 }
         verifyZeroInteractions(mockReportRunRepo)
     }
 

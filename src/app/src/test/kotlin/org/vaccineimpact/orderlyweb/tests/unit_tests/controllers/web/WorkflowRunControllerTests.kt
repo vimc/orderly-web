@@ -93,7 +93,7 @@ class WorkflowRunControllerTests
         val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200, Headers.headersOf())
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
+            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap()), any()) } doReturn mockAPIResponse
             on { getReportParameters(eq("r1"), eq(mapOf("commit" to "1234"))) } doReturn listOf(
                     Parameter("nmin", "100"),
                     Parameter("disease", "YF")
@@ -150,7 +150,7 @@ class WorkflowRunControllerTests
         val mockAPIResponse = PorcelainResponse(Serializer.instance.gson.toJson(mockSummary), 200, Headers.headersOf())
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
+            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap()), any()) } doReturn mockAPIResponse
             on { getReportParameters(eq("r1"), eq(mapOf())) } doReturn listOf(
                     Parameter("nmin", "100"),
                     Parameter("disease", "YF")
@@ -297,7 +297,7 @@ class WorkflowRunControllerTests
         val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
+            on { post(any(), any<String>(), any(), any()) } doReturn mockAPIResponse
         }
 
         val repo = mock<WorkflowRunRepository>()
@@ -422,7 +422,7 @@ class WorkflowRunControllerTests
         val mockResponse = """{"status": "failure", "data": null, "errors": []}"""
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn PorcelainResponse(
+            on { post(any(), any<String>(), any(), any()) } doReturn PorcelainResponse(
                     mockResponse,
                     400,
                     Headers.headersOf()
@@ -453,7 +453,7 @@ class WorkflowRunControllerTests
         }
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn PorcelainResponse(
+            on { post(any(), any<String>(), any(), any()) } doReturn PorcelainResponse(
                     """{"data": {"workflow_key": "workflow_key1",
                         | "reports": [{"key": "report_key1", "execution_order": 1,
                         |  "name": "report1", "params": {"key": "value"}}]}}""".trimMargin(),
@@ -543,7 +543,7 @@ class WorkflowRunControllerTests
         """.trimIndent()
         val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
         val apiClient = mock<OrderlyServerAPI> {
-            on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
+            on { get(any(), any<Map<String, String>>(), any()) } doReturn mockAPIResponse
         }
         val apiClientWithError = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn apiClient
@@ -644,7 +644,7 @@ class WorkflowRunControllerTests
         """.trimIndent()
         val mockAPIResponse = PorcelainResponse(mockAPIResponseText, 200, Headers.headersOf())
         val apiClient = mock<OrderlyServerAPI> {
-            on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
+            on { get(any(), any<Map<String, String>>(), any()) } doReturn mockAPIResponse
         }
         val apiClientWithError = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn apiClient
@@ -690,7 +690,7 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
         val apiClient = mock<OrderlyServerAPI> {
-            on { get(any(), any<Map<String, String>>()) } doThrow PorcelainError("", 400, "Orderly server")
+            on { get(any(), any<Map<String, String>>(), any()) } doThrow PorcelainError("", 400, "Orderly server")
         }
         val apiClientWithError = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn apiClient

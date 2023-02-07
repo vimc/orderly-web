@@ -15,7 +15,7 @@ abstract class OrderlyWebError(
     {
         fun formatProblemsIntoMessage(problems: Iterable<org.vaccineimpact.orderlyweb.models.ErrorInfo>): String
         {
-            val joined = problems.map { it.message }.joinToString("\n")
+            val joined = problems.map { it.detail }.joinToString("\n")
             return "the following problems occurred:\n$joined"
         }
     }

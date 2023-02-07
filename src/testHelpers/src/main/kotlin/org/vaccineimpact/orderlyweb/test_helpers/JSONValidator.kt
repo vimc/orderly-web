@@ -42,21 +42,21 @@ class JSONValidator
     }
 
     fun validateError(response: String,
-                      expectedErrorCode: String?,
+                      expectedError: String?,
                       expectedErrorText: String?)
     {
         val json = parseJson(response)
         checkResultSchema(json, "failure")
-        if (expectedErrorCode != null)
+        if (expectedError != null)
         {
-            val error = json["errors"].singleOrNull { it["code"].asText() == expectedErrorCode }
+            val error = json["errors"].singleOrNull { it["error"].asText() == expectedError }
             if (error != null)
             {
-                assertThat(error["message"].asText()).contains(expectedErrorText)
+                assertThat(error["detail"].asText()).contains(expectedErrorText)
             }
             else
             {
-                fail("Expected error code '$expectedErrorCode' to be present in $response")
+                fail("Expected error '$expectedError' to be present in $response")
             }
         }
     }
@@ -64,7 +64,7 @@ class JSONValidator
     fun validateMultipleAuthErrors(response: String)
     {
         validateError(response,
-                expectedErrorCode = "bearer-token-invalid",
+                expectedError = "bearer-token-invalid",
                 expectedErrorText = "Bearer token not supplied in Authorization header, or bearer token was invalid")
     }
 

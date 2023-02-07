@@ -34,7 +34,7 @@ class Router(
 
     companion object
     {
-        const val apiUrlBase = "/api/v1"
+        const val apiUrlBase = "/api/v2"
     }
 
     init

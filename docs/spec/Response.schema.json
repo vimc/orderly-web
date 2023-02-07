@@ -7,7 +7,7 @@
         },
         "data": {},
         "errors": {
-            "type": "array",
+            "type": [ "array", "null" ],
             "items": { "$ref": "Error.schema.json" }
         }
     },

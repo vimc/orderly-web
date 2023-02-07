@@ -8,14 +8,15 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.viewmodels.AccessibilityViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class IndexController(
-    actionContext: ActionContext,
-    private val orderly: OrderlyClient,
-    private val reportRepository: ReportRepository,
-    private val tagRepository: TagRepository
+        actionContext: ActionContext,
+        private val orderly: OrderlyClient,
+        private val reportRepository: ReportRepository,
+        private val tagRepository: TagRepository
 ) : Controller(actionContext)
 {
     constructor(context: ActionContext) :
@@ -42,5 +43,13 @@ class IndexController(
     fun metrics(): String
     {
         return "running 1"
+    }
+
+    fun legacy(): String
+    {
+        throw BadRequest(
+                "OrderlyWeb has been upgraded. Please update your R package to a version > 0.1.15. " +
+                        "See https://github.com/vimc/orderlyweb/#installation"
+        )
     }
 }

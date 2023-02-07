@@ -9,8 +9,6 @@ import okhttp3.Headers.Companion.toHeaders
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
-import org.json.JSONObject
 import org.vaccineimpact.orderlyweb.errors.PorcelainError
 
 interface PorcelainAPI
@@ -20,24 +18,31 @@ interface PorcelainAPI
             url: String,
             context: ActionContext,
             rawRequest: Boolean = false,
-            transformResponse: Boolean = true
+            accept: String = ContentTypes.json
     ): PorcelainResponse
 
     @Throws(PorcelainError::class)
     fun post(
             url: String,
             json: String,
-            queryParams: Map<String, String?>
+            queryParams: Map<String, String?>,
+            accept: String = ContentTypes.json
     ): PorcelainResponse
 
     @Throws(PorcelainError::class)
-    fun get(url: String, context: ActionContext, transformResponse: Boolean = true): PorcelainResponse
+    fun get(url: String, context: ActionContext, accept: String = ContentTypes.json): PorcelainResponse
 
     @Throws(PorcelainError::class)
-    fun get(url: String, queryParams: Map<String, String>): PorcelainResponse
+    fun get(
+            url: String, queryParams: Map<String, String>,
+            accept: String = ContentTypes.json
+    ): PorcelainResponse
 
     @Throws(PorcelainError::class)
-    fun delete(url: String, context: ActionContext): PorcelainResponse
+    fun delete(
+            url: String, context: ActionContext,
+            accept: String = ContentTypes.json
+    ): PorcelainResponse
 
     fun throwOnError(): PorcelainAPI
 }
@@ -76,8 +81,6 @@ open class PorcelainAPIClient(
 {
     protected var throwOnError = false
 
-    private val standardHeaders = mapOf("Accept" to ContentTypes.json)
-
     override fun throwOnError(): PorcelainAPI
     {
         return apply {
@@ -85,11 +88,11 @@ open class PorcelainAPIClient(
         }
     }
 
-    override fun get(url: String, context: ActionContext, transformResponse: Boolean): PorcelainResponse
+    override fun get(url: String, context: ActionContext, accept: String): PorcelainResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
-                .headers((if (transformResponse) standardHeaders else emptyMap()).toHeaders())
+                .headers(mapOf("Accept" to accept).toHeaders())
                 .build()
 
         client.newCall(request).execute().use {
@@ -97,18 +100,11 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return if (transformResponse)
-            {
-                transformResponse(it.code, it.body!!.string(), it.headers)
-            }
-            else
-            {
-                PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
-            }
+            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
         }
     }
 
-    override fun get(url: String, queryParams: Map<String, String>): PorcelainResponse
+    override fun get(url: String, queryParams: Map<String, String>, accept: String): PorcelainResponse
     {
         val buildUrl = urlBase.toHttpUrl().newBuilder()
                 .addPathSegments(url.trimStart('/'))
@@ -119,7 +115,7 @@ open class PorcelainAPIClient(
                 }
         val request = Request.Builder()
                 .url(buildUrl.toString())
-                .headers(standardHeaders.toHeaders())
+                .headers(mapOf("Accept" to accept).toHeaders())
                 .build()
 
         client.newCall(request).execute().use {
@@ -127,7 +123,7 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return transformResponse(it.code, it.body!!.string(), it.headers)
+            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
         }
     }
 
@@ -135,7 +131,7 @@ open class PorcelainAPIClient(
             url: String,
             context: ActionContext,
             rawRequest: Boolean,
-            transformResponse: Boolean
+            accept: String
     ): PorcelainResponse
     {
         val body = if (rawRequest)
@@ -154,10 +150,15 @@ open class PorcelainAPIClient(
                 "".toRequestBody()
             }
         }
-        return post(buildFullUrl(url, context.queryString()).toHttpUrl(), body, transformResponse)
+        return post(buildFullUrl(url, context.queryString()).toHttpUrl(), body, accept)
     }
 
-    override fun post(url: String, json: String, queryParams: Map<String, String?>): PorcelainResponse =
+    override fun post(
+            url: String,
+            json: String,
+            queryParams: Map<String, String?>,
+            accept: String
+    ): PorcelainResponse =
             post(
                     urlBase.toHttpUrl().newBuilder()
                             .addPathSegments(url.trimStart('/'))
@@ -166,18 +167,19 @@ open class PorcelainAPIClient(
                                     addQueryParameter(key, value)
                                 }
                             }.build(),
-                    json.toRequestBody(ContentTypes.json.toMediaType())
+                    json.toRequestBody(ContentTypes.json.toMediaType()),
+                    accept
             )
 
     private fun post(
             url: HttpUrl,
             body: RequestBody,
-            transformResponse: Boolean = true
+            accept: String
     ): PorcelainResponse
     {
         val request = Request.Builder()
                 .url(url)
-                .headers((if (transformResponse) standardHeaders else emptyMap()).toHeaders())
+                .headers(mapOf("Accept" to accept).toHeaders())
                 .post(body)
                 .build()
         client.newCall(request).execute().use {
@@ -185,22 +187,15 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url.toString(), it.code, instanceName)
             }
-            return if (transformResponse)
-            {
-                transformResponse(it.code, it.body!!.string(), it.headers)
-            }
-            else
-            {
-                PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
-            }
+            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
         }
     }
 
-    override fun delete(url: String, context: ActionContext): PorcelainResponse
+    override fun delete(url: String, context: ActionContext, accept: String): PorcelainResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
-                .headers(standardHeaders.toHeaders())
+                .headers(mapOf("Accept" to accept).toHeaders())
                 .delete()
                 .build()
         client.newCall(request).execute().use {
@@ -208,47 +203,8 @@ open class PorcelainAPIClient(
             {
                 throw PorcelainError(url, it.code, instanceName)
             }
-            return transformResponse(it.code, it.body!!.string(), it.headers)
+            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
         }
-    }
-
-    private fun transformResponse(code: Int, text: String, headers: Headers): PorcelainResponse
-    {
-        val errorsKey = "errors"
-        val messageKey = "message"
-        val detailKey = "detail"
-
-        val json = JSONObject(text)
-
-        val newErrors = JSONArray()
-        if (json.has(errorsKey) && json[errorsKey] is JSONArray)
-        {
-            val errors = json[errorsKey] as JSONArray
-            for (error in errors)
-            {
-                if (error is JSONObject)
-                {
-                    if (error.has(detailKey))
-                    {
-                        val message = if (error[detailKey] == JSONObject.NULL)
-                        {
-                            ""
-                        }
-                        else
-                        {
-                            error[detailKey]
-                        }
-                        error.put(messageKey, message)
-                        error.remove(detailKey)
-                    }
-
-                    newErrors.put(error)
-                }
-            }
-        }
-        json.put("errors", newErrors)
-
-        return PorcelainResponse(json.toString(), code, headers)
     }
 
     private fun buildFullUrl(url: String, queryString: String?): String

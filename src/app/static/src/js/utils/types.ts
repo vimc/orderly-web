@@ -172,8 +172,8 @@ export interface PayloadWithType<T> extends Payload {
 }
 
 export interface Error {
-    code: string;
-    message: string | null;
+    error: string;
+    detail: string | null;
 }
 
 export interface Response {

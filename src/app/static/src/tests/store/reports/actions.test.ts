@@ -56,8 +56,8 @@ describe("vuex reportList action", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: ReportsMutation.SetReportsError,
             payload: {
-                code: "ERROR",
-                message: "Test Error"
+                error: "ERROR",
+                detail: "Test Error"
             }
         })
     })

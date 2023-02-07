@@ -17,7 +17,7 @@ class MontaguAuthenticationTests : IntegrationTest()
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(
                 result.text,
-                expectedErrorCode = "montagu-token-invalid",
+                expectedError = "montagu-token-invalid",
                 expectedErrorText = "Montagu token not supplied in Authorization header, or Montagu token was invalid"
         )
     }
@@ -29,7 +29,7 @@ class MontaguAuthenticationTests : IntegrationTest()
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(
                 result.text,
-                expectedErrorCode = "montagu-token-invalid",
+                expectedError = "montagu-token-invalid",
                 expectedErrorText = "Montagu token not supplied in Authorization header, or Montagu token was invalid"
         )
     }
@@ -41,7 +41,7 @@ class MontaguAuthenticationTests : IntegrationTest()
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(
                 result.text,
-                expectedErrorCode = "montagu-token-invalid",
+                expectedError = "montagu-token-invalid",
                 expectedErrorText = "Montagu token not supplied in Authorization header, or Montagu token was invalid"
         )
     }

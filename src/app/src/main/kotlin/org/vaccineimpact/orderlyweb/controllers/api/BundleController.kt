@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.OrderlyServerClient
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -24,7 +25,7 @@ class BundleController(
     fun pack(): Boolean
     {
         val url = "/v1/bundle/pack/${context.params(":name")}"
-        val response = orderlyServerAPI.post(url, context, transformResponse = false)
+        val response = orderlyServerAPI.post(url, context, accept = ContentTypes.any)
         val servletResponse = context.getSparkResponse().raw()
         servletResponse.contentType = "application/zip" // TODO content type to be passed through after VIMC-4388
         servletResponse.outputStream.write(response.bytes)

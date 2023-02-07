@@ -1,7 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import StoreErrorInfo from "../../js/components/storeErrorInfo.vue"
 
-const errorMessage =  {code: "Error", message: "Error Alert"}
+const errorMessage = {error: "Error", detail: "Error Alert"}
 
 function getWrapper(error = errorMessage) {
     return shallowMount(StoreErrorInfo, {
@@ -21,7 +21,7 @@ describe("vuex StoreErrorInfo", () => {
     });
 
     it("renders code value if message is not given", async () => {
-        const errorMsg = {code: "Error", message: null}
+        const errorMsg = {error: "Error", detail: null}
         const wrapper = getWrapper(errorMsg)
 
         expect(wrapper.find(".error-message").text()).toBe("Error");
