@@ -4,6 +4,8 @@ import java.nio.file.Files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
@@ -39,8 +41,9 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run workflow")
     }
 
-    @Test
-    fun `can create a blank workflow and select git branch`()
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
+    fun `can create a blank workflow and select git branch iff git enabled`(configType: ConfigType)
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
         val page = tab.findElement(By.id("create-workflow-container"))
@@ -49,22 +52,30 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(createButton.text).isEqualTo("Create a blank workflow")
 
         createButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
-        val branchSelect = driver.findElement(By.id("git-branch"))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
-        val commitSelect = driver.findElement(By.id("git-commit"))
-        val commitValue = commitSelect.getAttribute("value")
-        assertThat(commitValue).isNotBlank()
+        if (configType == ConfigType.GIT_ALLOWED)
+        {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+            val branchSelect = driver.findElement(By.id("git-branch"))
+            assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+            val commitSelect = driver.findElement(By.id("git-commit"))
+            val commitValue = commitSelect.getAttribute("value")
+            assertThat(commitValue).isNotBlank()
 
-        //Select a git branch
-        Select(branchSelect).selectByIndex(1)
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
-        //Default commit value should update when new branch selected
-        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
-        assertThat(commitSelect.getAttribute("value")).isNotBlank()
+            //Select a git branch
+            Select(branchSelect).selectByIndex(1)
+            assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+            //Default commit value should update when new branch selected
+            wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
+            assertThat(commitSelect.getAttribute("value")).isNotBlank()
+        }
+        else
+        {
+            assertThat(driver.findElements(By.id("git-branch"))).isEmpty()
+        }
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can rerun workflow`()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
@@ -86,7 +97,8 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can clone workflow`()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
@@ -109,7 +121,8 @@ class RunWorkflowTests : SeleniumTest()
     }
 
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can add and remove reports from workflow`()
     {
         createWorkflow()
@@ -125,7 +138,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(nextButton.isEnabled).isFalse()
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can set parameter value`()
     {
         createWorkflow()
@@ -147,42 +161,55 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(nextButton.isEnabled).isTrue()
     }
 
-    @Test
-    fun `can change branch and see resulting workflow change`()
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
+    fun `can change branch and see resulting workflow change iff git enabled`(configType: ConfigType)
     {
         createWorkflow()
-        changeToOtherBranch()
-        addReport("other")
+        if (configType == ConfigType.GIT_ALLOWED)
+        {
+            changeToOtherBranch()
+            addReport("other")
 
-        //Expect report to be removed from workflow when change to a branch where report does not exist
-        changeToMasterBranch()
-        assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
-        assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
-                "The following items are not present in this git commit and have been removed from the workflow:\n" +
-                        "Report 'other'"
-        )
+            //Expect report to be removed from workflow when change to a branch where report does not exist
+            changeToMasterBranch()
+            assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
+            assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
+                    "The following items are not present in this git commit and have been removed from the workflow:\n" +
+                            "Report 'other'"
+            )
+        }
     }
 
-    @Test
-    fun `can refresh git`()
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
+    fun `can refresh git iff git enabled`(configType: ConfigType)
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
         val page = tab.findElement(By.id("create-workflow-container"))
         val createButton = page.findElement(By.id("create-workflow"))
 
         createButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+        if (configType == ConfigType.GIT_ALLOWED)
+        {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
-        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
+            // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
+            assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
 
-        val refreshButton = driver.findElement(By.id("git-refresh-btn"))
-        refreshButton.click()
-        assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
+            val refreshButton = driver.findElement(By.id("git-refresh-btn"))
+            refreshButton.click()
+            assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
+            wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
+        }
+        else
+        {
+            assertThat(driver.findElements(By.id("git-refresh-btn"))).isEmpty()
+        }
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can import csv file`()
     {
         val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
@@ -200,16 +227,20 @@ class RunWorkflowTests : SeleniumTest()
         tmpFile.delete()
     }
 
-    @Test
-    fun `can see all reports in non-master branch`()
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
+    fun `can see all reports in non-master branch iff git enabled`(configType: ConfigType)
     {
         // Available reports should include those which are unchanged from master branch i.e. 'minimal' and 'global', as
         // well as branch-only reports e.g. 'other'
         createWorkflow()
-        changeToOtherBranch()
-        addReport("minimal")
-        addReport("global")
-        addReport("other")
+        if (configType == ConfigType.GIT_ALLOWED)
+        {
+            changeToOtherBranch()
+            addReport("minimal")
+            addReport("global")
+            addReport("other")
+        }
     }
 
     private fun addReport(reportName: String)
@@ -228,7 +259,7 @@ class RunWorkflowTests : SeleniumTest()
     {
         val createButton = driver.findElement(By.id("create-workflow"))
         createButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-reports")))
     }
 
     private fun changeToMasterBranch()
@@ -256,7 +287,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can create a workflow and select the view progress link to navigate to the progress tab with workflow preselected and reports table generated, which persists when navigating off tab and back again, and re-run workflow in progress`()
     {
         // creates workflow with ui and navigates to the progress page with it selected
@@ -342,7 +374,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(workflowNameInput.getAttribute("readonly")).isEqualTo("true")
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `workflow progress link clears when updating the wizard`()
     {
         createWorkflow()
@@ -367,7 +400,8 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-progress-link")))
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can display workflow summary`()
     {
         createWorkflow()
@@ -433,7 +467,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(driver.findElements(By.id("summary-warning")).count()).isEqualTo(0)
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can display workflow summary and progress with default params, non-default params, and no params`()
     {
         createWorkflow()
@@ -545,7 +580,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
 
-    @Test
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can display workflow summary with depends on and missing dependencies`()
     {
         createWorkflow()
