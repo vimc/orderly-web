@@ -28,7 +28,7 @@ class GitTests : IntegrationTest()
                 contentType = ContentTypes.json)
 
         assertSuccessful(response)
-    //    assertJsonContentType(response)
+        assertJsonContentType(response)
         JSONValidator.validateAgainstOrderlySchema(response.text, "GitCommits")
     }
 }

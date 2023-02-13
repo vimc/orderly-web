@@ -10,9 +10,10 @@ object OutpackRouteConfig : RouteConfig
     private val controller = OutpackController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
+            // route for all non-json GET requests
             APIEndpoint("/outpack/*/", controller, "get")
                     .secure(readReports),
-            // default route for all not otherwise specified outpack GET requests
+            // route for all json GET requests
             APIEndpoint("/outpack/*/", controller, "get")
                     .json()
                     .secure(readReports)
