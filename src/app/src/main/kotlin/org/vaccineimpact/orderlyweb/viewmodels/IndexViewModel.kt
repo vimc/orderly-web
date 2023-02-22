@@ -8,6 +8,8 @@ import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -49,7 +51,8 @@ data class IndexViewModel(
                 reportTags: Map<String, List<String>>,
                 allTags: List<String>,
                 pinnedReports: List<Report>,
-                context: ActionContext
+                context: ActionContext,
+                authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
         ): IndexViewModel
         {
             val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
@@ -79,7 +82,7 @@ data class IndexViewModel(
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
-            val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
+            val isRunner = authConfig.useAuth && context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
 
             val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
             val reportDisplayNames = if (canSetPinnedReports)

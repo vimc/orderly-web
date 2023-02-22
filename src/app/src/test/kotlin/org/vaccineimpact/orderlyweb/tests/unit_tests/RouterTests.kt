@@ -7,9 +7,11 @@ import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.CallbackRoute
 import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.APIEndpoint
+import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.SparkWrapper
 import org.vaccineimpact.orderlyweb.app_start.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import spark.TemplateEngine
 
 class RouterTests
@@ -22,22 +24,32 @@ class RouterTests
         on { loginCallback() } doReturn CallbackRoute(Config())
     }
     private val mockErrorHandler = ErrorHandler(mockTemplateEngine)
+    private val mockAuthConfig = mock<AuthenticationConfig>() {
+        on { useAuth } doReturn true
+    }
 
-    object TestRouteConfig : RouteConfig
+    object TestRouteBuilder : RouteBuilder
     {
-        override val endpoints = listOf(
-                APIEndpoint("/first/url", Controller::class, "action", transform = true),
-                APIEndpoint("/second/url/", Controller::class, "action", transform = false)
-        )
+        override fun getEndpoints(useAuth: Boolean): List<EndpointDefinition>
+        {
+            if (useAuth)
+            {
+                return listOf(
+                        APIEndpoint("/first/url", Controller::class, "action", transform = true),
+                        APIEndpoint("/second/url/", Controller::class, "action", transform = false)
+                )
+            }
+            else return listOf()
+        }
     }
 
     @Test
     fun `maps endpoints with and without trailing slashes`()
     {
-        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler, mockAuthConfig)
 
-        val urls = sut.mapEndpoints(TestRouteConfig, "urlBase").toMutableList()
-        urls.addAll(sut.mapEndpoints(TestRouteConfig, "anotherBase"))
+        val urls = sut.mapEndpoints(TestRouteBuilder, "urlBase").toMutableList()
+        urls.addAll(sut.mapEndpoints(TestRouteBuilder, "anotherBase"))
 
         val expected = listOf(
                 "urlBase/first/url/",
@@ -55,11 +67,25 @@ class RouterTests
     }
 
     @Test
+    fun `passes through useAuth argument`()
+    {
+        val mockAuthConfig = mock<AuthenticationConfig>() {
+            on { useAuth } doReturn false
+        }
+
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler, mockAuthConfig)
+        val urls = sut.mapEndpoints(TestRouteBuilder, "urlBase").toMutableList()
+        urls.addAll(sut.mapEndpoints(TestRouteBuilder, "anotherBase"))
+        assertThat(urls).isEmpty()
+
+    }
+
+    @Test
     fun `only adds response transformer if endpoint should be transformed`()
     {
-        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler, mockAuthConfig)
 
-        sut.mapEndpoints(TestRouteConfig, "urlBase")
+        sut.mapEndpoints(TestRouteBuilder, "urlBase")
         val transformedUrl = "urlBase/first/url/"
         val untransformedUrl = "urlBase/second/url/"
 
@@ -70,7 +96,7 @@ class RouterTests
     @Test
     fun `maps logout route with and without trailing slash`()
     {
-        Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+        Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler, mockAuthConfig)
 
         verify(mockSparkWrapper).mapGet(eq("logout"), any())
         verify(mockSparkWrapper).mapGet(eq("logout/"), any())
@@ -79,7 +105,7 @@ class RouterTests
     @Test
     fun `maps login route with and without trailing slash`()
     {
-        Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+        Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler, mockAuthConfig)
 
         verify(mockSparkWrapper).mapGet(eq("login"), any())
         verify(mockSparkWrapper).mapGet(eq("login/"), any())

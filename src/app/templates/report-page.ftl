@@ -55,7 +55,7 @@
                                     <report-readers-list :report=report></report-readers-list>
                                 </div>
                             </#if>
-                            <#if isRunner || !fineGrainedAuth>
+                            <#if isRunner>
                                 <div id="runReportVueApp" class="mt-5">
                                     <run-report-inline :report=report></run-report-inline>
                                 </div>

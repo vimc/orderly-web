@@ -32,7 +32,7 @@ data class WebEndpoint(
 
     override fun additionalSetup(url: String)
     {
-        if (secure)
+        if (secure && authenticationConfig.useAuth)
         {
             addSecurityFilter(url)
         }

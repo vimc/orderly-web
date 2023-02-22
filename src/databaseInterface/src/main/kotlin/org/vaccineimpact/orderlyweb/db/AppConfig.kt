@@ -45,7 +45,7 @@ class AppConfig : Config
     }
 
     override val authorizationEnabled by lazy {
-        getBool("auth.fine_grained")
+        getBool("auth") && getBool("auth.fine_grained")
     }
     
     override fun getInt(key: String) = get(key).toInt()
