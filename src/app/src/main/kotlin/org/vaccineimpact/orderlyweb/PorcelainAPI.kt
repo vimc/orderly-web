@@ -1,15 +1,19 @@
 package org.vaccineimpact.orderlyweb
 
+import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import okhttp3.*
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.vaccineimpact.orderlyweb.app_start.OrderlyWeb.Companion.httpClient
 import org.vaccineimpact.orderlyweb.errors.PorcelainError
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 interface PorcelainAPI
 {
@@ -66,6 +70,27 @@ class PorcelainResponse(val bytes: ByteArray, val statusCode: Int, val headers: 
         return Serializer.instance.gson.fromJson(data, type)
     }
 
+    fun errors(): List<ErrorInfo>?
+    {
+        return try
+        {
+            val element = JsonParser().parse(text)
+            val errors = element.asJsonObject["errors"]
+            return if (errors.isJsonNull)
+            {
+                null
+            }
+            else
+            {
+                Serializer.instance.gson.fromJson(errors)
+            }
+        }
+        catch (e: JsonSyntaxException)
+        {
+            listOf(ErrorInfo("bad-json", text))
+        }
+    }
+
     private fun parseJson(jsonAsString: String): JsonElement
     {
         val element = JsonParser().parse(jsonAsString)
@@ -76,7 +101,7 @@ class PorcelainResponse(val bytes: ByteArray, val statusCode: Int, val headers: 
 open class PorcelainAPIClient(
         private val instanceName: String,
         private val urlBase: String,
-        private val client: OkHttpClient = OkHttpClient()
+        private val client: OkHttpClient = httpClient
 ) : PorcelainAPI
 {
     protected var throwOnError = false
@@ -95,13 +120,7 @@ open class PorcelainAPIClient(
                 .headers(mapOf("Accept" to accept).toHeaders())
                 .build()
 
-        client.newCall(request).execute().use {
-            if (!it.isSuccessful && throwOnError)
-            {
-                throw PorcelainError(url, it.code, instanceName)
-            }
-            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
-        }
+        return execute(url, request)
     }
 
     override fun get(url: String, queryParams: Map<String, String>, accept: String): PorcelainResponse
@@ -118,13 +137,7 @@ open class PorcelainAPIClient(
                 .headers(mapOf("Accept" to accept).toHeaders())
                 .build()
 
-        client.newCall(request).execute().use {
-            if (!it.isSuccessful && throwOnError)
-            {
-                throw PorcelainError(url, it.code, instanceName)
-            }
-            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
-        }
+        return execute(url, request)
     }
 
     override fun post(
@@ -182,13 +195,7 @@ open class PorcelainAPIClient(
                 .headers(mapOf("Accept" to accept).toHeaders())
                 .post(body)
                 .build()
-        client.newCall(request).execute().use {
-            if (!it.isSuccessful && throwOnError)
-            {
-                throw PorcelainError(url.toString(), it.code, instanceName)
-            }
-            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
-        }
+        return execute(url.toString(), request)
     }
 
     override fun delete(url: String, context: ActionContext, accept: String): PorcelainResponse
@@ -198,12 +205,18 @@ open class PorcelainAPIClient(
                 .headers(mapOf("Accept" to accept).toHeaders())
                 .delete()
                 .build()
+        return execute(url, request)
+    }
+
+    private fun execute(url: String, request: Request): PorcelainResponse
+    {
         client.newCall(request).execute().use {
+            val response = PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
             if (!it.isSuccessful && throwOnError)
             {
-                throw PorcelainError(url, it.code, instanceName)
+                throw PorcelainError(url, it.code, instanceName, response.errors())
             }
-            return PorcelainResponse(it.body!!.bytes(), it.code, it.headers)
+            return response
         }
     }
 

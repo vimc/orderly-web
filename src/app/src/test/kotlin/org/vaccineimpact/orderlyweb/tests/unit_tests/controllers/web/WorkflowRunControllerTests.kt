@@ -690,7 +690,7 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
         val apiClient = mock<OrderlyServerAPI> {
-            on { get(any(), any<Map<String, String>>(), any()) } doThrow PorcelainError("", 400, "Orderly server")
+            on { get(any(), any<Map<String, String>>(), any()) } doThrow PorcelainError("", 400, "Orderly server", listOf())
         }
         val apiClientWithError = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn apiClient

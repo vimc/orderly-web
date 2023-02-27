@@ -87,7 +87,7 @@ abstract class IntegrationTest
 
     protected fun assertJsonContentType(response: Response)
     {
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
+        Assertions.assertThat(response.headers["content-type"]).contains("application/json")
     }
 
     protected fun assertHtmlContentType(response: Response)

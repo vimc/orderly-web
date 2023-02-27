@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OutpackServerClient
 import org.vaccineimpact.orderlyweb.PorcelainAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -17,7 +16,7 @@ class OutpackController(
             OutpackServerClient(AppConfig())
     )
 
-    fun get(): String
+    fun get(): Boolean
     {
         val splat = context.splat()
         val url = if (splat?.isNotEmpty() == true)
@@ -28,19 +27,6 @@ class OutpackController(
         {
             "/"
         }
-        return passThroughResponse(outpackServerClient.get(url, context))
-    }
-
-    fun getFile(): Boolean
-    {
-        val url = "/file/${context.params(":hash")}"
-        val response = outpackServerClient
-                .throwOnError()
-                .get(url, context, accept = ContentTypes.any)
-
-        val servletResponse = context.getSparkResponse().raw()
-        response.headers.map { servletResponse.setHeader(it.first, it.second) }
-        servletResponse.outputStream.write(response.bytes)
-        return true
+        return writeResponseToOutputStream(outpackServerClient.get(url, context))
     }
 }

@@ -1,14 +1,10 @@
 package org.vaccineimpact.orderlyweb.test_helpers.http
 
-import okhttp3.FormBody
+import okhttp3.*
 import okhttp3.Headers.Companion.toHeaders
-import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.Closeable
 import java.net.CookieManager
 import java.util.*
 
@@ -29,7 +25,9 @@ object HttpClient
             .url(url)
             .headers(headers.toHeaders())
             .build()
-        return Response(client.newCall(request).execute())
+        client.newCall(request).execute().use {
+            return Response(it.code, it.headers, it.body!!.bytes())
+        }
     }
 
     fun post(url: String, data: Map<String, String>, auth: Authorization): Response
@@ -43,7 +41,9 @@ object HttpClient
                 }.build()
             )
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it.code, it.headers, it.body!!.bytes())
+        }
     }
 
     fun post(url: String, headers: Map<String, String>, json: Map<String, Any>?): Response
@@ -53,7 +53,9 @@ object HttpClient
             .headers(headers.toHeaders())
             .post((if (json == null) "" else JSONObject(json).toString()).toRequestBody("application/json".toMediaType()))
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it.code, it.headers, it.body!!.bytes())
+        }
     }
 
     fun post(url: String) = post(url, emptyMap(), "")
@@ -65,7 +67,9 @@ object HttpClient
             .headers(headers.toHeaders())
             .post((data ?: "").toRequestBody())
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it.code, it.headers, it.body!!.bytes())
+        }
     }
 
     fun delete(url: String, headers: Map<String, String>): Response
@@ -75,7 +79,9 @@ object HttpClient
             .headers(headers.toHeaders())
             .delete()
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it.code, it.headers, it.body!!.bytes())
+        }
     }
 
     fun options(url: String): Response
@@ -84,7 +90,9 @@ object HttpClient
             .url(url)
             .method("OPTIONS", null)
             .build()
-        return Response(OkHttpClient().newCall(request).execute())
+        OkHttpClient().newCall(request).execute().use {
+            return Response(it.code, it.headers, it.body!!.bytes())
+        }
     }
 }
 
@@ -103,16 +111,8 @@ data class BasicAuthorization(val user: String, val password: String) : Authoriz
         }
 }
 
-class Response(private val okHttpResponse: okhttp3.Response): Closeable
+class Response(val statusCode: Int, headers: Headers, val content: ByteArray)
 {
-    val content: ByteArray by lazy(okHttpResponse.body!!::bytes)
-    val headers: Map<String, String>
-        get() = okHttpResponse.headers.toMap().mapKeys { it.key.lowercase() }
-    val statusCode: Int
-        get() = okHttpResponse.code
-    val text: String by lazy(okHttpResponse.body!!::string)
-    override fun close()
-    {
-        okHttpResponse.close()
-    }
+    val headers: Map<String, String> = headers.toMap().mapKeys { it.key.lowercase() }
+    val text get() = String(content)
 }

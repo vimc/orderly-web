@@ -17,6 +17,7 @@ class GithubAuthenticationTests : CustomConfigTests()
     // Token with read:org and user:email scope, for a test user who only has access to a test org with no
     // repos. Token reversed so GitHub doesn't spot it and invalidate it
     private val testUserPAT = "dyw4x210375dauDALEtMVdvjypgs8RuGcY8H_phg".reversed()
+
     @Test
     fun `authentication fails without Auth header`()
     {
@@ -125,26 +126,22 @@ class GithubAuthenticationTests : CustomConfigTests()
 
     private fun assertAuthSuccess(result: Response)
     {
-        result.use {
-            assertSuccessful(result)
+        assertSuccessful(result)
 
-            val json = JsonLoader.fromString(result.text)
-            assertThat(json["token_type"].textValue()).isEqualTo("bearer")
-            assertThat(json["access_token"]).isNotNull
-            assertThat(isLong(json["expires_in"].toString())).isTrue()
-        }
+        val json = JsonLoader.fromString(result.text)
+        assertThat(json["token_type"].textValue()).isEqualTo("bearer")
+        assertThat(json["access_token"]).isNotNull
+        assertThat(isLong(json["expires_in"].toString())).isTrue()
     }
 
     private fun assertAuthFailure(result: Response)
     {
-        result.use {
-            assertThat(result.statusCode).isEqualTo(401)
-            JSONValidator.validateError(
-                    result.text,
-                    expectedError = "github-token-invalid",
-                    expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid"
-            )
-        }
+        assertThat(result.statusCode).isEqualTo(401)
+        JSONValidator.validateError(
+                result.text,
+                expectedError = "github-token-invalid",
+                expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid"
+        )
     }
 
     private fun isLong(raw: String): Boolean
