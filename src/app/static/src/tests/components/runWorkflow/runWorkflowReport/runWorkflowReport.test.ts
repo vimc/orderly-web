@@ -62,8 +62,8 @@ describe(`runWorkflowReport`, () => {
         mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
             .replyOnce(500, {
                 errors: [
-                    {code: "bad-request", message: "ERROR 1"},
-                    {code: "bad-request", message: "ERROR 2"}
+                    {code: "bad-request", detail: "ERROR 1"},
+                    {code: "bad-request", detail: "ERROR 2"}
                 ]
             });
 
