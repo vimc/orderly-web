@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers
 import org.pac4j.core.authorization.authorizer.Authorizer
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -12,6 +13,7 @@ import org.pac4j.sparkjava.SecurityFilter
 import org.pac4j.core.config.Config
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import spark.Filter
 import spark.route.HttpMethod
 
@@ -164,6 +166,23 @@ class APIEndpointTests
         sut.additionalSetup("/test")
 
         verify(mockSpark, times(0)).before(any(),any(), any(), any())
+    }
+
+    @Test
+    fun `does not add security filter if no auth`()
+    {
+        val mockSpark = mock<SparkWrapper>()
+
+        val mockAuthConfig = mock<AuthenticationConfig> {
+            on { useAuth } doReturn false
+        }
+
+        val sut = APIEndpoint(
+                urlFragment = "/test", actionName = "test", controller = TestController::class,
+                spark = mockSpark, authenticationConfig = mockAuthConfig
+        ).secure()
+        sut.additionalSetup("/test")
+        verify(mockSpark, times(0)).before(any(), any(), any(), any())
     }
 
     @Test

@@ -216,7 +216,7 @@ class WebEndpointTests
         }
 
         val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
-                spark = mockSpark, configFactory = mockConfigFactory, authenticationConfig = mockAuthConfig)
+                spark = mockSpark, configFactory = mockConfigFactory, authenticationConfig = mockAuthConfig).secure()
         sut.additionalSetup("/test")
 
         //verify that config factory and spark were not called
