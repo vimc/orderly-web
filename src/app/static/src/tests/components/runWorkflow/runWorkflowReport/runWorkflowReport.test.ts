@@ -739,8 +739,8 @@ describe(`runWorkflowReport`, () => {
         await Vue.nextTick();
 
         expect(wrapper.vm.$data.validationErrors).toEqual([
-            {code: "bad-request", message: "ERROR 1"},
-            {code: "bad-request", message: "ERROR 2"}
+            {code: "bad-request", detail: "ERROR 1"},
+            {code: "bad-request", detail: "ERROR 2"}
         ]);
         expect(wrapper.emitted("update").length).toBe(1);
         expect(wrapper.emitted("update")[0][0]["reports"]).toStrictEqual([]);
