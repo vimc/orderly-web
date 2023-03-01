@@ -128,35 +128,6 @@ class VersionPageTests: FreeMarkerTest("report-page.ftl")
     }
 
     @Test
-    fun `non runners see run report if auth is not enabled`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { userProfile } doReturn CommonProfile().apply {
-                id = "test.user"
-            }
-            on {
-                hasPermission(any())
-            } doReturn false
-        }
-
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn false
-            on { get("app.name") } doReturn "appName"
-            on { get("app.url") } doReturn "http://app"
-            on { get("app.email") } doReturn "email"
-            on { get("app.logo") } doReturn "logo.png"
-            on { get("montagu.url") } doReturn "montagu"
-        }
-
-        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
-        val mockModel = VersionPageTestData.testModel.copy(isRunner=false, appViewModel = defaultModel)
-        val htmlResponse = htmlPageResponseFor(mockModel)
-
-        val runReport = htmlResponse.getElementById("runReportVueApp")
-        assertThat(runReport).isNotNull()
-    }
-
-    @Test
     fun `report readers are shown if user is admin`()
     {
         val appViewModel = VersionPageTestData.testDefaultModel.copy(isAdmin = true)

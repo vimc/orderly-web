@@ -149,6 +149,7 @@ class WebEndpointTests
 
         val mockAuthConfig = mock<AuthenticationConfig> {
             on { getConfiguredProvider() } doReturn AuthenticationProvider.GitHub
+            on { useAuth } doReturn true
         }
 
         val requiredPermission = PermissionRequirement.parse("*/testperm")
@@ -192,6 +193,30 @@ class WebEndpointTests
 
         val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
                 spark = mockSpark, configFactory = mockConfigFactory)
+        sut.additionalSetup("/test")
+
+        //verify that config factory and spark were not called
+        verify(mockConfigFactory, times(0)).build()
+        verify(mockSpark, times(0)).before(anyString(), any(), any(), any())
+    }
+
+    @Test
+    fun `does not add security filter if no auth`()
+    {
+        val mockSpark = mock<SparkWrapper>()
+        val mockConfig = mock<Config> {
+            on { authorizers } doReturn mapOf()
+        }
+        val mockConfigFactory = mock<APISecurityConfigFactory> {
+            on { build() } doReturn (mockConfig)
+        }
+
+        val mockAuthConfig = mock<AuthenticationConfig> {
+            on { useAuth } doReturn false
+        }
+
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
+                spark = mockSpark, configFactory = mockConfigFactory, authenticationConfig = mockAuthConfig)
         sut.additionalSetup("/test")
 
         //verify that config factory and spark were not called
