@@ -42,7 +42,7 @@ class OrderlyWebAuthenticationConfig(
             return appConfig.authorizationEnabled && (getConfiguredProvider() != AuthenticationProvider.Montagu)
         }
 
-    override val useAuth: Boolean =  appConfig.getBool("auth")
+    override val useAuth: Boolean = appConfig.getBool("auth")
 
     override fun getConfiguredProvider(): AuthenticationProvider
     {

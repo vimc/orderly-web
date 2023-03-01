@@ -67,7 +67,8 @@ object WebRouteConfig : RouteBuilder
 
     override fun getEndpoints(useAuth: Boolean): List<EndpointDefinition>
     {
-        val endpoints = (WebAuthRouteConfig.endpoints +
+        val endpoints = (
+                WebAuthRouteConfig.endpoints +
                 WebDocumentRouteConfig.endpoints +
                 WebReportRouteConfig.endpoints +
                 WebLogsRouteConfig.endpoints +
@@ -77,7 +78,8 @@ object WebRouteConfig : RouteBuilder
                 WebRoleRouteConfig.endpoints +
                 WebSettingsRouteConfig.endpoints +
                 WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint +
-                accessibilityEndpoint + legacyEndpoint).toMutableList()
+                accessibilityEndpoint + legacyEndpoint
+                ).toMutableList()
 
         if (useAuth)
         {

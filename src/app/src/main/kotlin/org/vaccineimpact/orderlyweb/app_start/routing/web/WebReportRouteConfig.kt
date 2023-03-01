@@ -44,7 +44,6 @@ object WebReportRouteConfig : RouteConfig
             )
                     .secure(readReports),
 
-
             WebEndpoint(
                     "/publish-reports/",
                     ReportController::class,
