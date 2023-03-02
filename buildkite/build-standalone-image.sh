@@ -7,8 +7,8 @@ here=$(dirname $0)
 # Set up environment
 . $here/common
 
-BRANCH_TAG=orderly-web-standalone:$GIT_BRANCH
-COMMIT_TAG=orderly-web-standalone:$GIT_ID
+BRANCH_TAG=vimc/orderly-web-standalone:$GIT_BRANCH
+COMMIT_TAG=vimc/orderly-web-standalone:$GIT_ID
 
 docker build \
     --file standalone.Dockerfile \
