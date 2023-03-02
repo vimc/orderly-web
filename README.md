@@ -149,7 +149,7 @@ this is defined. These steps:
 1. Run `./buildkite/build-css-generator.sh` which creates a docker image that can compile the 
 front-end sass to css - for usage during deployment to create custom style overrides 
 (see [this deploy config](https://github.com/vimc/orderly-web-deploy/blob/d0691f6b84e590d09c50b15310a08fceabb7db98/config/customcss/orderly-web.yml))
-
+1. Run `./buildkite/build-standalone-image.sh` which builds and pushes a "standalone" docker image for running a local OW instance in noAuth mode with a single docker container.
 For more explanation including a diagram that explains the relationship between the various docker images, 
 see [build.md](/docs/build.md)
 
@@ -160,6 +160,12 @@ To make use of a built image, run:
         docker run --rm -p 8888:8888 -v {PATH_TO_ORDERLY}:/orderly vimc/orderly-web:master
 
 replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
+
+The resulting app will only work if it has an `orderly.server` instance it can talk to, and if database migrations have been run.
+To run a standalone image that works without `orderly.server` (so no report running) and handles database migrations itself, run
+	
+	docker pull vimc/orderly-web-standalone:master
+	docker run --rm -p 8888:8888 -v {PATH_TO_ORDERLY}:/orderly vimc/orderly-web-standalone:master
 
 ### User CLI
 See [/src/userCLI/README.md](/src/userCLI/README.md)
