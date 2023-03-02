@@ -2,6 +2,7 @@
 <#-- @ftlvariable name="reportJson" type="String" -->
 <#-- @ftlvariable name="isAdmin" type="Boolean" -->
 <#-- @ftlvariable name="isReviewer" type="Boolean" -->
+<#-- @ftlvariable name="isRunner" type="Boolean" -->
 <#-- @ftlvariable name="fineGrainedAuth" type="Boolean" -->
 <@layoutwide>
     <#macro styles>

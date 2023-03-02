@@ -123,7 +123,29 @@ class VersionPageTests: FreeMarkerTest("report-page.ftl")
 
         val htmlResponse = htmlPageResponseFor(mockModel)
 
-        val runReport = htmlResponse.getElementById("runReportVueApp")
+        val deps = htmlResponse.getElementById("runReportVueApp")
+        assertThat(deps).isNotNull()
+    }
+
+    @Test
+    fun `runners see dependencies`()
+    {
+        val mockModel = VersionPageTestData.testModel.copy(isRunner = true)
+
+        val htmlResponse = htmlPageResponseFor(mockModel)
+
+        val deps = htmlResponse.getElementById("reportDependenciesVueApp")
+        assertThat(deps).isNull()
+    }
+
+    @Test
+    fun `non runners do not see dependencies`()
+    {
+        val mockModel = VersionPageTestData.testModel.copy(isRunner = false)
+
+        val htmlResponse = htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("reportDependenciesVueApp")
         assertThat(runReport).isNull()
     }
 

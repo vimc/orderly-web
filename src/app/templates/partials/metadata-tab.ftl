@@ -58,7 +58,9 @@
             </div>
         </div>
     </#if>
-    <div id="reportDependenciesVueApp">
-        <report-dependencies :report=report></report-dependencies>
-    </div>
+    <#if isRunner>
+        <div id="reportDependenciesVueApp">
+            <report-dependencies :report=report></report-dependencies>
+        </div>
+    </#if>
 </div>
