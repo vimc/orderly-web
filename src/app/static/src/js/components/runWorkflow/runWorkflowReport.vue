@@ -77,8 +77,8 @@
                                  @dismissed="validationErrors=[]">
                             Failed to import from csv. The following issues were found:
                             <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                                <li v-for="e in validationErrors" :key="e.message" class="import-validation-error">
-                                    {{ e.message }}
+                                <li v-for="e in validationErrors" :key="e.detail" class="import-validation-error">
+                                    {{ e.detail }}
                                 </li>
                             </ul>
                         </b-alert>
