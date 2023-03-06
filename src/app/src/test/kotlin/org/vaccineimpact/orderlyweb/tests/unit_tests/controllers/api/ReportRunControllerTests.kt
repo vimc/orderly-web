@@ -135,7 +135,7 @@ class ReportRunControllerTests : ControllerTest()
         val url = "/v1/reports/$reportName/run/"
         val expectedBody = "{\"params\":{}}"
         val apiClient: OrderlyServerAPI = mock {
-            on { post(url, expectedBody, mapOf()) } doThrow PorcelainError(url, 500, "Orderly server")
+            on { post(url, expectedBody, mapOf()) } doThrow PorcelainError(url, 500, "Orderly server", listOf())
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()

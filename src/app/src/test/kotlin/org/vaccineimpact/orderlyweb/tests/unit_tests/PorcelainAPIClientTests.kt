@@ -200,11 +200,14 @@ class PorcelainAPIClientTests
     fun `throws error on failure with throwsOnError`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val httpClient = getHttpClient(text, 500)
-        val sut = PorcelainAPIClient("Fake instance", "http://url-base", httpClient)
+        var sut = PorcelainAPIClient("Fake instance", "http://url-base", getHttpClient(text, 500))
                 .throwOnError()
         assertThatThrownBy { sut.get("/some/path/", context = mock()) }.isInstanceOf(PorcelainError::class.java)
+        sut = PorcelainAPIClient("Fake instance", "http://url-base", getHttpClient(text, 500))
+                .throwOnError()
         assertThatThrownBy { sut.post("/some/path/", mock()) }.isInstanceOf(PorcelainError::class.java)
+        sut = PorcelainAPIClient("Fake instance", "http://url-base", getHttpClient(text, 500))
+                .throwOnError()
         assertThatThrownBy { sut.delete("/some/path/", mock()) }.isInstanceOf(PorcelainError::class.java)
     }
 
@@ -328,8 +331,10 @@ class PorcelainAPIClientTests
     {
         val rawResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val translatedResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val response = PorcelainAPIClient("Fake instance", "http://url-base",
-                getHttpClient(rawResponse, 400)).post("anyUrl", mock())
+        val response = PorcelainAPIClient(
+                "Fake instance", "http://url-base",
+                getHttpClient(rawResponse, 400)
+        ).post("anyUrl", mock())
         assertThat(ObjectMapper().readTree(response.text)).isEqualTo(ObjectMapper().readTree(translatedResponse))
         assertThat(response.statusCode).isEqualTo(400)
     }

@@ -8,7 +8,7 @@
     "webpack": "webpack",
     "watch": "webpack --watch",
     "build": "webpack && npm run sass",
-    "sass": "if test ${NODE_ENV} = \"production\" ; then npm run sass-prod ; else npm run sass-dev ; fi",
+    "sass": "if [ \"$NODE_ENV\" = \"production\" ]; then npm run sass-prod ; else npm run sass-dev ; fi",
     "test": "TZ=utc jest -c jest.config.js",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },

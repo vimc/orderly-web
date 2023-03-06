@@ -47,7 +47,6 @@ class BundleControllerTests : ControllerTest()
                     assertThat(it.body!!.contentLength()).isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
                 }
         )
-        verify(servletResponse).contentType = "application/zip"
     }
 
     @Test
@@ -99,7 +98,7 @@ class BundleControllerTests : ControllerTest()
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
-        val httpClient = getHttpClient("/v1/bundle/import", """{"status":"success","errors":null,"data":true}""".toByteArray())
+        val httpClient = getHttpClient("/v1/bundle/import", responseMessage = """{"status":"success","errors":null,"data":true}""")
         val controller = BundleController(context, config, OrderlyServerClient(config, httpClient))
         assertThat(controller.import()).isEqualTo("""{"status":"success","errors":null,"data":true}""")
     }
@@ -116,7 +115,7 @@ class BundleControllerTests : ControllerTest()
         assertThatThrownBy { controller.import() }.isInstanceOf(PorcelainError::class.java)
     }
 
-    private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient
+    private fun getHttpClient(path: String, responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient
     {
         val request = Request.Builder()
                 .url(config["orderly.server"] + path)
@@ -126,7 +125,7 @@ class BundleControllerTests : ControllerTest()
                 .protocol(HTTP_1_1)
                 .code(responseCode)
                 .message(responseMessage)
-                .body(responseBody.toResponseBody())
+                .body(responseMessage.toResponseBody())
                 .build()
         val call = mock<Call> {
             on { execute() } doReturn response

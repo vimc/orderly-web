@@ -229,6 +229,30 @@ class RunWorkflowTests : SeleniumTest()
 
     @ParameterizedTest
     @EnumSource(ConfigType::class)
+    fun `can see error from invalid csv file`()
+    {
+        val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
+        tmpFile.writeText("report\nunknown\nunknown2")
+
+        createWorkflow()
+        driver.findElement(By.id("import-from-csv-label")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
+
+        val fileInput = driver.findElement(By.id("import-csv"))
+        fileInput.sendKeys(tmpFile.absolutePath)
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-validation-errors")))
+
+        val validationErrors = driver.findElements(By.cssSelector("li.import-validation-error"))
+        assertThat(validationErrors.count()).isEqualTo(2)
+        assertThat(validationErrors[0].text).contains("Row 2, column 1: report 'unknown' not found in Orderly")
+        assertThat(validationErrors[1].text).contains("Row 3, column 1: report 'unknown2' not found in Orderly")
+
+        tmpFile.delete()
+    }
+
+    @ParameterizedTest
+    @EnumSource(ConfigType::class)
     fun `can see all reports in non-master branch iff git enabled`(configType: ConfigType)
     {
         // Available reports should include those which are unchanged from master branch i.e. 'minimal' and 'global', as
