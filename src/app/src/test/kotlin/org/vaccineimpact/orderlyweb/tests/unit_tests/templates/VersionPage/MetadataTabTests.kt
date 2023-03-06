@@ -117,7 +117,7 @@ class MetadataTabTests: FreeMarkerTest("report-page.ftl")
     @Test
     fun `renders dependencies component`()
     {
-        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel)
+        val jsoupDoc = jsoupDocFor(VersionPageTestData.testModel.copy(isRunner = true))
         val app = jsoupDoc.select("#reportDependenciesVueApp")
         assertThat(app.select("report-dependencies").count()).isEqualTo(1)
         assertThat(app.select("report-dependencies").attr(":report")).isEqualTo("report")

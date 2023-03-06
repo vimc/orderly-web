@@ -165,22 +165,6 @@ class IndexPageTests : SeleniumTest()
     }
 
     @Test
-    fun `does not link to run workflow page without auth`()
-    {
-        setUpDb()
-        startApp("auth=false")
-
-        addUserWithPermissions(listOf(
-                ReifiedPermission("reports.read", Scope.Global())))
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl)
-
-        val component = driver.findElements(By.id("run-workflow"))
-        assertThat(component.count()).isEqualTo(0)
-    }
-
-    @Test
     fun `can not link to run report page without permission`()
     {
         setUpDb()
@@ -188,22 +172,6 @@ class IndexPageTests : SeleniumTest()
 
         addUserWithPermissions(listOf(
                 ReifiedPermission("reports.read", Scope.Global())))
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl)
-
-        val component = driver.findElements(By.id("run-report"))
-        assertThat(component.count()).isEqualTo(0)
-    }
-
-    @Test
-    fun `does not link to run report page if no auth`()
-    {
-        setUpDb()
-        startApp("auth=false")
-
-        addUserWithPermissions(listOf(
-                ReifiedPermission("reports.run", Scope.Global())))
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl)

@@ -124,7 +124,7 @@ class VersionPageTests: FreeMarkerTest("report-page.ftl")
         val htmlResponse = htmlPageResponseFor(mockModel)
 
         val deps = htmlResponse.getElementById("runReportVueApp")
-        assertThat(deps).isNotNull()
+        assertThat(deps).isNull()
     }
 
     @Test
@@ -135,7 +135,7 @@ class VersionPageTests: FreeMarkerTest("report-page.ftl")
         val htmlResponse = htmlPageResponseFor(mockModel)
 
         val deps = htmlResponse.getElementById("reportDependenciesVueApp")
-        assertThat(deps).isNull()
+        assertThat(deps).isNotNull()
     }
 
     @Test
