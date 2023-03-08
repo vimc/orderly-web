@@ -30,12 +30,9 @@ abstract class CustomConfigTests
             Thread.sleep(500)
             System.err.println("Port not available yet")
         }
-        while (isSparkInstanceRunning())
-        {
-            Thread.sleep(500)
-            System.err.println("Spark not available yet")
-        }
 
+        System.err.println("Starting app with properties:")
+        System.err.println(AppConfig.properties)
         main(emptyArray())
         Thread.sleep(500)
     }
@@ -85,6 +82,12 @@ abstract class CustomConfigTests
     fun cleanup()
     {
         spark.Spark.stop()
+
+        while (isSparkInstanceRunning())
+        {
+            Thread.sleep(500)
+            System.err.println("Spark stopping")
+        }
 
         File(AppConfig()["db.location"]).delete()
 

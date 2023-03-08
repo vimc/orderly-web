@@ -161,8 +161,7 @@ class RunReportPageTests : SeleniumTest()
         assertThat(driver.findElement(By.cssSelector("#logs")).text).startsWith("minimal")
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can view logs tab`()
     {
         driver.findElement(By.id("logs-link")).click()
