@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import io.specto.hoverfly.junit.core.Hoverfly
+import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
 import io.specto.hoverfly.junit.core.SimulationSource
+import io.specto.hoverfly.junit.core.config.LogLevel
 import io.specto.hoverfly.junit5.HoverflyExtension
 import io.specto.hoverfly.junit5.api.HoverflyConfig
 import io.specto.hoverfly.junit5.api.HoverflySimulate
@@ -33,6 +35,7 @@ abstract class SeleniumTest : CustomConfigTests()
     fun setup(hoverfly: Hoverfly)
     {
         hoverfly.simulate(SimulationSource.defaultPath("github-oauth2-login.json"))
+        localConfigs().logLevel(LogLevel.FATAL)
         val proxy = Proxy()
         proxy.noProxy = "localhost"
         proxy.httpProxy = "localhost:" + hoverfly.hoverflyConfig.proxyPort
