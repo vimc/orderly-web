@@ -74,8 +74,7 @@ class RunWorkflowTests : SeleniumTest()
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can rerun workflow`()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
@@ -97,8 +96,7 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can clone workflow`()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
@@ -121,8 +119,7 @@ class RunWorkflowTests : SeleniumTest()
     }
 
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can add and remove reports from workflow`()
     {
         createWorkflow()
@@ -138,8 +135,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(nextButton.isEnabled).isFalse()
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can set parameter value`()
     {
         createWorkflow()
@@ -208,8 +204,7 @@ class RunWorkflowTests : SeleniumTest()
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can import csv file`()
     {
         val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
@@ -227,8 +222,7 @@ class RunWorkflowTests : SeleniumTest()
         tmpFile.delete()
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can see error from invalid csv file`()
     {
         val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
@@ -311,8 +305,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can create a workflow and select the view progress link to navigate to the progress tab with workflow preselected and reports table generated, which persists when navigating off tab and back again, and re-run workflow in progress`()
     {
         // creates workflow with ui and navigates to the progress page with it selected
@@ -398,8 +391,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(workflowNameInput.getAttribute("readonly")).isEqualTo("true")
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `workflow progress link clears when updating the wizard`()
     {
         createWorkflow()
@@ -424,8 +416,7 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-progress-link")))
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can display workflow summary`()
     {
         createWorkflow()
@@ -491,8 +482,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(driver.findElements(By.id("summary-warning")).count()).isEqualTo(0)
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can display workflow summary and progress with default params, non-default params, and no params`()
     {
         createWorkflow()
@@ -604,8 +594,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can display workflow summary with depends on and missing dependencies`()
     {
         createWorkflow()

@@ -62,7 +62,11 @@ abstract class CustomConfigTests
             val newConfig = oldConfig.copy(remote = linkedMapOf("main" to newRemote))
             configFile.writeText(mapper.writeValueAsString(newConfig))
         }
-        HttpClient.post("http://localhost:8321/v1/reload/")
+        val response = HttpClient.post("http://localhost:8321/v1/reload/")
+        if (response.statusCode != 200)
+        {
+            throw Exception("Failed to change orderly config")
+        }
     }
 
 
