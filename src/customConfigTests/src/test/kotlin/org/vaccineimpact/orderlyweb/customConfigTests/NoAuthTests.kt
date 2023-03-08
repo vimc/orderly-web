@@ -17,7 +17,7 @@ class NoAuthTests : SeleniumTest()
     fun `no user needed to get included routes`()
     {
         startApp("auth=false")
-        val response = HttpClient.get("/reports/minimal", mapOf())
+        val response = RequestHelper().get("/reports/minimal")
         assertSuccessful(response)
     }
 
@@ -25,12 +25,21 @@ class NoAuthTests : SeleniumTest()
     fun `excluded routes return 404`()
     {
         startApp("auth=false")
-        val response = HttpClient.get("/reports/runnable", mapOf())
+        val response = RequestHelper().get("/reports/runnable")
         assertThat(response.statusCode).isEqualTo(404)
     }
 
     @Test
-    fun `does not link to run workflow page without auth`()
+    fun `does not redirect to login`()
+    {
+        startApp("auth=false")
+
+        driver.get(RequestHelper.webBaseUrl)
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
+    }
+
+    @Test
+    fun `does not link to run workflow page`()
     {
         startApp("auth=false")
 
@@ -42,7 +51,7 @@ class NoAuthTests : SeleniumTest()
     }
 
     @Test
-    fun `does not link to run report page if no auth`()
+    fun `does not link to run report page`()
     {
         startApp("auth=false")
 

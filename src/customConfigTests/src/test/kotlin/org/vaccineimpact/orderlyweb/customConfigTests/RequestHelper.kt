@@ -17,6 +17,12 @@ class RequestHelper
         val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
     }
 
+    fun get(url: String, contentType: String = ContentTypes.json): Response
+    {
+        val headers = standardHeaders(contentType)
+        return get(apiBaseUrl + url, headers)
+    }
+
     fun get(url: String, contentType: String = ContentTypes.json,
             userEmail: String): Response
     {
