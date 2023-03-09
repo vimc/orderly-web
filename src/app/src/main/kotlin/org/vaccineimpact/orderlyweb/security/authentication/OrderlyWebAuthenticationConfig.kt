@@ -14,7 +14,7 @@ interface AuthenticationConfig
     val useAuth: Boolean
 
     fun getConfiguredProvider(): AuthenticationProvider
-    fun getAuthenticationIndirectClient(): IndirectClient
+    fun getAuthenticationIndirectClient():
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
 }
 
@@ -42,7 +42,11 @@ class OrderlyWebAuthenticationConfig(
             return appConfig.authorizationEnabled && (getConfiguredProvider() != AuthenticationProvider.Montagu)
         }
 
-    override val useAuth: Boolean = appConfig.getBool("auth")
+    override val useAuth: Boolean
+        get()
+        {
+            return appConfig.getBool("auth")
+        }
 
     override fun getConfiguredProvider(): AuthenticationProvider
     {
