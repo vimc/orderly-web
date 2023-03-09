@@ -13,7 +13,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class NoAuthTests : SeleniumTest()
 {
-    val config = "auth=false\nmontagu.api_url=\nmontagu.url=\nauth.provider=github"
+    private val config = "auth=false"
 
     @Test
     fun `no user needed to get included routes`()
