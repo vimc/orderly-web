@@ -34,13 +34,7 @@ data class WebEndpoint(
     {
         if (secure && authenticationConfig.useAuth)
         {
-
-            System.err.println("Adding security filter to endpoint")
             addSecurityFilter(url)
-        }
-        else
-        {
-            System.err.println("NOT Adding security filter to endpoint")
         }
 
         if (this.contentType == ContentTypes.json)
