@@ -14,7 +14,7 @@ interface AuthenticationConfig
     val useAuth: Boolean
 
     fun getConfiguredProvider(): AuthenticationProvider
-    fun getAuthenticationIndirectClient():
+    fun getAuthenticationIndirectClient(): IndirectClient
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
 }
 
