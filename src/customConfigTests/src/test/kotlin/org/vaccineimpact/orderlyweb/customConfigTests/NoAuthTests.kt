@@ -13,10 +13,12 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class NoAuthTests : SeleniumTest()
 {
+    private val config = "auth=false"
+
     @Test
     fun `no user needed to get included routes`()
     {
-        startApp("auth=false")
+        startApp(config)
         val response = RequestHelper().get("/reports/minimal")
         assertSuccessful(response)
     }
@@ -24,7 +26,7 @@ class NoAuthTests : SeleniumTest()
     @Test
     fun `excluded routes return 404`()
     {
-        startApp("auth=false")
+        startApp(config)
         val response = RequestHelper().get("/reports/runnable")
         assertThat(response.statusCode).isEqualTo(404)
     }
@@ -32,7 +34,7 @@ class NoAuthTests : SeleniumTest()
     @Test
     fun `does not redirect to login`()
     {
-        startApp("auth=false")
+        startApp(config)
 
         driver.get(RequestHelper.webBaseUrl)
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
@@ -41,7 +43,7 @@ class NoAuthTests : SeleniumTest()
     @Test
     fun `does not link to run workflow page`()
     {
-        startApp("auth=false")
+        startApp(config)
 
         driver.get(RequestHelper.webBaseUrl)
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
@@ -53,7 +55,7 @@ class NoAuthTests : SeleniumTest()
     @Test
     fun `does not link to run report page`()
     {
-        startApp("auth=false")
+        startApp(config)
 
         driver.get(RequestHelper.webBaseUrl)
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
