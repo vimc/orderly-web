@@ -75,8 +75,8 @@ class OrderlyWeb
 
         val router = Router(freeMarkerConfig)
 
-        val apiUrls = router.mapEndpoints(APIRouteConfig, Router.apiUrlBase)
-        val webUrls = router.mapEndpoints(WebRouteConfig, "")
+        val apiUrls = router.mapEndpoints(APIRouteBuilder, Router.apiUrlBase)
+        val webUrls = router.mapEndpoints(WebRouteBuilder, "")
 
         urls.addAll(apiUrls)
         urls.addAll(webUrls)

@@ -16,7 +16,7 @@ interface RouteConfig
     val endpoints: List<EndpointDefinition>
 }
 
-object APIRouteConfig : RouteBuilder
+object APIRouteBuilder : RouteBuilder
 {
     override fun getEndpoints(useAuth: Boolean): List<EndpointDefinition>
     {
@@ -37,7 +37,7 @@ object APIRouteConfig : RouteBuilder
     }
 }
 
-object WebRouteConfig : RouteBuilder
+object WebRouteBuilder : RouteBuilder
 {
     private val legacyEndpoint = WebEndpoint(
             "/api/v1/*/",
