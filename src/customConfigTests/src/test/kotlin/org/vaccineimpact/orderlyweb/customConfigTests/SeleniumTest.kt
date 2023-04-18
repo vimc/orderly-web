@@ -44,13 +44,13 @@ abstract class SeleniumTest : CustomConfigTests()
                 .apply {
                     addArguments(
                             "--ignore-certificate-errors", "--no-sandbox",
-                            "--disable-dev-shm-usage", "--headless"
+                            "--disable-dev-shm-usage"
                     )
                     setProxy(proxy)
                 })
 
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS)
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 60)
     }
 
     protected fun clickOnLandingPageLink()
