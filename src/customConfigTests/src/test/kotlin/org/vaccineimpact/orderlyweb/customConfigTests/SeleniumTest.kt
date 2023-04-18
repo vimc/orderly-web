@@ -44,7 +44,7 @@ abstract class SeleniumTest : CustomConfigTests()
                 .apply {
                     addArguments(
                             "--ignore-certificate-errors", "--no-sandbox",
-                            "--disable-dev-shm-usage"
+                            "--disable-dev-shm-usage", "--headless"
                     )
                     setProxy(proxy)
                 })
