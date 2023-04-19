@@ -92,6 +92,7 @@ describe("index page as report reviewer", () => {
         tags: ["tag1"]
     }];
 
+    // all tests here disabled because jest-canvas-mock is required and causing compilation failures
     //initReportTable(true, reports, ["author", "requester"]);
 
     beforeEach(() => {
