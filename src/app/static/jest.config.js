@@ -1,8 +1,7 @@
 module.exports = {
     "testResultsProcessor": "jest-teamcity-reporter",
     "setupFilesAfterEnv": [
-        "<rootDir>/src/tests/setup.js",
-        "jest-canvas-mock"
+        "<rootDir>/src/tests/setup.js"
     ],
     "testEnvironment": "jsdom",
     "globals": {

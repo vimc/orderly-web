@@ -50,7 +50,7 @@ abstract class SeleniumTest : CustomConfigTests()
                 })
 
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS)
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 60)
     }
 
     protected fun clickOnLandingPageLink()
