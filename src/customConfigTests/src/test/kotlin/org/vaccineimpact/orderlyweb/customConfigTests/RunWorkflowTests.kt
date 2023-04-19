@@ -169,6 +169,7 @@ class RunWorkflowTests : SeleniumTest()
 
             //Expect report to be removed from workflow when change to a branch where report does not exist
             changeToMasterBranch()
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("workflow-report-0")))
             assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
             assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
                     "The following items are not present in this git commit and have been removed from the workflow:\n" +
