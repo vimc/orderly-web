@@ -32,3 +32,6 @@ steps:
 
     - label: ":sparkle: Build css generator"
       command: buildkite/build-css-generator.sh
+
+    - label: ":construction_worker: Build standalone image"
+      command: buildkite/build-standalone-image.sh

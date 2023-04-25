@@ -6,6 +6,8 @@ import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import kotlin.math.roundToLong
 
 data class ReportVersionPageViewModel(
@@ -31,7 +33,8 @@ data class ReportVersionPageViewModel(
             report: ReportVersionWithArtefactsDataDescParamsResources,
             versions: List<String>,
             changelog: List<Changelog>,
-            context: ActionContext
+            context: ActionContext,
+            authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
         ): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report.name, report.id)
@@ -58,7 +61,7 @@ data class ReportVersionPageViewModel(
             val zipFile = fileViewModelBuilder
                     .buildZipFileViewModel()
 
-            val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
+            val isRunner = authConfig.useAuth && context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
 
             val displayName = report.displayName ?: report.name
 

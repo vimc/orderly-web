@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import spark.ResponseTransformer
 import spark.Route
@@ -16,7 +17,8 @@ class Router(
         private val actionResolver: ActionResolver,
         private val authenticationRouteBuilder: AuthenticationRouteBuilder,
         private val sparkWrapper: SparkWrapper,
-        private val errorHandler: ErrorHandler
+        private val errorHandler: ErrorHandler,
+        private val authConfig: AuthenticationConfig
 )
 {
     constructor(templateEngine: TemplateEngine) :
@@ -24,7 +26,8 @@ class Router(
                     ActionResolver(templateEngine),
                     OrderlyAuthenticationRouteBuilder(OrderlyWebAuthenticationConfig()),
                     SparkServiceWrapper(),
-                    ErrorHandler(templateEngine)
+                    ErrorHandler(templateEngine),
+                    OrderlyWebAuthenticationConfig()
             )
 
     constructor(freeMarkerConfig: Configuration) :
@@ -44,9 +47,9 @@ class Router(
         mapLogoutCallback()
     }
 
-    fun mapEndpoints(routeConfig: RouteConfig, urlBase: String): List<String>
+    fun mapEndpoints(routeConfig: RouteBuilder, urlBase: String): List<String>
     {
-        return routeConfig.endpoints.map { mapEndpoint(it, urlBase) }
+        return routeConfig.getEndpoints(authConfig.useAuth).map { mapEndpoint(it, urlBase) }
     }
 
     private fun mapLoginCallback()

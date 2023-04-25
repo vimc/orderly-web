@@ -31,8 +31,7 @@ class RunReportPageTests : SeleniumTest()
         driver.get(url)
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can view run tab`()
     {
         val tab = driver.findElement(By.id("run-tab"))
@@ -42,8 +41,7 @@ class RunReportPageTests : SeleniumTest()
         assertThat(select.firstSelectedOption.text).isEqualTo("master")
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can view run tab with querystring`()
     {
         val url = RequestHelper.webBaseUrl + "/run-report?report-name=minimal"
@@ -77,8 +75,7 @@ class RunReportPageTests : SeleniumTest()
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can view and select reports`()
     {
         val typeahead = driver.findElement(By.id("report"))
@@ -119,8 +116,7 @@ class RunReportPageTests : SeleniumTest()
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can run a report and follow view log link to logs`()
     {
         val typeahead = driver.findElement(By.id("report"))
@@ -142,8 +138,7 @@ class RunReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h2"), "Running report logs"))
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can run a report and view logs`()
     {
         val typeahead = driver.findElement(By.id("report"))
@@ -166,8 +161,7 @@ class RunReportPageTests : SeleniumTest()
         assertThat(driver.findElement(By.cssSelector("#logs")).text).startsWith("minimal")
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can view logs tab`()
     {
         driver.findElement(By.id("logs-link")).click()
@@ -202,8 +196,7 @@ class RunReportPageTests : SeleniumTest()
         assertThat(paramInput[0].text).isEqualTo("new value")
     }
 
-    @ParameterizedTest
-    @EnumSource(ConfigType::class)
+    @Test
     fun `can add change message and type values`()
     {
         val typeahead = driver.findElement(By.id("report"))

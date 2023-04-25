@@ -11,6 +11,8 @@ interface AuthenticationConfig
 {
     val allowGuestUser: Boolean
     val canAllowGuestUser: Boolean
+    val useAuth: Boolean
+
     fun getConfiguredProvider(): AuthenticationProvider
     fun getAuthenticationIndirectClient(): IndirectClient
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
@@ -38,6 +40,12 @@ class OrderlyWebAuthenticationConfig(
         get()
         {
             return appConfig.authorizationEnabled && (getConfiguredProvider() != AuthenticationProvider.Montagu)
+        }
+
+    override val useAuth: Boolean
+        get()
+        {
+            return appConfig.getBool("auth")
         }
 
     override fun getConfiguredProvider(): AuthenticationProvider

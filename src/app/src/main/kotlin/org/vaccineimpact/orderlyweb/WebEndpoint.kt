@@ -32,10 +32,11 @@ data class WebEndpoint(
 
     override fun additionalSetup(url: String)
     {
-        if (secure)
+        if (secure && authenticationConfig.useAuth)
         {
             addSecurityFilter(url)
         }
+
         if (this.contentType == ContentTypes.json)
         {
             spark.after(url, ContentTypes.json, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))

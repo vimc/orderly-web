@@ -52,16 +52,9 @@ class ReportTests : IntegrationTest()
         assertSuccessfulWithResponseText(runResponse)
         val key = JSONValidator.getData(runResponse.text)["key"].asText()
 
-        //Until https://mrc-ide.myjetbrains.com/youtrack/issue/VIMC-3849 is fixed, the orderly server endpoint works but
-        //spuriously returns a 400 when successful. So here do not test response, but check status to see if kill worked
-        apiRequestHelper.delete("/reports/$key/kill/", userEmail = fakeGlobalReportReviewer())
-
-        val statusResponse = apiRequestHelper.get(
-                "/reports/$key/status",
-                userEmail = fakeGlobalReportReviewer()
-        )
-        val status = JSONValidator.getData(statusResponse.text)["status"].asText()
-        assertThat(status).isEqualTo("interrupted")
+        val response = apiRequestHelper.delete("/reports/$key/kill/", userEmail = fakeGlobalReportReviewer())
+        assertThat(response.statusCode).isEqualTo(200)
+        JSONValidator.validateAgainstOrderlySchema(response.text, "Kill")
     }
 
     @Test

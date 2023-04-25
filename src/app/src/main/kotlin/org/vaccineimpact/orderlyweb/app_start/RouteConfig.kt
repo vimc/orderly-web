@@ -6,25 +6,38 @@ import org.vaccineimpact.orderlyweb.app_start.routing.web.*
 import org.vaccineimpact.orderlyweb.controllers.web.AdminController
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 
+interface RouteBuilder
+{
+    fun getEndpoints(useAuth: Boolean): List<EndpointDefinition>
+}
+
 interface RouteConfig
 {
     val endpoints: List<EndpointDefinition>
 }
 
-object APIRouteConfig : RouteConfig
+object APIRouteBuilder : RouteBuilder
 {
-    override val endpoints: List<EndpointDefinition> =
-            GitRouteConfig.endpoints.plus(ReportRouteConfig.endpoints)
-                    .plus(VersionRouteConfig.endpoints)
-                    .plus(HomeRouteConfig.endpoints)
-                    .plus(DataRouteConfig.endpoints)
-                    .plus(UserRouteConfig.endpoints)
-                    .plus(BundleRouteConfig.endpoints)
-                    .plus(QueueRouteConfig.endpoints)
-                    .plus(OutpackRouteConfig.endpoints)
+    override fun getEndpoints(useAuth: Boolean): List<EndpointDefinition>
+    {
+        val endpoints = GitRouteConfig.endpoints.plus(ReportRouteConfig.endpoints)
+                .plus(VersionRouteConfig.endpoints)
+                .plus(HomeRouteConfig.endpoints)
+                .plus(DataRouteConfig.endpoints)
+                .plus(UserRouteConfig.endpoints)
+                .plus(BundleRouteConfig.endpoints)
+                .plus(QueueRouteConfig.endpoints)
+                .plus(OutpackRouteConfig.endpoints).toMutableList()
+
+        if (useAuth)
+        {
+            endpoints += RunReportRouteConfig.endpoints
+        }
+        return endpoints
+    }
 }
 
-object WebRouteConfig : RouteConfig
+object WebRouteBuilder : RouteBuilder
 {
     private val legacyEndpoint = WebEndpoint(
             "/api/v1/*/",
@@ -52,17 +65,28 @@ object WebRouteConfig : RouteConfig
     )
             .secure(setOf("*/users.manage"))
 
-    override val endpoints: List<EndpointDefinition> =
-            WebAuthRouteConfig.endpoints +
-                    WebDocumentRouteConfig.endpoints +
-                    WebReportRouteConfig.endpoints +
-                    WebLogsRouteConfig.endpoints +
-                    WebVersionRouteConfig.endpoints +
-                    WebWorkflowRouteConfig.endpoints +
-                    WebUserRouteConfig.endpoints +
-                    WebPermissionRouteConfig.endpoints +
-                    WebRoleRouteConfig.endpoints +
-                    WebSettingsRouteConfig.endpoints +
-                    WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint +
-                    accessibilityEndpoint + legacyEndpoint
+    override fun getEndpoints(useAuth: Boolean): List<EndpointDefinition>
+    {
+        val endpoints = (
+                WebAuthRouteConfig.endpoints +
+                WebDocumentRouteConfig.endpoints +
+                WebReportRouteConfig.endpoints +
+                WebLogsRouteConfig.endpoints +
+                WebVersionRouteConfig.endpoints +
+                WebUserRouteConfig.endpoints +
+                WebPermissionRouteConfig.endpoints +
+                WebRoleRouteConfig.endpoints +
+                WebSettingsRouteConfig.endpoints +
+                WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint +
+                accessibilityEndpoint + legacyEndpoint
+                ).toMutableList()
+
+        if (useAuth)
+        {
+            endpoints += WebRunReportRouteConfig.endpoints +
+                    WebWorkflowRouteConfig.endpoints
+        }
+
+        return endpoints
+    }
 }

@@ -5,6 +5,8 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityClientsConfigFactory
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
@@ -19,13 +21,14 @@ data class APIEndpoint(
         override val authenticateWithExternalProvider: Boolean = false,
         override val secure: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
-        val configFactory: APISecurityConfigFactory? = null
+        val configFactory: APISecurityConfigFactory? = null,
+        val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
 
 ) : EndpointDefinition
 {
     override fun additionalSetup(url: String)
     {
-        if (secure)
+        if (secure && authenticationConfig.useAuth)
         {
             addSecurityFilter(url)
         }

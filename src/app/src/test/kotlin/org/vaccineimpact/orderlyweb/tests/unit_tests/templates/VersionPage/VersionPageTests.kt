@@ -123,37 +123,30 @@ class VersionPageTests: FreeMarkerTest("report-page.ftl")
 
         val htmlResponse = htmlPageResponseFor(mockModel)
 
-        val runReport = htmlResponse.getElementById("runReportVueApp")
-        assertThat(runReport).isNull()
+        val deps = htmlResponse.getElementById("runReportVueApp")
+        assertThat(deps).isNull()
     }
 
     @Test
-    fun `non runners see run report if auth is not enabled`()
+    fun `runners see dependencies`()
     {
-        val mockContext = mock<ActionContext> {
-            on { userProfile } doReturn CommonProfile().apply {
-                id = "test.user"
-            }
-            on {
-                hasPermission(any())
-            } doReturn false
-        }
+        val mockModel = VersionPageTestData.testModel.copy(isRunner = true)
 
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn false
-            on { get("app.name") } doReturn "appName"
-            on { get("app.url") } doReturn "http://app"
-            on { get("app.email") } doReturn "email"
-            on { get("app.logo") } doReturn "logo.png"
-            on { get("montagu.url") } doReturn "montagu"
-        }
-
-        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
-        val mockModel = VersionPageTestData.testModel.copy(isRunner=false, appViewModel = defaultModel)
         val htmlResponse = htmlPageResponseFor(mockModel)
 
-        val runReport = htmlResponse.getElementById("runReportVueApp")
-        assertThat(runReport).isNotNull()
+        val deps = htmlResponse.getElementById("reportDependenciesVueApp")
+        assertThat(deps).isNotNull()
+    }
+
+    @Test
+    fun `non runners do not see dependencies`()
+    {
+        val mockModel = VersionPageTestData.testModel.copy(isRunner = false)
+
+        val htmlResponse = htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("reportDependenciesVueApp")
+        assertThat(runReport).isNull()
     }
 
     @Test

@@ -30,12 +30,9 @@ abstract class CustomConfigTests
             Thread.sleep(500)
             System.err.println("Port not available yet")
         }
-        while (isSparkInstanceRunning())
-        {
-            Thread.sleep(500)
-            System.err.println("Spark not available yet")
-        }
 
+        System.err.println("Starting app with properties:")
+        System.err.println(AppConfig.properties)
         main(emptyArray())
         Thread.sleep(500)
     }
@@ -62,7 +59,11 @@ abstract class CustomConfigTests
             val newConfig = oldConfig.copy(remote = linkedMapOf("main" to newRemote))
             configFile.writeText(mapper.writeValueAsString(newConfig))
         }
-        HttpClient.post("http://localhost:8321/v1/reload/")
+        val response = HttpClient.post("http://localhost:8321/v1/reload/")
+        if (response.statusCode != 200)
+        {
+            throw Exception("Failed to change orderly config")
+        }
     }
 
 
@@ -81,6 +82,12 @@ abstract class CustomConfigTests
     fun cleanup()
     {
         spark.Spark.stop()
+
+        while (isSparkInstanceRunning())
+        {
+            Thread.sleep(500)
+            System.err.println("Spark stopping")
+        }
 
         File(AppConfig()["db.location"]).delete()
 
