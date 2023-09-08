@@ -82,12 +82,6 @@ export const options = (isReviewer, reports, customFields) => {
     }
 
     cols.push({
-        "data": "tags",
-        "render": buildTagsCell,
-        "orderable": false
-    });
-
-    cols.push({
         "data": "parameter_values",
         "render": buildBasicCell,
         "orderable": false

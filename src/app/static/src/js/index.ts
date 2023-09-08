@@ -4,10 +4,8 @@ import Vue from 'vue';
 import setGlobalPinnedReports from './components/reports/setGlobalPinnedReports.vue'
 
 import treetables from "treetables";
-import tokenize2 from "tokenize2";
 
 treetables(window, $);
-tokenize2(window, $);
 
 declare const currentPinnedReportNames;
 declare const reportDisplayNames;
@@ -47,23 +45,6 @@ export const initReportTable = (isReviewer, reports, customFields) => {
         dt.column(col)
             .search(this.value)
             .draw();
-    });
-
-    const $tagsFilter = $("#tags-filter");
-    $tagsFilter.tokenize2({placeholder: "Type to filter..."});
-    $tagsFilter.on('tokenize:tokens:added tokenize:tokens:remove', function() {
-
-        const col = parseInt($(this).data("col"));
-
-        dt.column(col)
-            .search($(this).val().join(","))
-            .draw();
-    });
-
-    $(".tokens-container input").on("focus", function() {
-        const t = $tagsFilter.tokenize2();
-        t.trigger('tokenize:search', [t.input.val()]);
-        t.trigger("tokenize:dropdown:show");
     });
 
     $('#expand').on("click", () => {
