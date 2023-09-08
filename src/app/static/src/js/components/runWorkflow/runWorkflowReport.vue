@@ -423,8 +423,8 @@
             validateWorkflow() {
                 const formData = new FormData()
                 formData.append("file", this.importedFile)
-                const branch = this.workflowMetadata.git_branch ? `${this.workflowMetadata.git_branch}` : '';
-                const commit = this.workflowMetadata.git_commit ? `${this.workflowMetadata.git_commit}` : '';
+                const branch = this.workflowMetadata.git_branch || '';
+                const commit = this.workflowMetadata.git_commit || '';
                 const params = `?branch=${branch}&commit=${commit}`
 
                 api.post(`/workflow/validate/${params}`,
