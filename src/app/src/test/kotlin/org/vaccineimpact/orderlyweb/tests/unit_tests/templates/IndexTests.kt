@@ -139,10 +139,9 @@ class IndexTests: FreeMarkerTest("index.ftl")
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
         assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Status")
-        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Tags")
-        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Parameter Values")
-        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Author")
-        assertThat(header.select("th")[6].selectFirst("label").text()).isEqualTo("Requester")
+        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
+        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
     }
 
     @Test
@@ -157,10 +156,9 @@ class IndexTests: FreeMarkerTest("index.ftl")
         assertThat(header.select("th").count()).isEqualTo(6)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
-        assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Tags")
-        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
-        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
-        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
+        assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Parameter Values")
+        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Requester")
 
     }
 
@@ -230,26 +228,9 @@ class IndexTests: FreeMarkerTest("index.ftl")
         assertThat(filters.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
         assertThat(filters.select("th")[1].selectFirst("input").id()).isEqualTo("version-filter")
         assertThat(filters.select("th")[2].selectFirst("select").id()).isEqualTo("status-filter")
-        assertThat(filters.select("th")[3].selectFirst("select").id()).isEqualTo("tags-filter")
-        assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("parameter-values-filter")
-        assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("author-filter")
-        assertThat(filters.select("th")[6].selectFirst("input").id()).isEqualTo("requester-filter")
-    }
-
-    @Test
-    fun `tag column has a multiselect filter`()
-    {
-        val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
-                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
-        val filters = jsoupDocFor(testModel).select("thead tr")[1]
-
-        val filterSelect = filters.select("th")[3].selectFirst("select")
-        assertThat(filterSelect.id()).isEqualTo("tags-filter")
-        assertThat(filterSelect.attr("multiple")).isEqualTo("multiple")
-        assertThat(filterSelect.select("option").count()).isEqualTo(2)
-        assertThat(filterSelect.select("option").map { it.attr("value") }).containsExactly("a", "b")
-        assertThat(filterSelect.select("option").map { it.text() }).containsExactly("a", "b")
+        assertThat(filters.select("th")[3].selectFirst("input").id()).isEqualTo("parameter-values-filter")
+        assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("author-filter")
+        assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("requester-filter")
     }
 
     @Test
