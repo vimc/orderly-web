@@ -55,14 +55,6 @@ function buildStatusCell(data, type, full) {
     }
 }
 
-function buildTagsCell(data) {
-    const result = [];
-    for (const tag of data) {
-        result.push(`<span class="badge badge-tag float-left mr-1 mb-1">${tag}</span>`)
-    }
-    return result.join('');
-}
-
 export const options = (isReviewer, reports, customFields) => {
 
     let cols = [
