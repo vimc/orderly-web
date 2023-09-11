@@ -135,7 +135,7 @@ class IndexTests: FreeMarkerTest("index.ftl")
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
         val header = jsoupDocFor(testModel).selectFirst("thead tr")
 
-        assertThat(header.select("th").count()).isEqualTo(7)
+        assertThat(header.select("th").count()).isEqualTo(6)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
         assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Status")
@@ -153,7 +153,7 @@ class IndexTests: FreeMarkerTest("index.ftl")
 
         val header = jsoupDocFor(testModel).selectFirst("thead tr")
 
-        assertThat(header.select("th").count()).isEqualTo(6)
+        assertThat(header.select("th").count()).isEqualTo(5)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
         assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Parameter Values")
@@ -224,7 +224,7 @@ class IndexTests: FreeMarkerTest("index.ftl")
 
         val filters = jsoupDocFor(testModel).select("thead tr")[1]
 
-        assertThat(filters.select("th").count()).isEqualTo(7)
+        assertThat(filters.select("th").count()).isEqualTo(6)
         assertThat(filters.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
         assertThat(filters.select("th")[1].selectFirst("input").id()).isEqualTo("version-filter")
         assertThat(filters.select("th")[2].selectFirst("select").id()).isEqualTo("status-filter")
