@@ -27,6 +27,8 @@ function cleanup() {
 
 trap cleanup ERR
 
+sleep 60
+
 docker exec montagu_db_1 montagu-wait.sh
 
 export NETWORK=montagu_default
