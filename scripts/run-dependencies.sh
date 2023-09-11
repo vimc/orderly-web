@@ -27,7 +27,8 @@ function cleanup() {
 
 trap cleanup ERR
 
-sleep 60
+# This is sometimes necessary locally, to give db time to start
+# sleep 20
 
 docker exec montagu_db_1 montagu-wait.sh
 
