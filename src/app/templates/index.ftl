@@ -63,9 +63,6 @@
             </#if>
 
             <th>
-                <label for="tags-filter">Tags</label>
-            </th>
-            <th>
                 <label for="parameter-values-filter">Parameter Values</label>
             </th>
 
@@ -101,19 +98,6 @@
                     </select>
                 </th>
             </#if>
-            <th>
-                <select class="form-control" id="tags-filter"
-                        multiple="multiple"
-                        <#if isReviewer>
-                            data-col="4"
-                        <#else>
-                            data-col="3"
-                        </#if>>
-                    <#list tags as tag>
-                        <option value="${tag}">${tag}</option>
-                    </#list>
-                </select>
-            </th>
             <th>
                 <input class="form-control" type="text" id="parameter-values-filter"
                        placeholder="Type to filter..."
