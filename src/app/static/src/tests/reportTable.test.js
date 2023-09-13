@@ -8,19 +8,19 @@ describe("reportsTable", () => {
 
     it("has expected columns when user is reviewer", () => {
         const cols = options(true, [], customFields).columns;
-        expect(cols.length).toBe(8);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "tags", "parameter_values", "author", "requester", "display_name"])
+        expect(cols.length).toBe(7);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "parameter_values", "author", "requester", "display_name"])
     });
 
     it("has expected columns when user is not a reviewer", () => {
         const cols = options(false, [], customFields).columns;
-        expect(cols.length).toBe(7);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "tags", "parameter_values", "author", "requester", "display_name"])
+        expect(cols.length).toBe(6);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "parameter_values", "author", "requester", "display_name"])
     });
 
     it("has invisible display name col", () => {
         const cols = options(false, [], customFields).columns;
-        expect(cols[6].visible).toBe(false);
+        expect(cols[5].visible).toBe(false);
     });
 
     it("is ordered by version desc", () => {
@@ -152,40 +152,15 @@ describe("reportsTable", () => {
 
     });
 
-    describe("tags cell", () => {
-
-        it("is not orderable", () => {
-            const tagsCol = options(false, [], customFields).columns[2];
-            expect(tagsCol.orderable).toBe(false);
-        });
-
-        it("show tags for parent rows", () => {
-            const tagsCol = options(false, [], customFields).columns[2];
-            expect(tagsCol.data).toBe("tags");
-
-            const result = tagsCol.render(["tag1"], null, {tt_parent: 0});
-            expect(result).toBe("<span class=\"badge badge-tag float-left mr-1 mb-1\">tag1</span>");
-        });
-
-        it("shows tags for child row", () => {
-            const tagsCol = options(false, [], customFields).columns[2];
-            expect(tagsCol.data).toBe("tags");
-
-            const result = tagsCol.render(["tag1", "tag2"], null, {tt_parent: 1});
-            expect(result).toBe("<span class=\"badge badge-tag float-left mr-1 mb-1\">tag1</span>" +
-                                "<span class=\"badge badge-tag float-left mr-1 mb-1\">tag2</span>");
-        });
-    });
-
     describe("parameter values cell", () => {
 
         it("is not orderable", () => {
-            const paramValsCol = options(false, [], customFields).columns[3];
+            const paramValsCol = options(false, [], customFields).columns[2];
             expect(paramValsCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const paramValsCol = options(false, [], customFields).columns[3];
+            const paramValsCol = options(false, [], customFields).columns[2];
             expect(paramValsCol.data).toBe("parameter_values");
 
             const result = paramValsCol.render("parameter_values", null, {tt_parent: 0});
@@ -193,7 +168,7 @@ describe("reportsTable", () => {
         });
 
         it("shows parameter values for child row", () => {
-            const paramValsCol = options(false, [], customFields).columns[3];
+            const paramValsCol = options(false, [], customFields).columns[2];
             expect(paramValsCol.data).toBe("parameter_values");
 
             const result = paramValsCol.render("parameter_values", null, {tt_parent: 1});
@@ -204,12 +179,12 @@ describe("reportsTable", () => {
     describe("author cell", () => {
 
         it("is not orderable", () => {
-            const requesterCol = options(false, [], customFields).columns[4];
+            const requesterCol = options(false, [], customFields).columns[3];
             expect(requesterCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const authorCol = options(false, [], customFields).columns[4];
+            const authorCol = options(false, [], customFields).columns[3];
             expect(authorCol.data).toBe("author");
 
             const result = authorCol.render("author", null, {tt_parent: 0});
@@ -217,7 +192,7 @@ describe("reportsTable", () => {
         });
 
         it("shows author for child row", () => {
-            const authorCol = options(false, [], customFields).columns[4];
+            const authorCol = options(false, [], customFields).columns[3];
             expect(authorCol.data).toBe("author");
 
             const result = authorCol.render("author", null, {tt_parent: 1});
@@ -228,12 +203,12 @@ describe("reportsTable", () => {
     describe("requester cell", () => {
 
         it("is not orderable", () => {
-            const requesterCol = options(false, [], customFields).columns[5];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const requesterCol = options(false, [], customFields).columns[5];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.data).toBe("requester");
 
             const result = requesterCol.render("requester", null, {tt_parent: 0});
@@ -241,7 +216,7 @@ describe("reportsTable", () => {
         });
 
         it("shows author for child row", () => {
-            const requesterCol = options(false, [], customFields).columns[5];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.data).toBe("requester");
 
             const result = requesterCol.render("requester", null, {tt_parent: 1});
