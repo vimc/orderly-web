@@ -630,6 +630,42 @@ describe(`runWorkflowReport`, () => {
     });
 
 
+    it("validation sends empty commit and branch if data is null", async () => {
+        switches.workFlowReport = true
+        const url = "http://app/workflow/validate/?branch=&commit="
+
+        const wrapper = shallowMount(runWorkflowReport, {
+            store: createStore(),
+            propsData: {
+                workflowMetadata:
+                    mockRunWorkflowMetadata({
+                        git_commit: null,
+                        git_branch: null
+                    }),
+            }
+        });
+
+        await wrapper.find("input#import-from-csv").setChecked();
+        const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
+
+        const blob = new Blob(["report"], {type: 'text/csv'});
+        blob['name'] = "test.csv";
+        const fakeFile = <File>blob;
+        Object.defineProperty(input, "files", {
+            value: [fakeFile]
+        })
+
+        wrapper.find("input#import-csv.custom-file-input").trigger("change")
+
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+        expect(wrapper.vm.$data.importedFile).toMatchObject({})
+        expect(mockAxios.history.post.length).toBe(1)
+        expect(mockAxios.history.post[0].url).toBe(url)
+        expect(mockAxios.history.post[0].data).toMatchObject({})
+    });
+
+
     it("remove imported file when a report is manually removed from imported reports", async () => {
         const wrapper = getWrapper({
             workflowMetadata:
