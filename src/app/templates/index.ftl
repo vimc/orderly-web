@@ -103,9 +103,9 @@
                        placeholder="Type to filter..."
                        data-role="standard-filter"
                         <#if isReviewer>
-                            data-col="5"
-                        <#else>
                             data-col="4"
+                        <#else>
+                            data-col="3"
                         </#if>/>
             </th>
             <#list customFieldKeys as customField>
@@ -114,9 +114,9 @@
                            placeholder="Type to filter..."
                            data-role="standard-filter"
                             <#if isReviewer>
-                                data-col="${customField?index + 6}"
-                            <#else>
                                 data-col="${customField?index + 5}"
+                            <#else>
+                                data-col="${customField?index + 4}"
                             </#if>
                     />
                 </th>

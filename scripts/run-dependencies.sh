@@ -18,17 +18,17 @@ docker run -v $ORDERLY_DEMO:/orderly:ro -v $OUTPACK_DEMO:/outpack -u $UID mrcide
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml
 
-docker-compose --compatibility -f $COMPOSE_FILE pull || true
-docker-compose --compatibility -f $COMPOSE_FILE --project-name montagu up -d
+docker compose --compatibility -f $COMPOSE_FILE pull || true
+docker compose --compatibility -f $COMPOSE_FILE --project-name montagu up -d
 
 function cleanup() {
-    docker-compose --compatibility -f $COMPOSE_FILE  --project-name montagu down
+    docker compose --compatibility -f $COMPOSE_FILE  --project-name montagu down
 }
 
 trap cleanup ERR
 
 # This is sometimes necessary locally, to give db time to start
-# sleep 20
+sleep 20
 
 docker exec montagu_db_1 montagu-wait.sh
 

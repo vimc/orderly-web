@@ -13,7 +13,7 @@ echo "Dependencies are now running; press Ctrl+C to teardown"
 
 # From now on, if the user presses Ctrl+C we should teardown
 function cleanup() {
-    docker-compose --compatibility -f $here/../scripts/docker-compose.yml --project-name montagu down
+    docker compose --compatibility -f $here/../scripts/docker-compose.yml --project-name montagu down
 }
 trap cleanup INT
 
