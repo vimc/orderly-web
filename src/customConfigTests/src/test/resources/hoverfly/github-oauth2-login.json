@@ -1926,7 +1926,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "application/vnd.github.beta+json"
+            "value" : "application/vnd.github.v3+json"
           } ],
           "Authorization" : [ {
             "matcher" : "exact",
