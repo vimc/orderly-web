@@ -68,9 +68,9 @@ class IndexPageTests : SeleniumTest()
         val body = driver.findElement(By.cssSelector("body"));
         val html = body.getAttribute("innerHTML")
         println(html)
-        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("another report")
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) td:nth-child(2)")).text).startsWith("another report")
 
-        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander"))
+        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander:nth-child(2)"))
         rowExpander.click()
 
         val authorCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(6)"))
@@ -78,9 +78,32 @@ class IndexPageTests : SeleniumTest()
         authorCells.forEach{ assertThat(it.text).isEqualTo("Dr Serious") }
     }
 
-    /*@Test
     fun `can filter datatable by parameter`()
-    {}*/
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        // Enter known parameter name
+        val input = driver.findElement(By.cssSelector("input#parameter-values-filter"))
+        input.sendKeys("nmin")
+
+        // We expect two report versions in one report to include this parameter
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 1))
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("another report")
+
+        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander"))
+        rowExpander.click()
+
+        val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(5)"))
+        assertThat(parameterCells.count()).isEqualTo(2)
+        assertThat(parameterCells[0].text).isEqualTo("nmin=0")
+        assertThat(parameterCells[1].text).isEqualTo("nmin=0.5")
+    }
 
     @Test
     fun `can expand and collapse all rows`()
