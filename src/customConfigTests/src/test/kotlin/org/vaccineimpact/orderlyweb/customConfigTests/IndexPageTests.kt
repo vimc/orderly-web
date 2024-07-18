@@ -63,6 +63,11 @@ class IndexPageTests : SeleniumTest()
 
         // We expect only one report to have this author name
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 1))
+        println("ROW TEXT")
+        println(driver.findElement(By.cssSelector("table.dataTable tbody tr")).text)
+        val body = driver.findElement(By.cssSelector("body"));
+        val html = body.getAttribute("innerHTML")
+        println(html)
         assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("Report using a dependency")
 
         val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander"))
