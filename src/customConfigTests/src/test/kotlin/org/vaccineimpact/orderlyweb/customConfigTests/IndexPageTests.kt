@@ -44,6 +44,31 @@ class IndexPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can filter datatable by author`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val allReportRows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
+
+        // Enter known author name
+        val input = driver.findElement(By.cssSelector("input#author-filter"))
+        input.sendKeys("Dr Very")
+
+        // wait til Number of rows reduces as epxected
+        // All author fields have expected text
+    }
+
+    /*@Test
+    fun `can filter datatable by parameter`()
+    {}*/
+
+    @Test
     fun `can expand and collapse all rows`()
     {
         setUpDb()

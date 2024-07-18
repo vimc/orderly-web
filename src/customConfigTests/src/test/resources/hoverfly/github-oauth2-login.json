@@ -128,8 +128,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Cookie" : [ {
             "matcher" : "regex",
@@ -205,8 +205,8 @@
             "value" : "text/css,*/*;q=0.1"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -280,8 +280,8 @@
             "value" : "text/css,*/*;q=0.1"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -355,8 +355,8 @@
             "value" : "text/css,*/*;q=0.1"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -430,8 +430,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -505,8 +505,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -580,8 +580,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -655,8 +655,8 @@
             "value" : "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Accept-Language" : [ {
             "matcher" : "regex",
@@ -733,8 +733,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -861,8 +861,8 @@
             "value" : "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Referer" : [ {
             "matcher" : "exact",
@@ -926,8 +926,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -1012,8 +1012,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Cache-Control" : [ {
             "matcher" : "exact",
@@ -1204,8 +1204,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
