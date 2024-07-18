@@ -68,6 +68,10 @@ abstract class SeleniumTest : CustomConfigTests()
         loginField.sendKeys(username)
         passwordField.sendKeys(pw)
 
+        val body = driver.findElement(By.cssSelector("body"));
+        val html = body.getAttribute("innerHTML")
+        println(html)
+
         driver.findElement(By.name("commit")).click()
     }
 
