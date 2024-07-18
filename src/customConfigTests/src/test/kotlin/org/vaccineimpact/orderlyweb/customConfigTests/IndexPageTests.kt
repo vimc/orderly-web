@@ -55,27 +55,27 @@ class IndexPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl)
 
         val allReportRows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
-        assertThat(allReportRows.count()).isGreaterThan(1)
+        assertThat(allReportRows.count()).isGreaterThan(2)
 
         // Enter known author name
         val input = driver.findElement(By.cssSelector("input#author-filter"))
-        input.sendKeys("Dr Very")
+        input.sendKeys("Dr Ser")
 
-        // We expect only one report to have this author name
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 1))
+        // We expect two reports to include this author name
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 2))
         println("ROW TEXT")
         println(driver.findElement(By.cssSelector("table.dataTable tbody tr")).text)
         val body = driver.findElement(By.cssSelector("body"));
         val html = body.getAttribute("innerHTML")
         println(html)
-        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("Report using a dependency")
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("another report")
 
         val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander"))
         rowExpander.click()
 
         val authorCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(6)"))
         assertThat(authorCells.count()).isGreaterThan(1)
-        authorCells.forEach{ assertThat(it.text).isEqualTo("Dr Very Serious") }
+        authorCells.forEach{ assertThat(it.text).isEqualTo("Dr Serious") }
     }
 
     /*@Test
