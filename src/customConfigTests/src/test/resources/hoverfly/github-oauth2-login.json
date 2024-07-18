@@ -46,8 +46,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Referer" : [ {
             "matcher" : "glob",
