@@ -1122,8 +1122,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Cache-Control" : [ {
             "matcher" : "exact",
@@ -1271,7 +1271,7 @@
         "query" : { },
         "body" : [ {
           "matcher" : "exact",
-          "value" :  "code=6d69f505eea9242229b0\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient\u0026scope=read%3Aorg%20user%3Aemail\u0026grant_type=authorization_code"
+          "value" :  "code=fake\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient\u0026scope=read%3Aorg%20user%3Aemail\u0026grant_type=authorization_code"
         } ],
         "headers" : {
           "Accept" : [ {
@@ -1284,7 +1284,7 @@
           } ],
           "Content-Length" : [ {
             "matcher" : "exact",
-            "value" : "175"
+            "value" : "159"
           } ],
           "Content-Type" : [ {
             "matcher" : "exact",
