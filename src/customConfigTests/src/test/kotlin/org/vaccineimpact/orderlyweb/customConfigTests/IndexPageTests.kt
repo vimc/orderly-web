@@ -55,12 +55,19 @@ class IndexPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl)
 
         val allReportRows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
+        assertThat(allReportRows.count()).isGreaterThan(1)
 
         // Enter known author name
         val input = driver.findElement(By.cssSelector("input#author-filter"))
         input.sendKeys("Dr Very")
 
-        // wait til Number of rows reduces as epxected
+        // We expect only one report to have this author name
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 1))
+
+        // Expand row
+        val rowExpander = driver.findElement(By.cssSelector("tr.has-child div.expander"))
+        rowExpander.click()
+
         // All author fields have expected text
     }
 
