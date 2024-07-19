@@ -70,7 +70,8 @@ class IndexPageTests : SeleniumTest()
         println(html)
         assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) td:nth-child(2)")).text).startsWith("another report")
 
-        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander:nth-child(2)"))
+        // expand second report
+        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) div.expander"))
         rowExpander.click()
 
         val authorCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(6)"))
@@ -78,6 +79,7 @@ class IndexPageTests : SeleniumTest()
         authorCells.forEach{ assertThat(it.text).isEqualTo("Dr Serious") }
     }
 
+    @Test
     fun `can filter datatable by parameter`()
     {
         setUpDb()
