@@ -74,7 +74,7 @@ class IndexPageTests : SeleniumTest()
 
         val expandedRows = driver.findElements(By.cssSelector("tbody tr.has-parent"))
         assertThat(expandedRows.count()).isGreaterThan(1)
-        expandedRows.forEach{ assertThat(it.findElement(By.cssSelector("td:nth-child(6)")).text).isEqualTo("Dr Serious") }
+        expandedRows.forEach{ assertThat(it.findElement(By.cssSelector("td:nth-child(5)")).text).isEqualTo("Dr Serious") }
     }
 
     @Test
@@ -98,7 +98,7 @@ class IndexPageTests : SeleniumTest()
 
         driver.findElement(By.cssSelector("#expand")).click()
 
-        val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(5)"))
+        val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(4)"))
         val body = driver.findElement(By.cssSelector("body"));
         val html = body.getAttribute("innerHTML")
         println(html)
