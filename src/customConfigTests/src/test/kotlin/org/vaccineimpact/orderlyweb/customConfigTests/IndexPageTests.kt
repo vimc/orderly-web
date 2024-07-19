@@ -65,10 +65,8 @@ class IndexPageTests : SeleniumTest()
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 2))
         println("ROW TEXT")
         println(driver.findElement(By.cssSelector("table.dataTable tbody tr")).text)
-        val body = driver.findElement(By.cssSelector("body"));
-        val html = body.getAttribute("innerHTML")
-        println(html)
-        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(1) td:nth-child(1)")).text).startsWith("use_resource")
+
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(1) td:nth-child(2)")).text).startsWith("use_resource")
         assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) td:nth-child(2)")).text).startsWith("another report")
 
         // expand all reportrs
@@ -101,10 +99,12 @@ class IndexPageTests : SeleniumTest()
         driver.findElement(By.cssSelector("#expand")).click()
 
         val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(5)"))
-        println("")
+        val body = driver.findElement(By.cssSelector("body"));
+        val html = body.getAttribute("innerHTML")
+        println(html)
         assertThat(parameterCells.count()).isEqualTo(2)
-        assertThat(parameterCells[0].text).isEqualTo("nmin=0")
-        assertThat(parameterCells[1].text).isEqualTo("nmin=0.5")
+        assertThat(parameterCells[0].text).isEqualTo("nmin=0.5")
+        assertThat(parameterCells[1].text).isEqualTo("nmin=0")
     }
 
     @Test

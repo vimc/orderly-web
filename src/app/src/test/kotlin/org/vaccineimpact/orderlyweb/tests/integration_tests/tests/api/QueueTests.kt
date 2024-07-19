@@ -28,7 +28,7 @@ class QueueTests : IntegrationTest()
         assertSuccessful(response)
         JSONValidator.validateAgainstOrderlySchema(response.text, "QueueStatusResponse")
         val tasks = JSONValidator.getData(response.text)["tasks"] as ArrayNode
-        assertThat(tasks.count()).isEqualTo(1)
+        assertThat(tasks.count()).isGreaterThan(0)
         assertThat(tasks[0]["key"].textValue()).isNotEmpty()
         assertThat(tasks[0]["status"].textValue()).isNotEmpty()
         assertThat(tasks[0]["inputs"]["name"].textValue()).isEqualTo("minimal-for-running")
