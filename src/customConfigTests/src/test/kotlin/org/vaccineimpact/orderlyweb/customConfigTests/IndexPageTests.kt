@@ -103,8 +103,8 @@ class IndexPageTests : SeleniumTest()
         val html = body.getAttribute("innerHTML")
         println(html)
         assertThat(parameterCells.count()).isEqualTo(2)
-        assertThat(parameterCells[0].text).isEqualTo("nmin=0.5")
-        assertThat(parameterCells[1].text).isEqualTo("nmin=0")
+        assertThat(parameterCells[0].text).isEqualTo("nmin=0")
+        assertThat(parameterCells[1].text).isEqualTo("nmin=0.5")
     }
 
     @Test

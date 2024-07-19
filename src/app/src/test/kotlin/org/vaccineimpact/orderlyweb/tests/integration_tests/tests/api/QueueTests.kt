@@ -25,6 +25,9 @@ class QueueTests : IntegrationTest()
 
         val response = apiRequestHelper.get("/queue/status", userEmail = fakeGlobalReportReader())
 
+        println("QUEUE RESPONSE")
+        println(response.text)
+
         assertSuccessful(response)
         JSONValidator.validateAgainstOrderlySchema(response.text, "QueueStatusResponse")
         val tasks = JSONValidator.getData(response.text)["tasks"] as ArrayNode
