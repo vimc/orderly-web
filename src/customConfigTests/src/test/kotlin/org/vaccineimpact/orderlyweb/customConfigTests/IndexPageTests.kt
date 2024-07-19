@@ -70,11 +70,10 @@ class IndexPageTests : SeleniumTest()
         println(html)
         assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) td:nth-child(2)")).text).startsWith("another report")
 
-        // expand second report
-        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) div.expander"))
-        rowExpander.click()
+        // expand all reportrs
+        driver.findElement(By.cssSelector("#expand")).click()
 
-        val authorCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(6)"))
+        val authorCells = driver.findElements(By.cssSelector("tbody tr.has-parent:nth-child(2) td:nth-child(6)"))
         assertThat(authorCells.count()).isGreaterThan(1)
         authorCells.forEach{ assertThat(it.text).isEqualTo("Dr Serious") }
     }
@@ -98,8 +97,7 @@ class IndexPageTests : SeleniumTest()
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 1))
         assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("another report")
 
-        val rowExpander = driver.findElement(By.cssSelector("tbody tr.has-child div.expander"))
-        rowExpander.click()
+        driver.findElement(By.cssSelector("#expand")).click()
 
         val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(5)"))
         assertThat(parameterCells.count()).isEqualTo(2)
