@@ -68,14 +68,15 @@ class IndexPageTests : SeleniumTest()
         val body = driver.findElement(By.cssSelector("body"));
         val html = body.getAttribute("innerHTML")
         println(html)
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(1) td:nth-child(1)")).text).startsWith("use_resource")
         assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) td:nth-child(2)")).text).startsWith("another report")
 
         // expand all reportrs
         driver.findElement(By.cssSelector("#expand")).click()
 
-        val authorCells = driver.findElements(By.cssSelector("tbody tr.has-parent:nth-child(2) td:nth-child(6)"))
-        assertThat(authorCells.count()).isGreaterThan(1)
-        authorCells.forEach{ assertThat(it.text).isEqualTo("Dr Serious") }
+        val expandedRows = driver.findElements(By.cssSelector("tbody tr.has-parent"))
+        assertThat(expandedRows.count()).isGreaterThan(1)
+        expandedRows.forEach{ assertThat(it.findElement(By.cssSelector("td:nth-child(6)")).text).isEqualTo("Dr Serious") }
     }
 
     @Test
@@ -100,6 +101,7 @@ class IndexPageTests : SeleniumTest()
         driver.findElement(By.cssSelector("#expand")).click()
 
         val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(5)"))
+        println("")
         assertThat(parameterCells.count()).isEqualTo(2)
         assertThat(parameterCells[0].text).isEqualTo("nmin=0")
         assertThat(parameterCells[1].text).isEqualTo("nmin=0.5")

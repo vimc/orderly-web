@@ -20,6 +20,9 @@ class QueueTests : IntegrationTest()
                 userEmail = fakeGlobalReportReviewer()
         )
 
+        // Give the queue a second to add the item
+        Thread.sleep(1000)
+
         val response = apiRequestHelper.get("/queue/status", userEmail = fakeGlobalReportReader())
 
         assertSuccessful(response)
