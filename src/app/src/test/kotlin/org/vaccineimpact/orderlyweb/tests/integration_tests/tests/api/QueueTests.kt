@@ -14,16 +14,31 @@ class QueueTests : IntegrationTest()
     @Test
     fun `can get queue status`()
     {
-        val postResp = apiRequestHelper.post(
+        apiRequestHelper.post(
                 "/reports/minimal-for-running/run/",
                 mapOf("params" to mapOf<String, String>()),
                 userEmail = fakeGlobalReportReviewer()
         )
-        println("POST RESPONSE")
-        println(postResp.text)
+        apiRequestHelper.post(
+            "/reports/minimal-for-running/run/",
+            mapOf("params" to mapOf<String, String>()),
+            userEmail = fakeGlobalReportReviewer()
+        )
+        apiRequestHelper.post(
+            "/reports/minimal-for-running/run/",
+            mapOf("params" to mapOf<String, String>()),
+            userEmail = fakeGlobalReportReviewer()
+        )
+        apiRequestHelper.post(
+            "/reports/minimal-for-running/run/",
+            mapOf("params" to mapOf<String, String>()),
+            userEmail = fakeGlobalReportReviewer()
+        )
+        //println("POST RESPONSE")
+        //println(postResp.text)
 
         // Give the queue a second to add the item
-        Thread.sleep(10000)
+        //Thread.sleep(10000)
 
         val response = apiRequestHelper.get("/queue/status", userEmail = fakeGlobalReportReader())
 
