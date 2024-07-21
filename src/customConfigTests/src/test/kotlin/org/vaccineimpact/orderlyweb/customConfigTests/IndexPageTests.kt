@@ -179,4 +179,64 @@ class IndexPageTests : SeleniumTest()
         val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(0)
     }
+
+    @Test
+    fun `can filter datatable by author`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val allReportRows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
+        assertThat(allReportRows.count()).isGreaterThan(2)
+
+        // Enter known author name
+        val input = driver.findElement(By.cssSelector("input#author-filter"))
+        input.sendKeys("Dr Ser")
+
+        // We expect two reports to include this author name
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 2))
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(1) td:nth-child(2)")).text).startsWith("use_resource")
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child:nth-child(2) td:nth-child(2)")).text).startsWith("another report")
+
+        // expand all reportrs
+        driver.findElement(By.cssSelector("#expand")).click()
+
+        val expandedRows = driver.findElements(By.cssSelector("tbody tr.has-parent"))
+        assertThat(expandedRows.count()).isGreaterThan(1)
+        expandedRows.forEach{ assertThat(it.findElement(By.cssSelector("td:nth-child(5)")).text).isEqualTo("Dr Serious") }
+    }
+
+    @Test
+    fun `can filter datatable by parameter`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        // Enter known parameter name
+        val input = driver.findElement(By.cssSelector("input#parameter-values-filter"))
+        input.sendKeys("nmin")
+
+        // We expect two report versions in one report to include this parameter
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable tbody tr"), 1))
+        assertThat(driver.findElement(By.cssSelector("tbody tr.has-child td:nth-child(2)")).text).startsWith("another report")
+
+        driver.findElement(By.cssSelector("#expand")).click()
+
+        val parameterCells = driver.findElements(By.cssSelector("tbody tr.has-parent td:nth-child(4)"))
+        val body = driver.findElement(By.cssSelector("body"));
+        val html = body.getAttribute("innerHTML")
+        assertThat(parameterCells.count()).isEqualTo(2)
+        assertThat(parameterCells[0].text).isEqualTo("nmin=0")
+        assertThat(parameterCells[1].text).isEqualTo("nmin=0.5")
+    }
 }
