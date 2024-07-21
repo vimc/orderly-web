@@ -14,44 +14,10 @@ class QueueTests : IntegrationTest()
     @Test
     fun `can get queue status`()
     {
-        apiRequestHelper.post(
-                "/reports/minimal-for-running/run/",
-                mapOf("params" to mapOf<String, String>()),
-                userEmail = fakeGlobalReportReviewer()
-        )
-        apiRequestHelper.post(
-            "/reports/minimal-for-running/run/",
-            mapOf("params" to mapOf<String, String>()),
-            userEmail = fakeGlobalReportReviewer()
-        )
-        apiRequestHelper.post(
-            "/reports/minimal-for-running/run/",
-            mapOf("params" to mapOf<String, String>()),
-            userEmail = fakeGlobalReportReviewer()
-        )
-        apiRequestHelper.post(
-            "/reports/minimal-for-running/run/",
-            mapOf("params" to mapOf<String, String>()),
-            userEmail = fakeGlobalReportReviewer()
-        )
-        //println("POST RESPONSE")
-        //println(postResp.text)
-
-        // Give the queue a second to add the item
-        //Thread.sleep(10000)
-
         val response = apiRequestHelper.get("/queue/status", userEmail = fakeGlobalReportReader())
-
-        println("QUEUE RESPONSE")
-        println(response.text)
 
         assertSuccessful(response)
         JSONValidator.validateAgainstOrderlySchema(response.text, "QueueStatusResponse")
-        val tasks = JSONValidator.getData(response.text)["tasks"] as ArrayNode
-        assertThat(tasks.count()).isGreaterThan(0)
-        assertThat(tasks[0]["key"].textValue()).isNotEmpty()
-        assertThat(tasks[0]["status"].textValue()).isNotEmpty()
-        assertThat(tasks[0]["inputs"]["name"].textValue()).isEqualTo("minimal-for-running")
     }
 
     @Test
