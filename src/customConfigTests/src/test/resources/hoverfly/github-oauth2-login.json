@@ -46,8 +46,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Referer" : [ {
             "matcher" : "glob",
@@ -128,8 +128,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Cookie" : [ {
             "matcher" : "regex",
@@ -205,8 +205,8 @@
             "value" : "text/css,*/*;q=0.1"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -280,8 +280,8 @@
             "value" : "text/css,*/*;q=0.1"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -355,8 +355,8 @@
             "value" : "text/css,*/*;q=0.1"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -430,8 +430,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -505,8 +505,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -580,8 +580,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -655,8 +655,8 @@
             "value" : "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Accept-Language" : [ {
             "matcher" : "regex",
@@ -733,8 +733,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -861,8 +861,8 @@
             "value" : "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Referer" : [ {
             "matcher" : "exact",
@@ -926,8 +926,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Content-Length" : [ {
             "matcher" : "regex",
@@ -1012,8 +1012,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Cache-Control" : [ {
             "matcher" : "exact",
@@ -1122,8 +1122,8 @@
             "value" : ".*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Cache-Control" : [ {
             "matcher" : "exact",
@@ -1204,8 +1204,8 @@
             "value" : "*/*"
           } ],
           "Accept-Encoding" : [ {
-            "matcher" : "exact",
-            "value" : "gzip, deflate, br"
+            "matcher" : "regex",
+            "value" : ".*"
           } ],
           "Origin" : [ {
             "matcher" : "exact",
@@ -1250,80 +1250,82 @@
           "X-Timer" : [ "S1559145160.280009,VS0,VE0" ]
         }
       }
-    }, {
-      "request" : {
-        "path" : [ {
-          "matcher" : "exact",
-          "value" : "/login/oauth/access_token"
-        } ],
-        "method" : [ {
-          "matcher" : "exact",
-          "value" : "POST"
-        } ],
-        "destination" : [ {
-          "matcher" : "exact",
-          "value" : "github.com"
-        } ],
-        "scheme" : [ {
-          "matcher" : "exact",
-          "value" : "https"
-        } ],
-        "query" : { },
-        "body" : [ {
-          "matcher" : "exact",
-          "value" :  "code=6d69f505eea9242229b0\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient\u0026scope=read%3Aorg%20user%3Aemail\u0026grant_type=authorization_code"
-        } ],
-        "headers" : {
-          "Accept" : [ {
+    },
+    {
+        "request" : {
+          "path" : [ {
             "matcher" : "exact",
-            "value" : "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"
+            "value" : "/login/oauth/access_token"
           } ],
-          "Authorization" : [ {
-            "matcher" : "regex",
-            "value" : ".*"
-          } ],
-          "Content-Length" : [ {
+          "method" : [ {
             "matcher" : "exact",
-            "value" : "175"
+            "value" : "POST"
           } ],
-          "Content-Type" : [ {
+          "destination" : [ {
             "matcher" : "exact",
-            "value" : "application/x-www-form-urlencoded"
+            "value" : "github.com"
           } ],
-          "User-Agent" : [ {
-            "matcher" : "regex",
-            "value" : ".*"
-          } ]
+          "scheme" : [ {
+            "matcher" : "exact",
+            "value" : "https"
+          } ],
+          "query" : { },
+          "body" : [ {
+            "matcher" : "exact",
+            "value" : "code=6d69f505eea9242229b0\u0026redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient\u0026scope=read%3Aorg%20user%3Aemail\u0026grant_type=authorization_code"
+          } ],
+          "headers" : {
+            "Accept" : [ {
+              "matcher" : "exact",
+              "value" : "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2"
+            } ],
+            "Authorization" : [ {
+              "matcher" : "regex",
+              "value" : ".*"
+            } ],
+            "Content-Length" : [ {
+              "matcher" : "exact",
+              "value" : "175"
+            } ],
+            "Content-Type" : [ {
+              "matcher" : "exact",
+              "value" : "application/x-www-form-urlencoded"
+            } ],
+            "User-Agent" : [ {
+              "matcher" : "regex",
+              "value" : ".*"
+            } ]
+          }
+        },
+        "response" : {
+          "status" : 200,
+          "body" : "access_token=notarealtoken&scope=read:user read:org user:email&token_type=bearer",
+          "encodedBody" : false,
+          "templated" : false,
+          "headers" : {
+            "Cache-Control" : [ "max-age=0, private, must-revalidate" ],
+            "Content-Security-Policy" : [ "default-src 'none'; base-uri 'self'; block-all-mixed-content; connect-src 'self' uploads.github.com www.githubstatus.com collector.githubapp.com api.github.com www.google-analytics.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com wss://live.github.com; font-src github.githubassets.com; form-action 'self' github.com gist.github.com; frame-ancestors 'none'; frame-src render.githubusercontent.com; img-src 'self' data: github.githubassets.com identicons.github.com collector.githubapp.com github-cloud.s3.amazonaws.com *.githubusercontent.com; manifest-src 'self'; media-src 'none'; script-src github.githubassets.com; style-src 'unsafe-inline' github.githubassets.com" ],
+            "Content-Type" : [ "application/x-www-form-urlencoded; charset=utf-8" ],
+            "Date" : [ "Wed, 29 May 2019 15:52:40 GMT" ],
+            "Etag" : [ "W/\"5c8d4f4c67813ff2d7ab33f1bac8b02f\"" ],
+            "Expect-Ct" : [ "max-age=2592000, report-uri=\"https://api.github.com/_private/browser/errors\"" ],
+            "Hoverfly" : [ "Was-Here" ],
+            "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
+            "Server" : [ "GitHub.com" ],
+            "Set-Cookie" : [ "has_recent_activity=1; path=/; expires=Wed, 29 May 2019 16:52:40 -0000", "ignored_unsupported_browser_notice=false; path=/" ],
+            "Status" : [ "200 OK" ],
+            "Strict-Transport-Security" : [ "max-age=31536000; includeSubdomains; preload" ],
+            "Transfer-Encoding" : [ "chunked" ],
+            "Vary" : [ "X-PJAX", "Accept-Encoding" ],
+            "X-Content-Type-Options" : [ "nosniff" ],
+            "X-Frame-Options" : [ "deny" ],
+            "X-Github-Request-Id" : [ "A5C0:1C920:1324D:1CCB8:5CEEAAC8" ],
+            "X-Request-Id" : [ "0e647fb5-b2cd-4bba-be7a-7e40a41f9b5e" ],
+            "X-Xss-Protection" : [ "1; mode=block" ]
+          }
         }
       },
-      "response" : {
-        "status" : 200,
-        "body" : "access_token=notarealtoken&scope=read:user read:org user:email&token_type=bearer",
-        "encodedBody" : false,
-        "templated" : false,
-        "headers" : {
-          "Cache-Control" : [ "max-age=0, private, must-revalidate" ],
-          "Content-Security-Policy" : [ "default-src 'none'; base-uri 'self'; block-all-mixed-content; connect-src 'self' uploads.github.com www.githubstatus.com collector.githubapp.com api.github.com www.google-analytics.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com wss://live.github.com; font-src github.githubassets.com; form-action 'self' github.com gist.github.com; frame-ancestors 'none'; frame-src render.githubusercontent.com; img-src 'self' data: github.githubassets.com identicons.github.com collector.githubapp.com github-cloud.s3.amazonaws.com *.githubusercontent.com; manifest-src 'self'; media-src 'none'; script-src github.githubassets.com; style-src 'unsafe-inline' github.githubassets.com" ],
-          "Content-Type" : [ "application/x-www-form-urlencoded; charset=utf-8" ],
-          "Date" : [ "Wed, 29 May 2019 15:52:40 GMT" ],
-          "Etag" : [ "W/\"5c8d4f4c67813ff2d7ab33f1bac8b02f\"" ],
-          "Expect-Ct" : [ "max-age=2592000, report-uri=\"https://api.github.com/_private/browser/errors\"" ],
-          "Hoverfly" : [ "Was-Here" ],
-          "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
-          "Server" : [ "GitHub.com" ],
-          "Set-Cookie" : [ "has_recent_activity=1; path=/; expires=Wed, 29 May 2019 16:52:40 -0000", "ignored_unsupported_browser_notice=false; path=/" ],
-          "Status" : [ "200 OK" ],
-          "Strict-Transport-Security" : [ "max-age=31536000; includeSubdomains; preload" ],
-          "Transfer-Encoding" : [ "chunked" ],
-          "Vary" : [ "X-PJAX", "Accept-Encoding" ],
-          "X-Content-Type-Options" : [ "nosniff" ],
-          "X-Frame-Options" : [ "deny" ],
-          "X-Github-Request-Id" : [ "A5C0:1C920:1324D:1CCB8:5CEEAAC8" ],
-          "X-Request-Id" : [ "0e647fb5-b2cd-4bba-be7a-7e40a41f9b5e" ],
-          "X-Xss-Protection" : [ "1; mode=block" ]
-        }
-      }
-    }, {
+    {
       "request" : {
         "path" : [ {
           "matcher" : "exact",
@@ -1850,7 +1852,7 @@
         "headers" : {
           "Accept" : [ {
             "matcher" : "exact",
-            "value" : "application/vnd.github.beta+json"
+            "value" : "application/vnd.github.v3+json"
           } ],
           "Authorization" : [ {
             "matcher" : "exact",
